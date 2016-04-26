@@ -1,9 +1,0 @@
-2016.04.24 10:38:40 INFO   es[o.elasticsearch.node]  [sonar-1461081051347] stopping ...
-2016.04.24 10:38:40 INFO   es[o.elasticsearch.node]  [sonar-1461081051347] stopped
-2016.04.24 10:38:40 INFO   es[o.elasticsearch.node]  [sonar-1461081051347] closing ...
-2016.04.24 10:38:40 INFO   es[o.elasticsearch.node]  [sonar-1461081051347] closed
-2016.04.24 10:38:50 INFO  web[o.s.s.n.NotificationService] Notification service stopped
-2016.04.24 10:38:50 INFO  web[o.s.s.d.EmbeddedDatabase] Embedded database stopped
-2016.04.24 10:38:57 INFO  web[o.s.s.a.TomcatAccessLog] Web server is stopped
-2016.04.24 10:38:58 INFO  app[o.s.p.m.Monitor] Process[web] is stopped
-<-- Wrapper Stopped

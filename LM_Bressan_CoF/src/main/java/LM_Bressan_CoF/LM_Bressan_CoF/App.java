@@ -7,5 +7,3 @@ public class App {
 
 	}
 }
-
-//added comment prova il mio commento

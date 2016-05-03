@@ -19,12 +19,10 @@ public class MapCrea {
     public MapCrea(int row, int collon) {
         this.row = row;
         this.collon = collon;
-        grid = new int[row][collon];
-        for (int i = 0; i < row; i++)
-            for (int j = 0; j < collon; j++)
-                this.grid[i][j] = 0;
+        this.grid = new int[row][collon];
+        this.cleanGrid(this.grid);
         JFrame frame = new JFrame("Select cities");
-        this.panel = new MapJPanel();
+        panel = new MapJPanel();
         Dimension d = new Dimension(800, 600);
         frame.setSize(d);
         frame.setVisible(true);
@@ -33,8 +31,8 @@ public class MapCrea {
     }
 
     private void cleanGrid(int[][] grid) {
-        for (int i = 0; i < this.row; i++)
-            for (int j = 0; j < this.collon; j++)
+        for (int i = 0; i < row; i++)
+            for (int j = 0; j < collon; j++)
                 grid[i][j] = 0;
     }
 }

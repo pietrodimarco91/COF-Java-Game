@@ -22,6 +22,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Software_Java/jgraphx-master/lib/jgraphx.jar" sourcepath="/Swing Graph/src"/>
+	<classpathentry kind="lib" path="C:/Software_Java/ing_soft/jgraphx-master/lib/jgraphx.jar" sourcepath="src"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

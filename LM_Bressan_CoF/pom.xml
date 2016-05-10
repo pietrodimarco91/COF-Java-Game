@@ -9,12 +9,15 @@
 
 	<name>LM_Bressan_CoF</name>
 	<url>http://maven.apache.org</url>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.language>java</sonar.language>
-		<sonar.host.url> http://localhost:9000/ </sonar.host.url>
+		<sonar.host.url>http://localhost:9000/</sonar.host.url>
+		<sonar.scm.disabled>true</sonar.scm.disabled>
+
 	</properties>
+
+
 	<description>Prova Finale Ingegneria del Software</description>
 	<dependencies>
 		<dependency>
@@ -68,4 +71,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
 </project>

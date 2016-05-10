@@ -1,15 +1,16 @@
+package model;
 
 import java.util.*;
 
 /**
  * 
  */
-public class KingRewardTiles extends Tile {
+public class KingRewardTile extends Tile {
 
     /**
      * Default constructor
      */
-    public KingRewardTiles() {
+    public KingRewardTile() {
     }
 
     /**

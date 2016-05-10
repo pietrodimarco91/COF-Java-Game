@@ -1,3 +1,4 @@
+package model;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class KingRewardDeck {
     /**
      * @return
      */
-    public RewardTile getKingRewars() {
+    public KingRewardTile getKingReward() {
         // TODO implement here
         return null;
     }

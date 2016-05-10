@@ -1,3 +1,4 @@
+package model;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class PermitTile extends Class1 {
     /**
      * 
      */
-    private ArrayList<Cities> cities;
+    private ArrayList<City> cities;
 
     /**
      * 

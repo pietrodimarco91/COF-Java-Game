@@ -1,10 +1,8 @@
+package model;
 
 /**
  * 
  */
 public enum CityColors {
-    GOLD,
-    SILVER,
-    BRONZE,
-    STEEL
+	GOLD, SILVER, BRONZE, STEEL
 }

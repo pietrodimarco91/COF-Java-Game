@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * 
  */
-public class PermitTile extends Class1 {
+public class PermitTile extends Tile {
 
     /**
      * Default constructor

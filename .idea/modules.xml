@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/LM_Bressan_CoF/LM_Bressan_CoF.iml" filepath="$PROJECT_DIR$/LM_Bressan_CoF/LM_Bressan_CoF.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/lm_bressan_cof.iml" filepath="$PROJECT_DIR$/.idea/lm_bressan_cof.iml" />
+    </modules>
+  </component>
+</project>

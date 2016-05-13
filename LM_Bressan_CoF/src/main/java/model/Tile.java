@@ -1,21 +1,12 @@
 package model;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
- * 
+ * Created by pietro on 12/05/16.
  */
 public abstract class Tile {
 
-    /**
-     * Default constructor
-     */
-    public Tile() {
-    }
-
-    /**
-     * 
-     */
-    private ArrayList<String> bonus;
+    public ArrayList<String> bonus;
 
 }

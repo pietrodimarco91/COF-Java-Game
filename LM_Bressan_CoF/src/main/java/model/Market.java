@@ -11,6 +11,7 @@ public class Market {
      * Default constructor
      */
     public Market() {
+    	
     }
 
 }

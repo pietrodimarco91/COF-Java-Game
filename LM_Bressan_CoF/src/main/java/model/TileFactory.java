@@ -1,7 +1,7 @@
 package model;
 
 /**
- * Created by Pietro Di Marco on 13/05/16.
+ * Created by Pietro Di Marco - edited by Riccardo - on 13/05/16.
  * AbstractFactory class used to create the different Tiles
  */
 public abstract class TileFactory {

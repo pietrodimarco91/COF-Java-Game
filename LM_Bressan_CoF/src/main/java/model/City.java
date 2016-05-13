@@ -5,7 +5,7 @@ import java.util.*;
 import controller.Player;
 
 /**
- * 
+ * This class represents a City in the map. It is also stored as a vertex inside the ArrayList of vertexes of the GraphMap. 
  */
 public class City {
 
@@ -13,7 +13,7 @@ public class City {
 	 * Name of the city
 	 * 
 	 */
-	private String name;
+	private String cityName;
 
 	/**
 	 * Color of the city
@@ -78,14 +78,14 @@ public class City {
 	 *            The bonus assigned to this city
 	 */
 	public City(String name, String color, Region region, Point coordinates, RewardToken rewardToken) {
-		this.setName(name);
-		this.setColor(color);
-		this.setRegion(region);
+		this.cityName=name;
+		this.color=color;
+		this.region=region;
 		this.coordinates = coordinates;
-		this.setRewardToken(rewardToken);
+		this.rewardToken=rewardToken;
 		emporiums = new ArrayList<Emporium>();
 		kingIsHere = false;
-		setVisited(false);
+		setVisited();
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class City {
 		if (checkPresenceOfEmporium(owner)) {
 			return false;
 		} else {
-			Emporium emporium = new Emporium(owner, name);
+			Emporium emporium = new Emporium(owner, cityName);
 			emporiums.add(emporium);
 			return true;
 		}
@@ -149,6 +149,7 @@ public class City {
 
 	/**
 	 * Checks if the specified player already owns an emporium in this city.
+	 * 
 	 * @param owner
 	 *            The owner of the emporiums tha
 	 * @return True if the player already has an emporium in this city, false
@@ -167,85 +168,73 @@ public class City {
 	}
 
 	/**
-	 * @return
+	 * This method is invoked when a player builds an emporium in this city. If
+	 * buildEmporium returns true, then the player is allowed to win the
+	 * RewardToken of the city.
+	 * 
+	 * @return The RewardToken assigned to this city
 	 */
-	public String winBonus() {
-		// TODO implement here
-		return "";
+	public RewardToken winBonus() {
+		return rewardToken;
 	}
 
 	/**
+	 * This method is invoked before a player builds an emporium in this city.
+	 * He has to check how many emporiums are already built, as this number
+	 * represents how many assistants he has to pay to build his emporium.
+	 * 
 	 * @param owner
-	 * @return
+	 *            The owner of the emporium that should be built.
+	 * @return The number of the emporiums owned by the other players.
 	 */
 	public int countOthersEmporiums(Player owner) {
-		// TODO implement here
-		return 0;
+		Iterator<Emporium> iterator = emporiums.iterator();
+		Emporium emporium;
+		int counter=0;
+		while (iterator.hasNext()) {
+			emporium = iterator.next();
+			if(emporium.getOwner()!=owner)
+				counter++;
+		}
+		return counter;
 	}
 
-	/**
-	 * @param owner
-	 * @return
-	 */
-	public boolean checkPresenceOfEmporiums(Player owner) {
-		// TODO implement here
-		return false;
-	}
 
 	/**
+	 * This method is invoked during a visit of the map, in order to keep track of cities already visited it sets true to the "visited" attribute when a city gets visited.
 	 * @return
 	 */
 	public void setVisited() {
-		// TODO implement here
-
+		visited=false;
 	}
 
+	/**
+	 * Returns the name of the city.
+	 * @return The name of the city
+	 */
 	public String getName() {
-		return name;
+		return cityName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
+/**
+ * This method returns the ArrayList of the emporiums that are built in this city
+ * @return The list of emporiums already built in this city
+ */
 	public ArrayList<Emporium> getEmporiums() {
 		return emporiums;
 	}
 
-	public void setEmporiums(ArrayList<Emporium> emporiums) {
-		this.emporiums = emporiums;
-	}
-
-	public void setRegion(Region region) {
-		this.region = region;
-	}
-
+/**
+ * This method returns the coordinates (x,y) of the city
+ * @return the coordinates (x,y) of the city represented by a Point class
+ */
 	public Point getCoordinates() {
 		return coordinates;
 	}
 
-	public void setCoordinates(Point coordinates) {
-		this.coordinates = coordinates;
-	}
 
-	public RewardToken getRewardToken() {
-		return rewardToken;
-	}
-
-	public void setRewardToken(RewardToken rewardToken) {
-		this.rewardToken = rewardToken;
-	}
-
-	public boolean isVisited() {
+	public boolean hasBeenVisited() {
 		return visited;
-	}
-
-	public void setVisited(boolean visited) {
-		this.visited = visited;
 	}
 
 }

@@ -3,13 +3,13 @@ package model;
 import java.util.*;
 
 /**
- * This class represents the deck of the Business Permit Tiles.
+ * This class represents the deck of the Business Permit Tiles of a single region.
  */
 public class PermitTileDeck {
 	/**
 	 * The deck is represented by a Queue.
 	 */
-	private Queue<PermitTile> deck;
+	private Queue<Tile> deck;
 
 	/*
 	 * The number of tiles in the deck. This is parametric, according to the
@@ -21,25 +21,30 @@ public class PermitTileDeck {
 	 * This attribute represents one of the uncovered Permit Tiles that a player
 	 * can choose from when he purchases a Permit Tile.
 	 */
-	private PermitTile uncoveredPermitTile1;
+	private Tile uncoveredPermitTile1;
 
 	/**
 	 * This attribute represents one of the uncovered Permit Tiles that a player
 	 * can choose from when he purchases a Permit Tile.
 	 */
-	private PermitTile uncoveredPermitTile2;
+	private Tile uncoveredPermitTile2;
 
+	/**
+	 * Each Region has its own PermitTileDeck
+	 */
+	private Region region;
 	/**
 	 * Default constructor
 	 */
-	public PermitTileDeck(int numberOfTiles) {
+	public PermitTileDeck(Region region,int numberOfTiles,int bonusNumber) {
+		this.region=region;
 		this.numberOfTiles = numberOfTiles;
-		uncoveredPermitTile1=new PermitTile();
-		uncoveredPermitTile2=new PermitTile();
-		/*
-		 * We need to instantiate the deck
-		 */
-
+		deck=new LinkedList<Tile>();
+		ConcreteTileFactory tileFactory = new ConcreteTileFactory();
+		
+		for(int i=0;i<numberOfTiles;i++) {
+			deck.add(tileFactory.createPermitTile(bonusNumber));
+		}		
 	}
 
 	/**

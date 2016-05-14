@@ -7,27 +7,33 @@ import java.util.*;
  */
 public class PoliticCardDeck {
 
-    /**
-     * Default constructor
-     */
-    public PoliticCardDeck() {
-    }
+	/**
+	 * Default constructor
+	 */
+	public PoliticCardDeck() {
+	}
 
+	/**
+	 * @return the new card generated
+	 */
+	public PoliticCard generateRandomPoliticCard() {
+		PoliticCard politicCardDraw = new PoliticCard();
+		return politicCardDraw;
+	}
 
-    /**
-     * @return
-     */
-    public PoliticCard generateRandomPoliticCard() {
-        // TODO implement here
-        return null;
-    }
+	/**
+	 * @return an ArrayList of randomized politic card
+	 */
+	public ArrayList<PoliticCard> distributePoliticCards() {
+		ArrayList<PoliticCard> playerCards = new ArrayList<PoliticCard>();
+		int i;
+		PoliticCard singleCard;
 
-    /**
-     * @return
-     */
-    public ArrayList<PoliticCard> distributePoliticCards() {
-        // TODO implement here
-        return null;
-    }
+		for (i = 0; i < 6; i++) {
+			singleCard = new PoliticCard();
+			playerCards.add(i, singleCard);
+		}
+		return playerCards;
+	}
 
 }

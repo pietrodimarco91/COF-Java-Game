@@ -7,18 +7,52 @@ import java.util.*;
  */
 public class Council {
 
-    /**
-     * Default constructor
-     */
-    public Council() {
-    }
+	/**
+	 * Queue of councillors,I used LinkedList Queue type
+	 */
+	private Queue<Councillor> councillors = new LinkedList();
 
-    /**
-     * 
-     */
-    private Queue<Councillor> councillors;
+	/**
+	 * Default constructor
+	 */
+	public Council() {
+		int i;
+		for (i = 0; i < 4; i++) {
+			Councillor councillor = new Councillor();
+			this.councillors.add(councillor);
+		}
 
+	}
 
+	public void addCouncillor() {
+		Councillor councillor = new Councillor();
+		this.councillors.add(councillor);
+	}
 
+	public void removeCoucillor() { // Remove a councillor
+		this.councillors.poll();
+	}
+
+	public void getCouncillor() {// Return a councillor
+    Iterator x= this.councillors.iterator();
+		while (x.hasNext())
+			System.out.println(x);
+		System.out.println("PAUSA");
+		int i;
+		Councillor temp;
+		for(i=0;i<4;i++){
+		temp=this.councillors.poll();
+		System.out.println(temp.getColor());
+		}
+		return;
+
+	}
+	 
+
+	public static void main(String [ ] args)
+	{
+	      Council council=new Council();
+	      council.getCouncillor();
+	}
 
 }

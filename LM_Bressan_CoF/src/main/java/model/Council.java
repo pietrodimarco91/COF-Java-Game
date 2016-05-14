@@ -34,9 +34,9 @@ public class Council {
 	}
 
 	public void getCouncillor() {// Return a councillor
-    Iterator x= this.councillors.iterator();
+    Iterator <Councillor> x= this.councillors.iterator();
 		while (x.hasNext())
-			System.out.println(x);
+			System.out.println(x.next());
 		System.out.println("PAUSA");
 		int i;
 		Councillor temp;

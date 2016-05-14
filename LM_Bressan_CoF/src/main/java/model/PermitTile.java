@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Pietro Di Marco on 14/05/16.
@@ -20,7 +21,11 @@ public class PermitTile extends Tile {
     /**
      * Constructor method that is used in the same time to fill the PermitTiles with bonuses.
      */
-    public PermitTile(int bonusNumber) {
+    public PermitTile(ArrayList<City> cities,int bonusNumber) {
+        cities=new ArrayList();
+        for(int i=new Random().nextInt(3);i>0;i--){
+            this.cities.add(cities.get(new Random().nextInt(cities.size())));
+        }
         bonus=PermitTileBonusType.random(bonusNumber);
     }
 

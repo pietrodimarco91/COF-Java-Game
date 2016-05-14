@@ -6,14 +6,14 @@ package model;
  */
 public abstract class TileFactory {
 
-    public abstract Tile createRewardToken(int BonusNumber);
+    public abstract Tile createRewardToken(int bonusNumber);
 
-    public abstract Tile createRegionBonusTile(int BonusNumber);
+    public abstract Tile createPermitTile(int bonusNumber);
 
-    public abstract Tile createPermitTile(int BonusNumber);
+    public abstract Tile createRegionBonusTile(int points);
 
-    public abstract Tile createKingRewardTile(int BonusNumber);
+    public abstract Tile createKingRewardTile(int points);
 
-    public abstract Tile createColorBonusTile(int BonusNumber);
+    public abstract Tile createColorBonusTile(int points,String color);
 
 }

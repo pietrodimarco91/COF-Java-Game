@@ -7,29 +7,23 @@ package model;
  */
 public class ConcreteTileFactory extends TileFactory {
 
+
     @Override
-    public Tile createRewardToken(int BonusNumber) {
-        return new RewardToken(BonusNumber);
+    public Tile createPermitTile(int bonusNumber) {
+        return new PermitTile(bonusNumber);
     }
 
     @Override
-    public Tile createRegionBonusTile(int BonusNumber) {
-        return new RegionBonusTile(BonusNumber);
+    public Tile createRewardToken(int bonusNumber) {
+        return new RewardToken(bonusNumber);
     }
 
     @Override
-    public Tile createPermitTile(int BonusNumber) {
-        return new PermitTile(BonusNumber);
-    }
+    public Tile createRegionBonusTile(int points) {return new RegionBonusTile(points);}
 
     @Override
-    public Tile createKingRewardTile(int BonusNumber) {
-        return new KingRewardTile(BonusNumber);
-    }
+    public Tile createKingRewardTile(int points) {return new KingRewardTile(points);}
 
     @Override
-    public Tile createColorBonusTile(int BonusNumber) {
-        return new ColorBonusTile(BonusNumber);
-    }
-
+    public Tile createColorBonusTile(int points,String color) {return new ColorBonusTile(points,color);}
 }

@@ -18,7 +18,7 @@ public class PermitTile extends Tile {
      * Constructor method that is used in the same time to fill the PermitTiles with bonuses.
      */
     public PermitTile(ArrayList<City> cities,int bonusNumber) {
-        cities=new ArrayList();
+        cities=new ArrayList<City>();
         for(int i=new Random().nextInt(3);i>0;i--){
             this.cities.add(cities.get(new Random().nextInt(cities.size())));
         }

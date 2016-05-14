@@ -34,8 +34,7 @@ public class Region {
 	private RegionBonusTile regionBonus;
 
 	/**
-	 * Instantiates a City with its main attributes. By default, King is not
-	 * meant to be in this city.
+	 * Instantiates a Region with its main attributes.
 	 * 
 	 * @param name
 	 *            The region name
@@ -48,7 +47,7 @@ public class Region {
 	 * @param regionBonus
 	 *            The bonus assigned to this region
 	 */
-	public Region(String name, Council council, ArrayList cities, PermitTileDeck deck,
+	public Region(String name, Council council, ArrayList<City> cities, PermitTileDeck deck,
 			RegionBonusTile regionBonusTile) {
 		this.name = name;
 		this.council = council;
@@ -99,6 +98,10 @@ public class Region {
 		if(isEligibleForRegionBonus(owner))
 			return this.regionBonus;
 		return null;
+	}
+	
+	public ArrayList<City> getCities() {
+		return cities;
 	}
 
 }

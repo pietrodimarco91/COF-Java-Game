@@ -1,7 +1,5 @@
 package model;
 
-import java.util.*;
-
 /**
  * 
  */
@@ -21,6 +19,7 @@ public class Councillor {
 	}
 	
 	public String getColor(){
+
 		return this.color;
 	}
  }

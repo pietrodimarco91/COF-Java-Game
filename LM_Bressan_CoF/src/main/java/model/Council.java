@@ -1,6 +1,10 @@
 package model;
 
-import java.util.*;
+
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 
@@ -33,26 +37,8 @@ public class Council {
 		this.councillors.poll();
 	}
 
-	public void getCouncillor() {// Return a councillor
-    Iterator <Councillor> x= this.councillors.iterator();
-		while (x.hasNext())
-			System.out.println(x.next());
-		System.out.println("PAUSA");
-		int i;
-		Councillor temp;
-		for(i=0;i<4;i++){
-		temp=this.councillors.poll();
-		System.out.println(temp.getColor());
-		}
-		return;
-
-	}
-	 
-
-	public static void main(String [ ] args)
-	{
-	      Council council=new Council();
-	      council.getCouncillor();
+	public Queue<Councillor> getCouncillors() {// Return a councillor
+		return this.councillors;
 	}
 
 }

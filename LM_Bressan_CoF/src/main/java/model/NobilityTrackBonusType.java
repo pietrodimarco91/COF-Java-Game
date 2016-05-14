@@ -8,7 +8,7 @@ import java.util.Random;
  * Enumeration of bonus.
  */
 public enum NobilityTrackBonusType {
-	ASSISTANT, VICTORYTRACK, POLITIC, COINS, NOBILITYTRACK, DRANPERMITTILE, BONUSPERMITTILE, TWOEMPORIUMCITY;
+	ASSISTANT, VICTORYTRACK, POLITIC, COINS, NOBILITYTRACK, DRAWPERMITTILE, BONUSPERMITTILE, TWOEMPORIUMCITY;
 
 	/**
 	 *This method is used to fill the Tiles with bonuses, in particular this method return an array from the enum in a random way.

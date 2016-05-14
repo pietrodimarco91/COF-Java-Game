@@ -1,5 +1,6 @@
 package model;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
@@ -17,6 +18,7 @@ public class KingRewardDeck {
      * This constructor create the deck with 5 KingRewardTile.
      */
     public KingRewardDeck() {
+        deck=new LinkedList();
         deck.add(new KingRewardTile(35));
         deck.add(new KingRewardTile(30));
         deck.add(new KingRewardTile(25));

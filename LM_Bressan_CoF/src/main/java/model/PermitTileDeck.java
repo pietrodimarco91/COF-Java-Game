@@ -82,4 +82,16 @@ public class PermitTileDeck {
 		}
 	}
 
+	public String toString() {
+		Iterator<Tile> iterator = deck.iterator();
+		String string="";
+		string+="Region: "+region.toString()+"\n";
+		string+="Number of tiles in the deck: "+numberOfTiles;
+		string+="Uncovered PermitTile 1: "+uncoveredPermitTile1.toString()+"\n";
+		string+="Uncovered PermitTile 2: "+uncoveredPermitTile2.toString()+"\n\n";
+		while(iterator.hasNext()) {
+			string+="Covered PermitTile inside deck: "+iterator.next().toString();
+		}
+		return string;
+	}
 }

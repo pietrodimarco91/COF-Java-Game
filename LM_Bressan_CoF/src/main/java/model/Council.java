@@ -1,6 +1,8 @@
 package model;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 
@@ -24,6 +26,12 @@ public class Council {
 
 	}
 
+	public static void main(String [ ] args)
+	{
+	      Council council=new Council();
+	      council.getCouncillor();
+	}
+
 	public void addCouncillor() {
 		Councillor councillor = new Councillor();
 		this.councillors.add(councillor);
@@ -32,11 +40,17 @@ public class Council {
 	public void removeCoucillor() { // Remove a councillor
 		this.councillors.poll();
 	}
-
+	 
 	public void getCouncillor() {// Return a councillor
-    Iterator x= this.councillors.iterator();
-		while (x.hasNext())
-			System.out.println(x);
+    Iterator<Councillor> x= this.councillors.iterator();
+        Councillor it;
+		while (x.hasNext()){
+            it=x.next();
+            if(it.getColor().equals(/*carta in mano*/)) {
+
+            }
+        }
+
 		System.out.println("PAUSA");
 		int i;
 		Councillor temp;
@@ -46,13 +60,6 @@ public class Council {
 		}
 		return;
 
-	}
-	 
-
-	public static void main(String [ ] args)
-	{
-	      Council council=new Council();
-	      council.getCouncillor();
 	}
 
 }

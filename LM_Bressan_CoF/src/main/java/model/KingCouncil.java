@@ -3,7 +3,7 @@ package model;
 import java.util.*;
 
 /**
- * 
+ * Created by Gabriele Bressan on 13/05/16.
  */
 public class KingCouncil {
 	/**
@@ -12,7 +12,7 @@ public class KingCouncil {
 	private Queue<Councillor> councillors = new LinkedList<Councillor>();
 
 	/**
-	 * Default constructor
+	 * Default constructor that set the king council with random councillor
 	 */
 	public KingCouncil() {
 		int i;

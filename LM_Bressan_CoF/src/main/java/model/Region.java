@@ -5,7 +5,7 @@ import java.util.*;
 import controller.Player;
 
 /**
- * 
+ * Created by Gabriele Bressan on 13/05/16.
  */
 public class Region {
 	/**
@@ -68,11 +68,26 @@ public class Region {
 
 	/**
 	 * @param politicCards
-	 * @return true if council is satisfied or false if the council is not
+	 * @return true if council is satisfied  or false if the council is not
 	 *         satisfied
 	 */
 	public boolean checkCouncilSatisfaction(ArrayList<PoliticCard> politicCards) {
+		Queue<Councillor> tempCouncillors; //Create a tempCouncillors Queue and I'm used iterator system
+		tempCouncillors=this.council.getCouncillors();//tempCouncillors is equals to the real councillors present in specific region
+		Iterator<Councillor> iterationCouncillors = tempCouncillors.iterator();
+		Councillor councillor;
+		PoliticCard tempPoliticCard;
 		
+		while (iterationCouncillors.hasNext()) {
+			int i;
+			councillor = iterationCouncillors.next();
+			for(i=0;i<politicCards.size();i++){
+				tempPoliticCard=politicCards.get(i);
+				if(councillor.getColor()==tempPoliticCard.getColorCard() || tempPoliticCard.getColorCard()=="MULTICOLOR")
+					return true;
+				}
+			councillor = iterationCouncillors.next();
+			}
 		return false;
 	}
 

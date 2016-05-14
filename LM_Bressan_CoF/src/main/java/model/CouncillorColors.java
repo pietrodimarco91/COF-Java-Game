@@ -1,6 +1,7 @@
 package model;
 
 /**
+ * Created by Gabriele Bressan on 13/05/16.
  * Enumaration about colors of the single Councillor
  */
 

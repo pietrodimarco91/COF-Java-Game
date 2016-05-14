@@ -3,7 +3,7 @@ package model;
 import java.util.*;
 
 /**
- * 
+ * Created by Gabriele Bressan on 13/05/16.
  */
 public class PoliticCard {
 	/**
@@ -19,7 +19,7 @@ public class PoliticCard {
     
     
     /**
-	 * @return string of card color
+	 * @return String of card color
 	 */
     public String getColorCard(){
     	return this.color;

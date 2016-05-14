@@ -3,7 +3,7 @@ package model;
 import java.util.*;
 
 /**
- * 
+ * Created by Gabriele Bressan on 13/05/16.
  */
 public class PoliticCardDeck {
 
@@ -14,7 +14,8 @@ public class PoliticCardDeck {
 	}
 
 	/**
-	 * @return the new card generated
+	 * @return PoliticCard 
+	 * return the new card generated
 	 */
 	public PoliticCard generateRandomPoliticCard() {
 		PoliticCard politicCardDraw = new PoliticCard();

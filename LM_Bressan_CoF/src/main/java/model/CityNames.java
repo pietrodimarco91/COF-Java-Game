@@ -1,7 +1,8 @@
 package model;
 
 /**
- * 
+ * Created by Gabriele Bressan on 13/05/16.
+ * Here there are all name of cities, abbreviation and one id (int) to make easy randomize these.
  */
 public enum CityNames {
     ARKON ("A",1),

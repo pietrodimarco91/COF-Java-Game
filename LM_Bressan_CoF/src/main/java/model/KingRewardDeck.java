@@ -1,32 +1,34 @@
 package model;
 
-import java.util.*;
+import java.util.Queue;
 
 /**
- * 
+ * Created by Pietro Di Marco on 14/05/16.
+ * Enumeration of bonus.
  */
 public class KingRewardDeck {
 
     /**
-     * Default constructor
+     * The KingReward pile.
+     */
+    private Queue<KingRewardTile> deck;
+
+    /**
+     * This constructor create the deck with 5 KingRewardTile.
      */
     public KingRewardDeck() {
+        deck.add(new KingRewardTile(35));
+        deck.add(new KingRewardTile(30));
+        deck.add(new KingRewardTile(25));
+        deck.add(new KingRewardTile(20));
+        deck.add(new KingRewardTile(15));
     }
 
     /**
-     * 
-     */
-    private ArrayList<KingRewardTile> deck;
-
-
-
-
-    /**
-     * @return
+     * @return the head of the queue, it's used when a player win a KingRewardTile.
      */
     public KingRewardTile getKingReward() {
-        // TODO implement here
-        return null;
+        return deck.poll();
     }
 
 }

@@ -7,6 +7,6 @@ import java.util.ArrayList;
  */
 public abstract class Tile {
 
-    public ArrayList<String> bonus;
+        public ArrayList<String> bonus;
 
 }

@@ -10,13 +10,9 @@ import java.util.Random;
 public class PermitTile extends Tile {
 
     /**
-     * Cities in which the tile permit the construction of emporiums.
+     * Cities in which the tile allows the construction of emporiums.
      */
     private ArrayList<City> cities;
-    /**
-     * Indicate in which region the tile is located.
-     */
-    private Region region;
 
     /**
      * Constructor method that is used in the same time to fill the PermitTiles with bonuses.

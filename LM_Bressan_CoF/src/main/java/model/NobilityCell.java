@@ -32,4 +32,19 @@ public class NobilityCell {
 		return bonus;
 	}
 
+	public String toString() {
+		Iterator<String> iterator = bonus.iterator();
+		String string = "";
+		if (bonus.size() == 0)
+			return "This cell has no bonus\n";
+		int i = 0;
+		while (iterator.hasNext()) {
+			string += "Bonus number " + i + ": ";
+			string += iterator.next();
+			string += "\n";
+			i++;
+		}
+		return string;
+	}
+
 }

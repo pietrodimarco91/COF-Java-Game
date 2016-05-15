@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 /**
  * Created by Pietro Di Marco on 13/05/16.
  * ConcreteFactory class used to invoke the different Tile's constructors
@@ -9,9 +11,7 @@ public class ConcreteTileFactory extends TileFactory {
 
 
     @Override
-    public Tile createPermitTile(int bonusNumber) {
-        return new PermitTile(bonusNumber);
-    }
+    public Tile createPermitTile(ArrayList<City> cities,int bonusNumber) {return new PermitTile(cities,bonusNumber);}
 
     @Override
     public Tile createRewardToken(int bonusNumber) {

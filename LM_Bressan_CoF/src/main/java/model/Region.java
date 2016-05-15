@@ -114,7 +114,10 @@ public class Region {
 			return this.regionBonus;
 		return null;
 	}
-	
+	/**
+	 * 
+	 * @return ArrayList of cities in regione
+	 */
 	public ArrayList<City> getCities() {
 		return cities;
 	}

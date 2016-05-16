@@ -31,7 +31,7 @@ public class Region {
 	/**
 	 * 
 	 */
-	private RegionBonusTile regionBonus;
+	private Tile regionBonus;
 
 	/**
 	 * Instantiates a Region with its main attributes.
@@ -47,13 +47,13 @@ public class Region {
 	 * @param regionBonus
 	 *            The bonus assigned to this region
 	 */
-	public Region(String name, Council council, ArrayList<City> cities, PermitTileDeck deck,
-			RegionBonusTile regionBonusTile) {
+	public Region(String name, Council council, ArrayList<City> cities, PermitTileDeck deck) {
 		this.name = name;
 		this.council = council;
 		this.cities = cities;
 		this.deck = deck;
-		this.regionBonus = regionBonusTile;
+		TileFactory tileFactory = new ConcreteTileFactory();
+		this.regionBonus=tileFactory.createRegionBonusTile(5+new Random().nextInt(5));
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class Region {
 		City tempCity;
 		for(i=0;i<cities.size();i++){
 			tempCity=cities.get(i);
-			if(tempCity.checkPresenceOfEmporium(owner)==false)
+			if((!tempCity.checkPresenceOfEmporium(owner)))
 				return false;
 			}
 		return true;
@@ -109,7 +109,7 @@ public class Region {
 	 * @param owner
 	 * @return region bonus if player is eligible for region bonus, else return null
 	 */
-	public RegionBonusTile winRegionBonus(Player owner) {
+	public Tile winRegionBonus(Player owner) {
 		if(isEligibleForRegionBonus(owner))
 			return this.regionBonus;
 		return null;

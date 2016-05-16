@@ -38,12 +38,8 @@ public enum RewardTokenType {
 	 * @return true if the value string already exists, false otherwise.
 	 */
 	public static boolean bonusAlreadyExisting(ArrayList<String> array, String value) {
-		Iterator<String> iterator = array.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next().equals(value))
-				return true;
-		}
-		return false;
+		
+		return array.contains(value);
 	}
 
 

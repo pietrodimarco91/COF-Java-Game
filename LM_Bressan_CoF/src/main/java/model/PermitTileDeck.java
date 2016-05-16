@@ -40,7 +40,7 @@ public class PermitTileDeck {
 		this.region=region;
 		this.numberOfTiles = numberOfTiles;
 		deck=new LinkedList<Tile>();
-		ConcreteTileFactory tileFactory = new ConcreteTileFactory();
+		TileFactory tileFactory = new ConcreteTileFactory();
 		for(int i=0;i<numberOfTiles;i++) {
 			deck.add(tileFactory.createPermitTile(region.getCities(),bonusNumber));
 		}

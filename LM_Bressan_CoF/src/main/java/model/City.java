@@ -60,6 +60,11 @@ public class City {
 	 * 
 	 */
 	private boolean visited;
+	
+	/**
+	 * Since a City is a vertex of the GraphMap, each City stores its connected cities inside an ArrayList of Cities.
+	 */
+	private ArrayList<City> connectedCities;
 
 	/**
 	 * Instantiates a City with its main attributes. By default, King is not
@@ -237,4 +242,11 @@ public class City {
 		return visited;
 	}
 
+	/**
+	 * Sets a connection in the GraphMap between this city and the specified city, by adding it to the list of connected cities.
+	 * @param city the city to be connected to this city
+	 */
+	public void addConnectedCity(City city) {
+		connectedCities.add(city);
+	}
 }

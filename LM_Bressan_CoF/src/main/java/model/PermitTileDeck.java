@@ -2,6 +2,8 @@ package model;
 
 import java.util.*;
 
+import exceptions.InvalidSlotException;
+
 /**
  * This class represents the deck of the Business Permit Tiles of a single region.
  */

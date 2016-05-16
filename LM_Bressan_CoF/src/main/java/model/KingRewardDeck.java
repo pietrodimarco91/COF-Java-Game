@@ -18,7 +18,7 @@ public class KingRewardDeck {
      * This constructor create the deck with 5 KingRewardTile.
      */
     public KingRewardDeck() {
-        deck=new LinkedList();
+        deck=new LinkedList<KingRewardTile>();
         deck.add(new KingRewardTile(35));
         deck.add(new KingRewardTile(30));
         deck.add(new KingRewardTile(25));

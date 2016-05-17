@@ -25,12 +25,12 @@ public class GraphMap {
 	public GraphMap(int numberOfPlayers) {
 		regions=new Region[RegionName.values().length];
 		for(int i=0;i<RegionName.values().length;i++) {
-			regions[i]=new Region();
+			//regions[i]=new Region();
 		}
 		City city;
 		for(int i=0;i<numberOfPlayers;i++) {
-			city=new City(CityNames.random(), CityColors.random(), new , coordinates, rewardToken);
-			map.add(city);
+			//city=new City(CityNames.random(), CityColors.random(), new , coordinates, rewardToken);
+			//map.add(city);
 		}
 	}
 

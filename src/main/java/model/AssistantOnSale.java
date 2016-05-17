@@ -11,6 +11,7 @@ public class AssistantOnSale extends ItemOnSale {
 		 */
 		
 	}
+	//try to commit
 	
 
 }

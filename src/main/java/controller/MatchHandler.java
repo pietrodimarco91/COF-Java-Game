@@ -37,6 +37,7 @@ public class MatchHandler extends Thread {
 	 * @return
 	 */
 	public void graphMapSetup(int numberOfPlayers) {
+
 		graphMap = new GraphMap(numberOfPlayers);
 	}
 

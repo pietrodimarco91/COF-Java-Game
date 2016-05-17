@@ -2,14 +2,16 @@ package model;
 
 import java.util.*;
 
+import exceptions.InvalidSlotException;
+
 /**
- * This class represents the deck of the Business Permit Tiles.
+ * This class represents the deck of the Business Permit Tiles of a single region.
  */
 public class PermitTileDeck {
 	/**
 	 * The deck is represented by a Queue.
 	 */
-	private Queue<PermitTile> deck;
+	private Queue<Tile> deck;
 
 	/*
 	 * The number of tiles in the deck. This is parametric, according to the
@@ -21,52 +23,59 @@ public class PermitTileDeck {
 	 * This attribute represents one of the uncovered Permit Tiles that a player
 	 * can choose from when he purchases a Permit Tile.
 	 */
-	private PermitTile uncoveredPermitTile1;
+	private Tile uncoveredPermitTile1;
 
 	/**
 	 * This attribute represents one of the uncovered Permit Tiles that a player
 	 * can choose from when he purchases a Permit Tile.
 	 */
-	private PermitTile uncoveredPermitTile2;
+	private Tile uncoveredPermitTile2;
 
+	/**
+	 * Each Region has its own PermitTileDeck
+	 */
+	private Region region;
 	/**
 	 * Default constructor
 	 */
-	public PermitTileDeck(int numberOfTiles) {
+	public PermitTileDeck(Region region,int numberOfTiles,int bonusNumber) {
+		this.region=region;
 		this.numberOfTiles = numberOfTiles;
-		uncoveredPermitTile1=new PermitTile();
-		uncoveredPermitTile2=new PermitTile();
-		/*
-		 * We need to instantiate the deck
-		 */
-
+		deck=new LinkedList<Tile>();
+		TileFactory tileFactory = new ConcreteTileFactory();
+		for(int i=0;i<numberOfTiles;i++) {
+			deck.add(tileFactory.createPermitTile(region.getCities(),bonusNumber));
+		}
+		uncoveredPermitTile1=deck.remove();
+		uncoveredPermitTile2=deck.remove();
 	}
 
 	/**
 	 * This method allows a player to perform the correspondent Quick Move.
 	 */
 	public void switchPermitTiles() {
-		uncoveredPermitTile1=deck.remove();
-		uncoveredPermitTile2=deck.remove();
 		deck.add(uncoveredPermitTile1);
 		deck.add(uncoveredPermitTile2);
+		uncoveredPermitTile1=deck.remove();
+		uncoveredPermitTile2=deck.remove();
 	}
 
 	/**
 	 * This method allows a player to pick up one of the uncovered Permit Tiles.
 	 * @param slot The number of the slot where the uncovered tiles are placed. This number should be 1 or 2.
 	 * @return The permit tile associated to the chosen slot
+	 * @throws InvalidSlotException if the specified slot is different from 1 or 2.
 	 */
-	public PermitTile drawPermitTile(int slot) throws InvalidSlotException {
+	public Tile drawPermitTile(int slot) throws InvalidSlotException {
 		switch (slot) {
 		case 1: {
-			PermitTile tempPermitTile = uncoveredPermitTile1;
+			Tile tempPermitTile = uncoveredPermitTile1;
 			uncoveredPermitTile1=deck.remove();
 			return tempPermitTile;
 		}
 			
 		case 2: {
-			PermitTile tempPermitTile = uncoveredPermitTile1;
+			Tile tempPermitTile = uncoveredPermitTile1;
 			uncoveredPermitTile2=deck.remove();
 			return tempPermitTile;
 		}
@@ -75,4 +84,16 @@ public class PermitTileDeck {
 		}
 	}
 
+	public String toString() {
+		Iterator<Tile> iterator = deck.iterator();
+		String string="";
+		string+="Region: "+region.toString()+"\n";
+		string+="Number of tiles in the deck: "+numberOfTiles;
+		string+="Uncovered PermitTile 1: "+uncoveredPermitTile1.toString()+"\n";
+		string+="Uncovered PermitTile 2: "+uncoveredPermitTile2.toString()+"\n\n";
+		while(iterator.hasNext()) {
+			string+="Covered PermitTile inside deck: "+iterator.next().toString();
+		}
+		return string;
+	}
 }

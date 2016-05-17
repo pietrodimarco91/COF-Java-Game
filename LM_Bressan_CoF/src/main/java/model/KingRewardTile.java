@@ -1,25 +1,18 @@
 package model;
 
-import java.util.*;
-
 /**
- * 
+ * Created by Pietro Di Marco on 14/05/16.
  */
 public class KingRewardTile extends Tile {
 
     /**
-     *
-     */
-    private String label;
-    /**
-     *
+     * Specify the KingReward.
      */
     private int points;
 
-    /**
-     * Default constructor
-     */
-    public KingRewardTile(int bonusNumber) {
+
+    public KingRewardTile(int points) {
+        this.points=points;
     }
 
 

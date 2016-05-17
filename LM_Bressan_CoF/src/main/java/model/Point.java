@@ -29,20 +29,24 @@ public class Point extends Point2D {
 
 	@Override
 	public double getX() {
-		// TODO Auto-generated method stub
-		return 0;
+		return x;
 	}
 
 	@Override
 	public double getY() {
-		// TODO Auto-generated method stub
-		return 0;
+		return y;
 	}
 
 	@Override
 	public void setLocation(double arg0, double arg1) {
-		// TODO Auto-generated method stub
 
+	}
+	
+	public boolean equals(Point2D point) {
+		if(this.x==point.getX()&&this.y==point.getY())
+			return true;
+		else 
+			return false;
 	}
 
 }

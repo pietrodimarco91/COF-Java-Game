@@ -3,20 +3,9 @@ package model;
 import java.util.*;
 
 /**
- * 
+ * Created by Gabriele Bressan on 13/05/16.
  */
-public class KingCouncil {
-
-    /**
-     * Default constructor
-     */
-    public KingCouncil() {
-    }
-
-    /**
-     * 
-     */
-    private Queue<Councillor> councillors;
-
+public class KingCouncil extends Council{
+	
 
 }

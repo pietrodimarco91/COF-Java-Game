@@ -5,7 +5,8 @@ import java.util.*;
 import controller.Player;
 
 /**
- * 
+ * This class represents an Emporium that is built inside a City by a specified
+ * Player.
  */
 public class Emporium {
 
@@ -25,7 +26,7 @@ public class Emporium {
 	 */
 	public Emporium(Player owner, String cityName) {
 		this.owner = owner;
-		this.cityName=cityName;
+		this.cityName = cityName;
 	}
 
 	public Player getOwner() {

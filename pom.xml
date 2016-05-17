@@ -14,6 +14,7 @@
 		<sonar.language>java</sonar.language>
 		<sonar.host.url>http://localhost:9000/</sonar.host.url>
 		<sonar.scm.disabled>true</sonar.scm.disabled>
+		<sonar.java.suorce>1.8</sonar.java.suorce>
 
 	</properties>
 

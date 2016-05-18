@@ -38,8 +38,7 @@ public class PermitTileDeck {
 	/**
 	 * Default constructor
 	 */
-	public PermitTileDeck(Region region,int numberOfTiles,int bonusNumber) {
-		this.region=region;
+	public PermitTileDeck(int numberOfTiles,int bonusNumber) {
 		this.numberOfTiles = numberOfTiles;
 		deck=new LinkedList<Tile>();
 		TileFactory tileFactory = new ConcreteTileFactory();
@@ -95,5 +94,9 @@ public class PermitTileDeck {
 			string+="Covered PermitTile inside deck: "+iterator.next().toString();
 		}
 		return string;
+	}
+	
+	public void setRegion(Region region) {
+		this.region=region;
 	}
 }

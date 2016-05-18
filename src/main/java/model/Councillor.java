@@ -10,7 +10,7 @@ public class Councillor {
 	private String color;
 
 	/**
-	 * Default constructor which choose a random color to set a councillor
+	 * Default constructor which chooses a random color to set a councillor
 	 */
 	public Councillor() {
 		do {
@@ -21,7 +21,7 @@ public class Councillor {
 
 	/**
 	 * @return String 
-	 * Return a color of councillor
+	 * Return the color of councillor
 	 */
 	
 	public String getColor() {

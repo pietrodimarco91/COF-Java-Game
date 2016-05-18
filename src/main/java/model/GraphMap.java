@@ -22,12 +22,18 @@ public class GraphMap {
 	/**
 	 * Default constructor. THIS IS JUST AN EXAMPLE, NEEDS REVISION!
 	 */
-	public GraphMap(int numberOfPlayers) {
+	public GraphMap(int numberOfPlayers,int linksBetweenCities,int bonusNumber) {
 		regions=new Region[RegionName.values().length];
-		for(int i=0;i<RegionName.values().length;i++) {
-			//regions[i]=new Region();
-		}
+		Council regionCouncil;
+		Council kingCouncil = new KingCouncil();
+		PermitTileDeck permitTileDeck;
 		City city;
+		for(int i=0;i<RegionName.values().length;i++) {
+			regionCouncil = new RegionCouncil();
+			permitTileDeck = new PermitTileDeck(45, bonusNumber);
+			regions[i]=new Region(RegionName.COAST.toString(), regionCouncil, map, permitTileDeck);
+		}
+		
 		for(int i=0;i<numberOfPlayers;i++) {
 			//city=new City(CityNames.random(), CityColors.random(), new , coordinates, rewardToken);
 			//map.add(city);

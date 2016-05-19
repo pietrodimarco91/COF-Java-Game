@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import model.GraphMap;
+import model.Map;
 import model.NobilityTrack;
 
 /**
@@ -26,7 +26,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * A reference to the local GraphMap for this match.
 	 */
-	private GraphMap graphMap;
+	private Map map;
 
 	/**
 	 * This attribute represents a reference to the NobilityTrack for this
@@ -53,8 +53,8 @@ public class MatchHandler extends Thread {
 	 *            detail, this number represents the maximum number of streets
 	 *            that come out from each city (vertex)
 	 */
-	public void graphMapSetup(int numberOfPlayers, int linksBetweenCities,int bonusNumber) {
-		graphMap = new GraphMap(numberOfPlayers, linksBetweenCities,bonusNumber);
+	public void mapSetup(int numberOfPlayers, int linksBetweenCities,int bonusNumber) {
+		map = new Map(numberOfPlayers, bonusNumber);
 	}
 
 	public void nobilityTrackSetup(int bonusNumber) {

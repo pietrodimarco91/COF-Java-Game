@@ -16,12 +16,18 @@ public class GraphMap {
 	private ArrayList<City> map;
 	
 	/**
+	 * The number of cities is an important parameter, depending on the number of players.
+	 */
+	private int numberOfCities;
+
+	/**
 	 * The regions are stored in this array.
 	 */
 	private Region[] regions;
-	
+
 	/**
-	 * Since the King's Council doesn't belong to any Region, the GraphMap saves its reference.
+	 * Since the King's Council doesn't belong to any Region, the GraphMap saves
+	 * its reference.
 	 */
 	private Council kingCouncil;
 
@@ -29,6 +35,13 @@ public class GraphMap {
 	 * Default constructor. THIS IS JUST AN EXAMPLE, NEEDS REVISION!
 	 */
 	public GraphMap(int numberOfPlayers,int linksBetweenCities,int bonusNumber) {
+		if(numberOfPlayers<=4) {
+			numberOfCities=15;
+		}
+		else {
+			numberOfCities=15+3*numberOfPlayers;
+		}
+		
 		regions=new Region[RegionName.values().length];
 		Council regionCouncil;
 		kingCouncil = new KingCouncil();
@@ -36,6 +49,8 @@ public class GraphMap {
 		City city;
 		ArrayList<String> regionNames = RegionName.getRegionNames();
 		Iterator<String> nameIterator = regionNames.iterator();
+		String name;
+		RewardToken rewardToken;
 		
 		for(int i=0;i<RegionName.values().length;i++) {
 			regionCouncil = new RegionCouncil();
@@ -43,9 +58,16 @@ public class GraphMap {
 			regions[i]=new Region(nameIterator.next(), regionCouncil, map, permitTileDeck);
 		}
 		
-		for(int i=0;i<numberOfPlayers;i++) {
-			//city=new City(CityNames.random(), CityColors.random(), new , coordinates, rewardToken);
-			//map.add(city);
+		int i=0;
+		while(i<numberOfCities) {
+			for(int j=0;j<RegionName.values().length;j++,i++) {
+			do {
+				name=CityNames.random();
+			} while(cityNameAlreadyExisting(name));
+			rewardToken=new RewardToken(bonusNumber);
+			city=new City(name, CityColors.random(),regions[j], rewardToken);
+			map.add(city);
+			}
 		}
 	}
 
@@ -108,6 +130,23 @@ public class GraphMap {
 	 */
 	public boolean isEligibleForColorBonus(Player owner) {
 		// TODO implement here
+		return false;
+	}
+
+	/**
+	 * Checks whether a City with the specified name already exists or not
+	 * 
+	 * @param name
+	 *            The city name to look for
+	 * @return True if there exists already a city with the specified name,
+	 *         false otherwise
+	 */
+	public boolean cityNameAlreadyExisting(String name) {
+		Iterator<City> iterator = map.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next().getName().equals(name))
+				return true;
+		}
 		return false;
 	}
 

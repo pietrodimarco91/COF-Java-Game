@@ -102,20 +102,28 @@ public class GraphMap {
 	}
 
 	/**
-	 * @param cityFrom
-	 * @param cityTo
-	 * @return
+	 * NEEDS IMPLEMENTATION!
+	 * This method counts the shortest path from the specified "cityFrom" to the "cityTo"
+	 * @param cityFrom the starting point (City) of the shortest path calculation
+	 * @param cityTo the end point (City) of the shortest path calculation 
+	 * @return the number of connections that separate the two cities
 	 */
 	public int countDistance(City cityFrom, City cityTo) {
-		// TODO implement here
 		return 0;
 	}
 
 	/**
-	 * @return
+	 * This method returns the city where the king is located
+	 * @return the city where the king is located
 	 */
 	public City findKingCity() {
-		// TODO implement here
+		Iterator<City> iterator = map.iterator();
+		City city;
+		while (iterator.hasNext()) {
+			city=iterator.next();
+			if(city.getKingIsHere())
+				return city;
+		}
 		return null;
 	}
 

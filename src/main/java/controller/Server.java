@@ -49,7 +49,7 @@ public class Server {
 		Date date = new Date();
 		MatchHandler matchHandler=new MatchHandler(matchCounter, date);
 		matches.add(matchHandler);
-		matchHandler.run();
+		matchHandler.start();
 		this.matchCounter++;
 	}
 	

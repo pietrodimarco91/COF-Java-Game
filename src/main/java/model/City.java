@@ -275,16 +275,20 @@ public class City {
 		string += "City Color: " + this.color + "\n";
 		Iterator<Emporium> emporiumIterator = emporiums.iterator();
 		while (emporiumIterator.hasNext())
-			string += emporiumIterator.next().toString()+"\n";
-		string+="City Region: "+this.region.toString()+"\n";
-		string+="Coordinates: "+this.coordinates.toString()+"\n";
-		string+="RewardToken: "+this.rewardToken.toString()+"\n";
-		string+="King is here? "+String.valueOf(kingIsHere)+"\n";
-		string+="Has this city been visited during the current visit? "+String.valueOf(visited)+"\n";
+			string += emporiumIterator.next().toString() + "\n";
+		string += "City Region: " + this.region.toString() + "\n";
+		string += "Coordinates: " + this.coordinates.toString() + "\n";
+		string += "RewardToken: " + this.rewardToken.toString() + "\n";
+		string += "King is here? " + String.valueOf(kingIsHere) + "\n";
+		string += "Has this city been visited during the current visit? " + String.valueOf(visited) + "\n";
 		Iterator<City> cityIterator = connectedCities.iterator();
-		string+="Connected cities:\n";
-		while(cityIterator.hasNext())
-		string+=cityIterator.next().getName()+" -> ";
+		string += "Connected cities:\n";
+		while (cityIterator.hasNext()) {
+			if(!(cityIterator.next().equals(connectedCities.get(connectedCities.size()-1))))
+				string += cityIterator.next().getName() + " -> ";
+			else
+				string += cityIterator.next().getName();
+		}
 		return string;
 	}
 }

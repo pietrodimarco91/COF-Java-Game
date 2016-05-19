@@ -37,6 +37,12 @@ public class Map {
 	 * its reference.
 	 */
 	private Council kingCouncil;
+	
+	/**
+	 * This attribute represents a reference to the NobilityTrack for the current
+	 * match.
+	 */
+	private NobilityTrack nobilityTrack;
 
 	/**
 	 * The Map constructor builds the map with the specified parameters, setting
@@ -53,6 +59,7 @@ public class Map {
 		regionsInitialization(numberOfPermitTiles);
 		kingCouncil = new KingCouncil();
 		citiesInitialization(bonusNumber);
+		nobilityTrackSetup(bonusNumber);
 	}
 
 	/**
@@ -222,5 +229,9 @@ public class Map {
 			regions[j].addCities(citiesInRegion);
 			regions[j].getDeck().generatePermitTiles(bonusNumber);
 		}
+	}
+
+	public void nobilityTrackSetup(int bonusNumber) {
+		nobilityTrack = new NobilityTrack(bonusNumber);
 	}
 }

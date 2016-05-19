@@ -29,12 +29,6 @@ public class MatchHandler extends Thread {
 	private Map map;
 
 	/**
-	 * This attribute represents a reference to the NobilityTrack for this
-	 * match.
-	 */
-	private NobilityTrack nobilityTrack;
-
-	/**
 	 * Default constructor
 	 */
 	public MatchHandler(int id, Date date) {
@@ -55,10 +49,6 @@ public class MatchHandler extends Thread {
 	 */
 	public void mapSetup(int numberOfPlayers, int linksBetweenCities,int bonusNumber) {
 		map = new Map(numberOfPlayers, bonusNumber);
-	}
-
-	public void nobilityTrackSetup(int bonusNumber) {
-		nobilityTrack = new NobilityTrack(bonusNumber);
 	}
 
 	public String toString() {

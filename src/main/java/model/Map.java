@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 import controller.Player;
 
@@ -37,10 +38,10 @@ public class Map {
 	 * its reference.
 	 */
 	private Council kingCouncil;
-	
+
 	/**
-	 * This attribute represents a reference to the NobilityTrack for the current
-	 * match.
+	 * This attribute represents a reference to the NobilityTrack for the
+	 * current match.
 	 */
 	private NobilityTrack nobilityTrack;
 
@@ -54,6 +55,7 @@ public class Map {
 	 * and a random RewardToken.
 	 */
 	public Map(int numberOfPlayers, int bonusNumber) {
+		map=new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
@@ -147,6 +149,14 @@ public class Map {
 	}
 
 	/**
+	 * This method sets the king randomly in a City.
+	 */
+	public void setKingRandomly() {
+		Random random = new Random();
+		City city = map.get(random.nextInt(map.size()));
+		city.setKingIsHere(true);
+	}
+	/**
 	 * Checks whether a City with the specified name already exists or not
 	 * 
 	 * @param name
@@ -196,6 +206,7 @@ public class Map {
 			regionCouncil = new RegionCouncil();
 			permitTileDeck = new PermitTileDeck(numberOfPermitTiles);
 			regions[i] = new Region(nameIterator.next(), regionCouncil, permitTileDeck);
+			regions[i].getDeck().setRegion(regions[i]);
 		}
 	}
 
@@ -229,9 +240,35 @@ public class Map {
 			regions[j].addCities(citiesInRegion);
 			regions[j].getDeck().generatePermitTiles(bonusNumber);
 		}
+		setKingRandomly();
 	}
 
+	/**
+	 * This method initializes the NobilityTrack for the current match and makes it randomly
+	 * @param bonusNumber the number of bonuses inside the cells containing bonuses.
+	 */
 	public void nobilityTrackSetup(int bonusNumber) {
 		nobilityTrack = new NobilityTrack(bonusNumber);
+	}
+
+	public String toString() {
+		String string = "";
+		string += "Map status:\n";
+		string += "Cities:\n";
+		Iterator<City> iterator = map.iterator();
+		while (iterator.hasNext()) {
+			string += iterator.next().toString() + "\n";
+		}
+		string+="Number of Permit Tiles: "+numberOfPermitTiles+"\n";
+		string+="Number of Cities: "+numberOfCities+"\n";
+		string+="Regions:\n";
+		for(int i=0;i<regions.length;i++) {
+			string+=regions[i].toString()+"\n";
+		}
+		string+="King's Council:\n";
+		string+=kingCouncil.toString()+"\n";
+		string+="Nobility Track:\n";
+		string+=nobilityTrack.toString()+"\n";
+		return string;
 	}
 }

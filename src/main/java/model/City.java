@@ -269,6 +269,9 @@ public class City {
 		this.coordinates = point;
 	}
 
+	/**
+	 * THIS METHOD MUST BE COMPLETED! Some parts lack.
+	 */
 	public String toString() {
 		String string = "";
 		string += "City Name: " + this.cityName + "\n";
@@ -276,11 +279,12 @@ public class City {
 		Iterator<Emporium> emporiumIterator = emporiums.iterator();
 		while (emporiumIterator.hasNext())
 			string += emporiumIterator.next().toString() + "\n";
-		string += "City Region: " + this.region.toString() + "\n";
-		string += "Coordinates: " + this.coordinates.toString() + "\n";
+		//string += "City Region: " + this.region.toString() + "\n";
+		//string += "Coordinates: " + this.coordinates.toString() + "\n";
 		string += "RewardToken: " + this.rewardToken.toString() + "\n";
 		string += "King is here? " + String.valueOf(kingIsHere) + "\n";
 		string += "Has this city been visited during the current visit? " + String.valueOf(visited) + "\n";
+		/*
 		Iterator<City> cityIterator = connectedCities.iterator();
 		string += "Connected cities:\n";
 		while (cityIterator.hasNext()) {
@@ -289,6 +293,7 @@ public class City {
 			else
 				string += cityIterator.next().getName();
 		}
+		*/
 		return string;
 	}
 }

@@ -7,18 +7,25 @@ import java.util.Iterator;
 import controller.Player;
 
 /**
- * 
+ * The constructor of the GraphMap initializes the map with the specified
+ * parameters. It also allows to make the connections between the cities.
  */
 public class GraphMap {
 	/**
 	 * This attribute stores all the cities (vertex) of the map.
 	 */
 	private ArrayList<City> map;
-	
+
 	/**
-	 * The number of cities is an important parameter, depending on the number of players.
+	 * The number of cities is an important parameter, depending on the number
+	 * of players.
 	 */
 	private int numberOfCities;
+
+	/**
+	 * This number represents the total number of the permit tiles
+	 */
+	private int numberOfPermitTiles;
 
 	/**
 	 * The regions are stored in this array.
@@ -32,17 +39,23 @@ public class GraphMap {
 	private Council kingCouncil;
 
 	/**
-	 * Default constructor. THIS IS JUST AN EXAMPLE, NEEDS REVISION!
+	 * The GraphMap constructor builds the map with the specified parameters,
+	 * setting by default (4 players or less) the number of cities at 15 and the
+	 * number of permit tiles at 45. For each new player, the number of cities
+	 * increases of 3 and the number of permit tiles increases of the number of
+	 * the cities. Each region is instantiated with its council and its permit
+	 * tile deck. Each city is instantiated with its name, its color, its region
+	 * and a random RewardToken.
 	 */
-	public GraphMap(int numberOfPlayers,int linksBetweenCities,int bonusNumber) {
-		if(numberOfPlayers<=4) {
-			numberOfCities=15;
+	public GraphMap(int numberOfPlayers, int linksBetweenCities, int bonusNumber) {
+		numberOfCities = 15;
+		numberOfPermitTiles = 45;
+		if (numberOfPlayers > 4) {
+			numberOfCities += 3 * (numberOfPlayers - 4);
+			numberOfPermitTiles += numberOfCities * (numberOfPlayers - 4);
 		}
-		else {
-			numberOfCities=15+3*numberOfPlayers;
-		}
-		
-		regions=new Region[RegionName.values().length];
+
+		regions = new Region[RegionName.values().length];
 		Council regionCouncil;
 		kingCouncil = new KingCouncil();
 		PermitTileDeck permitTileDeck;
@@ -51,33 +64,41 @@ public class GraphMap {
 		Iterator<String> nameIterator = regionNames.iterator();
 		String name;
 		RewardToken rewardToken;
-		
-		for(int i=0;i<RegionName.values().length;i++) {
+
+		for (int i = 0; i < RegionName.values().length; i++) {
 			regionCouncil = new RegionCouncil();
-			permitTileDeck = new PermitTileDeck(45, bonusNumber);
-			regions[i]=new Region(nameIterator.next(), regionCouncil, map, permitTileDeck);
+			permitTileDeck = new PermitTileDeck(numberOfPermitTiles);
+			regions[i] = new Region(nameIterator.next(), regionCouncil, permitTileDeck);
 		}
-		
-		int i=0;
-		while(i<numberOfCities) {
-			for(int j=0;j<RegionName.values().length;j++,i++) {
-			do {
-				name=CityNames.random();
-			} while(cityNameAlreadyExisting(name));
-			rewardToken=new RewardToken(bonusNumber);
-			city=new City(name, CityColors.random(),regions[j], rewardToken);
-			map.add(city);
+
+		ArrayList<City> citiesInRegion;
+		for (int j = 0; j < RegionName.values().length; j++) {
+			citiesInRegion = new ArrayList<City>();
+			for (int i = 0; i < numberOfCities / 3; i++) {
+				do {
+					name = CityNames.random();
+				} while (cityNameAlreadyExisting(name));
+				rewardToken = new RewardToken(bonusNumber);
+				city = new City(name, CityColors.random(), regions[j], rewardToken);
+				map.add(city);
+				citiesInRegion.add(city);
 			}
+			regions[j].addCities(citiesInRegion);
+			regions[j].getDeck().generatePermitTiles(bonusNumber);
 		}
 	}
 
 	/**
-	 * @param connections
-	 * @return
+	 * This methods sets a connection between the specified cities
+	 * 
+	 * @param city1
+	 *            the first city
+	 * @param city2
+	 *            the second city
 	 */
-	public void connectCities(HashMap<City, City> connections) {
-		// TODO implement here
-
+	public void connectCities(City city1, City city2) {
+		city1.addConnectedCity(city2);
+		city2.addConnectedCity(city1);
 	}
 
 	/**

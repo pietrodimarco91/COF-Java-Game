@@ -12,38 +12,52 @@ public abstract class Council {
 	/**
 	 * Queue of councillors,I used LinkedList Queue type
 	 */
-	private Queue<Councillor> councillors = new LinkedList();
+	private Queue<Councillor> councillors = new LinkedList<Councillor>();
 
 	/**
-	 * Default constructor
+	 * Number of councillors inside each Council.
+	 */
+	private static final int COUNCILLORS_PER_COUNCIL = 4;
+
+	/**
+	 * Default constructor: each Council is initially created taking 4 random
+	 * Councillors from the CouncillorsPool.
 	 */
 	public Council() {
-		int i;
-		for (i = 0; i < 4; i++) {
-			Councillor councillor = new Councillor();
-			this.councillors.add(councillor);
+		for (int i = 0; i < COUNCILLORS_PER_COUNCIL; i++) {
+			CouncillorsPool.shuffle();
+			councillors.add(CouncillorsPool.getCouncillor());
 		}
-
 	}
 
 	/**
-	 * Add councillor in queue
+	 * Adds a councillor in the queue of the specified color, from the Councillors Pool.
 	 */
-	public void addCouncillor() {
-		Councillor councillor = new Councillor();
-		this.councillors.add(councillor);
+	public void addCouncillor(String color) {
+		councillors.add(CouncillorsPool.getCouncillor(color));
 	}
+
 	/**
-	 * Remove councillor in queue
+	 * Removes a councillor from the queue and places it inside the Councillors Pool.
 	 */
-	public void removeCoucillor() { // Remove a councillor
-		this.councillors.poll();
+	public void removeCoucillor() {
+		CouncillorsPool.addCouncillor(councillors.remove());
 	}
+
 	/**
-	 * @return Queue of councillor used in region to check council satisfaction 
+	 * @return Queue of councillor used in region to check council satisfaction
 	 */
-	public Queue<Councillor> getCouncillors() {// Return a councillor
+	public Queue<Councillor> getCouncillors() {// Return the arraylist of councillors of this council
 		return this.councillors;
+	}
+	
+	public String toString() {
+		Iterator<Councillor> iterator = councillors.iterator();
+		String string="";
+		while(iterator.hasNext()) {
+			string+=iterator.next().toString()+"\n";
+		}
+		return string;
 	}
 
 }

@@ -17,7 +17,7 @@ public class Region {
 	 * Council of the region
 	 */
 	private Council council;
-
+	
 	/**
 	 * ArrayList of cities that are in region
 	 */

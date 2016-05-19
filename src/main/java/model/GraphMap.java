@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import controller.Player;
 
@@ -18,6 +19,11 @@ public class GraphMap {
 	 * The regions are stored in this array.
 	 */
 	private Region[] regions;
+	
+	/**
+	 * Since the King's Council doesn't belong to any Region, the GraphMap saves its reference.
+	 */
+	private Council kingCouncil;
 
 	/**
 	 * Default constructor. THIS IS JUST AN EXAMPLE, NEEDS REVISION!
@@ -25,13 +31,16 @@ public class GraphMap {
 	public GraphMap(int numberOfPlayers,int linksBetweenCities,int bonusNumber) {
 		regions=new Region[RegionName.values().length];
 		Council regionCouncil;
-		Council kingCouncil = new KingCouncil();
+		kingCouncil = new KingCouncil();
 		PermitTileDeck permitTileDeck;
 		City city;
+		ArrayList<String> regionNames = RegionName.getRegionNames();
+		Iterator<String> nameIterator = regionNames.iterator();
+		
 		for(int i=0;i<RegionName.values().length;i++) {
 			regionCouncil = new RegionCouncil();
 			permitTileDeck = new PermitTileDeck(45, bonusNumber);
-			regions[i]=new Region(RegionName.COAST.toString(), regionCouncil, map, permitTileDeck);
+			regions[i]=new Region(nameIterator.next(), regionCouncil, map, permitTileDeck);
 		}
 		
 		for(int i=0;i<numberOfPlayers;i++) {

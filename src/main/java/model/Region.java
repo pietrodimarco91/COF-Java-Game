@@ -60,9 +60,9 @@ public class Region {
 	 * @param councillor
 	 * @return void
 	 */
-	public void electCouncillor(Councillor councillor) {
-		this.council.removeCoucillor();
-		this.council.addCouncillor();
+	public void electCouncillor(String color) {
+		this.council.removeCouncillor();
+		this.council.addCouncillor(color);
 	}
 
 	/**

@@ -40,7 +40,7 @@ public abstract class Council {
 	/**
 	 * Removes a councillor from the queue and places it inside the Councillors Pool.
 	 */
-	public void removeCoucillor() {
+	public void removeCouncillor() {
 		CouncillorsPool.addCouncillor(councillors.remove());
 	}
 

@@ -32,7 +32,8 @@ public class CouncillorsPool {
 	 * 4 councillors for each of the 6 colors.
 	 */
 	public CouncillorsPool() {
-		int councillorsPerColor = NUMBER_OF_COUNCILLORS / CouncillorColors.values().length - 1;
+		pool=new ArrayList<Councillor>();
+		int councillorsPerColor = NUMBER_OF_COUNCILLORS / (CouncillorColors.values().length - 1);
 		String color;
 		Councillor councillor;
 		ArrayList<String> councillorColors = CouncillorColors.getCouncillorColors();
@@ -112,5 +113,16 @@ public class CouncillorsPool {
 	 */
 	public static void shuffle() {
 		Collections.shuffle(pool);
+	}
+	
+	public String toString() {
+		Iterator<Councillor> iterator = pool.iterator();
+		String string="";
+		Councillor councillor;
+		while(iterator.hasNext()) {
+			councillor=iterator.next();
+			string+=councillor.toString()+"\n";
+		}
+		return string;
 	}
 }

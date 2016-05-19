@@ -12,7 +12,7 @@ public abstract class Council {
 	/**
 	 * Queue of councillors,I used LinkedList Queue type
 	 */
-	private Queue<Councillor> councillors = new LinkedList<Councillor>();
+	private Queue<Councillor> councillors;
 
 	/**
 	 * Number of councillors inside each Council.
@@ -24,6 +24,7 @@ public abstract class Council {
 	 * Councillors from the CouncillorsPool.
 	 */
 	public Council() {
+		councillors = new LinkedList<Councillor>();
 		for (int i = 0; i < COUNCILLORS_PER_COUNCIL; i++) {
 			CouncillorsPool.shuffle();
 			councillors.add(CouncillorsPool.getCouncillor());

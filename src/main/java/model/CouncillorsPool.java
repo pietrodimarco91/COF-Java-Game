@@ -67,6 +67,21 @@ public class CouncillorsPool {
 		}
 		return null;
 	}
+	
+	/**
+	 * This method allows to check if there is a councillor of the specified color in the councillor pool.
+	 * @param color the color of the councillor to look for
+	 * @return true if there is a councillor of the specified color, false otherwise
+	 */
+	public static boolean checkPresenceOfCouncillor(String color) {
+		Iterator<Councillor> iterator = pool.iterator();
+		while(iterator.hasNext()) {
+			if(iterator.next().getColor().equals(color))
+				return true;
+		}
+		return false;
+		
+	}
 
 	/**
 	 * This method returns the FIRST Councillor inside the pool. If the

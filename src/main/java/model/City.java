@@ -5,7 +5,8 @@ import java.util.*;
 import controller.Player;
 
 /**
- * This class represents a City in the map. It is also stored as a vertex inside the ArrayList of vertexes of the GraphMap. 
+ * This class represents a City in the map. It is also stored as a vertex inside
+ * the ArrayList of vertexes of the GraphMap.
  */
 public class City {
 
@@ -60,9 +61,10 @@ public class City {
 	 * 
 	 */
 	private boolean visited;
-	
+
 	/**
-	 * Since a City is a vertex of the GraphMap, each City stores its connected cities inside an ArrayList of Cities.
+	 * Since a City is a vertex of the GraphMap, each City stores its connected
+	 * cities inside an ArrayList of Cities.
 	 */
 	private ArrayList<City> connectedCities;
 
@@ -82,12 +84,11 @@ public class City {
 	 * @param rewardToken
 	 *            The bonus assigned to this city
 	 */
-	public City(String name, String color, Region region, Point coordinates, RewardToken rewardToken) {
-		this.cityName=name;
-		this.color=color;
-		this.region=region;
-		this.coordinates = coordinates;
-		this.rewardToken=rewardToken;
+	public City(String name, String color, Region region, RewardToken rewardToken) {
+		this.cityName = name;
+		this.color = color;
+		this.region = region;
+		this.rewardToken = rewardToken;
 		emporiums = new ArrayList<Emporium>();
 		kingIsHere = false;
 		setVisited();
@@ -195,58 +196,99 @@ public class City {
 	public int countOthersEmporiums(Player owner) {
 		Iterator<Emporium> iterator = emporiums.iterator();
 		Emporium emporium;
-		int counter=0;
+		int counter = 0;
 		while (iterator.hasNext()) {
 			emporium = iterator.next();
-			if(emporium.getOwner()!=owner)
+			if (emporium.getOwner() != owner)
 				counter++;
 		}
 		return counter;
 	}
 
-
 	/**
-	 * This method is invoked during a visit of the map, in order to keep track of cities already visited it sets true to the "visited" attribute when a city gets visited.
+	 * This method is invoked during a visit of the map, in order to keep track
+	 * of cities already visited it sets true to the "visited" attribute when a
+	 * city gets visited.
+	 * 
 	 * @return
 	 */
 	public void setVisited() {
-		visited=false;
+		visited = false;
 	}
 
 	/**
 	 * Returns the name of the city.
+	 * 
 	 * @return The name of the city
 	 */
 	public String getName() {
 		return cityName;
 	}
 
-/**
- * This method returns the ArrayList of the emporiums that are built in this city
- * @return The list of emporiums already built in this city
- */
+	/**
+	 * This method returns the ArrayList of the emporiums that are built in this
+	 * city
+	 * 
+	 * @return The list of emporiums already built in this city
+	 */
 	public ArrayList<Emporium> getEmporiums() {
 		return emporiums;
 	}
 
-/**
- * This method returns the coordinates (x,y) of the city
- * @return the coordinates (x,y) of the city represented by a Point class
- */
+	/**
+	 * This method returns the coordinates (x,y) of the city
+	 * 
+	 * @return the coordinates (x,y) of the city represented by a Point class
+	 */
 	public Point getCoordinates() {
 		return coordinates;
 	}
-
 
 	public boolean hasBeenVisited() {
 		return visited;
 	}
 
 	/**
-	 * Sets a connection in the GraphMap between this city and the specified city, by adding it to the list of connected cities.
-	 * @param city the city to be connected to this city
+	 * Sets a connection in the GraphMap between this city and the specified
+	 * city, by adding it to the list of connected cities.
+	 * 
+	 * @param city
+	 *            the city to be connected to this city
 	 */
 	public void addConnectedCity(City city) {
 		connectedCities.add(city);
+	}
+
+	/**
+	 * Sets the coordinates of the city to the specified point2D
+	 * 
+	 * @param point
+	 *            the point2D corresponding to the coordinates of the city.
+	 */
+	public void setCoordinates(Point point) {
+		this.coordinates = point;
+	}
+
+	public String toString() {
+		String string = "";
+		string += "City Name: " + this.cityName + "\n";
+		string += "City Color: " + this.color + "\n";
+		Iterator<Emporium> emporiumIterator = emporiums.iterator();
+		while (emporiumIterator.hasNext())
+			string += emporiumIterator.next().toString() + "\n";
+		string += "City Region: " + this.region.toString() + "\n";
+		string += "Coordinates: " + this.coordinates.toString() + "\n";
+		string += "RewardToken: " + this.rewardToken.toString() + "\n";
+		string += "King is here? " + String.valueOf(kingIsHere) + "\n";
+		string += "Has this city been visited during the current visit? " + String.valueOf(visited) + "\n";
+		Iterator<City> cityIterator = connectedCities.iterator();
+		string += "Connected cities:\n";
+		while (cityIterator.hasNext()) {
+			if(!(cityIterator.next().equals(connectedCities.get(connectedCities.size()-1))))
+				string += cityIterator.next().getName() + " -> ";
+			else
+				string += cityIterator.next().getName();
+		}
+		return string;
 	}
 }

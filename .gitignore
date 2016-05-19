@@ -1,1 +1,17 @@
 /target/
+.classpath
+.project
+/.settings/
+/.idea/
+/_mac/
+/inspection/
+databseSettings.xml
+debugger.xml
+diff.xml
+IntelliLang.xml
+LM_Bressan_CoF.iml
+mavenVersion.xml
+ui.lnf.xml
+web-browsers.xml
+*.iml
+colors.scheme.xml

@@ -1,31 +1,33 @@
 package model;
 
 /**
- * Created by Gabriele Bressan on 13/05/16.
+ * This class represents a Councillor. Each councillor is instantiated at the
+ * beginning of the match.
  */
 public class Councillor {
 	/**
-	 * Colour of the Councillor
+	 * Color of the Councillor
 	 */
 	private String color;
 
 	/**
-	 * Default constructor which choose a random color to set a councillor
+	 * Each councillor is created with its own color. Notice that each
+	 * councillor is created at the beginning of the match and kept inside the
+	 * CouncillorsPool, if it isn't inside a Council.
 	 */
-	public Councillor() {
-		do {
-			this.color = CouncillorColors.getRandomColor();
-		} while (this.color == "MULTICOLOR");// Check to don't draw a MULTICOLOR
-												// Councillor
+	public Councillor(String color) {
+		this.color = color;
 	}
 
 	/**
-	 * @return String 
-	 * Return a color of councillor
+	 * @return String Returns the color of councillor
 	 */
-	
-	public String getColor() {
 
+	public String getColor() {
 		return this.color;
+	}
+	
+	public String toString() {
+		return "I'm a Councillor and my color is "+color;
 	}
 }

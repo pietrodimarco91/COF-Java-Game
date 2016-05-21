@@ -1,8 +1,8 @@
 package controller;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class initializes the game engine and the connection among the Clients.
@@ -14,58 +14,37 @@ public class Server {
 	 * must know to connect to the game.
 	 */
 	private static final String ip="localhost";
-
 	/**
 	 * The port of the specified IP Address (connection parameter).
 	 */
 	private static final int port=80;
-	
-	/**
-	 * This attribute is the counter for the Match IDs, starting from 0 and incrementing for each new match.
-	 */
-	private int matchCounter;
-
-	/**
-	 * THIS ATTRIBUTE NEEDS REVISION!
-	 */
-	private ArrayList<Player> registeredUsers;
-	
+	private ConnectorHandler connectorHandler;
+	private ExecutorService thread;
 	/**
 	 * The Server stores an array of currently on-going matches through their MatchHandlers
 	 */
 	private ArrayList<MatchHandler> matches;
 
+
 	/**
 	 * Default constructor
 	 */
 	public Server() {
-		this.matchCounter=0;
+		this.connectorHandler =new ConnectorHandler(port);
+		thread= Executors.newCachedThreadPool();
+		this.matches=new ArrayList<MatchHandler>();
+		this.waitConnection();
 	}
 
 	/**
-	 * NEEDS REVISION! This method initializes a new match by making its MatchHandler run.
+	 * NEED IMPLEMENTATION!
+	 *@param connectionHandle.getConnector() return a specific connector type (RMI,Socket)
 	 */
-	public void launchNewMatch() {
-		Date date = new Date();
-		MatchHandler matchHandler=new MatchHandler(matchCounter, date);
-		matches.add(matchHandler);
-		matchHandler.start();
-		this.matchCounter++;
-	}
-	
-	/**
-	 * NEEDS IMPLEMENTATION! This method allows a Client to join a currently on-going match, if this is not full. 
-	 */
-	public void joinMatch() {
-		
-	}
-	
-	/**
-	 * NEEDS IMPLEMENTATION! This method allows to check whether a match is currently full or not
-	 * @return True if the specified match is full, false otherwise.
-	 */
-	public boolean checkIfMatchIsFull(MatchHandler match) {
-		return true; //just for example 
+
+	private void waitConnection() {
+		while(true){
+			thread.submit(new UserHandler(connectorHandler.getConnector(), matches));
+		}
 	}
 	
 

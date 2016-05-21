@@ -1,11 +1,10 @@
 package controller;
 
+import model.Map;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import model.Map;
-import model.NobilityTrack;
+import java.util.Date;
 
 /**
  * This class represents the thread always running while a match is on-going. It
@@ -31,9 +30,13 @@ public class MatchHandler extends Thread {
 	/**
 	 * Default constructor
 	 */
-	public MatchHandler(int id, Date date) {
+	public MatchHandler(int id, Date date, String idUsr) {
 		this.id = id;
 		this.date = date;
+	}
+
+	public MatchHandler() {
+
 	}
 
 	/**
@@ -62,4 +65,15 @@ public class MatchHandler extends Thread {
 		return string;
 	}
 
+	public boolean isPending() {
+		return false;
+	}
+
+	public void addPlayer(String userId) {
+	}
+
+
+	public boolean isNotFull() {
+		return false;
+	}
 }

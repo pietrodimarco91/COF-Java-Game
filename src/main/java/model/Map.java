@@ -336,4 +336,28 @@ public class Map {
 		string += nobilityTrack.toString() + "\n";
 		return string;
 	}
+
+	public int getNumberOfCities() {
+		return this.numberOfCities;
+	}
+	
+	public int getNumberOfPermitTiles() {
+		return this.numberOfPermitTiles;
+	}
+	
+	public ArrayList<City> getMap() {
+		return this.map;
+	}
+	
+	public Region[] getRegions() {
+		return this.regions;
+	}
+	
+	public Council getKingCouncil() {
+		return this.kingCouncil;
+	}
+	
+	public NobilityTrack getNobilityTrack() {
+		return this.nobilityTrack;
+	}
 }

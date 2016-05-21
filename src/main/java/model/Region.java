@@ -18,7 +18,7 @@ public class Region {
 	 * Council of the region
 	 */
 	private Council council;
-	
+
 	/**
 	 * ArrayList of cities that are in region
 	 */
@@ -50,6 +50,7 @@ public class Region {
 		this.deck = deck;
 		TileFactory tileFactory = new ConcreteTileFactory();
 		this.regionBonus = tileFactory.createRegionBonusTile(5 + new Random().nextInt(5));
+
 	}
 
 	/**
@@ -62,8 +63,8 @@ public class Region {
 		if (CouncillorsPool.checkPresenceOfCouncillor(color)) {
 			this.council.removeCouncillor();
 			this.council.addCouncillor(color);
-		}
-		else throw new CouncillorNotFoundException();
+		} else
+			throw new CouncillorNotFoundException();
 	}
 
 	public PermitTileDeck getDeck() {
@@ -139,10 +140,30 @@ public class Region {
 
 	/**
 	 * 
-	 * @return ArrayList of cities in regione
+	 * @return ArrayList of cities in region
 	 */
 	public ArrayList<City> getCities() {
 		return cities;
+	}
+
+	/**
+	 * ToString method
+	 * 
+	 * @return String
+	 */
+	public String toString() {
+		String regionInformation;
+		City city;
+		regionInformation = ("This in the region called: " + this.name + "\n");
+		regionInformation += ("This region is composed by these councillors: \n");
+		regionInformation += this.council.toString();
+		regionInformation += ("In this region there are these cities: \n");
+
+		for (int i = 0; i < this.cities.size(); i++) {
+			regionInformation += (cities.get(i).getName() + "\n");
+		}
+
+		return regionInformation;
 	}
 
 }

@@ -269,6 +269,10 @@ public class Map {
 		string+=kingCouncil.toString()+"\n";
 		string+="Nobility Track:\n";
 		string+=nobilityTrack.toString()+"\n";
+		
+		this.regions[0].toString();//Gabbo added these to print out the content of region
+		this.regions[1].toString();
+		this.regions[2].toString();
 		return string;
 	}
 }

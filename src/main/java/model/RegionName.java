@@ -6,9 +6,9 @@ import java.util.ArrayList;
  * 
  */
 public enum RegionName {
+    COAST,
     HILLS,
-    MOUNTAINS,
-    COAST;
+    MOUNTAINS;
 	
 	public static ArrayList<String> getRegionNames() {
 		ArrayList<String> names = new ArrayList<String>();

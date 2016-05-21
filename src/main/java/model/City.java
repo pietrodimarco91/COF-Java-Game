@@ -56,11 +56,17 @@ public class City {
 	private boolean kingIsHere;
 
 	/**
-	 * It states whether this city has been visited during a visit of the map or
-	 * not.
-	 * 
+	 * This attribute is used during the BFS visit of the map: it states whether
+	 * a city is not discovered yet (WHITE), it has just been discovered (GRAY)
+	 * or it has been visited (BLACK).
 	 */
-	private boolean visited;
+	private String BFScolor;
+
+	/**
+	 * This attribute is used during the BFS visit: it counts the distance from
+	 * the source city.
+	 */
+	private int BFSdistance;
 
 	/**
 	 * Since a City is a vertex of the GraphMap, each City stores its connected
@@ -91,7 +97,15 @@ public class City {
 		this.rewardToken = rewardToken;
 		emporiums = new ArrayList<Emporium>();
 		kingIsHere = false;
-		setVisited();
+	}
+
+	/**
+	 * Returns the name of the city.
+	 * 
+	 * @return The name of the city
+	 */
+	public String getName() {
+		return cityName;
 	}
 
 	/**
@@ -120,6 +134,13 @@ public class City {
 	 */
 	public String getColor() {
 		return color;
+	}
+
+	/**
+	 * @return The list of cities connected to this city
+	 */
+	public ArrayList<City> getConnectedCities() {
+		return connectedCities;
 	}
 
 	/**
@@ -206,26 +227,6 @@ public class City {
 	}
 
 	/**
-	 * This method is invoked during a visit of the map, in order to keep track
-	 * of cities already visited it sets true to the "visited" attribute when a
-	 * city gets visited.
-	 * 
-	 * @return
-	 */
-	public void setVisited() {
-		visited = false;
-	}
-
-	/**
-	 * Returns the name of the city.
-	 * 
-	 * @return The name of the city
-	 */
-	public String getName() {
-		return cityName;
-	}
-
-	/**
 	 * This method returns the ArrayList of the emporiums that are built in this
 	 * city
 	 * 
@@ -242,10 +243,6 @@ public class City {
 	 */
 	public Point getCoordinates() {
 		return coordinates;
-	}
-
-	public boolean hasBeenVisited() {
-		return visited;
 	}
 
 	/**
@@ -279,21 +276,71 @@ public class City {
 		Iterator<Emporium> emporiumIterator = emporiums.iterator();
 		while (emporiumIterator.hasNext())
 			string += emporiumIterator.next().toString() + "\n";
-		//string += "City Region: " + this.region.toString() + "\n";
-		//string += "Coordinates: " + this.coordinates.toString() + "\n";
+		// string += "City Region: " + this.region.toString() + "\n";
+		// string += "Coordinates: " + this.coordinates.toString() + "\n";
 		string += "RewardToken: " + this.rewardToken.toString() + "\n";
 		string += "King is here? " + String.valueOf(kingIsHere) + "\n";
-		string += "Has this city been visited during the current visit? " + String.valueOf(visited) + "\n";
 		/*
-		Iterator<City> cityIterator = connectedCities.iterator();
-		string += "Connected cities:\n";
-		while (cityIterator.hasNext()) {
-			if(!(cityIterator.next().equals(connectedCities.get(connectedCities.size()-1))))
-				string += cityIterator.next().getName() + " -> ";
-			else
-				string += cityIterator.next().getName();
-		}
-		*/
+		 * Iterator<City> cityIterator = connectedCities.iterator(); string +=
+		 * "Connected cities:\n"; while (cityIterator.hasNext()) {
+		 * if(!(cityIterator.next().equals(connectedCities.get(connectedCities.
+		 * size()-1)))) string += cityIterator.next().getName() + " -> "; else
+		 * string += cityIterator.next().getName(); }
+		 */
 		return string;
+	}
+
+	/**
+	 * This method is invoked when a BFS (Breadth First Search) visit starts; it
+	 * initializes the necessary attributes to their default values;
+	 */
+	public void BFSinitialization() {
+		this.BFScolor = "WHITE";
+		this.BFSdistance = -1;
+	}
+
+	/**
+	 * This method is invoked when the source of the BFS visit must be visited.
+	 */
+	public void BFSsourceVisit() {
+		this.BFScolor = "GRAY";
+		this.BFSdistance = 0;
+	}
+
+	/**
+	 * @return The BFS Color of this city, during a BFS visit.
+	 */
+	public String getBFScolor() {
+		return BFScolor;
+	}
+
+	/**
+	 * @return During a BFS visit, returns the distance from this city to the
+	 *         source city.
+	 */
+	public int getBFSdistance() {
+		return this.BFSdistance;
+	}
+
+	/**
+	 * During a BFS visit, sets the BFS color of the city to the specified
+	 * value.
+	 * 
+	 * @param color
+	 *            the specified BFS color value
+	 */
+	public void setBFScolor(String color) {
+		this.BFScolor = color;
+	}
+
+	/**
+	 * During a BFS visit, this method increments the distance from the source
+	 * city.
+	 * 
+	 * @param val
+	 *            the distance from the source city
+	 */
+	public void setBFSdistance(int val) {
+		this.BFSdistance = val;
 	}
 }

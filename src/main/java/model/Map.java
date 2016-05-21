@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 import controller.Player;
@@ -55,7 +57,7 @@ public class Map {
 	 * and a random RewardToken.
 	 */
 	public Map(int numberOfPlayers, int bonusNumber) {
-		map=new ArrayList<City>();
+		map = new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
@@ -78,8 +80,8 @@ public class Map {
 	}
 
 	/**
-	 * NEEDS IMPLEMENTATION! This method counts the shortest path from the
-	 * specified "cityFrom" to the "cityTo"
+	 * This method counts the shortest path from the specified "cityFrom" to the
+	 * "cityTo" with a BFS visit of the map.
 	 * 
 	 * @param cityFrom
 	 *            the starting point (City) of the shortest path calculation
@@ -88,7 +90,37 @@ public class Map {
 	 * @return the number of connections that separate the two cities
 	 */
 	public int countDistance(City cityFrom, City cityTo) {
-		return 0;
+		Queue<City> grayNodesQueue = new LinkedList<City>();
+		City cityToExpand;
+
+		for (City city : map) { // all cities initialized for BFS visit
+			city.BFSinitialization();
+		}
+		cityFrom.BFSsourceVisit();
+		grayNodesQueue.add(cityFrom);
+		while (!(grayNodesQueue.isEmpty())) {
+			cityToExpand = grayNodesQueue.remove();
+			for (City connectedCity : cityToExpand.getConnectedCities()) {
+				if (connectedCity.getBFScolor().equals("WHITE")) {
+					connectedCity.setBFScolor("GRAY");
+					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
+					if (connectedCity == cityTo) { // checks whether the city
+													// that has just been
+													// discovered is the one I'm
+													// looking for
+						for (City city : map) { // all cities are set back to
+												// their default values
+							city.BFSinitialization();
+						}
+						return connectedCity.getBFSdistance();
+					}
+					grayNodesQueue.add(connectedCity);
+				}
+			}
+			grayNodesQueue.remove();
+			cityToExpand.setBFScolor("BLACK");
+		}
+		return -1;
 	}
 
 	/**
@@ -116,7 +148,18 @@ public class Map {
 	 *            The city where the king must me moved to
 	 */
 	public void moveKing(City cityDestination) {
-		// TODO implement here
+		Iterator<City> iterator = map.iterator();
+		boolean stop = false;
+		City cityTo;
+		City cityFrom = findKingCity();
+		cityFrom.setKingIsHere(false);
+		while (iterator.hasNext() && !stop) {
+			cityTo = iterator.next();
+			if (cityTo == cityDestination) {
+				stop = true;
+				cityTo.setKingIsHere(true);
+			}
+		}
 	}
 
 	/**
@@ -124,28 +167,41 @@ public class Map {
 	 * 
 	 * @param city
 	 *            The specified city
-	 * @return the arraylist of cities connected to the specified city
+	 * @return the arraylist of cities connected to the specified city. Returns
+	 *         null if the specified city doesn't exist.
 	 */
 	public ArrayList<City> getCitiesConnectedTo(City city) {
-		// TODO implement here
+		City cityToSearch;
+		Iterator<City> iterator = map.iterator();
+		while (iterator.hasNext()) {
+			cityToSearch = iterator.next();
+			if (cityToSearch == city) {
+				return cityToSearch.getConnectedCities();
+			}
+		}
 		return null;
 	}
 
 	/**
-	 * @return
-	 */
-	public void setAllNotVisited() {
-		// TODO implement here
-
-	}
-
-	/**
+	 * This method states whether the specified player is eligible for the Color
+	 * Bonus or not.
+	 * 
 	 * @param owner
-	 * @return
+	 *            The specified player
+	 * @return true if the player is eligible, false otherwise
 	 */
-	public boolean isEligibleForColorBonus(Player owner) {
-		// TODO implement here
-		return false;
+	public boolean isEligibleForColorBonus(Player owner, String color) {
+		Iterator<City> mapIterator = map.iterator();
+		City tempCity;
+
+		while (mapIterator.hasNext()) {
+			tempCity = mapIterator.next();
+			if (tempCity.getColor().equals(color)) {
+				if (!(tempCity.checkPresenceOfEmporium(owner)))
+					return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -156,6 +212,7 @@ public class Map {
 		City city = map.get(random.nextInt(map.size()));
 		city.setKingIsHere(true);
 	}
+
 	/**
 	 * Checks whether a City with the specified name already exists or not
 	 * 
@@ -244,8 +301,11 @@ public class Map {
 	}
 
 	/**
-	 * This method initializes the NobilityTrack for the current match and makes it randomly
-	 * @param bonusNumber the number of bonuses inside the cells containing bonuses.
+	 * This method initializes the NobilityTrack for the current match and makes
+	 * it randomly
+	 * 
+	 * @param bonusNumber
+	 *            the number of bonuses inside the cells containing bonuses.
 	 */
 	public void nobilityTrackSetup(int bonusNumber) {
 		nobilityTrack = new NobilityTrack(bonusNumber);
@@ -259,18 +319,18 @@ public class Map {
 		while (iterator.hasNext()) {
 			string += iterator.next().toString() + "\n";
 		}
-		string+="Number of Permit Tiles: "+numberOfPermitTiles+"\n";
-		string+="Number of Cities: "+numberOfCities+"\n";
-		string+="Regions:\n";
-		for(int i=0;i<regions.length;i++) {
-			string+=regions[i].toString()+"\n";
+		string += "Number of Permit Tiles: " + numberOfPermitTiles + "\n";
+		string += "Number of Cities: " + numberOfCities + "\n";
+		string += "Regions:\n";
+		for (int i = 0; i < regions.length; i++) {
+			string += regions[i].toString() + "\n";
 		}
-		string+="King's Council:\n";
-		string+=kingCouncil.toString()+"\n";
-		string+="Councillors Pool: current content of the pool is:\n";
-		string+=CouncillorsPool.poolStatus()+"\n";
-		string+="Nobility Track:\n";
-		string+=nobilityTrack.toString()+"\n";
+		string += "King's Council:\n";
+		string += kingCouncil.toString() + "\n";
+		string += "Councillors Pool: current content of the pool is:\n";
+		string += CouncillorsPool.poolStatus() + "\n";
+		string += "Nobility Track:\n";
+		string += nobilityTrack.toString() + "\n";
 		return string;
 	}
 }

@@ -18,7 +18,13 @@ public class Server {
 	 * The port of the specified IP Address (connection parameter).
 	 */
 	private static final int port=80;
+	/**
+	 *This attribute handles every interaction with the user.
+	 */
 	private ConnectorHandler connectorHandler;
+	/**
+	 *These threads are used by Server to handles the different connections coming from the Clients
+	 */
 	private ExecutorService thread;
 	/**
 	 * The Server stores an array of currently on-going matches through their MatchHandlers
@@ -26,9 +32,6 @@ public class Server {
 	private ArrayList<MatchHandler> matches;
 
 
-	/**
-	 * Default constructor
-	 */
 	public Server() {
 		this.connectorHandler =new ConnectorHandler(port);
 		thread= Executors.newCachedThreadPool();
@@ -37,10 +40,8 @@ public class Server {
 	}
 
 	/**
-	 * NEED IMPLEMENTATION!
-	 *@param connectionHandle.getConnector() return a specific connector type (RMI,Socket)
+	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
-
 	private void waitConnection() {
 		while(true){
 			thread.submit(new UserHandler(connectorHandler.getConnector(), matches));

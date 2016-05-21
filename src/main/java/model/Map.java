@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import com.sun.media.jfxmedia.events.MarkerEvent;
+
 import controller.Player;
 
 /**
@@ -54,7 +56,7 @@ public class Map {
 	 * increases of 3 and the number of permit tiles increases of the number of
 	 * the cities. Each region is instantiated with its council and its permit
 	 * tile deck. Each city is instantiated with its name, its color, its region
-	 * and a random RewardToken.
+	 * and a random RewardToken. This constructor initializes the Market too.
 	 */
 	public Map(int numberOfPlayers, int bonusNumber) {
 		map = new ArrayList<City>();
@@ -64,6 +66,7 @@ public class Map {
 		kingCouncil = new KingCouncil();
 		citiesInitialization(bonusNumber);
 		nobilityTrackSetup(bonusNumber);
+		Market market=new Market();
 	}
 
 	/**

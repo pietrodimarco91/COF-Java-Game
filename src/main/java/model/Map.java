@@ -66,7 +66,7 @@ public class Map {
 		kingCouncil = new KingCouncil();
 		citiesInitialization(bonusNumber);
 		nobilityTrackSetup(bonusNumber);
-		Market market=new Market();
+		Market market = new Market();
 	}
 
 	/**
@@ -314,6 +314,72 @@ public class Map {
 		nobilityTrack = new NobilityTrack(bonusNumber);
 	}
 
+	/**
+	 * NOT COMPLETED YET! This method creates the default connection at the
+	 * beginning of the match.
+	 */
+	public void generateDefaultConnections(int numberOfCities) {
+		int MATRIX_ROWS = numberOfCities / 3;
+		int MATRIX_COLUMNS = 32; // 10 cells for each region + 2 columns of '*'
+									// to delimit the regions
+
+		String[][] matrix = new String[MATRIX_ROWS][MATRIX_COLUMNS];
+		Random random = new Random();
+		int column;
+		int low, high;
+		String direction;
+
+		for (int i = 0; i < MATRIX_ROWS; i++) { // matrix initialization
+			for (int j = 0; j < MATRIX_COLUMNS; j++) {
+				if (j == 11 || j == 22) {
+					matrix[i][j] = "*";
+				} else
+					matrix[i][j] = " ";
+			}
+		}
+
+		/* first region */
+		for (int k = 0; k < regions.length; k++) {
+			ArrayList<City> cities = regions[k].getCities();
+			ArrayList<String> cityNames = new ArrayList<String>();
+			Iterator<City> iterator = cities.iterator();
+			String name;
+			HashMap<String, City> map = new HashMap<String, City>();
+			while (iterator.hasNext()) {
+				City city = iterator.next();
+				if (city.getRegion() == this.regions[k]) {
+					name = city.getName();
+					String initialLetter = String.valueOf(name.charAt(0));
+					cityNames.add(initialLetter); // the
+													// initial
+													// letter of
+													// the name
+					map.put(initialLetter, city);
+				}
+			}
+			high = 10;
+			low = 0;
+			direction = "right";
+			for (int j = low, i = 0, counter = 0; j < high && i < MATRIX_ROWS; j++, i++, counter++) {
+				column = low + random.nextInt(high);
+				String tempName = cityNames.remove(counter);
+				matrix[i][column] = tempName;
+
+				// map.put(tempName, value); I have to create an association
+				// among the initial letter and the corresponding city
+				if (direction.equals("right")) {
+					high = column;
+					low = 0;
+					direction = "left";
+				} else {
+					low = column;
+					high = 10;
+					direction = "right";
+				}
+			}
+		}
+	}
+
 	public String toString() {
 		String string = "";
 		string += "Map status:\n";
@@ -340,23 +406,23 @@ public class Map {
 	public int getNumberOfCities() {
 		return this.numberOfCities;
 	}
-	
+
 	public int getNumberOfPermitTiles() {
 		return this.numberOfPermitTiles;
 	}
-	
+
 	public ArrayList<City> getMap() {
 		return this.map;
 	}
-	
+
 	public Region[] getRegions() {
 		return this.regions;
 	}
-	
+
 	public Council getKingCouncil() {
 		return this.kingCouncil;
 	}
-	
+
 	public NobilityTrack getNobilityTrack() {
 		return this.nobilityTrack;
 	}

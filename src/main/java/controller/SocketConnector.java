@@ -5,6 +5,18 @@ package controller;
  */
 public class SocketConnector extends Connector{
 
-    public SocketConnector(int port) {
+    @Override
+    public void writeToClient(String s) {
+
+    }
+
+    @Override
+    public int reciveFromClient() {
+        return 0;
+    }
+
+    @Override
+    public String getUserId() {
+        return null;
     }
 }

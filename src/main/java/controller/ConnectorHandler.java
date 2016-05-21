@@ -3,7 +3,7 @@ package controller;
 /**
  * This Class handles the interactions with the Client making the difference between RMI and Socket connections.
  */
-public class ConnectorHandler implements Runnable{
+public class ConnectorHandler{
 
     /**
      *This attribute performs the interactions with the Client.
@@ -19,33 +19,11 @@ public class ConnectorHandler implements Runnable{
         this.port=port;
     }
 
-    @Override
-    public void run() {
-        
-    }
-
     /**
      *NEED TO BE IMPLEMENTED
      */
-    public ConnectorHandler getConnector() {
+    public Connector getConnector() {
         return null;
     }
-    /**
-     *NEED TO BE IMPLEMENTED
-     */
-    public void writeToClient(String s) {
 
-    }
-    /**
-     *NEED TO BE IMPLEMENTED
-     */
-    public int reciveFromClient() {
-        return 0;
-    }
-    /**
-     *NEED TO BE IMPLEMENTED
-     */
-    public String getUserId() {
-        return "null";
-    }
 }

@@ -15,13 +15,12 @@ public class UserHandler implements Runnable {
     /**
      *This attribute handles every interaction with the user.
      */
-    private ConnectorHandler connectorHandler;
+    private Connector connector;
 
-    public UserHandler(ConnectorHandler connector, ArrayList<MatchHandler> matches) {
+    public UserHandler(Connector connector, ArrayList<MatchHandler> matches) {
         this.matches=matches;
-        this.connectorHandler =connector;
+        this.connector =connector;
     }
-
 
     /**
      *This is the run() method of the Thread.
@@ -30,8 +29,8 @@ public class UserHandler implements Runnable {
     @Override
     public void run() {
         MatchHandler match = new MatchHandler();
-        connectorHandler.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
-        switch (connectorHandler.reciveFromClient()){
+        connector.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
+        switch (connector.reciveFromClient()){
             case 1:
                 this.joinMatch();
                 break;
@@ -47,7 +46,7 @@ public class UserHandler implements Runnable {
      */
     public void launchNewMatch() {
         Date date = new Date();
-        MatchHandler matchHandler=new MatchHandler(matches.size(), date, connectorHandler.getUserId());
+        MatchHandler matchHandler=new MatchHandler(matches.size(), date, connector.getUserId());
         matches.add(matchHandler);
         matchHandler.run();
     }
@@ -64,7 +63,7 @@ public class UserHandler implements Runnable {
         while(iterator.hasNext()){
             matchInList=iterator.next();
             if(matchInList.isPending() && matchInList.isNotFull()){
-                matchInList.addPlayer(connectorHandler.getUserId());
+                matchInList.addPlayer(connector.getUserId());
                 joined=true;
                 break;
             }

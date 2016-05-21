@@ -267,12 +267,10 @@ public class Map {
 		}
 		string+="King's Council:\n";
 		string+=kingCouncil.toString()+"\n";
+		string+="Councillors Pool: current content of the pool is:\n";
+		string+=CouncillorsPool.poolStatus()+"\n";
 		string+="Nobility Track:\n";
 		string+=nobilityTrack.toString()+"\n";
-		
-		this.regions[0].toString();//Gabbo added these to print out the content of region
-		this.regions[1].toString();
-		this.regions[2].toString();
 		return string;
 	}
 }

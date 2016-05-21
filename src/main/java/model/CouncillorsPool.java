@@ -115,7 +115,7 @@ public class CouncillorsPool {
 		Collections.shuffle(pool);
 	}
 	
-	public String toString() {
+	public static String poolStatus() {
 		Iterator<Councillor> iterator = pool.iterator();
 		String string="";
 		Councillor councillor;

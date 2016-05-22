@@ -21,7 +21,7 @@ public class Server {
 	/**
 	 * Matches Ids
 	 */
-	private static int id;
+	private static int id=0;
 	/**
 	 *This attribute handles every interaction with the user.
 	 */

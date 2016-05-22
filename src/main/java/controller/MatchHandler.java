@@ -43,8 +43,12 @@ public class MatchHandler extends Thread {
 	/**
 	 * Default constructor
 	 */
+<<<<<<< HEAD
 	public MatchHandler(int id, Date date, String idUsr) {
 		this.player= new ArrayList<Player>();
+=======
+	public MatchHandler(int id, Date date, Connector connector) {
+>>>>>>> 21ad9a5e7c9f522d87ca2e2f0bc1d51bd0f987f0
 		this.id = id;
 		this.date = date;
 	}

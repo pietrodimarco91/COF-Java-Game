@@ -145,6 +145,13 @@ public class Region {
 	public ArrayList<City> getCities() {
 		return cities;
 	}
+	
+	/**
+	 * @return the name of the region
+	 */
+	public String getName() {
+		return this.name;
+	}
 
 	/**
 	 * ToString method

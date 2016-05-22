@@ -30,7 +30,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * Default constructor
 	 */
-	public MatchHandler(int id, Date date, String idUsr) {
+	public MatchHandler(int id, Date date, Connector connector) {
 		this.id = id;
 		this.date = date;
 	}

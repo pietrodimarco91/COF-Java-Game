@@ -29,6 +29,7 @@ public class TestDefaultConnections {
 			}
 			System.out.println("Total combinations: " + counter);
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail("Test not passed");
 		}
 		/*

@@ -47,7 +47,7 @@ public class UserHandler implements Runnable {
         Date date = new Date();
         MatchHandler matchHandler=new MatchHandler(Server.getId(), date, connector);
         matches.add(matchHandler);
-        matchHandler.run();
+        matchHandler.start();
     }
 
     /**

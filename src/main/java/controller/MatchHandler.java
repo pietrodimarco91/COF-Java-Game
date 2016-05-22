@@ -53,6 +53,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * Default constructor
 	 */
+
 	public void run() {
 		String reciveFromClient;
 		int numberOfPlayers;
@@ -91,16 +92,25 @@ public class MatchHandler extends Thread {
 		//Start the match
 		
 		
+
+	public MatchHandler(int id, Date date, Connector connector) {
+		this.id = id;
+		this.date = date;
+
 	}
 
 	/**
 	 * Default constructor
 	 */
+
 	public MatchHandler(int id, Date date, Connector connector) {
 		this.connectors = new ArrayList<Connector>();
 		this.id = id;
 		this.date = date;
 		this.connectors.add(connector);
+
+	public void run() {
+
 
 	}
 
@@ -116,7 +126,7 @@ public class MatchHandler extends Thread {
 	 *            that come out from each city (vertex)
 	 */
 	public void mapSetup(int numberOfPlayers, int linksBetweenCities, int bonusNumber) {
-		map = new Map(numberOfPlayers, bonusNumber);
+		map = new Map(numberOfPlayers, bonusNumber,linksBetweenCities);
 	}
 
 	public String toString() {
@@ -134,8 +144,8 @@ public class MatchHandler extends Thread {
 		return this.pending;
 	}
 
-	public void addPlayer(String userId) {
-		this.players.add(UserId);		
+	public void addPlayer(Connector userId) {
+
 	}
 
 	public boolean isNotFull() {

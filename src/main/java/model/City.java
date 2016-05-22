@@ -96,6 +96,7 @@ public class City {
 		this.region = region;
 		this.rewardToken = rewardToken;
 		emporiums = new ArrayList<Emporium>();
+		connectedCities = new ArrayList<City>();
 		kingIsHere = false;
 	}
 
@@ -253,7 +254,20 @@ public class City {
 	 *            the city to be connected to this city
 	 */
 	public void addConnectedCity(City city) {
-		connectedCities.add(city);
+		if (!(connectedCities.contains(city)))
+			connectedCities.add(city);
+	}
+
+	/**
+	 * This methods removes the connection between the current city and the
+	 * specified city
+	 * 
+	 * @param city
+	 *            the city to remove the connection with
+	 */
+	public void removeConnectedCity(City city) {
+		if (connectedCities.contains(city))
+			connectedCities.remove(city);
 	}
 
 	/**
@@ -266,9 +280,6 @@ public class City {
 		this.coordinates = point;
 	}
 
-	/**
-	 * THIS METHOD MUST BE COMPLETED! Some parts lack.
-	 */
 	public String toString() {
 		String string = "";
 		string += "City Name: " + this.cityName + "\n";
@@ -276,17 +287,23 @@ public class City {
 		Iterator<Emporium> emporiumIterator = emporiums.iterator();
 		while (emporiumIterator.hasNext())
 			string += emporiumIterator.next().toString() + "\n";
-		// string += "City Region: " + this.region.toString() + "\n";
+		string += "City Region: " + this.region.getName() + "\n";
 		// string += "Coordinates: " + this.coordinates.toString() + "\n";
 		string += "RewardToken: " + this.rewardToken.toString() + "\n";
 		string += "King is here? " + String.valueOf(kingIsHere) + "\n";
-		/*
-		 * Iterator<City> cityIterator = connectedCities.iterator(); string +=
-		 * "Connected cities:\n"; while (cityIterator.hasNext()) {
-		 * if(!(cityIterator.next().equals(connectedCities.get(connectedCities.
-		 * size()-1)))) string += cityIterator.next().getName() + " -> "; else
-		 * string += cityIterator.next().getName(); }
-		 */
+
+		Iterator<City> cityIterator = connectedCities.iterator();
+		City tempCity;
+		string += "Connected cities:\n";
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (!(tempCity.equals(connectedCities.get(connectedCities.size() - 1))))
+				string += tempCity.getName() + " -> ";
+			else
+				string += tempCity.getName();
+		}
+		string += "\n";
+
 		return string;
 	}
 

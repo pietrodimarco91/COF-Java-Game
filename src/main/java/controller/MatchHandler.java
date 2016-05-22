@@ -60,7 +60,7 @@ public class MatchHandler extends Thread {
 	 *            that come out from each city (vertex)
 	 */
 	public void mapSetup(int numberOfPlayers, int linksBetweenCities, int bonusNumber) {
-		map = new Map(numberOfPlayers, bonusNumber);
+		map = new Map(numberOfPlayers, bonusNumber,linksBetweenCities);
 	}
 
 	public String toString() {

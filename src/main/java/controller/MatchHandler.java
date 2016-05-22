@@ -36,16 +36,16 @@ public class MatchHandler extends Thread {
 	/**
 	 * Default constructor
 	 */
-	public void run() {
-
+	public MatchHandler(int id, Date date, Connector connector) {
+		this.id = id;
+		this.date = date;
 	}
 
 	/**
 	 * Default constructor
 	 */
-	public MatchHandler(int id, Date date, Connector connector) {
-		this.id = id;
-		this.date = date;
+	public void run() {
+
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class MatchHandler extends Thread {
 		return false;
 	}
 
-	public void addPlayer(String userId) {
+	public void addPlayer(Connector userId) {
 	}
 
 	public boolean isNotFull() {

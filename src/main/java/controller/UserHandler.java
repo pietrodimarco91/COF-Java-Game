@@ -62,7 +62,7 @@ public class UserHandler implements Runnable {
         while(iterator.hasNext()){
             matchInList=iterator.next();
             if(matchInList.isPending() && matchInList.isNotFull()){
-                matchInList.addPlayer(connector.getUserId());
+                matchInList.addPlayer(connector);
                 joined=true;
                 break;
             }

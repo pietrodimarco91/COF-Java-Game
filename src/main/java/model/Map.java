@@ -50,21 +50,44 @@ public class Map {
 	private NobilityTrack nobilityTrack;
 
 	/**
+	 * This attribute is used only to graphically represent the map with the
+	 * regions and the cities distributed in them; the method
+	 * generateDefaultConnections() will generate automatically the default
+	 * connections between the cities.
+	 */
+	String[][] matrix;
+
+	/**
+	 * This attribute represents the matrix rows.
+	 */
+	private int MATRIX_ROWS;
+
+	/**
+	 * This attribute represents the matrix columns. 10 cells for each region +
+	 * 2 columns of '*' to delimit the regions
+	 */
+	private final int MATRIX_COLUMNS = 32;
+
+	/**
 	 * The Map constructor builds the map with the specified parameters, setting
 	 * by default (4 players or less) the number of cities at 15 and the number
 	 * of permit tiles at 45. For each new player, the number of cities
 	 * increases of 3 and the number of permit tiles increases of the number of
 	 * the cities. Each region is instantiated with its council and its permit
 	 * tile deck. Each city is instantiated with its name, its color, its region
-	 * and a random RewardToken. This constructor initializes the Market too.
+	 * and a random RewardToken. Random connections between cities in the same
+	 * region are generated too, and connections between different regions must
+	 * be set by the first player. This constructor initializes the Market too.
 	 */
-	public Map(int numberOfPlayers, int bonusNumber) {
+	public Map(int numberOfPlayers, int bonusNumber, int linksBetweenCities) {
 		map = new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
 		kingCouncil = new KingCouncil();
 		citiesInitialization(bonusNumber);
+		MATRIX_ROWS = this.numberOfCities / 3;
+		generateDefaultConnections(linksBetweenCities);
 		nobilityTrackSetup(bonusNumber);
 		Market market = new Market();
 	}
@@ -83,6 +106,103 @@ public class Map {
 	}
 
 	/**
+	 * This method removes the connection between the two specified cities
+	 * 
+	 * @param city1
+	 *            the first city
+	 * @param city2
+	 *            the second city
+	 */
+	public void unconnectCities(City city1, City city2) {
+		city1.removeConnectedCity(city2);
+		city2.removeConnectedCity(city1);
+	}
+
+	/**
+	 * This method checks if the specified cities can be connected, according to
+	 * the specified parameter of maximum number of links between the cities.
+	 * 
+	 * @param city1
+	 *            the first city
+	 * @param city2
+	 *            the second city
+	 * @param linksBetweenCities
+	 *            the maximum number of links between the cities.
+	 * @return true if the new connection is possible, false otherwise.
+	 */
+	public boolean checkPossibilityOfNewConnection(City city1, City city2, int linksBetweenCities) {
+		if (city1.getConnectedCities().size() < linksBetweenCities
+				&& city2.getConnectedCities().size() < linksBetweenCities) {
+			return true;
+		} else
+			return false;
+	}
+
+	/**
+	 * This method removes randomly some connections between the cities in order
+	 * to respect the maximum number of links between the cities.
+	 * 
+	 * @param linksBetweenCities
+	 *            the parameter to respect
+	 */
+	public void removeRandomConnections(int linksBetweenCities) {
+		Random random = new Random();
+		for (City city : this.map) {
+			while (city.getConnectedCities().size() > linksBetweenCities) {
+				City cityToRemove;
+				do {
+					cityToRemove = city.getConnectedCities().get(random.nextInt(city.getConnectedCities().size() - 1));
+				} while (cityToRemove.getConnectedCities().size() <= 2);
+				city.removeConnectedCity(cityToRemove);
+				cityToRemove.removeConnectedCity(city);
+			}
+		}
+	}
+
+	/**
+	 * This methods checks whether the graph map is fully connected or not by
+	 * launching a BFS visit
+	 * 
+	 * @return true if the graph is connected, false otherwise.
+	 */
+	public boolean graphIsConnected() {
+		Queue<City> grayNodesQueue = new LinkedList<City>();
+		City cityToExpand, connectedCity;
+		Iterator<City> mapIterator = map.iterator();
+		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
+			mapIterator.next().BFSinitialization();
+		}
+		City cityFrom = map.get(0);
+		cityFrom.BFSsourceVisit();
+		grayNodesQueue.add(cityFrom);
+		while (!(grayNodesQueue.isEmpty())) {
+			cityToExpand = grayNodesQueue.remove();
+			Iterator<City> connectedCitiesIterator = cityToExpand.getConnectedCities().iterator();
+			while (connectedCitiesIterator.hasNext()) {
+				connectedCity = connectedCitiesIterator.next();
+				if (connectedCity.getBFScolor().equals("WHITE")) {
+					connectedCity.setBFScolor("GRAY");
+					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
+					grayNodesQueue.add(connectedCity);
+				}
+			}
+			cityToExpand.setBFScolor("BLACK");
+		}
+		for (City city : map) {
+			if (!(city.getBFScolor().equals("BLACK"))) {
+				for (City tempCity : map) {
+					tempCity.BFSinitialization();
+				}
+				return false;
+			}
+		}
+		for (City tempCity : map) {
+			tempCity.BFSinitialization();
+		}
+		return true;
+	}
+
+	/**
 	 * This method counts the shortest path from the specified "cityFrom" to the
 	 * "cityTo" with a BFS visit of the map.
 	 * 
@@ -93,8 +213,11 @@ public class Map {
 	 * @return the number of connections that separate the two cities
 	 */
 	public int countDistance(City cityFrom, City cityTo) {
+		if (cityFrom == cityTo)
+			return 0;
 		Queue<City> grayNodesQueue = new LinkedList<City>();
 		City cityToExpand;
+		int distance = -1;
 
 		for (City city : map) { // all cities initialized for BFS visit
 			city.BFSinitialization();
@@ -111,16 +234,16 @@ public class Map {
 													// that has just been
 													// discovered is the one I'm
 													// looking for
+						distance = connectedCity.getBFSdistance();
 						for (City city : map) { // all cities are set back to
 												// their default values
 							city.BFSinitialization();
 						}
-						return connectedCity.getBFSdistance();
+						return distance;
 					}
 					grayNodesQueue.add(connectedCity);
 				}
 			}
-			grayNodesQueue.remove();
 			cityToExpand.setBFScolor("BLACK");
 		}
 		return -1;
@@ -245,7 +368,7 @@ public class Map {
 		numberOfPermitTiles = 45;
 		if (numberOfPlayers > 4) {
 			numberOfCities += 3 * (numberOfPlayers - 4);
-			numberOfPermitTiles += numberOfCities * (numberOfPlayers - 4);
+			numberOfPermitTiles += 12 * (numberOfPlayers - 4);
 		}
 	}
 
@@ -315,21 +438,57 @@ public class Map {
 	}
 
 	/**
-	 * NOT COMPLETED YET! This method creates the default connection at the
-	 * beginning of the match.
+	 * This method creates the default connections between the cities at the
+	 * beginning of the match. It uses the matrix to graphically represent the
+	 * cities in the map.
 	 */
-	public void generateDefaultConnections(int numberOfCities) {
-		int MATRIX_ROWS = numberOfCities / 3;
-		int MATRIX_COLUMNS = 32; // 10 cells for each region + 2 columns of '*'
-									// to delimit the regions
-
-		String[][] matrix = new String[MATRIX_ROWS][MATRIX_COLUMNS];
-		Random random = new Random();
+	public void generateDefaultConnections(int linksBetweenCities) {
+		initializeMatrix();
 		int column;
-		int low, high;
+		int low = 0;
 		String direction;
 
-		for (int i = 0; i < MATRIX_ROWS; i++) { // matrix initialization
+		for (int k = 0; k < regions.length; k++) {
+			HashMap<String, City> hashMap = new HashMap<String, City>();
+			ArrayList<String> cityNames = new ArrayList<String>();
+			hashMap = mapCitiesWithLetters(cityNames, hashMap, k);
+			direction = "right";
+			City currentCity, fatherCity = null, grandFatherCity = null;
+			for (int i = 0; i < MATRIX_ROWS; i++) {
+				if (direction.equals("right"))
+					column = low + 7;
+				else
+					column = low + 3;
+				String tempCityName = cityNames.remove(0);
+				String initialLetter = String.valueOf(tempCityName.charAt(0));
+				currentCity = hashMap.get(String.valueOf(tempCityName.charAt(0)));
+				if (fatherCity != null) {
+					connectCities(currentCity, fatherCity);
+					if (grandFatherCity != null) {
+						connectCities(currentCity, grandFatherCity);
+					}
+				}
+				matrix[i][column] = initialLetter;
+				if (direction.equals("right")) {
+					direction = "left";
+				} else {
+					direction = "right";
+				}
+				grandFatherCity = fatherCity;
+				fatherCity = currentCity;
+			}
+			low += 11;
+		}
+		removeRandomConnections(linksBetweenCities);
+	}
+
+	/**
+	 * This method initializes the matrix for the graphical visualization of the
+	 * map and the cities.
+	 */
+	public void initializeMatrix() {
+		matrix = new String[MATRIX_ROWS][MATRIX_COLUMNS];
+		for (int i = 0; i < MATRIX_ROWS; i++) {
 			for (int j = 0; j < MATRIX_COLUMNS; j++) {
 				if (j == 11 || j == 22) {
 					matrix[i][j] = "*";
@@ -337,46 +496,69 @@ public class Map {
 					matrix[i][j] = " ";
 			}
 		}
+	}
 
-		/* first region */
-		for (int k = 0; k < regions.length; k++) {
-			ArrayList<City> cities = regions[k].getCities();
-			ArrayList<String> cityNames = new ArrayList<String>();
-			Iterator<City> iterator = cities.iterator();
-			String name;
-			HashMap<String, City> map = new HashMap<String, City>();
-			while (iterator.hasNext()) {
-				City city = iterator.next();
-				if (city.getRegion() == this.regions[k]) {
-					name = city.getName();
-					String initialLetter = String.valueOf(name.charAt(0));
-					cityNames.add(initialLetter); // the
-													// initial
-													// letter of
-													// the name
-					map.put(initialLetter, city);
-				}
+	/**
+	 * This method is invoked to create an association between a city and its
+	 * initial letter. It is used when the default connections between the
+	 * cities are being generated.
+	 * 
+	 * @param cityNames
+	 *            a list with all the names of the cities of the current region
+	 *            k in the array of regions[k]
+	 * @param hashMap
+	 *            the hash map to fill with the keys "initial letters" and the
+	 *            values "city"
+	 * @param k
+	 *            the index of the current region
+	 */
+	public HashMap<String, City> mapCitiesWithLetters(ArrayList<String> cityNames, HashMap<String, City> hashMap,
+			int k) {
+		ArrayList<City> cities = regions[k].getCities();
+		Iterator<City> iterator = cities.iterator();
+		String name;
+		while (iterator.hasNext()) { // association of the initial letter
+										// with the corresponding city
+			City city = iterator.next();
+			if (city.getRegion() == this.regions[k]) {
+				name = city.getName();
+				String initialLetter = String.valueOf(name.charAt(0));
+				cityNames.add(initialLetter); // the
+												// initial
+												// letter of
+												// the name
+				hashMap.put(initialLetter, city);
 			}
-			high = 10;
-			low = 0;
-			direction = "right";
-			for (int j = low, i = 0, counter = 0; j < high && i < MATRIX_ROWS; j++, i++, counter++) {
-				column = low + random.nextInt(high);
-				String tempName = cityNames.remove(counter);
-				matrix[i][column] = tempName;
+		}
+		return hashMap;
+	}
 
-				// map.put(tempName, value); I have to create an association
-				// among the initial letter and the corresponding city
-				if (direction.equals("right")) {
-					high = column;
-					low = 0;
-					direction = "left";
-				} else {
-					low = column;
-					high = 10;
-					direction = "right";
-				}
+	/**
+	 * This method prints the matrix representing the cities in the map.
+	 */
+	public void printMatrix() {
+		String print = "";
+		for (int i = 0; i < MATRIX_ROWS; i++) {
+			for (int j = 0; j < MATRIX_COLUMNS; j++) {
+				print += matrix[i][j];
 			}
+			print += "\n";
+		}
+		System.out.println(print);
+		printConnections();
+	}
+
+	/**
+	 * This method is invoked during the print of the matrix, to visualize which
+	 * cities each city is connected to.
+	 */
+	public void printConnections() {
+		for (City city : map) {
+			System.out.println("Cities connected to " + city.getName() + ":");
+			for (City cityConnected : city.getConnectedCities()) {
+				System.out.print(cityConnected.getName() + " ");
+			}
+			System.out.println("\n");
 		}
 	}
 

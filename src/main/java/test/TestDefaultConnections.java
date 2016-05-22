@@ -17,21 +17,17 @@ public class TestDefaultConnections {
 
 	@Test
 	public void test() {
-		try {
-			int counter = 0;
-			for (int i = 2; i <= 8; i++) {
-				for (int j = 1; j <= 3; j++) {
-					for (int k = 2; k <= 4; k++,counter++) {
-						Map map = new Map(i,j,k);
-						System.out.println("Default connections between cities correctly generated!");
-					}
+
+		int counter = 0;
+		for (int i = 2; i <= 8; i++) {
+			for (int j = 1; j <= 3; j++) {
+				for (int k = 2; k <= 4; k++, counter++) {
+					Map map = new Map(i, j, k);
+					System.out.println("Default connections between cities correctly generated!");
 				}
 			}
-			System.out.println("Total combinations: " + counter);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Test not passed");
 		}
+		System.out.println("Total combinations: " + counter);
 		/*
 		 * Map map = new Map(4,2,2); System.out.println(map.toString());
 		 * map.printMatrix();

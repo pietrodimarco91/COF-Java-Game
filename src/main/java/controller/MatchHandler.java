@@ -4,11 +4,12 @@ import model.Map;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * This class represents the thread always running while a match is on-going. It
- * stores the core of the game engine.
+ * Created by Gabriele on 22/05/16. This class represents the thread always
+ * running while a match is on-going. It stores the core of the game engine.
  */
 public class MatchHandler extends Thread {
 
@@ -26,18 +27,29 @@ public class MatchHandler extends Thread {
 	 * A reference to the local GraphMap for this match.
 	 */
 	private Map map;
-
+	
+	/**
+	 * An ArrayList of player in this MatchHandler.
+	 */
+	private ArrayList<Player> player;
+	
+	/**
+	 * Default constructor
+	 */
+	public void run(){
+		
+	}
+	
 	/**
 	 * Default constructor
 	 */
 	public MatchHandler(int id, Date date, String idUsr) {
+		this.player= new ArrayList<Player>();
 		this.id = id;
 		this.date = date;
 	}
 
-	public MatchHandler() {
-
-	}
+	
 
 	/**
 	 * This method is invoked to setup the map before a match starts. The
@@ -50,7 +62,7 @@ public class MatchHandler extends Thread {
 	 *            detail, this number represents the maximum number of streets
 	 *            that come out from each city (vertex)
 	 */
-	public void mapSetup(int numberOfPlayers, int linksBetweenCities,int bonusNumber) {
+	public void mapSetup(int numberOfPlayers, int linksBetweenCities, int bonusNumber) {
 		map = new Map(numberOfPlayers, bonusNumber);
 	}
 
@@ -71,7 +83,6 @@ public class MatchHandler extends Thread {
 
 	public void addPlayer(String userId) {
 	}
-
 
 	public boolean isNotFull() {
 		return false;

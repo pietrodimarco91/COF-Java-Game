@@ -28,7 +28,6 @@ public class UserHandler implements Runnable {
      */
     @Override
     public void run() {
-        MatchHandler match = new MatchHandler();
         connector.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
         switch (connector.reciveFromClient()){
             case 1:
@@ -46,7 +45,7 @@ public class UserHandler implements Runnable {
      */
     public void launchNewMatch() {
         Date date = new Date();
-        MatchHandler matchHandler=new MatchHandler(matches.size(), date, connector.getUserId());
+        MatchHandler matchHandler=new MatchHandler(Server.getId(), date, connector.getUserId());
         matches.add(matchHandler);
         matchHandler.run();
     }

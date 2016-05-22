@@ -19,6 +19,10 @@ public class Server {
 	 */
 	private static final int port=80;
 	/**
+	 * Matches Ids
+	 */
+	private static int id;
+	/**
 	 *This attribute handles every interaction with the user.
 	 */
 	private ConnectorHandler connectorHandler;
@@ -37,6 +41,10 @@ public class Server {
 		thread= Executors.newCachedThreadPool();
 		this.matches=new ArrayList<MatchHandler>();
 		this.waitConnection();
+	}
+
+	public static int getId() {
+		return id++;
 	}
 
 	/**

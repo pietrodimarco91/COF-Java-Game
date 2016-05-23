@@ -29,7 +29,7 @@ public class UserHandler implements Runnable {
     @Override
     public void run() {
         connector.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
-        switch (connector.reciveFromClient()){
+        switch (connector.receiveIntFromClient()){
             case 1:
                 this.joinMatch();
                 break;

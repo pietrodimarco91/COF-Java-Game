@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
-import com.sun.media.jfxmedia.events.MarkerEvent;
-
 import controller.Player;
 
 /**
@@ -19,7 +17,7 @@ public class Map {
 	/**
 	 * This attribute stores all the cities (vertex) of the map.
 	 */
-	private ArrayList<City> map;
+	private ArrayList<City> cities;
 
 	/**
 	 * The number of cities is an important parameter, depending on the number
@@ -80,7 +78,7 @@ public class Map {
 	 * be set by the first player. This constructor initializes the Market too.
 	 */
 	public Map(int numberOfPlayers, int bonusNumber, int linksBetweenCities) {
-		map = new ArrayList<City>();
+		cities = new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
@@ -147,7 +145,7 @@ public class Map {
 	 */
 	public void removeRandomConnections(int linksBetweenCities) {
 		Random random = new Random();
-		for (City city : this.map) {
+		for (City city : this.cities) {
 			while (city.getConnectedCities().size() > linksBetweenCities) {
 				City cityToRemove;
 				do {
@@ -168,11 +166,11 @@ public class Map {
 	public boolean graphIsConnected() {
 		Queue<City> grayNodesQueue = new LinkedList<City>();
 		City cityToExpand, connectedCity;
-		Iterator<City> mapIterator = map.iterator();
+		Iterator<City> mapIterator = cities.iterator();
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
 			mapIterator.next().BFSinitialization();
 		}
-		City cityFrom = map.get(0);
+		City cityFrom = cities.get(0);
 		cityFrom.BFSsourceVisit();
 		grayNodesQueue.add(cityFrom);
 		while (!(grayNodesQueue.isEmpty())) {
@@ -188,15 +186,15 @@ public class Map {
 			}
 			cityToExpand.setBFScolor("BLACK");
 		}
-		for (City city : map) {
+		for (City city : cities) {
 			if (!(city.getBFScolor().equals("BLACK"))) {
-				for (City tempCity : map) {
+				for (City tempCity : cities) {
 					tempCity.BFSinitialization();
 				}
 				return false;
 			}
 		}
-		for (City tempCity : map) {
+		for (City tempCity : cities) {
 			tempCity.BFSinitialization();
 		}
 		return true;
@@ -219,7 +217,7 @@ public class Map {
 		City cityToExpand;
 		int distance = -1;
 
-		for (City city : map) { // all cities initialized for BFS visit
+		for (City city : cities) { // all cities initialized for BFS visit
 			city.BFSinitialization();
 		}
 		cityFrom.BFSsourceVisit();
@@ -235,7 +233,7 @@ public class Map {
 													// discovered is the one I'm
 													// looking for
 						distance = connectedCity.getBFSdistance();
-						for (City city : map) { // all cities are set back to
+						for (City city : cities) { // all cities are set back to
 												// their default values
 							city.BFSinitialization();
 						}
@@ -255,7 +253,7 @@ public class Map {
 	 * @return the city where the king is located
 	 */
 	public City findKingCity() {
-		Iterator<City> iterator = map.iterator();
+		Iterator<City> iterator = cities.iterator();
 		City city;
 		while (iterator.hasNext()) {
 			city = iterator.next();
@@ -274,7 +272,7 @@ public class Map {
 	 *            The city where the king must me moved to
 	 */
 	public void moveKing(City cityDestination) {
-		Iterator<City> iterator = map.iterator();
+		Iterator<City> iterator = cities.iterator();
 		boolean stop = false;
 		City cityTo;
 		City cityFrom = findKingCity();
@@ -298,7 +296,7 @@ public class Map {
 	 */
 	public ArrayList<City> getCitiesConnectedTo(City city) {
 		City cityToSearch;
-		Iterator<City> iterator = map.iterator();
+		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
 			cityToSearch = iterator.next();
 			if (cityToSearch == city) {
@@ -317,7 +315,7 @@ public class Map {
 	 * @return true if the player is eligible, false otherwise
 	 */
 	public boolean isEligibleForColorBonus(Player owner, String color) {
-		Iterator<City> mapIterator = map.iterator();
+		Iterator<City> mapIterator = cities.iterator();
 		City tempCity;
 
 		while (mapIterator.hasNext()) {
@@ -335,7 +333,7 @@ public class Map {
 	 */
 	public void setKingRandomly() {
 		Random random = new Random();
-		City city = map.get(random.nextInt(map.size()));
+		City city = cities.get(random.nextInt(cities.size()));
 		city.setKingIsHere(true);
 	}
 
@@ -348,7 +346,7 @@ public class Map {
 	 *         false otherwise
 	 */
 	public boolean cityNameAlreadyExisting(String name) {
-		Iterator<City> iterator = map.iterator();
+		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
 			if (iterator.next().getName().equals(name))
 				return true;
@@ -417,7 +415,7 @@ public class Map {
 				} while (cityNameAlreadyExisting(name));
 				rewardToken = new RewardToken(bonusNumber);
 				city = new City(name, CityColors.random(), regions[j], rewardToken);
-				map.add(city);
+				cities.add(city);
 				citiesInRegion.add(city);
 			}
 			regions[j].addCities(citiesInRegion);
@@ -552,7 +550,7 @@ public class Map {
 	 * cities each city is connected to.
 	 */
 	public void printConnections() {
-		for (City city : map) {
+		for (City city : cities) {
 			System.out.println("Cities connected to " + city.getName() + ":");
 			for (City cityConnected : city.getConnectedCities()) {
 				System.out.print(cityConnected.getName() + " ");
@@ -565,8 +563,8 @@ public class Map {
 	 * This methods prints the distances between all the cities of the map.
 	 */
 	public void printDistances() {
-		for (City city1 : map) {
-			for (City city2 : map) {
+		for (City city1 : cities) {
+			for (City city2 : cities) {
 				int distance = countDistance(city1, city2);
 				if (distance != -1) {
 					System.out.println(
@@ -581,7 +579,7 @@ public class Map {
 		String string = "";
 		string += "Map status:\n";
 		string += "Cities:\n";
-		Iterator<City> iterator = map.iterator();
+		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
 			string += iterator.next().toString() + "\n";
 		}
@@ -609,7 +607,7 @@ public class Map {
 	}
 
 	public ArrayList<City> getMap() {
-		return this.map;
+		return this.cities;
 	}
 
 	public Region[] getRegions() {

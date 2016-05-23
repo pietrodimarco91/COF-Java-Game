@@ -2,10 +2,12 @@ package controller;
 
 import model.Map;
 
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -31,18 +33,19 @@ public class MatchHandler extends Thread {
 	/**
 	 * An ArrayList of player in this MatchHandler.
 	 */
-	private ArrayList<String> players; // To add UML scheme
+	private ArrayList<Player> players; // To add UML scheme
 
 	/**
 	 * Number of player in this Match
 	 */
 	private int playersNumber; // To add UML scheme
-
+	
 	/**
-	 * An ArrayList of player connector.
+	 * Number of player in this Match
 	 */
-	private ArrayList<Connector> connectors; // To add UML scheme
-
+	private Connector playersNumber; // To add UML scheme
+	
+	
 	/**
 	 * An boolean value used to know if the first player has decided the total
 	 * number of player. It's true when he has finished to set the number else
@@ -55,32 +58,33 @@ public class MatchHandler extends Thread {
 	 */
 
 	public void run() {
-		String reciveFromClient;
+		String receiveFromClient;
 		int numberOfPlayers;
-		connectors.get(1).writeToClient(
+		Connector playerOneConnector=this.players.get(0).getConnector(); //PlayerOne is the creator of this match and for this reason i use him Connector
+		playerOneConnector.writeToClient(
 				"Inserisci il numero di giocatori massimo per questa partita.\n Puoi inserire un valore massimo di 8 giocatori.");
-		numberOfPlayers = connectors.get(1).reciveIntFromClient();
+		numberOfPlayers = playerOneConnector.receiveIntFromClient();
 		// Player has to add a correct number between 2 and 8
 		while (numberOfPlayers < 2 || numberOfPlayers > 8) {
-			connectors.get(1).writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra 2 e 8.");
-			numberOfPlayers = connectors.get(1).reciveIntFromClient();
+			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra 2 e 8.");
+			numberOfPlayers = playerOneConnector.receiveIntFromClient();
 		}
 
 		int linksBetweenCities;
-		connectors.get(1).writeToClient("Inserisci il numero massimo di collegamenti tra le citta");
-		linksBetweenCities = connectors.get(1).reciveIntFromClient();
+		playerOneConnector.writeToClient("Inserisci il numero massimo di collegamenti tra le citta");
+		linksBetweenCities = playerOneConnector.receiveIntFromClient();
 		// Player has to add a correct number between x and y
 		while (linksBetweenCities < X || linksBetweenCities > Y) {
-			connectors.get(1).writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			linksBetweenCities = connectors.get(1).reciveIntFromClient();
+			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
+			linksBetweenCities = playerOneConnector.receiveIntFromClient();
 		}
 
 		int bonusNumber;
-		connectors.get(1).writeToClient("Inserisci il numero di bonus.");
-		bonusNumber = connectors.get(1).reciveIntFromClient();
+		playerOneConnector.writeToClient("Inserisci il numero di bonus.");
+		bonusNumber = playerOneConnector.receiveIntFromClient();
 		while (bonusNumber < X || bonusNumber > Y) {
-			connectors.get(1).writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			bonusNumber = connectors.get(1).reciveIntFromClient();
+			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
+			bonusNumber = playerOneConnector.receiveIntFromClient();
 		}
 		
 		pending=true; //Player has finished to set the match
@@ -90,28 +94,18 @@ public class MatchHandler extends Thread {
 		//Aggiungi controllo per verificare se ArrayList è pieno di giocatori 
 		
 		//Start the match
-		
-		
-
-	public MatchHandler(int id, Date date, Connector connector) {
-		this.id = id;
-		this.date = date;
-
 	}
-
+		
 	/**
 	 * Default constructor
 	 */
 
 	public MatchHandler(int id, Date date, Connector connector) {
-		this.connectors = new ArrayList<Connector>();
+		this.players=new ArrayList<Player>();
+		Player player= new Player(connector);
+		this.players.add(player);
 		this.id = id;
-		this.date = date;
-		this.connectors.add(connector);
-
-	public void run() {
-
-
+		this.date = date;	
 	}
 
 	/**
@@ -129,6 +123,15 @@ public class MatchHandler extends Thread {
 		map = new Map(numberOfPlayers, bonusNumber,linksBetweenCities);
 	}
 
+	public void startGame() {//To add UML scheme
+		Player player;
+		for(int i=0;i<this.players.size();i++){
+			
+		}
+		
+
+	}
+
 	public String toString() {
 		String string = "";
 		string += "Match numero " + this.id + "\nLanciato in data: ";
@@ -144,13 +147,24 @@ public class MatchHandler extends Thread {
 		return this.pending;
 	}
 
-	public void addPlayer(Connector userId) {
-
-	}
-
-	public boolean isNotFull() {
-		return false;
+	public Connector getPlayerConnector(int numPlayer) {//To add UML scheme
+		Player player=players.get(numPlayer);
+		return player.getConnector();
 	}
 	
+	public void addPlayer(Connector connector) {//To add UML scheme
+		Player player= new Player(connector);
+		this.players.add(player);
+		if(isFull())
+			this.startGame();
+	}
+
+
+	public boolean isFull() {
+		if(this.players.size()<this.playersNumber)
+		return false;
+		else
+		return true;
+	}
 	
 }

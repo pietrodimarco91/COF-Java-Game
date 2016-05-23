@@ -1,5 +1,6 @@
 package controller;
 
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -26,6 +27,7 @@ public class ConnectorHandler{
      *This method return a specific connector
      */
     public Connector getConnector(){
+
         System.out.println("in attesa di connessione...");
         //if Socket Connection
 

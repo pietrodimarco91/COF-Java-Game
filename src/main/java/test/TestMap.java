@@ -1,17 +1,14 @@
 package test;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import org.junit.Test;
-
 import model.City;
 import model.Map;
 
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+
 public class TestMap {
 
-	@Test
 	public void test() {
 		int numberOfPlayers = 8, bonusNumber = 3, linksBetweenCities = 3;
 		Map map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);

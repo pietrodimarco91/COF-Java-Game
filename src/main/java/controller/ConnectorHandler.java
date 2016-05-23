@@ -11,8 +11,6 @@ public class ConnectorHandler{
     /**
      *The port where Server are listening to the requests from the Clients.
      */
-
-
     ServerSocket welcomeSocket;
 
     

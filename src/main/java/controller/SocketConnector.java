@@ -33,9 +33,10 @@ public class SocketConnector extends Connector{
     }
 
     @Override
-    public int reciveIntFromClient(){
-        return input.nextInt();
+    public int receiveIntFromClient() {
+        return 0;
     }
+
 
     @Override
     public String reciveStringFromClient() {

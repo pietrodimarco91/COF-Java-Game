@@ -15,7 +15,7 @@ public class RMIConnector extends Connector {
     }
 
     @Override
-    public int reciveIntFromClient() {
+    public int receiveIntFromClient() {
         return 0;
     }
 

@@ -153,8 +153,9 @@ public class MapDemo {
 				city2 = tempCity;
 			}
 		}
-		System.out.println("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
-				+ map.countDistance(city1, city2));
+		if (city1 != null && city2 != null)
+			System.out.println("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
+					+ map.countDistance(city1, city2));
 	}
 
 }

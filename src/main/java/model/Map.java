@@ -545,7 +545,6 @@ public class Map {
 			print += "\n";
 		}
 		System.out.println(print);
-		printConnections();
 	}
 
 	/**
@@ -559,6 +558,22 @@ public class Map {
 				System.out.print(cityConnected.getName() + " ");
 			}
 			System.out.println("\n");
+		}
+	}
+
+	/**
+	 * This methods prints the distances between all the cities of the map.
+	 */
+	public void printDistances() {
+		for (City city1 : map) {
+			for (City city2 : map) {
+				int distance = countDistance(city1, city2);
+				if (distance != -1) {
+					System.out.println(
+							"Distance between " + city1.getName() + " and " + city2.getName() + " is: " + distance);
+				} else
+					System.out.println(city1.getName() + " and " + city2.getName() + " are not connected.");
+			}
 		}
 	}
 

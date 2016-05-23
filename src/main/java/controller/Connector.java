@@ -9,6 +9,6 @@ public abstract class Connector {
 
     public abstract int receiveIntFromClient();
 
-    public abstract String reciveStringFromClient();//To add UML Scheme
+    public abstract String receiveStringFromClient();//To add UML Scheme
 
 }

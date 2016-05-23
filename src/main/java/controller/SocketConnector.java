@@ -39,7 +39,7 @@ public class SocketConnector extends Connector{
 
 
     @Override
-    public String reciveStringFromClient() {
+    public String receiveStringFromClient() {
         return input.nextLine();
     }
 

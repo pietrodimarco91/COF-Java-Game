@@ -20,7 +20,7 @@ public class RMIConnector extends Connector {
     }
 
     @Override
-    public String reciveStringFromClient() {
+    public String receiveStringFromClient() {
         return "null";
     }
 

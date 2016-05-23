@@ -41,12 +41,6 @@ public class MatchHandler extends Thread {
 	private int playersNumber; // To add UML scheme
 	
 	/**
-	 * Number of player in this Match
-	 */
-	private Connector playersNumber; // To add UML scheme
-	
-	
-	/**
 	 * An boolean value used to know if the first player has decided the total
 	 * number of player. It's true when he has finished to set the number else
 	 * it's false.
@@ -74,7 +68,7 @@ public class MatchHandler extends Thread {
 		playerOneConnector.writeToClient("Inserisci il numero massimo di collegamenti tra le citta");
 		linksBetweenCities = playerOneConnector.receiveIntFromClient();
 		// Player has to add a correct number between x and y
-		while (linksBetweenCities < X || linksBetweenCities > Y) {
+		while (linksBetweenCities < 2 || linksBetweenCities > 4) {
 			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
 			linksBetweenCities = playerOneConnector.receiveIntFromClient();
 		}
@@ -82,7 +76,7 @@ public class MatchHandler extends Thread {
 		int bonusNumber;
 		playerOneConnector.writeToClient("Inserisci il numero di bonus.");
 		bonusNumber = playerOneConnector.receiveIntFromClient();
-		while (bonusNumber < X || bonusNumber > Y) {
+		while (bonusNumber < 1 || bonusNumber > 3) {
 			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
 			bonusNumber = playerOneConnector.receiveIntFromClient();
 		}

@@ -88,8 +88,6 @@ public class Region {
 			councillor = iterationCouncillors.next();
 			for (int i = 0; i < tempArrayList.size() && councillorsSatisfied == false; i++) {
 				tempPoliticCard = tempArrayList.get(i);
-				System.out.println("Cofronto i 2 colori\n Consigliere: " + councillor.getColor() + " Carta: "
-						+ tempPoliticCard.getColorCard());
 				if (councillor.getColor() == tempPoliticCard.getColorCard()) {
 					councillorsSatisfied = true;
 					tempArrayList.remove(i);

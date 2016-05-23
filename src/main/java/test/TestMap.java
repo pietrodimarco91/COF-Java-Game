@@ -13,16 +13,17 @@ public class TestMap {
 
 	@Test
 	public void test() {
-		int numberOfPlayers = 8, bonusNumber = 3, linksBetweenCities = 2;
+		int numberOfPlayers = 8, bonusNumber = 3, linksBetweenCities = 3;
 		Map map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);
-		// System.out.println(map.toString());
+		System.out.println(map.toString());
+
 		assertEquals(27, map.getNumberOfCities());
 		assertEquals(93, map.getNumberOfPermitTiles());
 		assertEquals(3, map.getRegions().length);
 
 		numberOfPlayers = 4;
-		map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);
-		// System.out.println(map.toString());
+		map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities); // System.out.println(map.toString());
+
 		assertEquals(15, map.getNumberOfCities());
 		assertEquals(45, map.getNumberOfPermitTiles());
 
@@ -38,13 +39,14 @@ public class TestMap {
 						"Distance between " + city4.getName() + " and " + city5.getName() + " is: " + distance);
 			}
 		}
-		
+
 		City city1 = map.getRegions()[0].getCities().get(0);
 		City city2 = map.getRegions()[1].getCities().get(0);
 		City city3 = map.getRegions()[2].getCities().get(0);
 		map.connectCities(city1, city2);
 		map.connectCities(city2, city3);
-		//System.out.println(map.toString());
+		System.out.println(map);
+		map.printMatrix();
 		result = map.graphIsConnected();
 		assertEquals(true, result);
 

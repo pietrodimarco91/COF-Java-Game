@@ -9,10 +9,6 @@ import java.net.ServerSocket;
 public class ConnectorHandler{
 
     /**
-     *This attribute performs the interactions with the Client.
-     */
-    Connector connector;
-    /**
      *The port where Server are listening to the requests from the Clients.
      */
 

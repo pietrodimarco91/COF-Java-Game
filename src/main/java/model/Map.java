@@ -129,11 +129,10 @@ public class Map {
 	 * @return true if the new connection is possible, false otherwise.
 	 */
 	public boolean checkPossibilityOfNewConnection(City city1, City city2, int linksBetweenCities) {
-		if (city1.getConnectedCities().size() < linksBetweenCities
-				&& city2.getConnectedCities().size() < linksBetweenCities) {
-			return true;
-		} else
+		if(city1.getConnectedCities().contains(city2))
 			return false;
+		return city1.getConnectedCities().size() < linksBetweenCities
+				&& city2.getConnectedCities().size() < linksBetweenCities;
 	}
 
 	/**
@@ -234,7 +233,7 @@ public class Map {
 													// looking for
 						distance = connectedCity.getBFSdistance();
 						for (City city : cities) { // all cities are set back to
-												// their default values
+													// their default values
 							city.BFSinitialization();
 						}
 						return distance;

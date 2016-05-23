@@ -11,6 +11,4 @@ public class AssistantOnSale extends ItemOnSale {
 		 */
 		
 	}
-	
-
 }

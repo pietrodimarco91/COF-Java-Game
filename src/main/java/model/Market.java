@@ -8,24 +8,19 @@ import controller.Player;
  * 
  */
 public class Market {
-	private ArrayList<ItemOnSale> itemsOnSale;
-	private static Market instance;
+	private static ArrayList<ItemOnSale> itemsOnSale;
 	/**
 	 * Default constructor: Market implements Singleton pattern
 	 */
-	private Market() {
+	public Market() {
 		itemsOnSale=new ArrayList<ItemOnSale>();
-	}
-	
-	public static Market getInstance() {
-		return instance;
 	}
 	
 	/**
 	 * This method allows to insert new items on sale in the market
 	 * @param itemOnSale the item on sale to be inserted in the market
 	 */
-	public void putItemOnSale(ItemOnSale itemOnSale) {
+	public static void putItemOnSale(ItemOnSale itemOnSale) {
 		itemsOnSale.add(itemOnSale);
 	}
 	
@@ -33,7 +28,7 @@ public class Market {
 	 * This method returns the full list of items on sale in the market
 	 * @return the list of items on sale
 	 */
-	public ArrayList<ItemOnSale> getItemsOnSale() {
+	public static ArrayList<ItemOnSale> getItemsOnSale() {
 		return itemsOnSale;
 	}
 	
@@ -41,7 +36,7 @@ public class Market {
 	 * This item removes the specified item from the list of items on sale
 	 * @param item the item to be removed
 	 */
-	public void removeItemFromMarket(ItemOnSale item) {
+	public static void removeItemFromMarket(ItemOnSale item) {
 		boolean stop=false;
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		while(!stop&&iterator.hasNext()) {
@@ -57,7 +52,7 @@ public class Market {
 	 * @param player the player who wants to buy
 	 * @param item the item that will be purchased
 	 */
-	public void buyItemOnSale(Player player,ItemOnSale item) {
+	public static void buyItemOnSale(Player player,ItemOnSale item) {
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		boolean stop=false;
 		while(!stop&&iterator.hasNext()) {

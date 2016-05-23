@@ -5,7 +5,8 @@ import java.util.*;
 import exceptions.InvalidSlotException;
 
 /**
- * This class represents the deck of the Business Permit Tiles of a single region.
+ * This class represents the deck of the Business Permit Tiles of a single
+ * region.
  */
 public class PermitTileDeck {
 	/**
@@ -35,19 +36,22 @@ public class PermitTileDeck {
 	 * Each Region has its own PermitTileDeck
 	 */
 	private Region region;
+
 	/**
 	 * Default constructor
 	 */
-	public PermitTileDeck(Region region,int numberOfTiles,int bonusNumber) {
-		this.region=region;
+	public PermitTileDeck(int numberOfTiles) {
 		this.numberOfTiles = numberOfTiles;
-		deck=new LinkedList<Tile>();
+		deck = new LinkedList<Tile>();
+	}
+
+	public void generatePermitTiles(int bonusNumber) {
 		TileFactory tileFactory = new ConcreteTileFactory();
-		for(int i=0;i<numberOfTiles;i++) {
-			deck.add(tileFactory.createPermitTile(region.getCities(),bonusNumber));
+		for (int i = 0; i < numberOfTiles; i++) {
+			deck.add(tileFactory.createPermitTile(region.getCities(), bonusNumber));
 		}
-		uncoveredPermitTile1=deck.remove();
-		uncoveredPermitTile2=deck.remove();
+		uncoveredPermitTile1 = deck.remove();
+		uncoveredPermitTile2 = deck.remove();
 	}
 
 	/**
@@ -56,27 +60,31 @@ public class PermitTileDeck {
 	public void switchPermitTiles() {
 		deck.add(uncoveredPermitTile1);
 		deck.add(uncoveredPermitTile2);
-		uncoveredPermitTile1=deck.remove();
-		uncoveredPermitTile2=deck.remove();
+		uncoveredPermitTile1 = deck.remove();
+		uncoveredPermitTile2 = deck.remove();
 	}
 
 	/**
 	 * This method allows a player to pick up one of the uncovered Permit Tiles.
-	 * @param slot The number of the slot where the uncovered tiles are placed. This number should be 1 or 2.
+	 * 
+	 * @param slot
+	 *            The number of the slot where the uncovered tiles are placed.
+	 *            This number should be 1 or 2.
 	 * @return The permit tile associated to the chosen slot
-	 * @throws InvalidSlotException if the specified slot is different from 1 or 2.
+	 * @throws InvalidSlotException
+	 *             if the specified slot is different from 1 or 2.
 	 */
 	public Tile drawPermitTile(int slot) throws InvalidSlotException {
 		switch (slot) {
 		case 1: {
 			Tile tempPermitTile = uncoveredPermitTile1;
-			uncoveredPermitTile1=deck.remove();
+			uncoveredPermitTile1 = deck.remove();
 			return tempPermitTile;
 		}
-			
+
 		case 2: {
 			Tile tempPermitTile = uncoveredPermitTile1;
-			uncoveredPermitTile2=deck.remove();
+			uncoveredPermitTile2 = deck.remove();
 			return tempPermitTile;
 		}
 		default:
@@ -86,14 +94,18 @@ public class PermitTileDeck {
 
 	public String toString() {
 		Iterator<Tile> iterator = deck.iterator();
-		String string="";
-		string+="Region: "+region.toString()+"\n";
-		string+="Number of tiles in the deck: "+numberOfTiles;
-		string+="Uncovered PermitTile 1: "+uncoveredPermitTile1.toString()+"\n";
-		string+="Uncovered PermitTile 2: "+uncoveredPermitTile2.toString()+"\n\n";
-		while(iterator.hasNext()) {
-			string+="Covered PermitTile inside deck: "+iterator.next().toString();
+		String string = "";
+		string += "Region: " + region.toString() + "\n";
+		string += "Number of tiles in the deck: " + numberOfTiles;
+		string += "Uncovered PermitTile 1: " + uncoveredPermitTile1.toString() + "\n";
+		string += "Uncovered PermitTile 2: " + uncoveredPermitTile2.toString() + "\n\n";
+		while (iterator.hasNext()) {
+			string += "Covered PermitTile inside deck: " + iterator.next().toString();
 		}
 		return string;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 }

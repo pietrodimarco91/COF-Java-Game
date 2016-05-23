@@ -5,7 +5,8 @@ import java.util.*;
 import controller.Player;
 
 /**
- * This class represents a City in the map. It is also stored as a vertex inside the ArrayList of vertexes of the GraphMap. 
+ * This class represents a City in the map. It is also stored as a vertex inside
+ * the ArrayList of vertexes of the GraphMap.
  */
 public class City {
 
@@ -55,14 +56,21 @@ public class City {
 	private boolean kingIsHere;
 
 	/**
-	 * It states whether this city has been visited during a visit of the map or
-	 * not.
-	 * 
+	 * This attribute is used during the BFS visit of the map: it states whether
+	 * a city is not discovered yet (WHITE), it has just been discovered (GRAY)
+	 * or it has been visited (BLACK).
 	 */
-	private boolean visited;
-	
+	private String BFScolor;
+
 	/**
-	 * Since a City is a vertex of the GraphMap, each City stores its connected cities inside an ArrayList of Cities.
+	 * This attribute is used during the BFS visit: it counts the distance from
+	 * the source city.
+	 */
+	private int BFSdistance;
+
+	/**
+	 * Since a City is a vertex of the GraphMap, each City stores its connected
+	 * cities inside an ArrayList of Cities.
 	 */
 	private ArrayList<City> connectedCities;
 
@@ -82,15 +90,23 @@ public class City {
 	 * @param rewardToken
 	 *            The bonus assigned to this city
 	 */
-	public City(String name, String color, Region region, Point coordinates, RewardToken rewardToken) {
-		this.cityName=name;
-		this.color=color;
-		this.region=region;
-		this.coordinates = coordinates;
-		this.rewardToken=rewardToken;
+	public City(String name, String color, Region region, RewardToken rewardToken) {
+		this.cityName = name;
+		this.color = color;
+		this.region = region;
+		this.rewardToken = rewardToken;
 		emporiums = new ArrayList<Emporium>();
+		connectedCities = new ArrayList<City>();
 		kingIsHere = false;
-		setVisited();
+	}
+
+	/**
+	 * Returns the name of the city.
+	 * 
+	 * @return The name of the city
+	 */
+	public String getName() {
+		return cityName;
 	}
 
 	/**
@@ -119,6 +135,13 @@ public class City {
 	 */
 	public String getColor() {
 		return color;
+	}
+
+	/**
+	 * @return The list of cities connected to this city
+	 */
+	public ArrayList<City> getConnectedCities() {
+		return connectedCities;
 	}
 
 	/**
@@ -195,58 +218,146 @@ public class City {
 	public int countOthersEmporiums(Player owner) {
 		Iterator<Emporium> iterator = emporiums.iterator();
 		Emporium emporium;
-		int counter=0;
+		int counter = 0;
 		while (iterator.hasNext()) {
 			emporium = iterator.next();
-			if(emporium.getOwner()!=owner)
+			if (emporium.getOwner() != owner)
 				counter++;
 		}
 		return counter;
 	}
 
-
 	/**
-	 * This method is invoked during a visit of the map, in order to keep track of cities already visited it sets true to the "visited" attribute when a city gets visited.
-	 * @return
+	 * This method returns the ArrayList of the emporiums that are built in this
+	 * city
+	 * 
+	 * @return The list of emporiums already built in this city
 	 */
-	public void setVisited() {
-		visited=false;
-	}
-
-	/**
-	 * Returns the name of the city.
-	 * @return The name of the city
-	 */
-	public String getName() {
-		return cityName;
-	}
-
-/**
- * This method returns the ArrayList of the emporiums that are built in this city
- * @return The list of emporiums already built in this city
- */
 	public ArrayList<Emporium> getEmporiums() {
 		return emporiums;
 	}
 
-/**
- * This method returns the coordinates (x,y) of the city
- * @return the coordinates (x,y) of the city represented by a Point class
- */
+	/**
+	 * This method returns the coordinates (x,y) of the city
+	 * 
+	 * @return the coordinates (x,y) of the city represented by a Point class
+	 */
 	public Point getCoordinates() {
 		return coordinates;
 	}
 
-
-	public boolean hasBeenVisited() {
-		return visited;
+	/**
+	 * Sets a connection in the GraphMap between this city and the specified
+	 * city, by adding it to the list of connected cities.
+	 * 
+	 * @param city
+	 *            the city to be connected to this city
+	 */
+	public void addConnectedCity(City city) {
+		if (!(connectedCities.contains(city)))
+			connectedCities.add(city);
 	}
 
 	/**
-	 * Sets a connection in the GraphMap between this city and the specified city, by adding it to the list of connected cities.
-	 * @param city the city to be connected to this city
+	 * This methods removes the connection between the current city and the
+	 * specified city
+	 * 
+	 * @param city
+	 *            the city to remove the connection with
 	 */
-	public void addConnectedCity(City city) {
-		connectedCities.add(city);
+	public void removeConnectedCity(City city) {
+		if (connectedCities.contains(city))
+			connectedCities.remove(city);
+	}
+
+	/**
+	 * Sets the coordinates of the city to the specified point2D
+	 * 
+	 * @param point
+	 *            the point2D corresponding to the coordinates of the city.
+	 */
+	public void setCoordinates(Point point) {
+		this.coordinates = point;
+	}
+
+	public String toString() {
+		String string = "";
+		string += "City Name: " + this.cityName + "\n";
+		string += "City Color: " + this.color + "\n";
+		Iterator<Emporium> emporiumIterator = emporiums.iterator();
+		while (emporiumIterator.hasNext())
+			string += emporiumIterator.next().toString() + "\n";
+		string += "City Region: " + this.region.getName() + "\n";
+		// string += "Coordinates: " + this.coordinates.toString() + "\n";
+		string += "RewardToken: " + this.rewardToken.toString() + "\n";
+		string += "King is here? " + String.valueOf(kingIsHere) + "\n";
+
+		Iterator<City> cityIterator = connectedCities.iterator();
+		City tempCity;
+		string += "Connected cities:\n";
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (!(tempCity.equals(connectedCities.get(connectedCities.size() - 1))))
+				string += tempCity.getName() + " -> ";
+			else
+				string += tempCity.getName();
+		}
+		string += "\n";
+
+		return string;
+	}
+
+	/**
+	 * This method is invoked when a BFS (Breadth First Search) visit starts; it
+	 * initializes the necessary attributes to their default values;
+	 */
+	public void BFSinitialization() {
+		this.BFScolor = "WHITE";
+		this.BFSdistance = -1;
+	}
+
+	/**
+	 * This method is invoked when the source of the BFS visit must be visited.
+	 */
+	public void BFSsourceVisit() {
+		this.BFScolor = "GRAY";
+		this.BFSdistance = 0;
+	}
+
+	/**
+	 * @return The BFS Color of this city, during a BFS visit.
+	 */
+	public String getBFScolor() {
+		return BFScolor;
+	}
+
+	/**
+	 * @return During a BFS visit, returns the distance from this city to the
+	 *         source city.
+	 */
+	public int getBFSdistance() {
+		return this.BFSdistance;
+	}
+
+	/**
+	 * During a BFS visit, sets the BFS color of the city to the specified
+	 * value.
+	 * 
+	 * @param color
+	 *            the specified BFS color value
+	 */
+	public void setBFScolor(String color) {
+		this.BFScolor = color;
+	}
+
+	/**
+	 * During a BFS visit, this method increments the distance from the source
+	 * city.
+	 * 
+	 * @param val
+	 *            the distance from the source city
+	 */
+	public void setBFSdistance(int val) {
+		this.BFSdistance = val;
 	}
 }

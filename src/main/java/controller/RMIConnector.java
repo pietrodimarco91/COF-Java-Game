@@ -15,12 +15,13 @@ public class RMIConnector extends Connector {
     }
 
     @Override
-    public int reciveFromClient() {
+    public int reciveIntFromClient() {
         return 0;
     }
 
     @Override
-    public String getUserId() {
-        return null;
+    public String reciveStringFromClient() {
+        return "null";
     }
+
 }

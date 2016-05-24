@@ -81,11 +81,10 @@ public class Region{
 		PoliticCard tempPoliticCard;
 		int numberOfCouncillorsSatisfied = 0;
 		ArrayList<PoliticCard> tempArrayList = new ArrayList<PoliticCard>(politicCards);
-		numberOfCouncillorsSatisfied+=countMulticolorCard(politicCards);
-		tempArrayList = removeMulticolorFromPoliticCard(tempArrayList);
 		while (iterationCouncillors.hasNext()) {
 			boolean councillorsSatisfied = false;
 			councillor = iterationCouncillors.next();
+			
 			for (int i = 0; i < tempArrayList.size() && councillorsSatisfied == false; i++) {
 				tempPoliticCard = tempArrayList.get(i);
 				if (councillor.getColor() == tempPoliticCard.getColorCard()) {
@@ -97,42 +96,24 @@ public class Region{
 			}
 
 		}
+		
+		if(numberOfCouncillorsSatisfied<4){
+			int numberOfMulticolorCard=0;
+			for (int i = 0; i < tempArrayList.size(); i++){
+				tempPoliticCard = tempArrayList.get(i);
+				if (tempPoliticCard.getColorCard()== "MULTICOLOR")
+					numberOfMulticolorCard++;
+			}
+			if((numberOfCouncillorsSatisfied+numberOfMulticolorCard)<4)
+				return numberOfCouncillorsSatisfied+numberOfMulticolorCard;
+			else
+				return 4;
+		}
+		
+		else
 		return numberOfCouncillorsSatisfied;
 	}
 
-	/**
-	 * @param ArrayListof PoliticCard
-	 *            
-	 * @return An ArrayList of PoliticCard without MULTICOLOR String.
-	 */
-	public ArrayList<PoliticCard> removeMulticolorFromPoliticCard(ArrayList<PoliticCard> politicCards) {
-		PoliticCard tempPoliticCard;
-		for (int i = 0; i < politicCards.size(); i++) {
-			tempPoliticCard = politicCards.get(i);
-			if (tempPoliticCard.getColorCard() == "MULTICOLOR")
-				politicCards.remove(i);
-		}
-		return politicCards;
-	}
-
-	/**
-	 * @param ArrayList of PoliticCard
-	 *           
-	 * 
-	 * @return int value that says if there are MULTICOLOR cards in PoliticCard ArrayList.
-	 *         
-	 * 
-	 */
-	public int countMulticolorCard(ArrayList<PoliticCard> politicCards) {
-		PoliticCard tempPoliticCard;
-		int numberOfMulticolor = 0;
-		for (int i = 0; i < politicCards.size(); i++) {
-			tempPoliticCard = politicCards.get(i);
-			if (tempPoliticCard.getColorCard() == "MULTICOLOR")
-				numberOfMulticolor++;
-		}
-		return numberOfMulticolor;
-	}
 
 	/**
 	 * @param owner

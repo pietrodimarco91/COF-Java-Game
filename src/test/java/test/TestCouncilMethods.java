@@ -19,9 +19,13 @@ public class TestCouncilMethods {
 		Council testCouncil=new RegionCouncil();
 		Queue<Councillor>testQueueCouncillors= testCouncil.getCouncillors();
 		assertEquals(4,testQueueCouncillors.size());
-		 testQueueCouncillors.add(new Councillor("BLACK"));
+		
+		 testCouncil.addCouncillor("BLACK");
+		 testQueueCouncillors= testCouncil.getCouncillors();
+		 
 		 assertEquals(5,testQueueCouncillors.size());
-		 testQueueCouncillors.remove();
+		 testCouncil.removeCouncillor();
+		 testQueueCouncillors= testCouncil.getCouncillors();
 		 assertEquals(4,testQueueCouncillors.size());	
 	}
 

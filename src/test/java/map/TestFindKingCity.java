@@ -18,7 +18,7 @@ public class TestFindKingCity {
 
 	@Test
 	public void test() {
-		Map map = new Map(4,2,2);
+		Map map = new Map(4,2,2,2,2);
 		ArrayList<City> cities = map.getMap();
 		City cityWithKing=null;
 		int counter=0;

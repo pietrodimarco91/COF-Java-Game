@@ -20,7 +20,7 @@ public class TestMoveKing {
 
 	@Test
 	public void test() {
-		Map map = new Map(4, 2, 2);
+		Map map = new Map(4, 2, 2, 2, 2);
 		ArrayList<City> cities = map.getMap();
 		for (City city : cities) {
 			map.moveKing(city);

@@ -13,8 +13,10 @@ public class TestMap {
 
 	@Test
 	public void test() {
-		int numberOfPlayers = 8, bonusNumber = 3, linksBetweenCities = 3;
-		Map map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);
+		int numberOfPlayers = 8, rewardTokenBonusNumber = 3, permitTileBonusNumber = 3, nobilityTrackBonusNumber = 3,
+				linksBetweenCities = 3;
+		Map map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
 		System.out.println(map.toString());
 
 		assertEquals(27, map.getNumberOfCities());
@@ -22,7 +24,8 @@ public class TestMap {
 		assertEquals(3, map.getRegions().length);
 
 		numberOfPlayers = 4;
-		map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities); // System.out.println(map.toString());
+		map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities); // System.out.println(map.toString());
 
 		assertEquals(15, map.getNumberOfCities());
 		assertEquals(45, map.getNumberOfPermitTiles());

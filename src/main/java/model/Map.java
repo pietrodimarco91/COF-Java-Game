@@ -77,16 +77,17 @@ public class Map {
 	 * region are generated too, and connections between different regions must
 	 * be set by the first player. This constructor initializes the Market too.
 	 */
-	public Map(int numberOfPlayers, int bonusNumber, int linksBetweenCities) {
+	public Map(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber, int nobilityTrackBonusNumber,
+			int linksBetweenCities) {
 		cities = new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
 		kingCouncil = new KingCouncil();
-		citiesInitialization(bonusNumber);
+		citiesInitialization(rewardTokenBonusNumber, permitTileBonusNumber);
 		MATRIX_ROWS = this.numberOfCities / 3;
 		generateDefaultConnections(linksBetweenCities);
-		nobilityTrackSetup(bonusNumber);
+		nobilityTrackSetup(nobilityTrackBonusNumber);
 		Market market = new Market();
 	}
 
@@ -129,7 +130,7 @@ public class Map {
 	 * @return true if the new connection is possible, false otherwise.
 	 */
 	public boolean checkPossibilityOfNewConnection(City city1, City city2, int linksBetweenCities) {
-		if(city1.getConnectedCities().contains(city2))
+		if (city1.getConnectedCities().contains(city2))
 			return false;
 		return city1.getConnectedCities().size() < linksBetweenCities
 				&& city2.getConnectedCities().size() < linksBetweenCities;
@@ -401,7 +402,7 @@ public class Map {
 	 *            the number of the bonus that each reward token and permit tile
 	 *            should have.
 	 */
-	public void citiesInitialization(int bonusNumber) {
+	public void citiesInitialization(int rewardTokenBonusNumber, int permitTileBonusNumber) {
 		City city;
 		String name;
 		RewardToken rewardToken;
@@ -412,13 +413,13 @@ public class Map {
 				do {
 					name = CityNames.random();
 				} while (cityNameAlreadyExisting(name));
-				rewardToken = new RewardToken(bonusNumber);
+				rewardToken = new RewardToken(rewardTokenBonusNumber);
 				city = new City(name, CityColors.random(), regions[j], rewardToken);
 				cities.add(city);
 				citiesInRegion.add(city);
 			}
 			regions[j].addCities(citiesInRegion);
-			regions[j].getDeck().generatePermitTiles(bonusNumber);
+			regions[j].getDeck().generatePermitTiles(permitTileBonusNumber);
 		}
 		setKingRandomly();
 	}

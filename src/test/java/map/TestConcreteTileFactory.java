@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class TestConcreteTileFactory {
     @Test
     public void Test(){
-        Map map=new Map(4,2,2);
+        Map map=new Map(4,2,2,2,2);
         ConcreteTileFactory concreteTileFactory=new ConcreteTileFactory();
         Tile permitTile=concreteTileFactory.createPermitTile(map.getMap(),2);
         assertEquals(PermitTile.class,permitTile.getClass());

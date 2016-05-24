@@ -6,6 +6,10 @@
           <option name="url" value="https://pietrodimarco@bitbucket.org/rickystream94/lm_bressan_cof.git" />
           <option name="userName" value="" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="https://bitbucket.org/rickystream94/lm_bressan_cof" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
     <option name="cloneParentDir" value="$USER_HOME$/IdeaProjects" />

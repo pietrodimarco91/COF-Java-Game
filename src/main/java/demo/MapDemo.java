@@ -11,7 +11,8 @@ public class MapDemo {
 
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
-		int numberOfPlayers, bonusNumber, linksBetweenCities, choice;
+		int numberOfPlayers, permitTileBonusNumber, rewardTokenBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities, choice;
 		boolean stop = false;
 		while (!stop) {
 			do {
@@ -19,14 +20,23 @@ public class MapDemo {
 				numberOfPlayers = input.nextInt();
 			} while (numberOfPlayers > 8 || numberOfPlayers < 2);
 			do {
-				System.out.println("Number of bonuses per tile (between 1 and 3)");
-				bonusNumber = input.nextInt();
-			} while (bonusNumber > 3 || bonusNumber < 1);
+				System.out.println("Number of bonuses per Permit Tile (between 1 and 3)");
+				permitTileBonusNumber = input.nextInt();
+			} while (permitTileBonusNumber > 3 || permitTileBonusNumber < 1);
+			do {
+				System.out.println("Number of bonuses per Reward Token (City bonus) (between 1 and 3)");
+				rewardTokenBonusNumber = input.nextInt();
+			} while (rewardTokenBonusNumber > 3 || rewardTokenBonusNumber < 1);
+			do {
+				System.out.println("Number of bonuses per Nobility Track Cell (between 1 and 3)");
+				nobilityTrackBonusNumber = input.nextInt();
+			} while (nobilityTrackBonusNumber > 3 || nobilityTrackBonusNumber < 1);
 			do {
 				System.out.println("Maximum number of connections between the cities (between 2 and 4)");
 				linksBetweenCities = input.nextInt();
 			} while (linksBetweenCities > 4 || linksBetweenCities < 2);
-			Map map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);
+			Map map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+					linksBetweenCities);
 			while (!stop) {
 				System.out.println("Next choice?");
 				System.out.println(

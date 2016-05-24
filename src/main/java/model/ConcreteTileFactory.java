@@ -11,7 +11,9 @@ public class ConcreteTileFactory extends TileFactory {
 
 
     @Override
-    public Tile createPermitTile(ArrayList<City> cities,int bonusNumber) {return new PermitTile(cities,bonusNumber);}
+    public Tile createPermitTile(ArrayList<City> cities,int bonusNumber) {
+        return new PermitTile(cities,bonusNumber);
+    }
 
     @Override
     public Tile createRewardToken(int bonusNumber) {

@@ -1,9 +1,13 @@
 package test;
 
+import model.*;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 
 import org.junit.Test;
 
@@ -14,6 +18,7 @@ import model.PermitTileDeck;
 import model.PoliticCard;
 import model.Region;
 import model.RegionCouncil;
+
 
 public class TestCheckCouncillorsSatisfaction {
 

@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
  * running while a match is on-going. It stores the core of the game engine.
@@ -39,7 +38,7 @@ public class MatchHandler extends Thread {
 	 * Number of player in this Match
 	 */
 	private int playersNumber; // To add UML scheme
-	
+
 	/**
 	 * An boolean value used to know if the first player has decided the total
 	 * number of player. It's true when he has finished to set the number else
@@ -48,13 +47,27 @@ public class MatchHandler extends Thread {
 	private boolean pending = false; // To add UML scheme
 
 	/**
-	 * Default constructor
+	 * MUST BE ADAPTED TO THE LAST VERSION OF MAP CONSTRUCTOR
 	 */
 
 	public void run() {
 		String receiveFromClient;
 		int numberOfPlayers;
-		Connector playerOneConnector=this.players.get(0).getConnector(); //PlayerOne is the creator of this match and for this reason i use him Connector
+		Connector playerOneConnector = this.players.get(0).getConnector(); // PlayerOne
+																			// is
+																			// the
+																			// creator
+																			// of
+																			// this
+																			// match
+																			// and
+																			// for
+																			// this
+																			// reason
+																			// i
+																			// use
+																			// him
+																			// Connector
 		playerOneConnector.writeToClient(
 				"Inserisci il numero di giocatori massimo per questa partita.\n Puoi inserire un valore massimo di 8 giocatori.");
 		numberOfPlayers = playerOneConnector.receiveIntFromClient();
@@ -80,26 +93,29 @@ public class MatchHandler extends Thread {
 			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
 			bonusNumber = playerOneConnector.receiveIntFromClient();
 		}
-		
-		pending=true; //Player has finished to set the match
 
-		mapSetup(numberOfPlayers, linksBetweenCities, bonusNumber);
-		
-		//Aggiungi controllo per verificare se ArrayList è pieno di giocatori 
-		
-		//Start the match
+		pending = true; // Player has finished to set the match
+
+		/*
+		 * NEEDS REVISION: MUST INSERT THE NEW ATTRIBUTES: SEE MAP CONSTRUCTOR!
+		 */
+		mapSetup(numberOfPlayers, linksBetweenCities, linksBetweenCities, linksBetweenCities, bonusNumber);
+
+		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
+
+		// Start the match
 	}
-		
+
 	/**
 	 * Default constructor
 	 */
 
 	public MatchHandler(int id, Date date, Connector connector) {
-		this.players=new ArrayList<Player>();
-		Player player= new Player(connector);
+		this.players = new ArrayList<Player>();
+		Player player = new Player(connector);
 		this.players.add(player);
 		this.id = id;
-		this.date = date;	
+		this.date = date;
 	}
 
 	/**
@@ -113,16 +129,17 @@ public class MatchHandler extends Thread {
 	 *            detail, this number represents the maximum number of streets
 	 *            that come out from each city (vertex)
 	 */
-	public void mapSetup(int numberOfPlayers, int linksBetweenCities, int bonusNumber) {
-		map = new Map(numberOfPlayers, bonusNumber,linksBetweenCities);
+	public void mapSetup(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) {
+		map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
 	}
 
-	public void startGame() {//To add UML scheme
+	public void startGame() {// To add UML scheme
 		Player player;
-		for(int i=0;i<this.players.size();i++){
-			
+		for (int i = 0; i < this.players.size(); i++) {
+
 		}
-		
 
 	}
 
@@ -141,24 +158,23 @@ public class MatchHandler extends Thread {
 		return this.pending;
 	}
 
-	public Connector getPlayerConnector(int numPlayer) {//To add UML scheme
-		Player player=players.get(numPlayer);
+	public Connector getPlayerConnector(int numPlayer) {// To add UML scheme
+		Player player = players.get(numPlayer);
 		return player.getConnector();
 	}
-	
-	public void addPlayer(Connector connector) {//To add UML scheme
-		Player player= new Player(connector);
+
+	public void addPlayer(Connector connector) {// To add UML scheme
+		Player player = new Player(connector);
 		this.players.add(player);
-		if(isFull())
+		if (isFull())
 			this.startGame();
 	}
 
-
 	public boolean isFull() {
-		if(this.players.size()<this.playersNumber)
-		return false;
+		if (this.players.size() < this.playersNumber)
+			return false;
 		else
-		return true;
+			return true;
 	}
-	
+
 }

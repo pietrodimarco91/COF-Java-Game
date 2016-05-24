@@ -21,7 +21,7 @@ public class TestCheckNewConnection {
 	@Test
 	public void test() {
 		for (int i = 2; i <= 4; i++) {
-			Map map = new Map(4, 2, i);
+			Map map = new Map(4, 2, 2, 2, i);
 			ArrayList<City> cities = map.getMap();
 			for (City city1 : cities) {
 				for (City city2 : cities) {

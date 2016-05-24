@@ -22,7 +22,7 @@ public class TestDefaultConnections {
 		for (int i = 2; i <= 8; i++) {
 			for (int j = 1; j <= 3; j++) {
 				for (int k = 2; k <= 4; k++, counter++) {
-					Map map = new Map(i, j, k);
+					Map map = new Map(i, j, 2, 2, k);
 					System.out.println("Default connections between cities correctly generated!");
 				}
 			}

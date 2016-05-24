@@ -1,5 +1,6 @@
 package controller;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -28,14 +29,22 @@ public class UserHandler implements Runnable {
      */
     @Override
     public void run() {
-        connector.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
-        switch (connector.receiveIntFromClient()){
-            case 1:
-                this.joinMatch();
-                break;
-            case 2:
-                this.launchNewMatch();
-                break;
+        try {
+            connector.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+            switch (connector.receiveIntFromClient()){
+                case 1:
+                    this.joinMatch();
+                    break;
+                case 2:
+                    this.launchNewMatch();
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,7 +53,11 @@ public class Server {
 	 */
 	private void waitConnection() {
 		while(true){
-			thread.submit(new UserHandler(connectorHandler.getConnector(), matches));
+			try {
+				thread.submit(new UserHandler(connectorHandler.getConnector(), matches));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

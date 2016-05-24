@@ -1,8 +1,10 @@
 package model;
 
-import java.util.*;
-
 import exceptions.InvalidSlotException;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * This class represents the deck of the Business Permit Tiles of a single
@@ -50,6 +52,7 @@ public class PermitTileDeck {
 		for (int i = 0; i < numberOfTiles; i++) {
 			deck.add(tileFactory.createPermitTile(region.getCities(), bonusNumber));
 		}
+
 		uncoveredPermitTile1 = deck.remove();
 		uncoveredPermitTile2 = deck.remove();
 	}

@@ -1,27 +1,32 @@
 package controller;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
 /**
  * This class is used in case of RMI Connection, it handles the real interaction with the user.
  */
-public class RMIConnector extends Connector {
+public class RMIConnector extends UnicastRemoteObject implements Connector, ConnectorRMIServerInt {
 
-    public RMIConnector(int port) {
+    ConnectorRMIClientInt clientMethod;
 
+    public RMIConnector() throws RemoteException {
     }
 
     @Override
-    public void writeToClient(String s) {
-
+    public void writeToClient(String s) throws RemoteException {
+        clientMethod.Tell(s);
     }
 
     @Override
-    public int receiveIntFromClient() {
-        return 0;
+    public int receiveIntFromClient() throws RemoteException {
+
+        return clientMethod.receiveInt();
     }
 
     @Override
-    public String receiveStringFromClient() {
-        return "null";
+    public String receiveStringFromClient() throws RemoteException {
+        return clientMethod.receiveString();
     }
 
 }

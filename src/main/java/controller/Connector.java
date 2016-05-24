@@ -1,14 +1,16 @@
 package controller;
 
+import java.rmi.RemoteException;
+
 /**
  * Created by pietro on 21/05/16.
  */
-public abstract class Connector {
+public interface Connector{
 
-    public abstract void writeToClient(String s);
+    void writeToClient(String s) throws RemoteException;
 
-    public abstract int receiveIntFromClient();
+    int receiveIntFromClient() throws RemoteException;
 
-    public abstract String receiveStringFromClient();//To add UML Scheme
+    String receiveStringFromClient() throws RemoteException;//To add UML Scheme
 
 }

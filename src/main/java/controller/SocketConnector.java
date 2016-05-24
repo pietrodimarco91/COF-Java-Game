@@ -8,7 +8,7 @@ import java.util.Scanner;
 /**
  * This class is used in case of Socket Connection, it handles the real interaction with the user.
  */
-public class SocketConnector extends Connector{
+public class SocketConnector implements Connector{
 
     Socket socket;
     PrintWriter output;

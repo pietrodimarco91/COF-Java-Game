@@ -1,18 +1,10 @@
 package test;
 
-import static org.junit.Assert.*;
+import model.*;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import org.junit.Test;
-
-import model.Council;
-import model.Councillor;
-import model.CouncillorsPool;
-import model.PoliticCard;
-import model.Region;
-import model.RegionCouncil;
 
 public class TestCheckCouncillorsSatisfaction {
 

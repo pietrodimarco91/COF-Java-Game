@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 /**
  * Tests the method that checks whether a connection between the specified
@@ -21,7 +21,7 @@ public class TestCheckNewConnection {
 	@Test
 	public void test() {
 		for (int i = 2; i <= 4; i++) {
-			Map map = new Map(4, 2, 2, 2, i);
+			Board map = new Board(4, 2, 2, 2, i);
 			ArrayList<City> cities = map.getMap();
 			for (City city1 : cities) {
 				for (City city2 : cities) {

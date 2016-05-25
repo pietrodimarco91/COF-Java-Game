@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 public class TestMap {
 
@@ -15,7 +15,7 @@ public class TestMap {
 	public void test() {
 		int numberOfPlayers = 8, rewardTokenBonusNumber = 3, permitTileBonusNumber = 3, nobilityTrackBonusNumber = 3,
 				linksBetweenCities = 3;
-		Map map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+		Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 				linksBetweenCities);
 		System.out.println(map.toString());
 
@@ -24,7 +24,7 @@ public class TestMap {
 		assertEquals(3, map.getRegions().length);
 
 		numberOfPlayers = 4;
-		map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+		map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 				linksBetweenCities); // System.out.println(map.toString());
 
 		assertEquals(15, map.getNumberOfCities());

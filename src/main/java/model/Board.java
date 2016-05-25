@@ -13,7 +13,7 @@ import controller.Player;
  * The constructor of the Map initializes the map with the specified parameters.
  * It also allows to make the connections between the cities.
  */
-public class Map {
+public class Board {
 	/**
 	 * This attribute stores all the cities (vertex) of the map.
 	 */
@@ -77,7 +77,7 @@ public class Map {
 	 * region are generated too, and connections between different regions must
 	 * be set by the first player. This constructor initializes the Market too.
 	 */
-	public Map(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber, int nobilityTrackBonusNumber,
+	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber, int nobilityTrackBonusNumber,
 			int linksBetweenCities) {
 		cities = new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
@@ -390,7 +390,7 @@ public class Map {
 			regions[i].getDeck().setRegion(regions[i]);
 		}
 	}
-	
+
 	/**
 	 * This method initializes the cities of the map. Notice that the cities
 	 * represent the vertexes of the map, and as the constructor of the Map

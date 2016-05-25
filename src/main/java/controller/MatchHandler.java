@@ -66,7 +66,7 @@ public class MatchHandler extends Thread {
 		/*
 		 * NEEDS REVISION: MUST INSERT THE NEW ATTRIBUTES: SEE MAP CONSTRUCTOR!
 		 */
-		boardSetup(numberOfPlayers, linksBetweenCities, linksBetweenCities, linksBetweenCities, bonusNumber);
+		
 
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 

@@ -17,6 +17,10 @@ public class PoliticCard {
 	public PoliticCard() {
 		this.color = CouncillorColors.getRandomColor();
 	}
+	
+	public PoliticCard(String color) {
+		this.color = color;
+	}
 
 	/**
 	 * @return String of card color

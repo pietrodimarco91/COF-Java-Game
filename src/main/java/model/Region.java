@@ -70,7 +70,7 @@ public class Region{
 	public PermitTileDeck getDeck() {
 		return this.deck;
 	}
-
+	
 	/**
 	 * @param politicCards of the player
 	 * @return number of councillors satisfied

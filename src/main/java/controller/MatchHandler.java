@@ -1,12 +1,19 @@
 package controller;
 
 import model.Board;
+import model.PermitTile;
+import model.PermitTileDeck;
+import model.PoliticCard;
+import model.Region;
 
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
+
+import exceptions.InvalidSlotException;
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -157,8 +164,34 @@ public class MatchHandler extends Thread {
 	public boolean isPending() {
 		return this.pending;
 	}
-	
-	public buyPermitTile (Player player,){
+
+	public void buyPermitTile(Player player, String regionName) {
+		Region regions[] = this.board.getRegions();
+		boolean flag = false;
+		int playerPayment;
+		int numberOfCouncillorSatisfied;
+		PermitTileDeck regionDeck;
+		int i;
+		for (i = 0; i < 3 && flag == false; i++) {
+			if (regions[i].getName() == regionName)
+				flag = true;
+		}
+		ArrayList<PoliticCard> cardsChoseForCouncilSatisfaction=player.cardsToCouncilSatisfaction();
+		numberOfCouncillorSatisfied=regions[i].checkCouncilSatisfaction(cardsChoseForCouncilSatisfaction);
+		CoinsManager coinsManager=new CoinsManager();
+		playerPayment=coinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+		player.applyPayment(playerPayment);
+		player.removeCardsFromHand(cardsChoseForCouncilSatisfaction);
+		regionDeck=regions[i].getDeck();
+		System.out.println("Quale slot vuoi scegliere 1 o 2?");
+		Scanner input= new Scanner(System.in);
+		int Slot=input.nextInt();// potrebbe essere che bisognerà aggiungere un input.next per il carattere di invio
+		try {
+			player.setUnusedPermitTiles(regionDeck.drawPermitTile(Slot));
+		} catch (InvalidSlotException e) {
+			
+			e.printStackTrace();
+		}
 		
 	}
 

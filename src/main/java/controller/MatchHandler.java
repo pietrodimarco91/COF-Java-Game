@@ -58,48 +58,8 @@ public class MatchHandler extends Thread {
 	 */
 
 	public void run() {
-		String receiveFromClient;
-		int numberOfPlayers;
-		Connector playerOneConnector = this.players.get(0).getConnector(); // PlayerOne
-																			// is
-																			// the
-																			// creator
-																			// of
-																			// this
-																			// match
-																			// and
-																			// for
-																			// this
-																			// reason
-																			// i
-																			// use
-																			// him
-																			// Connector
-		playerOneConnector.writeToClient(
-				"Inserisci il numero di giocatori massimo per questa partita.\n Puoi inserire un valore massimo di 8 giocatori.");
-		numberOfPlayers = playerOneConnector.receiveIntFromClient();
-		// Player has to add a correct number between 2 and 8
-		while (numberOfPlayers < 2 || numberOfPlayers > 8) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra 2 e 8.");
-			numberOfPlayers = playerOneConnector.receiveIntFromClient();
-		}
-
-		int linksBetweenCities;
-		playerOneConnector.writeToClient("Inserisci il numero massimo di collegamenti tra le citta");
-		linksBetweenCities = playerOneConnector.receiveIntFromClient();
-		// Player has to add a correct number between x and y
-		while (linksBetweenCities < 2 || linksBetweenCities > 4) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			linksBetweenCities = playerOneConnector.receiveIntFromClient();
-		}
-
-		int bonusNumber;
-		playerOneConnector.writeToClient("Inserisci il numero di bonus.");
-		bonusNumber = playerOneConnector.receiveIntFromClient();
-		while (bonusNumber < 1 || bonusNumber > 3) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			bonusNumber = playerOneConnector.receiveIntFromClient();
-		}
+		
+	
 
 		pending = true; // Player has finished to set the match
 

@@ -71,11 +71,11 @@ public class Player {
 	/**
 	 *
 	 */
-	private ArrayList<PermitTile> usedPermitTiles;
+	private ArrayList<Tile> usedPermitTiles;
 	/**
 	 *
 	 */
-	private ArrayList<PermitTile> unusedPermitTiles;
+	private ArrayList<Tile> unusedPermitTiles;
 	/**
 	 *
 	 */

@@ -390,7 +390,7 @@ public class Map {
 			regions[i].getDeck().setRegion(regions[i]);
 		}
 	}
-
+	
 	/**
 	 * This method initializes the cities of the map. Notice that the cities
 	 * represent the vertexes of the map, and as the constructor of the Map

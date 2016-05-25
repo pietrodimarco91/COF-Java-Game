@@ -157,6 +157,10 @@ public class MatchHandler extends Thread {
 	public boolean isPending() {
 		return this.pending;
 	}
+	
+	public buyPermitTile (Player player,){
+		
+	}
 
 	public Connector getPlayerConnector(int numPlayer) {// To add UML scheme
 		Player player = players.get(numPlayer);

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 public class MapDemo {
 
@@ -35,7 +35,7 @@ public class MapDemo {
 				System.out.println("Maximum number of connections between the cities (between 2 and 4)");
 				linksBetweenCities = input.nextInt();
 			} while (linksBetweenCities > 4 || linksBetweenCities < 2);
-			Map map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+			Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 					linksBetweenCities);
 			while (!stop) {
 				System.out.println("Next choice?");
@@ -78,7 +78,7 @@ public class MapDemo {
 		}
 	}
 
-	public static void generateConnection(Map map, int linksBetweenCities) {
+	public static void generateConnection(Board map, int linksBetweenCities) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
 		ArrayList<City> cities = map.getMap();
@@ -110,7 +110,7 @@ public class MapDemo {
 		}
 	}
 
-	public static void removeConnection(Map map) {
+	public static void removeConnection(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
 		ArrayList<City> cities = map.getMap();
@@ -138,7 +138,7 @@ public class MapDemo {
 		map.unconnectCities(city1, city2);
 	}
 
-	public static void countDistance(Map map) {
+	public static void countDistance(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
 		ArrayList<City> cities = map.getMap();

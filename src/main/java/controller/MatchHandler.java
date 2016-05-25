@@ -1,6 +1,6 @@
 package controller;
 
-import model.Map;
+import model.Board;
 
 import java.net.Socket;
 import java.text.DateFormat;
@@ -27,7 +27,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * A reference to the local GraphMap for this match.
 	 */
-	private Map map;
+	private Board board;
 
 	/**
 	 * An ArrayList of player in this MatchHandler.
@@ -99,7 +99,7 @@ public class MatchHandler extends Thread {
 		/*
 		 * NEEDS REVISION: MUST INSERT THE NEW ATTRIBUTES: SEE MAP CONSTRUCTOR!
 		 */
-		mapSetup(numberOfPlayers, linksBetweenCities, linksBetweenCities, linksBetweenCities, bonusNumber);
+		boardSetup(numberOfPlayers, linksBetweenCities, linksBetweenCities, linksBetweenCities, bonusNumber);
 
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
@@ -129,9 +129,9 @@ public class MatchHandler extends Thread {
 	 *            detail, this number represents the maximum number of streets
 	 *            that come out from each city (vertex)
 	 */
-	public void mapSetup(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+	public void boardSetup(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
-		map = new Map(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 				linksBetweenCities);
 	}
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 /**
  * Tests the unconnectCities method of Map
@@ -16,7 +16,7 @@ import model.Map;
  *
  */
 public class TestUnconnectCities {
-	Map map = new Map(4, 2, 2, 2, 3);
+	Board map = new Board(4, 2, 2, 2, 3);
 
 	@Test
 	public void test() {

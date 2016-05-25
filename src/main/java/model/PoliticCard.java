@@ -17,7 +17,12 @@ public class PoliticCard {
 	public PoliticCard() {
 		this.color = CouncillorColors.getRandomColor();
 	}
-	
+	/**
+	 * 
+	 * @overloading constructor
+	 * @param one string of color
+	 * In this case you can choose the color of politic card and this method is used in player cardsToCouncilSatisfaction method.
+	 */
 	public PoliticCard(String color) {
 		this.color = color;
 	}

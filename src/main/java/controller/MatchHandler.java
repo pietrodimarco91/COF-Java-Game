@@ -58,15 +58,12 @@ public class MatchHandler extends Thread {
 	 */
 
 	public void run() {
-		
-	
 
 		pending = true; // Player has finished to set the match
 
 		/*
 		 * NEEDS REVISION: MUST INSERT THE NEW ATTRIBUTES: SEE MAP CONSTRUCTOR!
 		 */
-		
 
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
@@ -126,7 +123,7 @@ public class MatchHandler extends Thread {
 	}
 
 	public void buyPermitTile(Player player, String regionName) {
-		Region regions[] = this.board.getRegions();
+		Region[] regions = this.board.getRegions();
 		boolean flag = false;
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
@@ -136,23 +133,27 @@ public class MatchHandler extends Thread {
 			if (regions[i].getName() == regionName)
 				flag = true;
 		}
-		ArrayList<PoliticCard> cardsChoseForCouncilSatisfaction=player.cardsToCouncilSatisfaction();
-		numberOfCouncillorSatisfied=regions[i].checkCouncilSatisfaction(cardsChoseForCouncilSatisfaction);
-		CoinsManager coinsManager=new CoinsManager();
-		playerPayment=coinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-		player.applyPayment(playerPayment);
-		player.removeCardsFromHand(cardsChoseForCouncilSatisfaction);
-		regionDeck=regions[i].getDeck();
-		System.out.println("Quale slot vuoi scegliere 1 o 2?");
-		Scanner input= new Scanner(System.in);
-		int Slot=input.nextInt();// potrebbe essere che bisognerà aggiungere un input.next per il carattere di invio
-		try {
-			player.setUnusedPermitTiles(regionDeck.drawPermitTile(Slot));
-		} catch (InvalidSlotException e) {
+		ArrayList<PoliticCard> cardsChoseForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
+		numberOfCouncillorSatisfied = regions[i].numberOfCouncilSatisfied(cardsChoseForCouncilSatisfaction);
+		CoinsManager coinsManager = new CoinsManager();
+		Scanner input = new Scanner(System.in);
+		if (numberOfCouncillorSatisfied > 0) {
+			System.out.println("Puoi soddisfare il consiglio con " + numberOfCouncillorSatisfied + " carte!");
+			playerPayment = coinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			player.applyPayment(playerPayment);
+			player.removeCardsFromHand(cardsChoseForCouncilSatisfaction);
+			regionDeck = regions[i].getDeck();
+			System.out.println("Quale slot vuoi scegliere 1 o 2?");
+			int Slot = input.nextInt();
+			try {
+				player.setUnusedPermitTiles(regionDeck.drawPermitTile(Slot));
+			} catch (InvalidSlotException e) {
+
+				e.printStackTrace();
+			}
 			
-			e.printStackTrace();
-		}
-		
+		}else
+		System.out.println("Non ci sono consiglieri con questo colore");
 	}
 
 	public Connector getPlayerConnector(int numPlayer) {// To add UML scheme

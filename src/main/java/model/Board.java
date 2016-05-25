@@ -612,6 +612,7 @@ public class Board {
 
 	public Region[] getRegions() {
 		return this.regions;
+		
 	}
 
 	public Council getKingCouncil() {

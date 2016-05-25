@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,6 +35,8 @@ public class Server {
 	 */
 	private ArrayList<MatchHandler> matches;
 
+	private Connector connector;
+
 
 	public Server() {
 		this.connectorHandler =new ConnectorHandler(port);
@@ -52,12 +53,25 @@ public class Server {
 	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
 	private void waitConnection() {
+		RMIWaitConnectionThread waitRmiConnection=new RMIWaitConnectionThread();
+		SocketWaitConnectionThread waitSocketConnection=new SocketWaitConnectionThread(port);
 		while(true){
+			waitRmiConnection.start();
+			waitSocketConnection.start();
 			try {
-				thread.submit(new UserHandler(connectorHandler.getConnector(), matches));
-			} catch (IOException e) {
+				this.wait();
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			if(!waitRmiConnection.isAlive()){
+				connector=waitRmiConnection.getConnector();
+				waitRmiConnection=new RMIWaitConnectionThread();
+			}
+			if(!waitSocketConnection.isAlive()){
+				connector=waitSocketConnection.getConnector();
+				waitSocketConnection= new SocketWaitConnectionThread(port);
+			}
+			thread.submit(new UserHandler(connector, matches));
 		}
 	}
 	

@@ -152,7 +152,7 @@ public class TestCheckCouncillorsSatisfaction {
 			PermitTileDeck testDeck= new PermitTileDeck(10);
 			Region testRegion= new Region("Example",testCouncil,testDeck);
 			
-			int testResultMethod=testRegion.checkCouncilSatisfaction(tempCardsArrayList);
+			int testResultMethod=testRegion.numberOfCouncilSatisfied(tempCardsArrayList);
 			assertEquals(corrispondence,testResultMethod);
 		
 		}

@@ -11,51 +11,7 @@ import java.util.ArrayList;
  */
 public class Client {
 
-	/**
-	 *
-	 */
-	private String ipAddress;
-	/**
-	 *
-	 */
-	private int port;
-	/**
-	 *
-	 */
-	private int coins;
-	/**
-	 *
-	 */
-	private int assistants;
-	/**
-	 *
-	 */
-	private int turnNumber;
-	/**
-	 *
-	 */
-	private ArrayList<PoliticCard> politicCards;
-	/**
-	 *
-	 */
-	private int victoryPoints;
-	/**
-	 *
-	 */
-	private ArrayList<PermitTile> usedPermitTiles;
-	/**
-	 *
-	 */
-	private ArrayList<PermitTile> unusedPermitTiles;
-	/**
-	 *
-	 */
-	private int emporiums;
-	/**
-	 *
-	 */
-	private ArrayList<City> controlledCities;
-
+	
 	/**
 	 * Default constructor
 	 */

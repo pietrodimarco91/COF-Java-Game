@@ -1,12 +1,19 @@
 package controller;
 
 import model.Board;
+import model.PermitTile;
+import model.PermitTileDeck;
+import model.PoliticCard;
+import model.Region;
 
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
+
+import exceptions.InvalidSlotException;
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -51,55 +58,12 @@ public class MatchHandler extends Thread {
 	 */
 
 	public void run() {
-		String receiveFromClient;
-		int numberOfPlayers;
-		Connector playerOneConnector = this.players.get(0).getConnector(); // PlayerOne
-																			// is
-																			// the
-																			// creator
-																			// of
-																			// this
-																			// match
-																			// and
-																			// for
-																			// this
-																			// reason
-																			// i
-																			// use
-																			// him
-																			// Connector
-		playerOneConnector.writeToClient(
-				"Inserisci il numero di giocatori massimo per questa partita.\n Puoi inserire un valore massimo di 8 giocatori.");
-		numberOfPlayers = playerOneConnector.receiveIntFromClient();
-		// Player has to add a correct number between 2 and 8
-		while (numberOfPlayers < 2 || numberOfPlayers > 8) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra 2 e 8.");
-			numberOfPlayers = playerOneConnector.receiveIntFromClient();
-		}
-
-		int linksBetweenCities;
-		playerOneConnector.writeToClient("Inserisci il numero massimo di collegamenti tra le citta");
-		linksBetweenCities = playerOneConnector.receiveIntFromClient();
-		// Player has to add a correct number between x and y
-		while (linksBetweenCities < 2 || linksBetweenCities > 4) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			linksBetweenCities = playerOneConnector.receiveIntFromClient();
-		}
-
-		int bonusNumber;
-		playerOneConnector.writeToClient("Inserisci il numero di bonus.");
-		bonusNumber = playerOneConnector.receiveIntFromClient();
-		while (bonusNumber < 1 || bonusNumber > 3) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			bonusNumber = playerOneConnector.receiveIntFromClient();
-		}
 
 		pending = true; // Player has finished to set the match
 
 		/*
 		 * NEEDS REVISION: MUST INSERT THE NEW ATTRIBUTES: SEE MAP CONSTRUCTOR!
 		 */
-		boardSetup(numberOfPlayers, linksBetweenCities, linksBetweenCities, linksBetweenCities, bonusNumber);
 
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
@@ -157,9 +121,39 @@ public class MatchHandler extends Thread {
 	public boolean isPending() {
 		return this.pending;
 	}
-	
-	public buyPermitTile (Player player,){
-		
+
+	public void buyPermitTile(Player player, String regionName) {
+		Region[] regions = this.board.getRegions();
+		boolean flag = false;
+		int playerPayment;
+		int numberOfCouncillorSatisfied;
+		PermitTileDeck regionDeck;
+		int i;
+		for (i = 0; i < 3 && flag == false; i++) {
+			if (regions[i].getName() == regionName)
+				flag = true;
+		}
+		ArrayList<PoliticCard> cardsChoseForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
+		numberOfCouncillorSatisfied = regions[i].numberOfCouncilSatisfied(cardsChoseForCouncilSatisfaction);
+		CoinsManager coinsManager = new CoinsManager();
+		Scanner input = new Scanner(System.in);
+		if (numberOfCouncillorSatisfied > 0) {
+			System.out.println("Puoi soddisfare il consiglio con " + numberOfCouncillorSatisfied + " carte!");
+			playerPayment = coinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			player.applyPayment(playerPayment);
+			player.removeCardsFromHand(cardsChoseForCouncilSatisfaction);
+			regionDeck = regions[i].getDeck();
+			System.out.println("Quale slot vuoi scegliere 1 o 2?");
+			int Slot = input.nextInt();
+			try {
+				player.setUnusedPermitTiles(regionDeck.drawPermitTile(Slot));
+			} catch (InvalidSlotException e) {
+
+				e.printStackTrace();
+			}
+			
+		}else
+		System.out.println("Non ci sono consiglieri con questo colore");
 	}
 
 	public Connector getPlayerConnector(int numPlayer) {// To add UML scheme

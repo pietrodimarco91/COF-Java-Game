@@ -10,6 +10,7 @@ public class SocketWaitConnectionThread extends Thread {
 
     private ServerSocket welcomeSocket;
     private Connector connector;
+    private Object lock;
 
 
     public SocketWaitConnectionThread(Object lock, int port) {

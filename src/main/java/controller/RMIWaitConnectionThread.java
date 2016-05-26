@@ -6,13 +6,15 @@ package controller;
 public class RMIWaitConnectionThread extends Thread {
 
     Connector connector;
+    Object lock;
 
     public RMIWaitConnectionThread(Object lock) {
-
+        this.lock=lock;
     }
 
     @Override
     public void run() {
+        lock.notify();
     }
 
     public Connector getConnector() {

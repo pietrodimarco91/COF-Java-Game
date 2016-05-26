@@ -59,11 +59,7 @@ public class Server {
 		while(true){
 			waitRmiConnection.start();
 			waitSocketConnection.start();
-			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			lock.wait();
 			if(!waitRmiConnection.isAlive()){
 				connector=waitRmiConnection.getConnector();
 				waitRmiConnection=new RMIWaitConnectionThread(lock);

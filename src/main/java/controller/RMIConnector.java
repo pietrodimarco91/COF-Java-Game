@@ -15,7 +15,7 @@ public class RMIConnector extends UnicastRemoteObject implements Connector, Conn
 
     @Override
     public void writeToClient(String s) throws RemoteException {
-        clientMethod.Tell(s);
+        clientMethod.tell(s);
     }
 
     @Override

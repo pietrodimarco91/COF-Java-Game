@@ -12,7 +12,7 @@ public class SocketWaitConnectionThread extends Thread {
     private Connector connector;
 
 
-    public SocketWaitConnectionThread(int port) {
+    public SocketWaitConnectionThread(Object lock, int port) {
         this.connector=connector;
         try {
             welcomeSocket=new ServerSocket(port);

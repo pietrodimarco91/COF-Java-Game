@@ -9,7 +9,7 @@ import java.util.Iterator;
  *This Class let every user to create a new match
  * or to join in a pending match that already exist.
  */
-public class UserHandler implements Runnable {
+public class ClientHandler implements Runnable {
 
     private ArrayList<MatchHandler> matches;
 
@@ -18,7 +18,7 @@ public class UserHandler implements Runnable {
      */
     private Connector connector;
 
-    public UserHandler(Connector connector, ArrayList<MatchHandler> matches) {
+    public ClientHandler(Connector connector, ArrayList<MatchHandler> matches) {
         this.matches=matches;
         this.connector =connector;
     }

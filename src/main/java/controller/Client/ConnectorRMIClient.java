@@ -13,7 +13,7 @@ public class ConnectorRMIClient extends UnicastRemoteObject implements Connector
     }
 
     @Override
-    public void Tell(String s) {
+    public void tell(String s) {
         System.out.println(s);
 
     }

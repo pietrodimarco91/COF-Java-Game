@@ -7,7 +7,7 @@ public class RMIWaitConnectionThread extends Thread {
 
     Connector connector;
 
-    public RMIWaitConnectionThread() {
+    public RMIWaitConnectionThread(Object lock) {
 
     }
 

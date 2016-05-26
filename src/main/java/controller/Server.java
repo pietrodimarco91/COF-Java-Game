@@ -53,8 +53,9 @@ public class Server {
 	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
 	private void waitConnection() {
-		RMIWaitConnectionThread waitRmiConnection=new RMIWaitConnectionThread();
-		SocketWaitConnectionThread waitSocketConnection=new SocketWaitConnectionThread(port);
+		Object lock = null;
+		RMIWaitConnectionThread waitRmiConnection=new RMIWaitConnectionThread(lock);
+		SocketWaitConnectionThread waitSocketConnection=new SocketWaitConnectionThread(lock,port);
 		while(true){
 			waitRmiConnection.start();
 			waitSocketConnection.start();
@@ -65,13 +66,13 @@ public class Server {
 			}
 			if(!waitRmiConnection.isAlive()){
 				connector=waitRmiConnection.getConnector();
-				waitRmiConnection=new RMIWaitConnectionThread();
+				waitRmiConnection=new RMIWaitConnectionThread(lock);
 			}
 			if(!waitSocketConnection.isAlive()){
 				connector=waitSocketConnection.getConnector();
-				waitSocketConnection= new SocketWaitConnectionThread(port);
+				waitSocketConnection= new SocketWaitConnectionThread(lock, port);
 			}
-			thread.submit(new UserHandler(connector, matches));
+			thread.submit(new ClientHandler(connector, matches));
 		}
 	}
 	

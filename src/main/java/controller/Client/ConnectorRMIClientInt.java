@@ -8,9 +8,9 @@ import java.rmi.RemoteException;
  */
 public interface ConnectorRMIClientInt extends Remote {
 
-    public void Tell(String s) throws RemoteException;
+    void tell(String s) throws RemoteException;
 
-    public int receiveInt() throws RemoteException;
+    int receiveInt() throws RemoteException;
 
-    public String receiveString() throws RemoteException;
+    String receiveString() throws RemoteException;
 }

@@ -191,7 +191,9 @@ public class Player {
 		return cardsChose;
 
 	}
-
+	/**
+	 * @return
+	 */
 	public boolean checkExistingColor(String colorCard) {
 		ArrayList<String> allColorsCards;
 		allColorsCards = CouncillorColors.getPoliticCardsColors();
@@ -201,7 +203,9 @@ public class Player {
 		}
 		return false;
 	}
-
+	/**
+	 * @return
+	 */
 	public boolean checkIfYouHaveThisCard(String colorCard,ArrayList<PoliticCard> tempHandCards) {
 		for (int i = 0; i < tempHandCards.size(); i++) {
 			if (tempHandCards.get(i).getColorCard().equals(colorCard)){
@@ -211,13 +215,24 @@ public class Player {
 		}
 		return false;
 	}
-
+	/**
+	 * @return
+	 */
 	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
 		for (int i = 0; i < cardsChose.size(); i++)
 			if (this.politicCards.contains(cardsChose.get(i)))
 				this.politicCards.remove(i);
 	}
-
+	
+	/**
+	 * @return
+	 */
+	public void addCardOnHand(PoliticCard card) {
+		this.politicCards.add(card);
+	}
+	/**
+	 * @return
+	 */
 	public boolean applyPayment(int payment) {
 		if ((this.coins - payment) >= 0) {
 			this.coins -= payment;
@@ -225,21 +240,64 @@ public class Player {
 		} else
 			return false;
 	}
-
+	/**
+	 * @return
+	 */
 	public void setUnusedPermitTiles(Tile permitTile) {
 		this.unusedPermitTiles.add((PermitTile) permitTile);
 	}
-
+	/**
+	 * @return
+	 */
 	public int getNumberOfPermitTile() {
 		return this.unusedPermitTiles.size();
 	}
-
-	public void setCoins(int coins) {
+	/**
+	 * @return
+	 */
+	public void addCoins(int coins) {
 		this.coins = coins;
 	}
-
+	
+	/**
+	 * @return
+	 */
+	public void removeCoins(int coins) {
+		this.coins -= coins;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getCoins() {
+		return this.coins;
+	}
+	/**
+	 * @return
+	 */
 	public ArrayList<PoliticCard> getPoliticCards() {
 		return this.politicCards;
+	}
+	
+	/**
+	 * @return
+	 */
+	public void addAssistant() {
+		this.assistants++;
+	}
+	
+	/**
+	 * @return
+	 */
+	public void removeAssistant() {
+		this.assistants--;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getNumberAssistants() {
+		return this.assistants;
 	}
 
 }

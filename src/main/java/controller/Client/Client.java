@@ -50,29 +50,9 @@ public class Client {
 
 	}
 
-	/**
-	 * @return
-	 */
-	public void drawPoliticCard() {
-		// TODO implement here
-
 	}
 
-	/**
-	 * @return
-	 */
-	public void electCoucillor() {
-		// TODO implement here
 
-	}
-
-	/**
-	 * @return
-	 */
-	public void acquireBusinessPermitTile() {
-		// TODO implement here
-
-	}
 
 	/**
 	 * @return
@@ -90,13 +70,7 @@ public class Client {
 
 	}
 
-	/**
-	 * @return
-	 */
-	public void engageAssistant() {
-		// TODO implement here
-
-	}
+	
 
 	/**
 	 * @return
@@ -106,13 +80,6 @@ public class Client {
 
 	}
 
-	/**
-	 * @return
-	 */
-	public void sendAssistantToElectCouncillor() {
-		// TODO implement here
-
-	}
 
 	/**
 	 * @return

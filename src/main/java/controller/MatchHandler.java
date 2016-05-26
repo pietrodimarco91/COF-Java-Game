@@ -4,6 +4,7 @@ import model.Board;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
+import model.PoliticCardDeck;
 import model.Region;
 
 import java.net.Socket;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
+import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidSlotException;
 
 /**
@@ -151,16 +153,76 @@ public class MatchHandler extends Thread {
 
 				e.printStackTrace();
 			}
-			
-		}else
-		System.out.println("Non ci sono consiglieri con questo colore");
+
+		} else
+			System.out.println("Non ci sono consiglieri con questo colore");
 	}
 
+	/**
+	 * @return
+	 */
+	public void drawPoliticCard(Player player) {
+		PoliticCardDeck cardDrawn = new PoliticCardDeck();
+		player.addCardOnHand(cardDrawn.generateRandomPoliticCard());
+	}
+
+	/**
+	 * @return
+	 */
 	public Connector getPlayerConnector(int numPlayer) {// To add UML scheme
 		Player player = players.get(numPlayer);
 		return player.getConnector();
 	}
 
+	/**
+	 * @return
+	 */
+	public boolean electCoucillor(Player player, String regionName, String councillorColor) {
+		Region region = this.getRegion(regionName);
+		try {
+			region.electCouncillor(councillorColor);
+		} catch (CouncillorNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		player.addCoins(4);
+		return true;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean engageAssistant(Player player) {
+		int coins = player.getCoins();
+		if (coins >= 3) {
+			player.removeCoins(3);
+			player.addAssistant();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean sendAssistantToElectCouncillor(Player player, String regionName, String councillorColor) {
+		if (player.getNumberAssistants() >= 1) {
+			Region region = this.getRegion(regionName);
+			try {
+				region.electCouncillor(councillorColor);
+			} catch (CouncillorNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true;
+		} else
+			return false;
+		}
+
+	/**
+	 * @return
+	 */
 	public void addPlayer(Connector connector) {// To add UML scheme
 		Player player = new Player(connector);
 		this.players.add(player);
@@ -168,6 +230,23 @@ public class MatchHandler extends Thread {
 			this.startGame();
 	}
 
+	/**
+	 * @return
+	 */
+	public Region getRegion(String regionName) {
+		boolean regionFind = false;
+		int i;
+		Region regions[] = this.board.getRegions();
+		for (i = 0; i < 3 && regionFind == false; i++) {
+			if (regions[i].getName().equals(regionName))
+				regionFind = true;
+		}
+		return regions[i];
+	}
+
+	/**
+	 * @return
+	 */
 	public boolean isFull() {
 		if (this.players.size() < this.playersNumber)
 			return false;

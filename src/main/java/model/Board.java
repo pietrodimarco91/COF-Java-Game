@@ -77,8 +77,8 @@ public class Board {
 	 * region are generated too, and connections between different regions must
 	 * be set by the first player. This constructor initializes the Market too.
 	 */
-	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber, int nobilityTrackBonusNumber,
-			int linksBetweenCities) {
+	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) {
 		cities = new ArrayList<City>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
@@ -155,6 +155,46 @@ public class Board {
 				cityToRemove.removeConnectedCity(city);
 			}
 		}
+	}
+
+	/**
+	 * This method is used to see in which cities a player has already built his
+	 * emporiums, after he has just build an emporium, to get all the Reward
+	 * Tokens of the other cities too
+	 * 
+	 * @param player
+	 *            the player to check for
+	 * @return the arraylist of the owned cities (where he has an emporium)
+	 */
+	public ArrayList<City> getOwnedCities(Player player) {
+		ArrayList<City> ownedCities = new ArrayList<City>();
+		Queue<City> grayNodesQueue = new LinkedList<City>();
+		City cityToExpand, connectedCity;
+		Iterator<City> mapIterator = cities.iterator();
+		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
+			mapIterator.next().BFSinitialization();
+		}
+		City cityFrom = cities.get(0);
+		cityFrom.BFSsourceVisit();
+		grayNodesQueue.add(cityFrom);
+		while (!(grayNodesQueue.isEmpty())) {
+			cityToExpand = grayNodesQueue.remove();
+			Iterator<City> connectedCitiesIterator = cityToExpand.getConnectedCities().iterator();
+			while (connectedCitiesIterator.hasNext()) {
+				connectedCity = connectedCitiesIterator.next();
+				if (connectedCity.getBFScolor().equals("WHITE")) {
+					connectedCity.setBFScolor("GRAY");
+					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
+					if (connectedCity.checkPresenceOfEmporium(player))
+						grayNodesQueue.add(connectedCity);
+				}
+			}
+			cityToExpand.setBFScolor("BLACK");
+		}
+		for (City tempCity : cities) {
+			tempCity.BFSinitialization();
+		}
+		return ownedCities;
 	}
 
 	/**
@@ -612,7 +652,7 @@ public class Board {
 
 	public Region[] getRegions() {
 		return this.regions;
-		
+
 	}
 
 	public Council getKingCouncil() {

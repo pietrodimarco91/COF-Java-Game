@@ -14,7 +14,7 @@ public class SocketWaitConnectionThread extends Thread {
 
 
     public SocketWaitConnectionThread(Object lock, int port) {
-        this.connector=connector;
+
         try {
             welcomeSocket=new ServerSocket(port);
         } catch (IOException e) {

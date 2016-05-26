@@ -25,9 +25,9 @@ public class ConfigFileManager {
 
 	private final String filename = "config/board.config";
 
-	private ObjectOutputStream outputStream;
+	private FileOutputStream fos;
 
-	private ObjectInputStream inputStream;
+	private ObjectOutputStream outputStream;
 
 	private int numberOfConfigurations;
 
@@ -54,24 +54,22 @@ public class ConfigFileManager {
 
 	public ArrayList<ConfigObject> getConfigurations() {
 		ArrayList<ConfigObject> configurations = new ArrayList<ConfigObject>();
-		try {
-			inputStream = new ObjectInputStream(new FileInputStream(file));
+
+		try (FileInputStream fis = new FileInputStream(file);
+				ObjectInputStream inputStream = new ObjectInputStream(fis)) {
 			while (true) {
 				configurations.add((ConfigObject) inputStream.readObject());
 			}
-		} catch (ClassNotFoundException e) {
-			System.out.println("Error in handling the class type");
-			System.exit(0);
 		} catch (EOFException e) {
 			// just to break from the cycle and catch the end of file
 		} catch (IOException e) {
 			System.out.println("Error while reading the content of the file " + filename);
+			closeFile();
 			System.exit(0);
-		}
-		try {
-			inputStream.close();
-		} catch (IOException e) {
-			System.out.println("Error while closing the input stream");
+		} catch (ClassNotFoundException e) {
+			System.out.println("Error in handling the class type");
+			closeFile();
+			System.exit(0);
 		}
 		return configurations;
 	}
@@ -93,7 +91,8 @@ public class ConfigFileManager {
 	public void openFile() {
 		if (!file.exists()) {
 			try {
-				outputStream = new ObjectOutputStream(new FileOutputStream(file));
+				fos = new FileOutputStream(file);
+				outputStream = new ObjectOutputStream(fos);
 			} catch (FileNotFoundException e) {
 				System.out.println("Error while opening the file!");
 				System.exit(0);
@@ -103,7 +102,8 @@ public class ConfigFileManager {
 			}
 		} else {
 			try {
-				outputStream = new AppendableObjectOutputStream(new FileOutputStream(file, true));
+				fos = new FileOutputStream(file, true);
+				outputStream = new AppendableObjectOutputStream(fos);
 			} catch (FileNotFoundException e) {
 				System.out.println("Error while opening the file!");
 				System.exit(0);
@@ -117,9 +117,11 @@ public class ConfigFileManager {
 
 	public void closeFile() {
 		try {
+			fos.close();
 			outputStream.close();
 		} catch (IOException e) {
 			System.out.println("Error while closing the file!");
+			System.exit(0);
 		}
 	}
 

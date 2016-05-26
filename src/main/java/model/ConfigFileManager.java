@@ -47,7 +47,6 @@ public class ConfigFileManager {
 		try {
 			outputStream.writeObject(new ConfigObject(numberOfConfigurations, numberOfPlayers, rewardTokenBonusNumber,
 					permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities));
-			outputStream.reset();
 		} catch (IOException e) {
 			System.out.println("Error: cannot save the configuration in file " + filename);
 		}
@@ -64,7 +63,7 @@ public class ConfigFileManager {
 			System.out.println("Error in handling the class type");
 			System.exit(0);
 		} catch (EOFException e) {
-			System.out.println("No more configurations in " + filename);
+			// just to break from the cycle and catch the end of file
 		} catch (IOException e) {
 			System.out.println("Error while reading the content of the file " + filename);
 			System.exit(0);
@@ -92,15 +91,28 @@ public class ConfigFileManager {
 	}
 
 	public void openFile() {
-		try {
-			outputStream = new ObjectOutputStream(new FileOutputStream(file));
-		} catch (FileNotFoundException e) {
-			System.out.println("Error while opening the file!");
-			System.exit(0);
-		} catch (IOException e) {
-			System.out.println("Error while reading the file!");
-			System.exit(0);
+		if (!file.exists()) {
+			try {
+				outputStream = new ObjectOutputStream(new FileOutputStream(file));
+			} catch (FileNotFoundException e) {
+				System.out.println("Error while opening the file!");
+				System.exit(0);
+			} catch (IOException e) {
+				System.out.println("Error while reading the file!");
+				System.exit(0);
+			}
+		} else {
+			try {
+				outputStream = new AppendableObjectOutputStream(new FileOutputStream(file, true));
+			} catch (FileNotFoundException e) {
+				System.out.println("Error while opening the file!");
+				System.exit(0);
+			} catch (IOException e) {
+				System.out.println("Error while reading the file!");
+				System.exit(0);
+			}
 		}
+
 	}
 
 	public void closeFile() {

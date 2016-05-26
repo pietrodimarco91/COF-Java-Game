@@ -15,6 +15,10 @@ public class TestConfigFile {
 	@Test
 	public void test() {
 		ConfigFileManager fileManager = new ConfigFileManager();
+		ArrayList<ConfigObject> configs =fileManager.getConfigurations();
+		for(ConfigObject config:configs) {
+			System.out.println(config.toString());
+		}
 		try {
 			fileManager.createConfiguration(5, 2, 2, 2, 2);
 			fileManager.createConfiguration(7, 2, 2, 2, 2);
@@ -49,10 +53,7 @@ public class TestConfigFile {
 			e.printError();
 		}
 		assertEquals(6, fileManager.getConfigurations().size());
-		ArrayList<ConfigObject> configs =fileManager.getConfigurations();
-		for(ConfigObject config:configs) {
-			System.out.println(config.toString());
-		}
+		
 		fileManager.closeFile();
 	}
 }

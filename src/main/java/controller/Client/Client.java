@@ -1,6 +1,5 @@
 package controller.Client;
 
-import model.City;
 import model.PermitTile;
 import model.PoliticCard;
 
@@ -51,7 +50,7 @@ public class Client {
 
 	}
 
-	}
+
 
 
 

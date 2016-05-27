@@ -25,5 +25,9 @@ public class PermitTile extends Tile {
 		}
 		bonus = PermitTileBonusType.random(bonusNumber);
 	}
+	
+	public ArrayList<City> getCities(){
+		return this.cities;
+	}
 
 }

@@ -1,6 +1,8 @@
 package controller;
 
 import model.Board;
+import model.City;
+import model.Tile;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
@@ -125,18 +127,13 @@ public class MatchHandler extends Thread {
 	}
 
 	public void buyPermitTile(Player player, String regionName) {
-		Region[] regions = this.board.getRegions();
-		boolean flag = false;
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
 		PermitTileDeck regionDeck;
-		int i;
-		for (i = 0; i < 3 && flag == false; i++) {
-			if (regions[i].getName() == regionName)
-				flag = true;
-		}
+		Region region=this.getRegion(regionName);
+		
 		ArrayList<PoliticCard> cardsChoseForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
-		numberOfCouncillorSatisfied = regions[i].numberOfCouncilSatisfied(cardsChoseForCouncilSatisfaction);
+		numberOfCouncillorSatisfied = region.numberOfCouncilSatisfied(cardsChoseForCouncilSatisfaction);
 		CoinsManager coinsManager = new CoinsManager();
 		Scanner input = new Scanner(System.in);
 		if (numberOfCouncillorSatisfied > 0) {
@@ -144,7 +141,7 @@ public class MatchHandler extends Thread {
 			playerPayment = coinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
 			player.applyPayment(playerPayment);
 			player.removeCardsFromHand(cardsChoseForCouncilSatisfaction);
-			regionDeck = regions[i].getDeck();
+			regionDeck = region.getDeck();
 			System.out.println("Quale slot vuoi scegliere 1 o 2?");
 			int Slot = input.nextInt();
 			try {
@@ -206,21 +203,49 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
+	public boolean changeBusinessPermitTiles(Player player, String regionName) {
+		Region region = this.getRegion(regionName);
+		if (player.getNumberAssistants() >= 1) {
+			region.getDeck().switchPermitTiles();
+			player.removeAssistant();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * @return
+	 */
+	public boolean buildEmporiumWithPermitTile(Player player,String cityName) {
+		ArrayList<City> city;
+		int i;
+		PermitTile permitTile=player.getUnusedPermitTile(tileChose);
+		city=permitTile.getCities();
+		for(i=0;i<city.size();i++)
+			if(city.get(i).getName().equals(cityName) && !(city.get(i).checkPresenceOfEmporium(player))){
+				
+			}
+		
+		
+
+	}
+
+	/**
+	 * @return
+	 */
 	public boolean sendAssistantToElectCouncillor(Player player, String regionName, String councillorColor) {
 		if (player.getNumberAssistants() >= 1) {
 			Region region = this.getRegion(regionName);
 			try {
 				region.electCouncillor(councillorColor);
 			} catch (CouncillorNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return true;
 		} else
 			return false;
-		}
+	}
 
-	
 	/**
 	 * @return
 	 */

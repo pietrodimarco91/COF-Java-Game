@@ -131,8 +131,18 @@ public class Player {
 	 * @return
 	 */
 	public int getRageQuits() {
-		// TODO implement here
+	
 		return 0;
+	}
+	
+	/**
+	 * @return
+	 */
+	public Tile getUnusedPermitTile(Tile tileChose) {// metodo da risistemare e da aggiungere UML
+		int i=this.unusedPermitTiles.indexOf(tileChose);
+		
+		return this.unusedPermitTiles.get(i);
+
 	}
 
 	/**

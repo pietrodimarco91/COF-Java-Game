@@ -3,6 +3,7 @@ package map;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class TestCheckNewConnection {
 	public void test() {
 		for (int i = 2; i <= 4; i++) {
 			Board map = new Board(4, 2, 2, 2, i);
-			ArrayList<City> cities = map.getMap();
+			List<City> cities = map.getMap();
 			for (City city1 : cities) {
 				for (City city2 : cities) {
 					if (city1.getConnectedCities().contains(city2))

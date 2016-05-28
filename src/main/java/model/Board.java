@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 
 import controller.Player;
 
 /**
- * The constructor of the Board initializes the board with the specified parameters.
- * It also allows to make the connections between the cities.
+ * The constructor of the Board initializes the board with the specified
+ * parameters. It also allows to make the connections between the cities.
  */
 public class Board {
 	/**
@@ -79,7 +81,7 @@ public class Board {
 	 */
 	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
-		cities = new ArrayList<City>();
+		cities = new ArrayList<>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
@@ -166,9 +168,9 @@ public class Board {
 	 *            the player to check for
 	 * @return the arraylist of the owned cities (where he has an emporium)
 	 */
-	public ArrayList<City> getOwnedCities(Player player) {
-		ArrayList<City> ownedCities = new ArrayList<City>();
-		Queue<City> grayNodesQueue = new LinkedList<City>();
+	public List<City> getOwnedCities(Player player) {
+		ArrayList<City> ownedCities = new ArrayList<>();
+		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand, connectedCity;
 		Iterator<City> mapIterator = cities.iterator();
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
@@ -182,7 +184,7 @@ public class Board {
 			Iterator<City> connectedCitiesIterator = cityToExpand.getConnectedCities().iterator();
 			while (connectedCitiesIterator.hasNext()) {
 				connectedCity = connectedCitiesIterator.next();
-				if (connectedCity.getBFScolor().equals("WHITE")) {
+				if ("WHITE".equals(connectedCity.getBFScolor())) {
 					connectedCity.setBFScolor("GRAY");
 					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
 					if (connectedCity.checkPresenceOfEmporium(player))
@@ -204,7 +206,7 @@ public class Board {
 	 * @return true if the graph is connected, false otherwise.
 	 */
 	public boolean graphIsConnected() {
-		Queue<City> grayNodesQueue = new LinkedList<City>();
+		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand, connectedCity;
 		Iterator<City> mapIterator = cities.iterator();
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
@@ -218,7 +220,7 @@ public class Board {
 			Iterator<City> connectedCitiesIterator = cityToExpand.getConnectedCities().iterator();
 			while (connectedCitiesIterator.hasNext()) {
 				connectedCity = connectedCitiesIterator.next();
-				if (connectedCity.getBFScolor().equals("WHITE")) {
+				if ("WHITE".equals(connectedCity.getBFScolor())) {
 					connectedCity.setBFScolor("GRAY");
 					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
 					grayNodesQueue.add(connectedCity);
@@ -227,7 +229,7 @@ public class Board {
 			cityToExpand.setBFScolor("BLACK");
 		}
 		for (City city : cities) {
-			if (!(city.getBFScolor().equals("BLACK"))) {
+			if (!("BLACK".equals(city.getBFScolor()))) {
 				for (City tempCity : cities) {
 					tempCity.BFSinitialization();
 				}
@@ -253,7 +255,7 @@ public class Board {
 	public int countDistance(City cityFrom, City cityTo) {
 		if (cityFrom == cityTo)
 			return 0;
-		Queue<City> grayNodesQueue = new LinkedList<City>();
+		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand;
 		int distance = -1;
 
@@ -265,7 +267,7 @@ public class Board {
 		while (!(grayNodesQueue.isEmpty())) {
 			cityToExpand = grayNodesQueue.remove();
 			for (City connectedCity : cityToExpand.getConnectedCities()) {
-				if (connectedCity.getBFScolor().equals("WHITE")) {
+				if ("WHITE".equals(connectedCity.getBFScolor())) {
 					connectedCity.setBFScolor("GRAY");
 					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
 					if (connectedCity == cityTo) { // checks whether the city
@@ -284,7 +286,7 @@ public class Board {
 			}
 			cityToExpand.setBFScolor("BLACK");
 		}
-		return -1;
+		return distance;
 	}
 
 	/**
@@ -334,7 +336,7 @@ public class Board {
 	 * @return the arraylist of cities connected to the specified city. Returns
 	 *         null if the specified city doesn't exist.
 	 */
-	public ArrayList<City> getCitiesConnectedTo(City city) {
+	public List<City> getCitiesConnectedTo(City city) {
 		City cityToSearch;
 		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
@@ -343,7 +345,7 @@ public class Board {
 				return cityToSearch.getConnectedCities();
 			}
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	/**
@@ -360,9 +362,8 @@ public class Board {
 
 		while (mapIterator.hasNext()) {
 			tempCity = mapIterator.next();
-			if (tempCity.getColor().equals(color)) {
-				if (!(tempCity.checkPresenceOfEmporium(owner)))
-					return false;
+			if (tempCity.getColor().equals(color) && !(tempCity.checkPresenceOfEmporium(owner))) {
+				return false;
 			}
 		}
 		return true;
@@ -448,7 +449,7 @@ public class Board {
 		RewardToken rewardToken;
 		ArrayList<City> citiesInRegion;
 		for (int j = 0; j < RegionName.values().length; j++) {
-			citiesInRegion = new ArrayList<City>();
+			citiesInRegion = new ArrayList<>();
 			for (int i = 0; i < numberOfCities / 3; i++) {
 				do {
 					name = CityNames.random();
@@ -487,13 +488,13 @@ public class Board {
 		String direction;
 
 		for (int k = 0; k < regions.length; k++) {
-			HashMap<String, City> hashMap = new HashMap<String, City>();
-			ArrayList<String> cityNames = new ArrayList<String>();
+			Map<String, City> hashMap = new HashMap<>();
+			ArrayList<String> cityNames = new ArrayList<>();
 			hashMap = mapCitiesWithLetters(cityNames, hashMap, k);
 			direction = "right";
 			City currentCity, fatherCity = null, grandFatherCity = null;
 			for (int i = 0; i < MATRIX_ROWS; i++) {
-				if (direction.equals("right"))
+				if ("right".equals(direction))
 					column = low + 7;
 				else
 					column = low + 3;
@@ -507,7 +508,7 @@ public class Board {
 					}
 				}
 				matrix[i][column] = initialLetter;
-				if (direction.equals("right")) {
+				if ("right".equals(direction)) {
 					direction = "left";
 				} else {
 					direction = "right";
@@ -550,10 +551,10 @@ public class Board {
 	 * @param k
 	 *            the index of the current region
 	 */
-	public HashMap<String, City> mapCitiesWithLetters(ArrayList<String> cityNames, HashMap<String, City> hashMap,
+	public Map<String, City> mapCitiesWithLetters(List<String> cityNames, Map<String, City> hashMap,
 			int k) {
-		ArrayList<City> cities = regions[k].getCities();
-		Iterator<City> iterator = cities.iterator();
+		ArrayList<City> regionCities = regions[k].getCities();
+		Iterator<City> iterator = regionCities.iterator();
 		String name;
 		while (iterator.hasNext()) { // association of the initial letter
 										// with the corresponding city
@@ -615,6 +616,7 @@ public class Board {
 		}
 	}
 
+	@Override
 	public String toString() {
 		String string = "";
 		string += "Map status:\n";
@@ -646,7 +648,7 @@ public class Board {
 		return this.numberOfPermitTiles;
 	}
 
-	public ArrayList<City> getMap() {
+	public List<City> getMap() {
 		return this.cities;
 	}
 

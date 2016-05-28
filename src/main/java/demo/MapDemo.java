@@ -2,6 +2,7 @@ package demo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 
 import model.City;
@@ -81,7 +82,7 @@ public class MapDemo {
 	public static void generateConnection(Board map, int linksBetweenCities) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
 		Scanner input = new Scanner(System.in);
 		System.out.println("NEW CONNECTION");
@@ -113,7 +114,7 @@ public class MapDemo {
 	public static void removeConnection(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
 		Scanner input = new Scanner(System.in);
 		System.out.println("REMOVE CONNECTION");
@@ -141,7 +142,7 @@ public class MapDemo {
 	public static void countDistance(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
 		Scanner input = new Scanner(System.in);
 		System.out.println("COUNT DISTANCE:");

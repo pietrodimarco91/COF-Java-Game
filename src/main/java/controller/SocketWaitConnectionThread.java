@@ -30,7 +30,7 @@ public class SocketWaitConnectionThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.notifyAll();
+        lock.notifyAll();
     }
 
     public Connector getConnector() {

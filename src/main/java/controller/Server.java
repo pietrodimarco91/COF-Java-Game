@@ -14,22 +14,27 @@ public class Server {
 	 * must know to connect to the game.
 	 */
 	private static final String ip="localhost";
+	
 	/**
 	 * The port of the specified IP Address (connection parameter).
 	 */
 	private static final int port=80;
+	
 	/**
 	 * Matches Ids
 	 */
 	private static int id=0;
+	
 	/**
-	 *This attribute handles every interaction with the user.
+	 *This attribute handles every interaction with the client.
 	 */
 	private ConnectorHandler connectorHandler;
+	
 	/**
-	 *These threads are used by Server to handles the different connections coming from the Clients
+	 *These threads are used by Server to handle the different connections coming from the Clients
 	 */
 	private ExecutorService thread;
+	
 	/**
 	 * The Server stores an array of currently on-going matches through their MatchHandlers
 	 */
@@ -45,6 +50,9 @@ public class Server {
 		this.waitConnection();
 	}
 
+	/**
+	 * NEEDS REVISION: Why id++?
+	 */
 	public static int getId() {
 		return id++;
 	}

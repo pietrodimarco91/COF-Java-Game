@@ -1,5 +1,12 @@
 package exceptions;
 
+/**
+ * This exception is thrown when a Councillor of a specified color doesn't exist
+ * inside the CouncillorsPool
+ * 
+ * @author Riccardo
+ *
+ */
 public class CouncillorNotFoundException extends Exception {
 
 	/**

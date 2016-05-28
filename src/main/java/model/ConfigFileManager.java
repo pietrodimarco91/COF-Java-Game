@@ -21,14 +21,31 @@ import exceptions.ConfigAlreadyExistingException;
  */
 public class ConfigFileManager {
 
+	/**
+	 * The identifier of the configuration file
+	 */
 	private File file;
 
+	/**
+	 * The name of the file
+	 */
 	private final String filename = "config/board.config";
 
+	/**
+	 * The FileOutputStreamto to be used to open the file and correctly write in
+	 * it.
+	 */
 	private FileOutputStream fos;
 
+	/**
+	 * The ObjectOutputStream to be used to serialize the ConfigObjects in the
+	 * config fille
+	 */
 	private ObjectOutputStream outputStream;
 
+	/**
+	 * The current number of the configurations saved in the config file.
+	 */
 	private int numberOfConfigurations;
 
 	public ConfigFileManager() {
@@ -37,6 +54,18 @@ public class ConfigFileManager {
 		openFile();
 	}
 
+	/**
+	 * This methods allows the player to create a new configuration and save it
+	 * inside the config file
+	 * 
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 * @throws ConfigAlreadyExistingException
+	 *             if the chosen configuration already exists inside the file
+	 */
 	public void createConfiguration(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) throws ConfigAlreadyExistingException {
 		if (configAlreadyExists(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
@@ -52,6 +81,13 @@ public class ConfigFileManager {
 		}
 	}
 
+	/**
+	 * This methods returns an ArrayList of ConfigObjects, representing the
+	 * configurations already existing inside the config file
+	 * 
+	 * @return a list of the already existing configurations, that the player
+	 *         can choose from
+	 */
 	public ArrayList<ConfigObject> getConfigurations() {
 		ArrayList<ConfigObject> configurations = new ArrayList<ConfigObject>();
 
@@ -74,6 +110,15 @@ public class ConfigFileManager {
 		return configurations;
 	}
 
+	/**
+	 * This method is used to check whether the desired configuration already exists inside the file or not.
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 * @return true if the specified configuration already exists, false otherwise
+	 */
 	public boolean configAlreadyExists(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
 		ArrayList<ConfigObject> configs = getConfigurations();
@@ -88,6 +133,9 @@ public class ConfigFileManager {
 		return false;
 	}
 
+	/**
+	 * This method opens the necessary output streams to write inside the file
+	 */
 	public void openFile() {
 		if (!file.exists()) {
 			try {
@@ -115,6 +163,9 @@ public class ConfigFileManager {
 
 	}
 
+	/**
+	 * This method closes all the output streams.
+	 */
 	public void closeFile() {
 		try {
 			fos.close();

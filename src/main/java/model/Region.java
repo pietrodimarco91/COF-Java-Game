@@ -80,7 +80,7 @@ public class Region implements Cloneable {
 	 *            of the player
 	 * @return number of councillors satisfied
 	 */
-	public int numberOfCouncilSatisfied(ArrayList<PoliticCard> politicCards) {
+	public int numberOfCouncillorsSatisfied(ArrayList<PoliticCard> politicCards) {
 		Iterator<Councillor> iterationCouncillors = this.council.getCouncillors().iterator();
 		Councillor councillor;
 		PoliticCard tempPoliticCard;

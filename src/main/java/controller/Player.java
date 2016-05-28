@@ -138,7 +138,7 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public Connector getConnector() { // Da aggiunfere UML
+	public Connector getConnector() { // Da aggiungere UML
 		// TODO implement here
 		return this.playerConnector;
 	}
@@ -234,7 +234,7 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public boolean applyPayment(int payment) {
+	public boolean performPayment(int payment) {
 		if ((this.coins - payment) >= 0) {
 			this.coins -= payment;
 			return true;

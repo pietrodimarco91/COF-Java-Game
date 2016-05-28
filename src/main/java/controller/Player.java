@@ -7,6 +7,7 @@ import model.CouncillorColors;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
+import model.PoliticCardDeck;
 import model.Tile;
 
 /**
@@ -99,8 +100,7 @@ public class Player {
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
 		this.playerConnector = playerConnector;
-		this.politicCards = new ArrayList<PoliticCard>();
-		inizializeFirstHand();// Distribute the first hand of politic cards
+		initializeFirstHand();// Distributes the first hand of politic cards
 	}
 
 	/**
@@ -139,19 +139,14 @@ public class Player {
 	 * @return
 	 */
 	public Connector getConnector() { // Da aggiungere UML
-		// TODO implement here
 		return this.playerConnector;
 	}
 
 	/**
-	 * @return
+	 * 
 	 */
-	public void inizializeFirstHand() {
-		PoliticCard card;
-		for (int i = 0; i < 6; i++) {
-			card = new PoliticCard();
-			this.politicCards.add(card);
-		}
+	public void initializeFirstHand() {
+		this.politicCards = PoliticCardDeck.distributePoliticCards();
 	}
 
 	/**
@@ -174,7 +169,7 @@ public class Player {
 					System.out.println("Write the color card that yoy would to use:");
 					colorCard = input.nextLine();
 				}
-				while (!checkIfYouHaveThisCard(colorCard,tempHandCards)) {
+				while (!checkIfYouHaveThisCard(colorCard, tempHandCards)) {
 					System.out.println("You don't have this card!");
 					System.out.println("Rewrite the color card that you would to use:");
 					colorCard = input.nextLine();
@@ -191,6 +186,7 @@ public class Player {
 		return cardsChose;
 
 	}
+
 	/**
 	 * @return
 	 */
@@ -203,19 +199,20 @@ public class Player {
 		}
 		return false;
 	}
+
 	/**
 	 * @return
 	 */
-	public boolean checkIfYouHaveThisCard(String colorCard,ArrayList<PoliticCard> tempHandCards) {
+	public boolean checkIfYouHaveThisCard(String colorCard, ArrayList<PoliticCard> tempHandCards) {
 		for (int i = 0; i < tempHandCards.size(); i++) {
-			if (tempHandCards.get(i).getColorCard().equals(colorCard)){
+			if (tempHandCards.get(i).getColorCard().equals(colorCard)) {
 				tempHandCards.remove(i);
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -224,13 +221,14 @@ public class Player {
 			if (this.politicCards.contains(cardsChose.get(i)))
 				this.politicCards.remove(i);
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public void addCardOnHand(PoliticCard card) {
 		this.politicCards.add(card);
 	}
+
 	/**
 	 * @return
 	 */
@@ -241,59 +239,63 @@ public class Player {
 		} else
 			return false;
 	}
+
 	/**
 	 * @return
 	 */
 	public void setUnusedPermitTiles(Tile permitTile) {
 		this.unusedPermitTiles.add((PermitTile) permitTile);
 	}
+
 	/**
 	 * @return
 	 */
 	public int getNumberOfPermitTile() {
 		return this.unusedPermitTiles.size();
 	}
+
 	/**
 	 * @return
 	 */
 	public void addCoins(int coins) {
 		this.coins = coins;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public void removeCoins(int coins) {
 		this.coins -= coins;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public int getCoins() {
 		return this.coins;
 	}
+
 	/**
 	 * @return
 	 */
 	public ArrayList<PoliticCard> getPoliticCards() {
 		return this.politicCards;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public void addAssistant() {
 		this.assistants++;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public void removeAssistant() {
 		this.assistants--;
 	}
-	
+
 	/**
 	 * @return
 	 */

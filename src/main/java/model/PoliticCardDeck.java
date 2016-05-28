@@ -8,13 +8,13 @@ import java.util.ArrayList;
  */
 public abstract class PoliticCardDeck {
 
+	private static final int FIRST_HAND_POLITIC_CARDS=6;
 	/**
 	 * @return PoliticCard 
 	 * returns the new card generated
 	 */
 	public static PoliticCard generateRandomPoliticCard() {
-		PoliticCard politicCardDraw = new PoliticCard();
-		return politicCardDraw;
+		return new PoliticCard();
 	}
 
 	/**
@@ -22,11 +22,9 @@ public abstract class PoliticCardDeck {
 	 */
 	public static ArrayList<PoliticCard> distributePoliticCards() {
 		ArrayList<PoliticCard> playerCards = new ArrayList<PoliticCard>();
-		PoliticCard singleCard;
 
-		for (int i = 0; i < 6; i++) {
-			singleCard = new PoliticCard();
-			playerCards.add(i, singleCard);
+		for (int i = 0; i < FIRST_HAND_POLITIC_CARDS; i++) {
+			playerCards.add(generateRandomPoliticCard());
 		}
 		return playerCards;
 	}

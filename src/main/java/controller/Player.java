@@ -150,6 +150,9 @@ public class Player {
 	}
 
 	/**
+	 * NEEDS REVISION: must implement exceptions and correct communication with
+	 * the client.
+	 * 
 	 * @return
 	 */
 	public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
@@ -169,7 +172,7 @@ public class Player {
 					System.out.println("Write the color card that yoy would to use:");
 					colorCard = input.nextLine();
 				}
-				while (!checkIfYouHaveThisCard(colorCard, tempHandCards)) {
+				while (!checkIfYouOwnThisCard(colorCard, tempHandCards)) {
 					System.out.println("You don't have this card!");
 					System.out.println("Rewrite the color card that you would to use:");
 					colorCard = input.nextLine();
@@ -188,22 +191,30 @@ public class Player {
 	}
 
 	/**
-	 * @return
+	 * This method checks whether the specified color is a valid Politic Card
+	 * color or not.
+	 * 
+	 * @return true if the color is correct, false otherwise
 	 */
 	public boolean checkExistingColor(String colorCard) {
+		colorCard = colorCard.toUpperCase();
+		colorCard = colorCard.trim();
 		ArrayList<String> allColorsCards;
 		allColorsCards = CouncillorColors.getPoliticCardsColors();
-		for (int i = 0; i < allColorsCards.size(); i++) {
-			if (allColorsCards.get(i).equals(colorCard))
+		for (String color : allColorsCards) {
+			if (color.equals(colorCard))
 				return true;
 		}
 		return false;
 	}
 
 	/**
-	 * @return
+	 * Checks whether the player owns a PoliticCard of the specified color or
+	 * not.
+	 * 
+	 * @return true if the player owns it, false otherwise
 	 */
-	public boolean checkIfYouHaveThisCard(String colorCard, ArrayList<PoliticCard> tempHandCards) {
+	public boolean checkIfYouOwnThisCard(String colorCard, ArrayList<PoliticCard> tempHandCards) {
 		for (int i = 0; i < tempHandCards.size(); i++) {
 			if (tempHandCards.get(i).getColorCard().equals(colorCard)) {
 				tempHandCards.remove(i);
@@ -214,7 +225,8 @@ public class Player {
 	}
 
 	/**
-	 * @return
+	 * This method removed the specified PoliticCard from the hand of the
+	 * player.
 	 */
 	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
 		for (int i = 0; i < cardsChose.size(); i++)
@@ -223,13 +235,16 @@ public class Player {
 	}
 
 	/**
-	 * @return
+	 * This method adds the specified PoliticCard to the hand of the player
 	 */
 	public void addCardOnHand(PoliticCard card) {
 		this.politicCards.add(card);
 	}
 
 	/**
+	 * NEEDS REVISION! Must implement exception handling instead of boolean
+	 * return.
+	 * 
 	 * @return
 	 */
 	public boolean performPayment(int payment) {
@@ -241,35 +256,37 @@ public class Player {
 	}
 
 	/**
-	 * @return
+	 * This method adds the specified PermitTile to the list of the unused
+	 * Permit Tiles of the player.
 	 */
-	public void setUnusedPermitTiles(Tile permitTile) {
+	public void addUnusedPermitTiles(Tile permitTile) {
 		this.unusedPermitTiles.add((PermitTile) permitTile);
 	}
 
 	/**
-	 * @return
+	 * @return the number of the UNUSED permit tiles of the player
 	 */
 	public int getNumberOfPermitTile() {
 		return this.unusedPermitTiles.size();
 	}
 
 	/**
-	 * @return
+	 * This method adds the specified coins to the coins owned by the player
 	 */
 	public void addCoins(int coins) {
-		this.coins = coins;
+		this.coins += coins;
 	}
 
 	/**
-	 * @return
+	 * This method removes the specified quantity of coins from the owned coins
+	 * of the player
 	 */
 	public void removeCoins(int coins) {
 		this.coins -= coins;
 	}
 
 	/**
-	 * @return
+	 * @return the coins of the player
 	 */
 	public int getCoins() {
 		return this.coins;
@@ -283,14 +300,14 @@ public class Player {
 	}
 
 	/**
-	 * @return
+	 * This method adds an assistant to the owned assistants of the player
 	 */
 	public void addAssistant() {
 		this.assistants++;
 	}
 
 	/**
-	 * @return
+	 * This method removes an assistant from the owned assistants of the player
 	 */
 	public void removeAssistant() {
 		this.assistants--;
@@ -299,7 +316,7 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public int getNumberAssistants() {
+	public int getNumberOfAssistants() {
 		return this.assistants;
 	}
 

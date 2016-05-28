@@ -159,7 +159,7 @@ public class MatchHandler extends Thread {
 			System.out.println("Choose slot: 1 or 2?");
 			int slot = input.nextInt();
 			try {
-				player.setUnusedPermitTiles(regionDeck.drawPermitTile(slot));
+				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
 			} catch (InvalidSlotException e) {
 				e.printStackTrace();
 			}
@@ -226,7 +226,7 @@ public class MatchHandler extends Thread {
 	 * @return
 	 */
 	public boolean sendAssistantToElectCouncillor(Player player, String regionName, String councillorColor) {
-		if (player.getNumberAssistants() >= 1) {
+		if (player.getNumberOfAssistants() >= 1) {
 			Region region = this.getRegion(regionName);
 			try {
 				region.electCouncillor(councillorColor);

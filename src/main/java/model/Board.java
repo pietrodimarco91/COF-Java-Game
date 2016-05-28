@@ -10,7 +10,7 @@ import java.util.Random;
 import controller.Player;
 
 /**
- * The constructor of the Map initializes the map with the specified parameters.
+ * The constructor of the Board initializes the board with the specified parameters.
  * It also allows to make the connections between the cities.
  */
 public class Board {

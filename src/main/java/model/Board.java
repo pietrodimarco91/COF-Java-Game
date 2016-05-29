@@ -90,7 +90,6 @@ public class Board {
 		MATRIX_ROWS = this.numberOfCities / 3;
 		generateDefaultConnections(linksBetweenCities);
 		nobilityTrackSetup(nobilityTrackBonusNumber);
-		Market market = new Market();
 	}
 
 	/**

@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidSlotException;
@@ -22,6 +24,7 @@ import exceptions.InvalidSlotException;
  */
 public class MatchHandler extends Thread {
 
+	private static final Logger logger= Logger.getLogger( MatchHandler.class.getName() );
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
 	 */
@@ -161,7 +164,7 @@ public class MatchHandler extends Thread {
 			try {
 				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
 			} catch (InvalidSlotException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, e.showError(), e);
 			}
 		} else
 			System.out.println("You were not able to satisfy the specified Council with these Politic Cards");
@@ -196,7 +199,7 @@ public class MatchHandler extends Thread {
 		try {
 			region.electCouncillor(councillorColor);
 		} catch (CouncillorNotFoundException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.showError(), e);
 			return false;
 		}
 		player.addCoins(4);
@@ -231,7 +234,7 @@ public class MatchHandler extends Thread {
 			try {
 				region.electCouncillor(councillorColor);
 			} catch (CouncillorNotFoundException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, e.showError(), e);
 			}
 			return true;
 		} else

@@ -5,19 +5,21 @@ package controller;
  */
 public class RMIWaitConnectionThread extends Thread {
 
-    Connector connector;
-    Object lock;
+	Connector connector;
+	Object lock;
 
-    public RMIWaitConnectionThread(Object lock) {
-        this.lock=lock;
-    }
+	public RMIWaitConnectionThread(Object lock) {
+		this.lock = lock;
+	}
 
-    @Override
-    public void run() {
-        lock.notify();
-    }
+	@Override
+	public void run() {
+		synchronized (lock) {
+			lock.notify();
+		}
+	}
 
-    public Connector getConnector() {
-        return connector;
-    }
+	public Connector getConnector() {
+		return connector;
+	}
 }

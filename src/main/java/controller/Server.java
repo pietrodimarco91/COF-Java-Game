@@ -80,7 +80,8 @@ public class Server {
 					lock.wait();
 				}
 			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, "Server: Error while waiting on 'lock'", e);
+				logger.log(Level.WARNING, "Interrupted Exception! Server: Error while waiting on 'lock'", e);
+				System.exit(0);
 			}
 			if (!waitRmiConnection.isAlive()) {
 				connector = waitRmiConnection.getConnector();

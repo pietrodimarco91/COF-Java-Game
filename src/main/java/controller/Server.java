@@ -1,5 +1,8 @@
 package controller;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,65 +27,50 @@ public class Server {
 	 * Matches Ids
 	 */
 	private static int id=0;
-	
-	/**
-	 *This attribute handles every interaction with the client.
-	 */
-	private ConnectorHandler connectorHandler;
-	
+	SocketConnector socketConnector;
+	RMIServer rmiServer;
 	/**
 	 *These threads are used by Server to handle the different connections coming from the Clients
 	 */
 	private ExecutorService thread;
-	
 	/**
 	 * The Server stores an array of currently on-going matches through their MatchHandlers
 	 */
 	private ArrayList<MatchHandler> matches;
-
-	private Connector connector;
+	private ServerSocket welcomeSocket;
 
 
 	public Server() {
-		this.connectorHandler =new ConnectorHandler(port);
 		thread= Executors.newCachedThreadPool();
 		this.matches=new ArrayList<MatchHandler>();
+		try {
+			rmiServer=new RMIServer(matches);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		this.waitConnection();
+		try {
+			this.welcomeSocket=new ServerSocket(port);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	/**
-	 * NEEDS REVISION: Why id++?
-	 */
-	public static int getId() {
-		return id++;
-	}
 
 	/**
 	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
 	private void waitConnection() {
-		Object lock = new Object();
-		RMIWaitConnectionThread waitRmiConnection=new RMIWaitConnectionThread(lock);
-		SocketWaitConnectionThread waitSocketConnection=new SocketWaitConnectionThread(lock,port);
 		while(true){
-			waitRmiConnection.start();
-			waitSocketConnection.start();
 			try {
-				lock.wait();
-			} catch (InterruptedException e) {
+				socketConnector=new SocketConnector(welcomeSocket.accept());
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if(!waitRmiConnection.isAlive()){
-				connector=waitRmiConnection.getConnector();
-				waitRmiConnection=new RMIWaitConnectionThread(lock);
-			}
-			if(!waitSocketConnection.isAlive()){
-				connector=waitSocketConnection.getConnector();
-				waitSocketConnection= new SocketWaitConnectionThread(lock, port);
-			}
-			thread.submit(new ClientHandler(connector, matches));
+			thread.submit(new ClientHandler(socketConnector, matches));
 		}
 	}
-	
+
+
 
 }

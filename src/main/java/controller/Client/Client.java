@@ -3,18 +3,51 @@ package controller.Client;
 import model.PermitTile;
 import model.PoliticCard;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * 
  */
 public class Client {
 
+	Connector connector;
+	RMIServerInt rmiServerInt;
 	
 	/**
 	 * Default constructor
 	 */
 	public Client() {
+		Scanner input = new Scanner(System.in);
+		System.out.println("come vuoi connetterti?\n1)RMI\n2)Socket");
+		switch (input.nextInt()){
+			case 1:
+				try {
+					connector=new Connector();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				try {
+					System.out.println(Naming.lookup("rmi://127.0.0.1/registry"));
+					rmiServerInt= (RMIServerInt) Naming.lookup("rmi://127.0.0.1/registry");
+					rmiServerInt.connect(connector);
+				} catch (NotBoundException e) {
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+
+				break;
+			case 2:
+				break;
+		}
+
 	}
 
 	/**

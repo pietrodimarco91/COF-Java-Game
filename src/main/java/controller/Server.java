@@ -1,7 +1,10 @@
 package controller;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +24,7 @@ public class Server {
 	/**
 	 * The port of the specified IP Address (connection parameter).
 	 */
-	private static final int port=80;
+	private static final int port=2000;
 	
 	/**
 	 * Matches Ids
@@ -44,16 +47,31 @@ public class Server {
 		thread= Executors.newCachedThreadPool();
 		this.matches=new ArrayList<MatchHandler>();
 		try {
-			rmiServer=new RMIServer(matches);
+			java.rmi.registry.LocateRegistry.createRegistry(1099);
+			RMIServerInt b=new RMIServer(matches);
+			try {
+				try {
+					Naming.bind("rmi://127.0.0.1/registry", b);
+				} catch (AlreadyBoundException e) {
+					e.printStackTrace();
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			System.out.println("[System] Chat Server is ready.");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		this.waitConnection();
 		try {
 			this.welcomeSocket=new ServerSocket(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		//this.waitConnection();
+	}
+
+	public static int getId() {
+		return id++;
 	}
 
 

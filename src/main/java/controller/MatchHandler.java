@@ -144,37 +144,15 @@ public class MatchHandler extends Thread {
 	 * @param regionName
 	 */
 	public void buyPermitTile(Player player, String regionName) {
-<<<<<<< HEAD
-=======
-		Region[] regions = this.board.getRegions();
-		boolean flag = false;
-		Region region = null;
->>>>>>> branch 'develop' of https://Gabbo16@bitbucket.org/rickystream94/lm_bressan_cof.git
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
 		PermitTileDeck regionDeck;
-<<<<<<< HEAD
 		Region region=this.getRegion(regionName);
-		
-		ArrayList<PoliticCard> cardsChoseForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
-		numberOfCouncillorSatisfied = region.numberOfCouncilSatisfied(cardsChoseForCouncilSatisfaction);
-		CoinsManager coinsManager = new CoinsManager();
-=======
 		region = this.getRegion(regionName);
 		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
->>>>>>> branch 'develop' of https://Gabbo16@bitbucket.org/rickystream94/lm_bressan_cof.git
 		Scanner input = new Scanner(System.in);
 		if (numberOfCouncillorSatisfied > 0) {
-<<<<<<< HEAD
-			System.out.println("Puoi soddisfare il consiglio con " + numberOfCouncillorSatisfied + " carte!");
-			playerPayment = coinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.applyPayment(playerPayment);
-			player.removeCardsFromHand(cardsChoseForCouncilSatisfaction);
-			regionDeck = region.getDeck();
-			System.out.println("Quale slot vuoi scegliere 1 o 2?");
-			int Slot = input.nextInt();
-=======
 			System.out.println("You are able to satisfy the region Council with " + numberOfCouncillorSatisfied
 					+ " Politic Cards!");
 			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
@@ -183,7 +161,6 @@ public class MatchHandler extends Thread {
 			regionDeck = region.getDeck();
 			System.out.println("Choose slot: 1 or 2?");
 			int slot = input.nextInt();
->>>>>>> branch 'develop' of https://Gabbo16@bitbucket.org/rickystream94/lm_bressan_cof.git
 			try {
 				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
 			} catch (InvalidSlotException e) {
@@ -253,7 +230,7 @@ public class MatchHandler extends Thread {
 	 */
 	public boolean changeBusinessPermitTiles(Player player, String regionName) {
 		Region region = this.getRegion(regionName);
-		if (player.getNumberAssistants() >= 1) {
+		if (player.getNumberOfAssistants() >= 1) {
 			region.getDeck().switchPermitTiles();
 			player.removeAssistant();
 			return true;
@@ -262,6 +239,7 @@ public class MatchHandler extends Thread {
 	}
 	
 	/**
+	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
 	 * @return
 	 */
 	public boolean buildEmporiumWithPermitTile(Player player,String cityName) {

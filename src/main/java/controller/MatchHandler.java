@@ -1,6 +1,8 @@
 package controller;
 
 import model.Board;
+import model.City;
+import model.Tile;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
@@ -12,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidSlotException;
@@ -22,6 +26,7 @@ import exceptions.InvalidSlotException;
  */
 public class MatchHandler extends Thread {
 
+	private static final Logger logger= Logger.getLogger( MatchHandler.class.getName() );
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
 	 */
@@ -139,12 +144,10 @@ public class MatchHandler extends Thread {
 	 * @param regionName
 	 */
 	public void buyPermitTile(Player player, String regionName) {
-		Region[] regions = this.board.getRegions();
-		boolean flag = false;
-		Region region = null;
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
 		PermitTileDeck regionDeck;
+		Region region=this.getRegion(regionName);
 		region = this.getRegion(regionName);
 		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
@@ -161,7 +164,7 @@ public class MatchHandler extends Thread {
 			try {
 				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
 			} catch (InvalidSlotException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, e.showError(), e);
 			}
 		} else
 			System.out.println("You were not able to satisfy the specified Council with these Politic Cards");
@@ -196,7 +199,7 @@ public class MatchHandler extends Thread {
 		try {
 			region.electCouncillor(councillorColor);
 		} catch (CouncillorNotFoundException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.showError(), e);
 			return false;
 		}
 		player.addCoins(4);
@@ -225,13 +228,46 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
+	public boolean changeBusinessPermitTiles(Player player, String regionName) {
+		Region region = this.getRegion(regionName);
+		if (player.getNumberOfAssistants() >= 1) {
+			region.getDeck().switchPermitTiles();
+			player.removeAssistant();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
+	 * @return
+	 */
+	public boolean buildEmporiumWithPermitTile(Player player,String cityName) {
+		ArrayList<City> city;
+		int i;
+		PermitTile permitTile=player.getUnusedPermitTile(tileChose);
+		city=permitTile.getCities();
+		for(i=0;i<city.size();i++)
+			if(city.get(i).getName().equals(cityName) && !(city.get(i).checkPresenceOfEmporium(player))){
+				
+			}
+		
+		
+
+	}
+
+	/**
+	 * @return
+	 */
 	public boolean sendAssistantToElectCouncillor(Player player, String regionName, String councillorColor) {
 		if (player.getNumberOfAssistants() >= 1) {
 			Region region = this.getRegion(regionName);
 			try {
 				region.electCouncillor(councillorColor);
 			} catch (CouncillorNotFoundException e) {
-				e.printStackTrace();
+
+				logger.log(Level.SEVERE, e.showError(), e);
+
 			}
 			return true;
 		} else

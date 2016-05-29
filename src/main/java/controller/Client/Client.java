@@ -72,13 +72,7 @@ public class Client {
 
 	
 
-	/**
-	 * @return
-	 */
-	public void changeBusinessPermitTiles() {
-		// TODO implement here
 
-	}
 
 
 	/**

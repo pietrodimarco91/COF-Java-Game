@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import exceptions.ConfigAlreadyExistingException;
 
@@ -21,6 +23,7 @@ import exceptions.ConfigAlreadyExistingException;
  */
 public class ConfigFileManager {
 
+	private static final Logger logger= Logger.getLogger( ConfigFileManager.class.getName() );
 	/**
 	 * The identifier of the configuration file
 	 */
@@ -77,7 +80,8 @@ public class ConfigFileManager {
 			outputStream.writeObject(new ConfigObject(numberOfConfigurations, numberOfPlayers, rewardTokenBonusNumber,
 					permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities));
 		} catch (IOException e) {
-			System.out.println("Error: cannot save the configuration in file " + filename);
+			logger.log( Level.SEVERE, "Error: cannot save the configuration in file ", e );
+			
 		}
 	}
 
@@ -97,13 +101,14 @@ public class ConfigFileManager {
 				configurations.add((ConfigObject) inputStream.readObject());
 			}
 		} catch (EOFException e) {
+			logger.log( Level.INFO, "Just read all configurations from " + filename, e );
 			// just to break from the cycle and catch the end of file
 		} catch (IOException e) {
-			System.out.println("Error while reading the content of the file " + filename);
+			logger.log( Level.SEVERE, "Error while reading the content of the file " + filename, e );
 			closeFile();
 			System.exit(0);
 		} catch (ClassNotFoundException e) {
-			System.out.println("Error in handling the class type");
+			logger.log( Level.SEVERE, "Error in handling the class type", e );
 			closeFile();
 			System.exit(0);
 		}
@@ -142,10 +147,10 @@ public class ConfigFileManager {
 				fos = new FileOutputStream(file);
 				outputStream = new ObjectOutputStream(fos);
 			} catch (FileNotFoundException e) {
-				System.out.println("Error while opening the file!");
+				logger.log( Level.SEVERE, "Error while opening the file!", e );
 				System.exit(0);
 			} catch (IOException e) {
-				System.out.println("Error while reading the file!");
+				logger.log( Level.SEVERE, "Error while reading the file!", e );
 				System.exit(0);
 			}
 		} else {
@@ -153,10 +158,10 @@ public class ConfigFileManager {
 				fos = new FileOutputStream(file, true);
 				outputStream = new AppendableObjectOutputStream(fos);
 			} catch (FileNotFoundException e) {
-				System.out.println("Error while opening the file!");
+				logger.log( Level.SEVERE, "Error while opening the file!", e );
 				System.exit(0);
 			} catch (IOException e) {
-				System.out.println("Error while reading the file!");
+				logger.log( Level.SEVERE, "Error while reading the file!", e );
 				System.exit(0);
 			}
 		}
@@ -171,7 +176,7 @@ public class ConfigFileManager {
 			fos.close();
 			outputStream.close();
 		} catch (IOException e) {
-			System.out.println("Error while closing the file!");
+			logger.log( Level.SEVERE, "Error while closing the file!", e );
 			System.exit(0);
 		}
 	}

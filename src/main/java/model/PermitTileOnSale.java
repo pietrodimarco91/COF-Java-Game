@@ -6,14 +6,13 @@ public class PermitTileOnSale extends ItemOnSale {
 
 	Tile permitTile;
 	
-	public PermitTileOnSale(Tile permitTile) {
+	public PermitTileOnSale(Tile permitTile,Player seller,int price) {
+		super(seller,price);
 		this.permitTile=permitTile;
 	}
 	@Override
 	public void buyItem(Player player) {
-		/*
-		 * The basic idea is that the specified player is given the PermitTile associated to this object
-		 */
+		player.addUnusedPermitTiles(permitTile);
 	}
 
 }

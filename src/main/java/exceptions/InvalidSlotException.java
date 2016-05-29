@@ -11,5 +11,9 @@ public class InvalidSlotException extends Exception {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public String showError() {
+		return "Invalid slot! Please choose correct slot!";
+	}
 
 }

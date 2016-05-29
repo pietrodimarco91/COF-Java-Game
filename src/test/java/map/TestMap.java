@@ -3,6 +3,7 @@ package map;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ public class TestMap {
 		assertEquals(false, result);
 
 		System.out.println("UNCONNECTED GRAPH:");
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		for (City city4 : cities) {
 			for (City city5 : cities) {
 				int distance = map.countDistance(city4, city5);

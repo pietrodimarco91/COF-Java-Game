@@ -3,6 +3,7 @@ package map;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -20,8 +21,8 @@ public class TestUnconnectCities {
 
 	@Test
 	public void test() {
-		int initialLength1, initialLength2, finalLength;
-		ArrayList<City> cities = map.getMap();
+		int initialLength1, initialLength2;
+		List<City> cities = map.getMap();
 		City city = cities.get(0);
 		City connectedCity = city.getConnectedCities().get(0);
 		initialLength1 = city.getConnectedCities().size();

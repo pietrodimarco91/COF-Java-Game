@@ -2,12 +2,17 @@ package controller;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import model.ConfigFileManager;
 
 /**
  * This Class handles the interactions with the Client making the difference between RMI and Socket connections.
  */
 public class ConnectorHandler{
 
+	private static final Logger logger= Logger.getLogger( ConnectorHandler.class.getName() );
     /**
      *The port where Server are listening to the requests from the Clients.
      */
@@ -19,7 +24,7 @@ public class ConnectorHandler{
         try {
             welcomeSocket=new ServerSocket(port);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE,"Error while creating ServerSocket 'welcomeSocket' on port"+port,e);
         }
     }
 

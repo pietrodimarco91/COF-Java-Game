@@ -4,12 +4,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import model.ConfigFileManager;
 
 /**
  * This class is used in case of Socket Connection, it handles the real interaction with the user.
  */
 public class SocketConnector implements Connector{
 
+	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
+	
     Socket socket;
     PrintWriter output;
     Scanner input;
@@ -21,7 +27,7 @@ public class SocketConnector implements Connector{
             output=new PrintWriter(socket.getOutputStream());
             input=new Scanner(socket.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error while opening the output/input stream for 'socket'", e);
         }
         System.out.println("accesso effettuato da :"+socket.getInetAddress());
     }

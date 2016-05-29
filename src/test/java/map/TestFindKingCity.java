@@ -3,6 +3,7 @@ package map;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class TestFindKingCity {
 	@Test
 	public void test() {
 		Board map = new Board(4,2,2,2,2);
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		City cityWithKing=null;
 		int counter=0;
 		for(City city:cities) {

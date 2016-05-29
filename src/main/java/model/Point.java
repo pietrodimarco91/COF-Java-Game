@@ -42,11 +42,11 @@ public class Point extends Point2D {
 
 	}
 	
-	public boolean equals(Point2D point) {
+	/*public boolean equals(Point2D point) {
 		if(this.x==point.getX()&&this.y==point.getY())
 			return true;
 		else 
 			return false;
-	}
+	}*/
 
 }

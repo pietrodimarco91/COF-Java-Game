@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Pietro Di Marco - edited by Riccardo - on 13/05/16.
@@ -10,7 +11,7 @@ public abstract class TileFactory {
 
     public abstract Tile createRewardToken(int bonusNumber);
 
-    public abstract Tile createPermitTile(ArrayList<City> cities, int bonusNumber);
+    public abstract Tile createPermitTile(List<City> cities, int bonusNumber);
 
     public abstract Tile createRegionBonusTile(int points);
 

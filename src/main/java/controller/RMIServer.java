@@ -16,7 +16,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInt {
 
     }
     @Override
-    public void connect(Connector a) throws RemoteException {
+    public void connect(ConnectorInt a) throws RemoteException {
         new ClientHandler(a,matches);
     }
 }

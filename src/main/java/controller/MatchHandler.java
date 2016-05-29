@@ -2,7 +2,6 @@ package controller;
 
 import model.Board;
 import model.City;
-import model.Tile;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
@@ -80,9 +79,9 @@ public class MatchHandler extends Thread {
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, Connector connector) {
+	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
 		this.players = new ArrayList<Player>();
-		Player player = new Player(connector);
+		Player player = new Player(connectorInt);
 		this.players.add(player);
 		this.id = id;
 		this.date = date;
@@ -181,7 +180,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public Connector getPlayerConnector(int playerNumber) {// To add UML scheme
+	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
 	}
@@ -277,8 +276,8 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(Connector connector) {// To add UML scheme
-		Player player = new Player(connector);
+	public void addPlayer(ConnectorInt connectorInt) {// To add UML scheme
+		Player player = new Player(connectorInt);
 		this.players.add(player);
 		if (isFull())
 			this.startGame();

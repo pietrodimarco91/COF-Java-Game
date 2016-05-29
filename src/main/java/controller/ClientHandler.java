@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.ConfigFileManager;
-
 /**
  * This Class let every user to create a new match or to join in a pending match
  * that already exist.
@@ -22,11 +20,11 @@ public class ClientHandler implements Runnable {
 	/**
 	 * This attribute handles every interaction with the user.
 	 */
-	private Connector connector;
+	private ConnectorInt connectorInt;
 
-	public ClientHandler(Connector connector, ArrayList<MatchHandler> matches) {
+	public ClientHandler(ConnectorInt connectorInt, ArrayList<MatchHandler> matches) {
 		this.matches = matches;
-		this.connector = connector;
+		this.connectorInt = connectorInt;
 	}
 
 	/**
@@ -36,12 +34,12 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			connector.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
+			connectorInt.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
 		} catch (RemoteException e) {
 			logger.log(Level.SEVERE, "Error while writing to client", e);
 		}
 		try {
-			switch (connector.receiveIntFromClient()) {
+			switch (connectorInt.receiveIntFromClient()) {
 			case 1:
 				this.joinMatch();
 				break;
@@ -59,7 +57,7 @@ public class ClientHandler implements Runnable {
 	 */
 	public void launchNewMatch() {
 		Date date = new Date();
-		MatchHandler matchHandler = new MatchHandler(Server.getId(), date, connector);
+		MatchHandler matchHandler = new MatchHandler(Server.getId(), date, connectorInt);
 		matches.add(matchHandler);
 		matchHandler.start();
 	}
@@ -77,7 +75,7 @@ public class ClientHandler implements Runnable {
 		while (iterator.hasNext()) {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
-				matchInList.addPlayer(connector);
+				matchInList.addPlayer(connectorInt);
 				joined = true;
 				break;
 			}

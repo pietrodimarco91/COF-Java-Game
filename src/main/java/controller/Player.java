@@ -5,7 +5,6 @@ import java.util.*;
 import model.City;
 import model.CouncillorColors;
 import model.PermitTile;
-import model.PermitTileDeck;
 import model.PoliticCard;
 import model.PoliticCardDeck;
 import model.Tile;
@@ -90,16 +89,16 @@ public class Player {
 	/**
 	 * 
 	 */
-	private Connector playerConnector;// To add UML scheme
+	private ConnectorInt playerConnectorInt;// To add UML scheme
 
 	/**
 	 * Default constructor
 	 */
-	public Player(Connector playerConnector) {
+	public Player(ConnectorInt playerConnectorInt) {
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
-		this.playerConnector = playerConnector;
+		this.playerConnectorInt = playerConnectorInt;
 		initializeFirstHand();// Distributes the first hand of politic cards
 	}
 
@@ -148,8 +147,8 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public Connector getConnector() { // Da aggiungere UML
-		return this.playerConnector;
+	public ConnectorInt getConnector() { // Da aggiungere UML
+		return this.playerConnectorInt;
 	}
 
 	/**

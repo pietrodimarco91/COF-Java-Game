@@ -9,22 +9,18 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import controller.Connector;
+import controller.ConnectorInt;
 import controller.ConnectorHandler;
 import controller.Player;
 import controller.SocketConnector;
 import exceptions.UnsufficientCoinsException;
-import model.AssistantOnSale;
 import model.Board;
 import model.ConcreteItemFactory;
-import model.ConfigFileManager;
 import model.ItemFactory;
 import model.ItemOnSale;
 import model.Market;
 import model.PermitTile;
-import model.PermitTileOnSale;
 import model.PoliticCard;
-import model.PoliticCardOnSale;
 import model.Tile;
 
 /**
@@ -43,12 +39,12 @@ public class TestMarket {
 		String string="";
 		assertEquals(items.getClass(),Market.getItemsOnSale().getClass());
 		
-		Connector connector1 = new SocketConnector(new Socket());
-		Player player1 = new Player(connector1);
-		Connector connector2 = new SocketConnector(new Socket());
-		Player player2 = new Player(connector2);
-		Connector connector3 = new SocketConnector(new Socket());
-		Player player3 = new Player(connector3);
+		ConnectorInt connectorInt1 = new SocketConnector(new Socket());
+		Player player1 = new Player(connectorInt1);
+		ConnectorInt connectorInt2 = new SocketConnector(new Socket());
+		Player player2 = new Player(connectorInt2);
+		ConnectorInt connectorInt3 = new SocketConnector(new Socket());
+		Player player3 = new Player(connectorInt3);
 		
 		ItemFactory itemFactory = new ConcreteItemFactory();
 		ItemOnSale item1 = itemFactory.createAssistantOnSale(player1, 5);
@@ -61,8 +57,8 @@ public class TestMarket {
 		Market.putItemOnSale(item3);
 		assertEquals(3,Market.getItemsOnSale().size());
 		
-		Connector connector4 = new SocketConnector(new Socket());
-		Player player4 = new Player(connector1);
+		ConnectorInt connectorInt4 = new SocketConnector(new Socket());
+		Player player4 = new Player(connectorInt1);
 		player4.addCoins(3);
 		try {
 			Market.buyItemOnSale(player4, item1);

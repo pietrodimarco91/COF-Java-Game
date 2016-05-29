@@ -7,12 +7,10 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.ConfigFileManager;
-
 /**
  * This class is used in case of Socket Connection, it handles the real interaction with the user.
  */
-public class SocketConnector implements Connector{
+public class SocketConnector implements ConnectorInt {
 
 	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
 	

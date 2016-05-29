@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import controller.ConnectorInt;
-import controller.ConnectorHandler;
 import controller.Player;
 import controller.SocketConnector;
 import exceptions.UnsufficientCoinsException;

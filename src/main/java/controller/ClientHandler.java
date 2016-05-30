@@ -1,8 +1,6 @@
 package controller;
 
 import java.rmi.RemoteException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -35,28 +33,34 @@ public class ClientHandler implements Runnable {
 	 */
 	@Override
 	public void run() {
-		if (!joinMatch()) {
-			launchNewMatch(new Date());
+		try {
+			connectorInt.writeToClient("Do you want to:\n1)join into a match\n2)create a new match?");
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Error while writing to client", e);
+		}
+		try {
+			switch (connectorInt.receiveIntFromClient()) {
+			case 1:
+				this.joinMatch();
+				break;
+			case 2:
+				Date date = new Date();
+				this.launchNewMatch(date);
+				break;
+			}
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Error while receiving int from client", e);
 		}
 	}
 
 	/**
 	 * This method let to launch a new match adding it to the matches.
-	 * 
 	 * @param date
 	 */
 	public synchronized void launchNewMatch(Date date) {
-		int id = Server.getId();
-		MatchHandler matchHandler = new MatchHandler(id, date, connectorInt);
+		MatchHandler matchHandler = new MatchHandler(Server.getId(), date, connectorInt);
 		matches.add(matchHandler);
 		matchHandler.start();
-		DateFormat dateFormat = new SimpleDateFormat();
-		try {
-			connectorInt.writeToClient(
-					"You launched a new match of Council Of Four on " + dateFormat.format(date) + " with ID " + id+"\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: could not write to client while launching a new match\n", e);
-		}
 	}
 
 	/**
@@ -65,24 +69,21 @@ public class ClientHandler implements Runnable {
 	 * new player into the match. If there are no available matches it launch a
 	 * new match.
 	 */
-	public synchronized boolean joinMatch() {
+	public synchronized void joinMatch() {
 		Iterator<MatchHandler> iterator = matches.iterator();
 		MatchHandler matchInList;
-		boolean joined = false;
-		while (iterator.hasNext() && !joined) {
+		Boolean joined = false;
+		while (iterator.hasNext()) {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
 				matchInList.addPlayer(connectorInt);
-				try {
-					connectorInt.writeToClient(
-							"You joined an already existing match still pending, with ID " + matchInList.getId()+"\n");
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: could not write to client while trying to join a match\n", e);
-				}
 				joined = true;
+				break;
 			}
 		}
-		return joined;
+		if (!joined) {
+			this.launchNewMatch(date);
+		}
 	}
 
 }

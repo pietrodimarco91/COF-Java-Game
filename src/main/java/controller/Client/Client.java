@@ -15,36 +15,42 @@ public class Client {
 
 	Connector connector;
 	RMIServerInt rmiServerInt;
+	ClientSocket clientSocket;
 	
 	/**
 	 * Default constructor
 	 */
 	public Client() {
 		Scanner input = new Scanner(System.in);
-		System.out.println("come vuoi connetterti?\n1)RMI\n2)Socket");
+		System.out.println("How do you want to connect?\n1)RMI\n2)Socket");
 		switch (input.nextInt()){
 			case 1:
-				try {
-					connector=new Connector();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-				try {
-					rmiServerInt= (RMIServerInt) Naming.lookup("rmi://127.0.0.1/registry");
-					rmiServerInt.connect(connector);
-				} catch (NotBoundException e) {
-					e.printStackTrace();
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-
+				this.startRMIConnection();
 				break;
 			case 2:
+				this.startSocketConnection();
 				break;
 		}
 
+	}
+
+	private void startSocketConnection() {
+		clientSocket=new ClientSocket();
+
+	}
+
+	private void startRMIConnection() {
+		try {
+			connector=new Connector();
+			rmiServerInt= (RMIServerInt) Naming.lookup("rmi://127.0.0.1/registry");
+			rmiServerInt.connect(connector);
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

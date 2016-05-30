@@ -25,7 +25,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInt {
     }
     @Override
     public void connect(ConnectorInt a) throws RemoteException {
-        a.writeToClient("connessione effettuata");
+        a.writeToClient("Connection RMI established");
         thread.submit(new ClientHandler(a,matches));
     }
 }

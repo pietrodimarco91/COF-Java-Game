@@ -58,7 +58,7 @@ public class Server {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-			System.out.println("[System] Chat Server is ready.");
+			System.out.println("Server is ready to recive RMI invocations.");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -67,7 +67,8 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//this.waitConnection();
+		System.out.println("Server is ready to recive Socket Connections.");
+		this.waitConnection();
 	}
 
 	public static int getId() {

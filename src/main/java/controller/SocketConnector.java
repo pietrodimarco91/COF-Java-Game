@@ -27,7 +27,7 @@ public class SocketConnector implements ConnectorInt {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error while opening the output/input stream for 'socket'", e);
         }
-        System.out.println("accesso effettuato da :"+socket.getInetAddress());
+        System.out.println("Socket connection established");
     }
 
     @Override

@@ -48,7 +48,7 @@ public class Server {
 		this.matches=new ArrayList<MatchHandler>();
 		try {
 			java.rmi.registry.LocateRegistry.createRegistry(1099);
-			RMIServerInt b=new RMIServer(matches);
+			RMIServerInt b=new RMIServer(matches,thread);
 			try {
 				try {
 					Naming.bind("rmi://127.0.0.1/registry", b);

@@ -44,7 +44,8 @@ public class ClientHandler implements Runnable {
 				this.joinMatch();
 				break;
 			case 2:
-				this.launchNewMatch();
+				Date date = new Date();
+				this.launchNewMatch(date);
 				break;
 			}
 		} catch (RemoteException e) {
@@ -54,9 +55,9 @@ public class ClientHandler implements Runnable {
 
 	/**
 	 * This method let to launch a new match adding it to the matches.
+	 * @param date
 	 */
-	public void launchNewMatch() {
-		Date date = new Date();
+	public synchronized void launchNewMatch(Date date) {
 		MatchHandler matchHandler = new MatchHandler(Server.getId(), date, connectorInt);
 		matches.add(matchHandler);
 		matchHandler.start();
@@ -68,7 +69,7 @@ public class ClientHandler implements Runnable {
 	 * new player into the match. If there are no available matches it launch a
 	 * new match.
 	 */
-	public void joinMatch() {
+	public synchronized void joinMatch() {
 		Iterator<MatchHandler> iterator = matches.iterator();
 		MatchHandler matchInList;
 		Boolean joined = false;
@@ -81,7 +82,7 @@ public class ClientHandler implements Runnable {
 			}
 		}
 		if (!joined) {
-			this.launchNewMatch();
+			this.launchNewMatch(date);
 		}
 	}
 

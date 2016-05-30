@@ -1,6 +1,8 @@
 package controller;
 
+import exceptions.ConfigAlreadyExistingException;
 import exceptions.CouncillorNotFoundException;
+import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
 import model.*;
 
@@ -121,22 +123,102 @@ public class MatchHandler extends Thread {
 		if (choice == 1) {
 			newConfiguration(playerConnector);
 		} else {
+			if (configFileManager.getConfigurations().size() > 0) {
+				try {
+					playerConnector.writeToClient("These are the currently existing configurations:\n");
+					ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
+					for(ConfigObject configuration: configurations) {
+						playerConnector.writeToClient(configuration.toString());
+					}
+					
+					//must add configuration choice from client
+					
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: could't write to client", e);
+				}
+			} else {
+				try {
+					playerConnector
+							.writeToClient("There aren't any configurations yet! Please create a new one :-) \n");
+					newConfiguration(playerConnector);
 
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: could't write to client", e);
+				}
+			}
 		}
 	}
 
+	/**
+	 * INCOMPLETE IMPLEMENTATION!
+	 * 
+	 * @param playerConnector
+	 */
 	public void newConfiguration(ConnectorInt playerConnector) {
 		String parameters = "";
-		int numberOfPlayers,linksBetweenCities,rewardTokenBonusNumber,permitTileBonusNumber,nobilityTrackBonusNumber;
-		playerConnector.writeToClient(
-				"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
-		playerConnector.writeToClient(
-				"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
-		parameters=playerConnector.receiveStringFromClient();
-		
-		//now we received all parameters
-		
-		
+		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
+				nobilityTrackBonusNumber = 0;
+		boolean stop = false;
+		try {
+			playerConnector.writeToClient(
+					"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
+			playerConnector.writeToClient(
+					"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: could't write to client", e);
+		}
+		try {
+			parameters = playerConnector.receiveStringFromClient();
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: could't receive from client", e);
+		}
+
+		while (!stop) {
+
+			// now we received all parameters
+
+			try {
+				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				stop = true;
+			} catch (InvalidInputException e) {
+				try {
+					playerConnector.writeToClient(e.printError());
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: could't write to client", e1);
+				}
+			} catch (ConfigAlreadyExistingException e) {
+				try {
+					playerConnector.writeToClient(e.printError());
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: could't write to client", e1);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks whether the specified parameters respect the rules or not.
+	 * 
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 * @throws InvalidInputException
+	 */
+	public void parametersValidation(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
+		if (numberOfPlayers < 2 || numberOfPlayers > 8)
+			throw new InvalidInputException();
+		if ((rewardTokenBonusNumber < 1 || rewardTokenBonusNumber > 3)
+				&& (permitTileBonusNumber < 1 || permitTileBonusNumber > 3)
+				&& (nobilityTrackBonusNumber < 1 || nobilityTrackBonusNumber > 3))
+			throw new InvalidInputException();
+		if (linksBetweenCities < 2 && linksBetweenCities > 4)
+			throw new InvalidInputException();
 	}
 
 	/**

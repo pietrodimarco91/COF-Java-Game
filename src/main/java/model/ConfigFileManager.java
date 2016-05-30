@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import exceptions.ConfigAlreadyExistingException;
+import exceptions.UnexistingConfigurationException;
 
 /**
  * This class is responsible for managing the configuration file, from which the
@@ -136,6 +137,21 @@ public class ConfigFileManager {
 				return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws UnexistingConfigurationException
+	 */
+	public ConfigObject getConfiguration(int id) throws UnexistingConfigurationException {
+		ArrayList<ConfigObject> configurations = getConfigurations();
+		for(ConfigObject configuration : configurations) {
+			if(configuration.getId()==id)
+				return configuration;
+		}
+		throw new UnexistingConfigurationException();
 	}
 
 	/**

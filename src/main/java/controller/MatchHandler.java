@@ -4,6 +4,7 @@ import exceptions.ConfigAlreadyExistingException;
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
+import exceptions.UnexistingConfigurationException;
 import model.*;
 
 import java.rmi.RemoteException;
@@ -78,18 +79,19 @@ public class MatchHandler extends Thread {
 		boardConfiguration(players.get(0));
 		pending = true; // Player has finished to set the match
 
-		/*
-		 * NEEDS REVISION: MUST INSERT THE NEW ATTRIBUTES: SEE MAP CONSTRUCTOR!
-		 */
-
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
 		// Start the match
 	}
 
+	/**
+	 * NEEDS JAVADOC
+	 * @param player
+	 */
 	public void boardConfiguration(Player player) {
 		boolean correctAnswer = false;
 		int choice = 0;
+		ConfigObject config;
 		ConnectorInt playerConnector = player.getConnector();
 		try {
 			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
@@ -127,12 +129,23 @@ public class MatchHandler extends Thread {
 				try {
 					playerConnector.writeToClient("These are the currently existing configurations:\n");
 					ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
-					for(ConfigObject configuration: configurations) {
+					for (ConfigObject configuration : configurations) {
 						playerConnector.writeToClient(configuration.toString());
 					}
-					
-					//must add configuration choice from client
-					
+					int id = -1;
+					boolean correctID = false;
+					while (!correctID) {
+
+						// must add configuration choice from client
+
+						try {
+							config = configFileManager.getConfiguration(id);
+							correctID = true;
+							boardSetup(config);
+						} catch (UnexistingConfigurationException e) {
+							playerConnector.writeToClient(e.printError());
+						}
+					}
 				} catch (RemoteException e) {
 					logger.log(Level.INFO, "Error: could't write to client", e);
 				}
@@ -197,6 +210,7 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
+		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities);
 	}
 
 	/**
@@ -236,6 +250,22 @@ public class MatchHandler extends Thread {
 				linksBetweenCities);
 	}
 
+	/**
+	 * NEEDS JAVADOC
+	 * @param config
+	 */
+	public void boardSetup(ConfigObject config) {
+		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
+				nobilityTrackBonusNumber = 0;
+		numberOfPlayers=config.getNumberOfPlayers();
+		linksBetweenCities=config.getLinksBetweenCities();
+		rewardTokenBonusNumber=config.getRewardTokenBonusNumber();
+		permitTileBonusNumber=config.getPermitTileBonusNumber();
+		nobilityTrackBonusNumber=config.getNobilityTrackBonusNumber();
+		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
+	}
+	
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */

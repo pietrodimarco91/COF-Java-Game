@@ -60,6 +60,10 @@ public class ConfigObject implements Serializable {
 		this.numberOfPlayers = new Integer(numberOfPlayers);
 	}
 
+	public int getId() {
+		return this.id;
+	}
+	
 	public int getNumberOfPlayers() {
 		return this.numberOfPlayers.intValue();
 	}

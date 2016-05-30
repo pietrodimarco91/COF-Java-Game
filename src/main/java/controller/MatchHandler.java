@@ -1,12 +1,8 @@
 package controller;
 
-import model.Board;
-import model.City;
-import model.PermitTile;
-import model.PermitTileDeck;
-import model.PoliticCard;
-import model.PoliticCardDeck;
-import model.Region;
+import exceptions.CouncillorNotFoundException;
+import exceptions.InvalidSlotException;
+import model.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,9 +11,6 @@ import java.util.Date;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import exceptions.CouncillorNotFoundException;
-import exceptions.InvalidSlotException;
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -59,6 +52,19 @@ public class MatchHandler extends Thread {
 	private boolean pending; // To add UML scheme
 
 	/**
+	 * Default constructor
+	 */
+
+	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
+		this.players = new ArrayList<Player>();
+		Player player = new Player(connectorInt);
+		this.players.add(player);
+		this.id = id;
+		this.date = date;
+		this.pending = false;
+	}
+
+	/**
 	 * MUST BE ADAPTED TO THE LAST VERSION OF MAP CONSTRUCTOR
 	 */
 
@@ -73,19 +79,6 @@ public class MatchHandler extends Thread {
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
 		// Start the match
-	}
-
-	/**
-	 * Default constructor
-	 */
-
-	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
-		this.players = new ArrayList<Player>();
-		Player player = new Player(connectorInt);
-		this.players.add(player);
-		this.id = id;
-		this.date = date;
-		this.pending = false;
 	}
 
 	/**
@@ -241,7 +234,7 @@ public class MatchHandler extends Thread {
 	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
 	 * @return
 	 */
-	public boolean buildEmporiumWithPermitTile(Player player,String cityName) {
+	/*public boolean buildEmporiumWithPermitTile(Player player,String cityName) {
 		ArrayList<City> city;
 		int i;
 		PermitTile permitTile=player.getUnusedPermitTile(tileChose);
@@ -253,7 +246,7 @@ public class MatchHandler extends Thread {
 		
 		
 
-	}
+	}*/
 
 	/**
 	 * @return
@@ -308,10 +301,7 @@ public class MatchHandler extends Thread {
 	 * @return
 	 */
 	public boolean isFull() {
-		if (this.players.size() < this.numberOfPlayers)
-			return false;
-		else
-			return true;
+		return this.players.size() >= this.numberOfPlayers;
 	}
 
 }

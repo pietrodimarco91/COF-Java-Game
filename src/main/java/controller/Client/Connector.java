@@ -1,12 +1,14 @@
 package controller.Client;
 
+import controller.ConnectorInt;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Created by pietro on 29/05/16.
  */
-public class Connector extends UnicastRemoteObject implements ConnectorInt{
+public class Connector extends UnicastRemoteObject implements ConnectorInt {
 
     protected Connector() throws RemoteException {
     }

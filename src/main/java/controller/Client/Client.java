@@ -1,13 +1,11 @@
 package controller.Client;
 
-import model.PermitTile;
-import model.PoliticCard;
+import controller.RMIServerInt;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -32,7 +30,6 @@ public class Client {
 					e.printStackTrace();
 				}
 				try {
-					System.out.println(Naming.lookup("rmi://127.0.0.1/registry"));
 					rmiServerInt= (RMIServerInt) Naming.lookup("rmi://127.0.0.1/registry");
 					rmiServerInt.connect(connector);
 				} catch (NotBoundException e) {

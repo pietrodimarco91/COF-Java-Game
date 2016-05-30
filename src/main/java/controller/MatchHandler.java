@@ -4,6 +4,7 @@ import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidSlotException;
 import model.*;
 
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class MatchHandler extends Thread {
 
-	private static final Logger logger= Logger.getLogger( MatchHandler.class.getName() );
+	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
 	 */
@@ -51,6 +52,8 @@ public class MatchHandler extends Thread {
 	 */
 	private boolean pending; // To add UML scheme
 
+	private ConfigFileManager configFileManager;
+
 	/**
 	 * Default constructor
 	 */
@@ -61,6 +64,7 @@ public class MatchHandler extends Thread {
 		this.players.add(player);
 		this.id = id;
 		this.date = date;
+		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
 	}
 
@@ -69,7 +73,7 @@ public class MatchHandler extends Thread {
 	 */
 
 	public void run() {
-
+		boardConfiguration(players.get(0));
 		pending = true; // Player has finished to set the match
 
 		/*
@@ -79,6 +83,56 @@ public class MatchHandler extends Thread {
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
 		// Start the match
+	}
+
+	public void boardConfiguration(Player player) {
+		boolean correctAnswer = false;
+		int choice = 0;
+		ConnectorInt playerConnector = player.getConnector();
+		try {
+			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: could't write to client", e);
+		}
+		while (!correctAnswer) {
+			try {
+				playerConnector
+						.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: could't write to client", e);
+			}
+			try {
+				choice = playerConnector.receiveIntFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: could't receive from client", e);
+			}
+			if (choice != 0) {
+				if (choice != 1 && choice != 2) {
+					try {
+						playerConnector.writeToClient("ERROR: incorrect input. Please retry\n");
+					} catch (RemoteException e) {
+						logger.log(Level.INFO, "Error: could't write to client", e);
+					}
+				} else
+					correctAnswer = true;
+			}
+		}
+
+		if (choice == 1) {
+			newConfiguration(playerConnector);
+		} else {
+
+		}
+	}
+
+	public void newConfiguration(ConnectorInt playerConnector) {
+		String parameters = "";
+		playerConnector.writeToClient(
+				"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
+		playerConnector.writeToClient(
+				"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
+		parameters=playerConnector.receiveStringFromClient();
+		
 	}
 
 	/**
@@ -139,7 +193,7 @@ public class MatchHandler extends Thread {
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
 		PermitTileDeck regionDeck;
-		Region region=this.getRegion(regionName);
+		Region region = this.getRegion(regionName);
 		region = this.getRegion(regionName);
 		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
@@ -173,7 +227,8 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML scheme
+	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML
+																// scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
 	}
@@ -229,24 +284,26 @@ public class MatchHandler extends Thread {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
+	 * 
 	 * @return
 	 */
-	/*public boolean buildEmporiumWithPermitTile(Player player,String cityName) {
-		ArrayList<City> city;
-		int i;
-		PermitTile permitTile=player.getUnusedPermitTile(tileChose);
-		city=permitTile.getCities();
-		for(i=0;i<city.size();i++)
-			if(city.get(i).getName().equals(cityName) && !(city.get(i).checkPresenceOfEmporium(player))){
-				
-			}
-		
-		
-
-	}*/
+	/*
+	 * public boolean buildEmporiumWithPermitTile(Player player,String cityName)
+	 * { ArrayList<City> city; int i; PermitTile
+	 * permitTile=player.getUnusedPermitTile(tileChose);
+	 * city=permitTile.getCities(); for(i=0;i<city.size();i++)
+	 * if(city.get(i).getName().equals(cityName) &&
+	 * !(city.get(i).checkPresenceOfEmporium(player))){
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
 
 	/**
 	 * @return

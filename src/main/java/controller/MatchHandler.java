@@ -127,11 +127,15 @@ public class MatchHandler extends Thread {
 
 	public void newConfiguration(ConnectorInt playerConnector) {
 		String parameters = "";
+		int numberOfPlayers,linksBetweenCities,rewardTokenBonusNumber,permitTileBonusNumber,nobilityTrackBonusNumber;
 		playerConnector.writeToClient(
 				"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
 		playerConnector.writeToClient(
 				"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
 		parameters=playerConnector.receiveStringFromClient();
+		
+		//now we received all parameters
+		
 		
 	}
 

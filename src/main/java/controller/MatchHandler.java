@@ -316,6 +316,11 @@ public class MatchHandler extends Thread {
 		}
 		while (this.players.size() < 2) {
 			// Match starts with at least two players
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+			}
 		}
 		try {
 			Thread.sleep(20000);

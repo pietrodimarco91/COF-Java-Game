@@ -206,7 +206,16 @@ public class MatchHandler extends Thread {
 			}
 			switch (choice) {
 			case 1:
-				generateConnection(this.board,connector);
+				try {
+					generateConnection(this.board,connector);
+					break;
+				} catch (InvalidInputException e1) {
+					try {
+						creator.getConnector().writeToClient(e1.printError());
+					} catch (RemoteException e) {
+						logger.log(Level.INFO, "Error: couldn't write to client",e);
+					}
+				}
 				break;
 			case 2:
 				removeConnection(this.board,connector);
@@ -269,9 +278,10 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * @throws InvalidInputException 
 	* 
 	*/
-	public void generateConnection(Board map, ConnectorInt connector) {
+	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first=null;
 		String second=null;
 		City city1 = null, city2 = null, tempCity;
@@ -317,6 +327,9 @@ public class MatchHandler extends Thread {
 			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
 				city2 = tempCity;
 			}
+		}
+		if(city1==null||city2==null) {
+			throw new InvalidInputException();
 		}
 		if (map.checkPossibilityOfNewConnection(city1, city2))
 			map.connectCities(city1, city2);

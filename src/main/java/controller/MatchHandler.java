@@ -224,7 +224,7 @@ public class MatchHandler extends Thread {
 				break;
 			case 4:
 				try {
-					connector.writeToClient(printMatrix());
+					connector.writeToClient(this.board.printMatrix());
 				} catch (RemoteException e) {
 					logger.log(Level.INFO, "Error: couldn't write to client", e);
 				}
@@ -232,7 +232,7 @@ public class MatchHandler extends Thread {
 				break;
 			case 5:
 				try {
-					connector.writeToClient(printConnections());
+					connector.writeToClient(this.board.printConnections());
 				} catch (RemoteException e) {
 					logger.log(Level.INFO, "Error: couldn't write to client", e);
 				}
@@ -250,7 +250,7 @@ public class MatchHandler extends Thread {
 				break;
 			case 8:
 				try {
-					connector.writeToClient(printDistances());	
+					connector.writeToClient(this.board.printDistances());	
 				} catch (RemoteException e) {
 					logger.log(Level.INFO, "Error: couldn't write to client", e);
 				}

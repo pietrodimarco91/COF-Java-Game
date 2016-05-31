@@ -296,7 +296,6 @@ public class MatchHandler extends Thread {
 		City city1 = null, city2 = null, tempCity;
 		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
-		Scanner input = new Scanner(System.in);
 		try {
 			connector.writeToClient("NEW CONNECTION\n");
 		} catch (RemoteException e) {
@@ -355,7 +354,7 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
-	 * @throws InvalidInputException 
+	 * @throws InvalidInputException
 	 * 
 	 */
 	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
@@ -412,7 +411,7 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
-	 * @throws InvalidInputException 
+	 * @throws InvalidInputException
 	 * 
 	 */
 	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
@@ -716,7 +715,7 @@ public class MatchHandler extends Thread {
 				try {
 					player.getConnector().writeToClient(e.showError());
 				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
 				}
 			}
 		} else
@@ -801,20 +800,54 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
-	/*
-	 * public boolean buildEmporiumWithPermitTile(Player player,String cityName)
-	 * { ArrayList<City> city; int i; PermitTile
-	 * permitTile=player.getUnusedPermitTile(tileChose);
-	 * city=permitTile.getCities(); for(i=0;i<city.size();i++)
-	 * if(city.get(i).getName().equals(cityName) &&
-	 * !(city.get(i).checkPresenceOfEmporium(player))){
-	 * 
-	 * }
-	 * 
-	 * 
-	 * 
-	 * }
-	 */
+
+	public void buildEmporiumWithPermitTile(Player player) {
+		ArrayList<City> cities;
+		int permitTileChoice=-1;
+		String cityChoice=null;
+		ConnectorInt connector=player.getConnector();
+		
+		do{
+			
+		try {
+			connector.writeToClient("Which card do you want to choose?");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+		try {
+			connector.writeToClient(player.showPermitTileCards());
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+		try {
+			permitTileChoice=connector.receiveIntFromClient();
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't receive from client", e);
+		}
+		}while(permitTileChoice<0 || permitTileChoice>(player.getNumberOfPermitTile()-1));
+		
+		PermitTile permitTile = (PermitTile) player.getUnusedPermitTile(permitTileChoice);
+		
+		do{
+		try {
+			connector.writeToClient("Which city do you want to build?");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+		try {
+			cityChoice=connector.receiveStringFromClient();
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't receive from client", e);
+		}
+		}while(!checkCorrectCityNameChoice(permitTile, cityChoice) || !checkPresenceOfEmporium(permitTile, player, cityChoice));
+		buildEmporium(permitTile, player, cityChoice);
+		try {
+			connector.writeToClient("Your emporium has been successfully built!:D");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+
+	}
 
 	/**
 	 * @return
@@ -888,4 +921,47 @@ public class MatchHandler extends Thread {
 	public int getIdentifier() {
 		return this.id;
 	}
+
+	/**
+	 * 
+	 */
+	public boolean checkCorrectCityNameChoice(PermitTile permitTile, String cityChoice) {
+		List<City> cities = permitTile.getCities();
+		cityChoice=cityChoice.trim();
+		cityChoice=cityChoice.toUpperCase();
+		String allCity = "";
+		for (City tempCities : cities) {
+			allCity += tempCities.getName();
+		}
+		if (allCity.contains(cityChoice))
+			return true;
+		else
+			return false;
+	}
+
+	public boolean checkPresenceOfEmporium(PermitTile permitTile, Player player, String cityChoice) {
+		List<City> cities = permitTile.getCities();
+		City tempCity;
+		boolean find = false;
+		cityChoice=cityChoice.trim();
+		cityChoice=cityChoice.toUpperCase();
+		for (int i = 0; i < cities.size() && !find; i++) {
+			tempCity = cities.get(i);
+			if (tempCity.getName().equals(cityChoice))
+				find = true;
+		}
+		return find;
+
+	}
+	
+	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice){
+		List<City> cities = permitTile.getCities();
+		cityChoice=cityChoice.trim();
+		cityChoice=cityChoice.toUpperCase();
+		for (City tempCities : cities) {
+			if(tempCities.getName().equals(cityChoice))
+				tempCities.buildEmporium(player);
+		}
+	}
+
 }

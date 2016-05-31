@@ -160,12 +160,8 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public Tile getUnusedPermitTile(Tile tileChose) {// metodo da risistemare e
-														// da aggiungere UML
-		int i = this.unusedPermitTiles.indexOf(tileChose);
-
-		return this.unusedPermitTiles.get(i);
-
+	public Tile getUnusedPermitTile(int choice) {// metodo da risistemare e da aggiungere UML
+		return this.unusedPermitTiles.get(choice);												
 	}
 
 	/**
@@ -359,5 +355,19 @@ public class Player {
 	public int getNumberOfAssistants() {
 		return this.assistants;
 	}
+	
+	/**
+	 * @return
+	 */
+	public String showPermitTileCards() {
+		String permitTile="";
+		int i=0;
+		for(Tile tile:this.unusedPermitTiles){
+			permitTile+=i+")"+" "+tile.toString()+"\n";
+			i++;
+		}
+		return permitTile;
+	}
+
 
 }

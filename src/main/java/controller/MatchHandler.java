@@ -211,7 +211,15 @@ public class MatchHandler extends Thread {
 				}
 				break;
 			case 2:
-				removeConnection(this.board, connector);
+				try {
+					removeConnection(this.board, connector);
+				} catch (InvalidInputException e1) {
+					try {
+						creator.getConnector().writeToClient(e1.printError());
+					} catch (RemoteException e) {
+						logger.log(Level.INFO, "Error: couldn't write to client", e);
+					}
+				}
 				break;
 			case 3:
 				if (this.board.graphIsConnected()) {
@@ -248,7 +256,15 @@ public class MatchHandler extends Thread {
 				}
 				break;
 			case 7:
-				countDistance(this.board, connector);
+				try {
+					countDistance(this.board, connector);
+				} catch (InvalidInputException e1) {
+					try {
+						creator.getConnector().writeToClient(e1.printError());
+					} catch (RemoteException e) {
+						logger.log(Level.INFO, "Error: couldn't write to client", e);
+					}
+				}
 				break;
 			case 8:
 				try {
@@ -298,7 +314,7 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			first = first.toUpperCase();
+
 		} while (first.length() > 1);
 		do {
 			try {
@@ -311,21 +327,21 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			second = second.toUpperCase();
+
 		} while (second.length() > 1 || second.equals(first));
-		if (!("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second)))
+		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
+				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
 			throw new InvalidInputException();
-			while (cityIterator.hasNext()) {
-				tempCity = cityIterator.next();
-				if (tempCity.getName().charAt(0) == first.charAt(0)) {
-					city1 = tempCity;
-				} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-					city2 = tempCity;
-				}
+		}
+		first = first.toUpperCase();
+		second = second.toUpperCase();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
 			}
-		if (city1 == null || city2 == null) {
-			throw new InvalidInputException();
 		}
 		if (map.checkPossibilityOfNewConnection(city1, city2))
 			map.connectCities(city1, city2);
@@ -339,9 +355,10 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * @throws InvalidInputException 
 	 * 
 	 */
-	public void removeConnection(Board map, ConnectorInt connector) {
+	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -364,7 +381,6 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			try {
@@ -377,9 +393,13 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
-
+		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
+				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
+			throw new InvalidInputException();
+		}
+		first = first.toUpperCase();
+		second = second.toUpperCase();
 		while (cityIterator.hasNext()) {
 			tempCity = cityIterator.next();
 			if (tempCity.getName().charAt(0) == first.charAt(0)) {
@@ -392,9 +412,10 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * @throws InvalidInputException 
 	 * 
 	 */
-	public void countDistance(Board map, ConnectorInt connector) {
+	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -418,7 +439,6 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			try {
@@ -431,9 +451,13 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
-
+		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
+				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
+			throw new InvalidInputException();
+		}
+		first = first.toUpperCase();
+		second = second.toUpperCase();
 		while (cityIterator.hasNext()) {
 			tempCity = cityIterator.next();
 			if (tempCity.getName().charAt(0) == first.charAt(0)) {

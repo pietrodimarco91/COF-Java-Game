@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.Color;
 import java.util.*;
 
 import model.City;
@@ -87,6 +88,11 @@ public class Player {
 	private ArrayList<City> controlledCities;
 
 	/**
+	 * The color of the player in the current match
+	 */
+	private String color;
+	
+	/**
 	 * 
 	 */
 	private ConnectorInt playerConnectorInt;// To add UML scheme
@@ -100,6 +106,7 @@ public class Player {
 	 * Default constructor
 	 */
 	public Player(ConnectorInt playerConnectorInt, int id) {
+		Random random = new Random();
 		this.turnNumber = id;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
@@ -107,6 +114,15 @@ public class Player {
 		this.playerConnectorInt = playerConnectorInt;
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
+		this.color=String.valueOf(new Color(random.nextFloat(),random.nextFloat(),random.nextFloat()));
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getColor() {
+		return this.color;
 	}
 
 	/**

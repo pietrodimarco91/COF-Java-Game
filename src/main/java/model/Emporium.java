@@ -9,6 +9,11 @@ import controller.Player;
  * Player.
  */
 public class Emporium {
+	
+	/**
+	 * This color represents the color of the Player that owns this emporium
+	 */
+	private String color;
 
 	/**
 	 * The owner of the emporium
@@ -27,6 +32,7 @@ public class Emporium {
 	public Emporium(Player owner, String cityName) {
 		this.owner = owner;
 		this.cityName = cityName;
+		this.color=owner.getColor();
 	}
 
 	public Player getOwner() {

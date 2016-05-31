@@ -6,34 +6,25 @@ import java.util.ArrayList;
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public class PoliticCardDeck {
+public abstract class PoliticCardDeck {
 
-	/**
-	 * Default constructor
-	 */
-	public PoliticCardDeck() {
-	}
-
+	private static final int FIRST_HAND_POLITIC_CARDS=6;
 	/**
 	 * @return PoliticCard 
-	 * return the new card generated
+	 * returns the new card generated
 	 */
-	public PoliticCard generateRandomPoliticCard() {
-		PoliticCard politicCardDraw = new PoliticCard();
-		return politicCardDraw;
+	public static PoliticCard generateRandomPoliticCard() {
+		return new PoliticCard();
 	}
 
 	/**
 	 * @return an ArrayList of randomized politic card
 	 */
-	public ArrayList<PoliticCard> distributePoliticCards() {
+	public static ArrayList<PoliticCard> distributePoliticCards() {
 		ArrayList<PoliticCard> playerCards = new ArrayList<PoliticCard>();
-		int i;
-		PoliticCard singleCard;
 
-		for (i = 0; i < 6; i++) {
-			singleCard = new PoliticCard();
-			playerCards.add(i, singleCard);
+		for (int i = 0; i < FIRST_HAND_POLITIC_CARDS; i++) {
+			playerCards.add(generateRandomPoliticCard());
 		}
 		return playerCards;
 	}

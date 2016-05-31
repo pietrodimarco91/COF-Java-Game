@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 
 import controller.Player;
 
 /**
- * The constructor of the Map initializes the map with the specified parameters.
- * It also allows to make the connections between the cities.
+ * The constructor of the Board initializes the board with the specified
+ * parameters. It also allows to make the connections between the cities.
  */
-public class Map {
+public class Board {
 	/**
 	 * This attribute stores all the cities (vertex) of the map.
 	 */
@@ -77,17 +79,17 @@ public class Map {
 	 * region are generated too, and connections between different regions must
 	 * be set by the first player. This constructor initializes the Market too.
 	 */
-	public Map(int numberOfPlayers, int bonusNumber, int linksBetweenCities) {
-		cities = new ArrayList<City>();
+	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) {
+		cities = new ArrayList<>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
 		kingCouncil = new KingCouncil();
-		citiesInitialization(bonusNumber);
+		citiesInitialization(rewardTokenBonusNumber, permitTileBonusNumber);
 		MATRIX_ROWS = this.numberOfCities / 3;
 		generateDefaultConnections(linksBetweenCities);
-		nobilityTrackSetup(bonusNumber);
-		Market market = new Market();
+		nobilityTrackSetup(nobilityTrackBonusNumber);
 	}
 
 	/**
@@ -129,7 +131,7 @@ public class Map {
 	 * @return true if the new connection is possible, false otherwise.
 	 */
 	public boolean checkPossibilityOfNewConnection(City city1, City city2, int linksBetweenCities) {
-		if(city1.getConnectedCities().contains(city2))
+		if (city1.getConnectedCities().contains(city2))
 			return false;
 		return city1.getConnectedCities().size() < linksBetweenCities
 				&& city2.getConnectedCities().size() < linksBetweenCities;
@@ -157,13 +159,17 @@ public class Map {
 	}
 
 	/**
-	 * This methods checks whether the graph map is fully connected or not by
-	 * launching a BFS visit
+	 * This method is used to see in which cities a player has already built his
+	 * emporiums, after he has just build an emporium, to get all the Reward
+	 * Tokens of the other cities too
 	 * 
-	 * @return true if the graph is connected, false otherwise.
+	 * @param player
+	 *            the player to check for
+	 * @return the arraylist of the owned cities (where he has an emporium)
 	 */
-	public boolean graphIsConnected() {
-		Queue<City> grayNodesQueue = new LinkedList<City>();
+	public List<City> getOwnedCities(Player player) {
+		ArrayList<City> ownedCities = new ArrayList<>();
+		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand, connectedCity;
 		Iterator<City> mapIterator = cities.iterator();
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
@@ -177,7 +183,43 @@ public class Map {
 			Iterator<City> connectedCitiesIterator = cityToExpand.getConnectedCities().iterator();
 			while (connectedCitiesIterator.hasNext()) {
 				connectedCity = connectedCitiesIterator.next();
-				if (connectedCity.getBFScolor().equals("WHITE")) {
+				if ("WHITE".equals(connectedCity.getBFScolor())) {
+					connectedCity.setBFScolor("GRAY");
+					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
+					if (connectedCity.checkPresenceOfEmporium(player))
+						grayNodesQueue.add(connectedCity);
+				}
+			}
+			cityToExpand.setBFScolor("BLACK");
+		}
+		for (City tempCity : cities) {
+			tempCity.BFSinitialization();
+		}
+		return ownedCities;
+	}
+
+	/**
+	 * This methods checks whether the graph map is fully connected or not by
+	 * launching a BFS visit
+	 * 
+	 * @return true if the graph is connected, false otherwise.
+	 */
+	public boolean graphIsConnected() {
+		Queue<City> grayNodesQueue = new LinkedList<>();
+		City cityToExpand, connectedCity;
+		Iterator<City> mapIterator = cities.iterator();
+		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
+			mapIterator.next().BFSinitialization();
+		}
+		City cityFrom = cities.get(0);
+		cityFrom.BFSsourceVisit();
+		grayNodesQueue.add(cityFrom);
+		while (!(grayNodesQueue.isEmpty())) {
+			cityToExpand = grayNodesQueue.remove();
+			Iterator<City> connectedCitiesIterator = cityToExpand.getConnectedCities().iterator();
+			while (connectedCitiesIterator.hasNext()) {
+				connectedCity = connectedCitiesIterator.next();
+				if ("WHITE".equals(connectedCity.getBFScolor())) {
 					connectedCity.setBFScolor("GRAY");
 					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
 					grayNodesQueue.add(connectedCity);
@@ -186,7 +228,7 @@ public class Map {
 			cityToExpand.setBFScolor("BLACK");
 		}
 		for (City city : cities) {
-			if (!(city.getBFScolor().equals("BLACK"))) {
+			if (!("BLACK".equals(city.getBFScolor()))) {
 				for (City tempCity : cities) {
 					tempCity.BFSinitialization();
 				}
@@ -212,7 +254,7 @@ public class Map {
 	public int countDistance(City cityFrom, City cityTo) {
 		if (cityFrom == cityTo)
 			return 0;
-		Queue<City> grayNodesQueue = new LinkedList<City>();
+		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand;
 		int distance = -1;
 
@@ -224,7 +266,7 @@ public class Map {
 		while (!(grayNodesQueue.isEmpty())) {
 			cityToExpand = grayNodesQueue.remove();
 			for (City connectedCity : cityToExpand.getConnectedCities()) {
-				if (connectedCity.getBFScolor().equals("WHITE")) {
+				if ("WHITE".equals(connectedCity.getBFScolor())) {
 					connectedCity.setBFScolor("GRAY");
 					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
 					if (connectedCity == cityTo) { // checks whether the city
@@ -243,7 +285,7 @@ public class Map {
 			}
 			cityToExpand.setBFScolor("BLACK");
 		}
-		return -1;
+		return distance;
 	}
 
 	/**
@@ -293,7 +335,7 @@ public class Map {
 	 * @return the arraylist of cities connected to the specified city. Returns
 	 *         null if the specified city doesn't exist.
 	 */
-	public ArrayList<City> getCitiesConnectedTo(City city) {
+	public List<City> getCitiesConnectedTo(City city) {
 		City cityToSearch;
 		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
@@ -302,7 +344,7 @@ public class Map {
 				return cityToSearch.getConnectedCities();
 			}
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	/**
@@ -319,9 +361,8 @@ public class Map {
 
 		while (mapIterator.hasNext()) {
 			tempCity = mapIterator.next();
-			if (tempCity.getColor().equals(color)) {
-				if (!(tempCity.checkPresenceOfEmporium(owner)))
-					return false;
+			if (tempCity.getColor().equals(color) && !(tempCity.checkPresenceOfEmporium(owner))) {
+				return false;
 			}
 		}
 		return true;
@@ -401,24 +442,24 @@ public class Map {
 	 *            the number of the bonus that each reward token and permit tile
 	 *            should have.
 	 */
-	public void citiesInitialization(int bonusNumber) {
+	public void citiesInitialization(int rewardTokenBonusNumber, int permitTileBonusNumber) {
 		City city;
 		String name;
 		RewardToken rewardToken;
 		ArrayList<City> citiesInRegion;
 		for (int j = 0; j < RegionName.values().length; j++) {
-			citiesInRegion = new ArrayList<City>();
+			citiesInRegion = new ArrayList<>();
 			for (int i = 0; i < numberOfCities / 3; i++) {
 				do {
 					name = CityNames.random();
 				} while (cityNameAlreadyExisting(name));
-				rewardToken = new RewardToken(bonusNumber);
+				rewardToken = new RewardToken(rewardTokenBonusNumber);
 				city = new City(name, CityColors.random(), regions[j], rewardToken);
 				cities.add(city);
 				citiesInRegion.add(city);
 			}
 			regions[j].addCities(citiesInRegion);
-			regions[j].getDeck().generatePermitTiles(bonusNumber);
+			regions[j].getDeck().generatePermitTiles(permitTileBonusNumber);
 		}
 		setKingRandomly();
 	}
@@ -446,13 +487,13 @@ public class Map {
 		String direction;
 
 		for (int k = 0; k < regions.length; k++) {
-			HashMap<String, City> hashMap = new HashMap<String, City>();
-			ArrayList<String> cityNames = new ArrayList<String>();
+			Map<String, City> hashMap = new HashMap<>();
+			ArrayList<String> cityNames = new ArrayList<>();
 			hashMap = mapCitiesWithLetters(cityNames, hashMap, k);
 			direction = "right";
 			City currentCity, fatherCity = null, grandFatherCity = null;
 			for (int i = 0; i < MATRIX_ROWS; i++) {
-				if (direction.equals("right"))
+				if ("right".equals(direction))
 					column = low + 7;
 				else
 					column = low + 3;
@@ -466,7 +507,7 @@ public class Map {
 					}
 				}
 				matrix[i][column] = initialLetter;
-				if (direction.equals("right")) {
+				if ("right".equals(direction)) {
 					direction = "left";
 				} else {
 					direction = "right";
@@ -509,10 +550,10 @@ public class Map {
 	 * @param k
 	 *            the index of the current region
 	 */
-	public HashMap<String, City> mapCitiesWithLetters(ArrayList<String> cityNames, HashMap<String, City> hashMap,
+	public Map<String, City> mapCitiesWithLetters(List<String> cityNames, Map<String, City> hashMap,
 			int k) {
-		ArrayList<City> cities = regions[k].getCities();
-		Iterator<City> iterator = cities.iterator();
+		ArrayList<City> regionCities = regions[k].getCities();
+		Iterator<City> iterator = regionCities.iterator();
 		String name;
 		while (iterator.hasNext()) { // association of the initial letter
 										// with the corresponding city
@@ -574,6 +615,7 @@ public class Map {
 		}
 	}
 
+	@Override
 	public String toString() {
 		String string = "";
 		string += "Map status:\n";
@@ -605,12 +647,13 @@ public class Map {
 		return this.numberOfPermitTiles;
 	}
 
-	public ArrayList<City> getMap() {
+	public List<City> getMap() {
 		return this.cities;
 	}
 
 	public Region[] getRegions() {
 		return this.regions;
+
 	}
 
 	public Council getKingCouncil() {

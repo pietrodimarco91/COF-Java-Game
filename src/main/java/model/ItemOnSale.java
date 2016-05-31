@@ -12,6 +12,11 @@ public abstract class ItemOnSale {
 	 * This attribute represents the price (coins) for this item
 	 */
 	private int price;
+	
+	public ItemOnSale(Player seller, int price) {
+		this.seller=seller;
+		this.price=price;
+	}
 
 	public Player getSeller() {
 		return seller;

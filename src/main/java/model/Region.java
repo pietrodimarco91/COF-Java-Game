@@ -8,7 +8,7 @@ import exceptions.CouncillorNotFoundException;
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public class Region {
+public class Region implements Cloneable {
 	/**
 	 * Name of the region
 	 */
@@ -38,11 +38,14 @@ public class Region {
 	 * Instantiates a Region with its main attributes.
 	 * 
 	 * @param name
-	 *            The region name
+	 *            the region name
+	 * 
 	 * @param council
-	 *            The region council
+	 *            the region council
+	 * 
 	 * @param permitTileDeck
-	 *            The permit tile deck of this region
+	 *            the permit tile deck of this region
+	 * 
 	 */
 	public Region(String name, Council council, PermitTileDeck deck) {
 		this.name = name;
@@ -58,6 +61,7 @@ public class Region {
 	 * 
 	 * @param color
 	 *            the color of the councillor to elect
+	 * 
 	 */
 	public void electCouncillor(String color) throws CouncillorNotFoundException {
 		if (CouncillorsPool.checkPresenceOfCouncillor(color)) {
@@ -73,32 +77,58 @@ public class Region {
 
 	/**
 	 * @param politicCards
-	 * @return true if council is satisfied or false if the council is not
-	 *         satisfied
+	 *            of the player
+	 * @return number of councillors satisfied
 	 */
-	public boolean checkCouncilSatisfaction(ArrayList<PoliticCard> politicCards) {
-		Queue<Councillor> tempCouncillors; // Create a tempCouncillors Queue and
-											// I'm used iterator system
-		tempCouncillors = this.council.getCouncillors();// tempCouncillors is
-														// equals to the real
-														// councillors present
-														// in specific region
-		Iterator<Councillor> iterationCouncillors = tempCouncillors.iterator();
+	public int numberOfCouncillorsSatisfied(ArrayList<PoliticCard> politicCards) {
+		Iterator<Councillor> iterationCouncillors = this.council.getCouncillors().iterator();
 		Councillor councillor;
 		PoliticCard tempPoliticCard;
-
+		int numberOfCouncillorsSatisfied = 0;
+		ArrayList<PoliticCard> tempArrayList = new ArrayList<PoliticCard>(politicCards);
 		while (iterationCouncillors.hasNext()) {
-			int i;
+			boolean councillorsSatisfied = false;
 			councillor = iterationCouncillors.next();
-			for (i = 0; i < politicCards.size(); i++) {
-				tempPoliticCard = politicCards.get(i);
-				if (councillor.getColor() == tempPoliticCard.getColorCard()
-						|| tempPoliticCard.getColorCard() == "MULTICOLOR")
-					return true;
+
+			for (int i = 0; i < tempArrayList.size() && councillorsSatisfied == false; i++) {
+				tempPoliticCard = tempArrayList.get(i);
+				if (councillor.getColor() == tempPoliticCard.getColorCard()) {
+					councillorsSatisfied = true;
+					tempArrayList.remove(i);
+					numberOfCouncillorsSatisfied++;
+				}
+
 			}
-			councillor = iterationCouncillors.next();
+
 		}
-		return false;
+
+		if (numberOfCouncillorsSatisfied < 4) {
+			int numberOfMulticolorCard = 0;
+			for (int i = 0; i < tempArrayList.size(); i++) {
+				tempPoliticCard = tempArrayList.get(i);
+				if (tempPoliticCard.getColorCard().equals("MULTICOLOR"))
+					numberOfMulticolorCard++;
+			}
+			if ((numberOfCouncillorsSatisfied + numberOfMulticolorCard) < 4)
+				return numberOfCouncillorsSatisfied + numberOfMulticolorCard;
+			else
+				return 4;
+		}
+
+		else
+			return numberOfCouncillorsSatisfied;
+	}
+
+	/**
+	 * @param owner
+	 * @return region bonus tile if player is eligible for region bonus, else
+	 *         return null
+	 * 
+	 */
+	public Tile winRegionBonus(Player owner) {
+		if (isEligibleForRegionBonus(owner))
+			return this.regionBonus;
+		return null;
 	}
 
 	/**
@@ -111,21 +141,10 @@ public class Region {
 		City tempCity;
 		for (i = 0; i < cities.size(); i++) {
 			tempCity = cities.get(i);
-			if ((!tempCity.checkPresenceOfEmporium(owner)))
+			if (tempCity.checkPresenceOfEmporium(owner) == false)
 				return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @param owner
-	 * @return region bonus if player is eligible for region bonus, else return
-	 *         null
-	 */
-	public Tile winRegionBonus(Player owner) {
-		if (isEligibleForRegionBonus(owner))
-			return this.regionBonus;
-		return null;
 	}
 
 	/**
@@ -133,6 +152,7 @@ public class Region {
 	 * 
 	 * @param cities
 	 *            the cities to add to this region
+	 * 
 	 */
 	public void addCities(ArrayList<City> cities) {
 		this.cities = cities;
@@ -145,7 +165,7 @@ public class Region {
 	public ArrayList<City> getCities() {
 		return cities;
 	}
-	
+
 	/**
 	 * @return the name of the region
 	 */
@@ -160,7 +180,6 @@ public class Region {
 	 */
 	public String toString() {
 		String regionInformation;
-		City city;
 		regionInformation = ("This in the region called: " + this.name + "\n");
 		regionInformation += ("This region is composed by these councillors: \n");
 		regionInformation += this.council.toString();

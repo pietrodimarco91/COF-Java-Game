@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Pietro Di Marco on 13/05/16.
@@ -11,7 +12,9 @@ public class ConcreteTileFactory extends TileFactory {
 
 
     @Override
-    public Tile createPermitTile(ArrayList<City> cities,int bonusNumber) {return new PermitTile(cities,bonusNumber);}
+    public Tile createPermitTile(List<City> cities,int bonusNumber) {
+        return new PermitTile(cities,bonusNumber);
+    }
 
     @Override
     public Tile createRewardToken(int bonusNumber) {

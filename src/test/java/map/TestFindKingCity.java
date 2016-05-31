@@ -3,11 +3,12 @@ package map;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 /**
  * Tests if the city where the king is located is correctly returned
@@ -18,8 +19,8 @@ public class TestFindKingCity {
 
 	@Test
 	public void test() {
-		Map map = new Map(4,2,2);
-		ArrayList<City> cities = map.getMap();
+		Board map = new Board(4,2,2,2,2);
+		List<City> cities = map.getMap();
 		City cityWithKing=null;
 		int counter=0;
 		for(City city:cities) {

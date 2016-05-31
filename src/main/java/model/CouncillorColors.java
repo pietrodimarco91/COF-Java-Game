@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Gabriele Bressan on 13/05/16. Enumaration about colors of the
@@ -32,5 +33,15 @@ public enum CouncillorColors {
 		}
 		return colorValues;
 	}
+	
+	public static ArrayList<String> getPoliticCardsColors() {
+		ArrayList<String> colorValues = new ArrayList<String>();
+		CouncillorColors[] values = CouncillorColors.values();
+		for (int i = 0; i < CouncillorColors.values().length; i++) {
+				colorValues.add(String.valueOf(values[i]));
+		}
+		return colorValues;
+	}
+
 
 }

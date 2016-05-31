@@ -3,18 +3,21 @@ package map;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 public class TestMap {
 
 	@Test
 	public void test() {
-		int numberOfPlayers = 8, bonusNumber = 3, linksBetweenCities = 3;
-		Map map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);
+		int numberOfPlayers = 8, rewardTokenBonusNumber = 3, permitTileBonusNumber = 3, nobilityTrackBonusNumber = 3,
+				linksBetweenCities = 3;
+		Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
 		System.out.println(map.toString());
 
 		assertEquals(27, map.getNumberOfCities());
@@ -22,7 +25,8 @@ public class TestMap {
 		assertEquals(3, map.getRegions().length);
 
 		numberOfPlayers = 4;
-		map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities); // System.out.println(map.toString());
+		map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities); // System.out.println(map.toString());
 
 		assertEquals(15, map.getNumberOfCities());
 		assertEquals(45, map.getNumberOfPermitTiles());
@@ -31,7 +35,7 @@ public class TestMap {
 		assertEquals(false, result);
 
 		System.out.println("UNCONNECTED GRAPH:");
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		for (City city4 : cities) {
 			for (City city5 : cities) {
 				int distance = map.countDistance(city4, city5);

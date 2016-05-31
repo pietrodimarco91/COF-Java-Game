@@ -2,16 +2,18 @@ package demo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 
 import model.City;
-import model.Map;
+import model.Board;
 
 public class MapDemo {
 
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
-		int numberOfPlayers, bonusNumber, linksBetweenCities, choice;
+		int numberOfPlayers, permitTileBonusNumber, rewardTokenBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities, choice;
 		boolean stop = false;
 		while (!stop) {
 			do {
@@ -19,14 +21,23 @@ public class MapDemo {
 				numberOfPlayers = input.nextInt();
 			} while (numberOfPlayers > 8 || numberOfPlayers < 2);
 			do {
-				System.out.println("Number of bonuses per tile (between 1 and 3)");
-				bonusNumber = input.nextInt();
-			} while (bonusNumber > 3 || bonusNumber < 1);
+				System.out.println("Number of bonuses per Permit Tile (between 1 and 3)");
+				permitTileBonusNumber = input.nextInt();
+			} while (permitTileBonusNumber > 3 || permitTileBonusNumber < 1);
+			do {
+				System.out.println("Number of bonuses per Reward Token (City bonus) (between 1 and 3)");
+				rewardTokenBonusNumber = input.nextInt();
+			} while (rewardTokenBonusNumber > 3 || rewardTokenBonusNumber < 1);
+			do {
+				System.out.println("Number of bonuses per Nobility Track Cell (between 1 and 3)");
+				nobilityTrackBonusNumber = input.nextInt();
+			} while (nobilityTrackBonusNumber > 3 || nobilityTrackBonusNumber < 1);
 			do {
 				System.out.println("Maximum number of connections between the cities (between 2 and 4)");
 				linksBetweenCities = input.nextInt();
 			} while (linksBetweenCities > 4 || linksBetweenCities < 2);
-			Map map = new Map(numberOfPlayers, bonusNumber, linksBetweenCities);
+			Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+					nobilityTrackBonusNumber, linksBetweenCities);
 			while (!stop) {
 				System.out.println("Next choice?");
 				System.out.println(
@@ -68,10 +79,10 @@ public class MapDemo {
 		}
 	}
 
-	public static void generateConnection(Map map, int linksBetweenCities) {
+	public static void generateConnection(Board map, int linksBetweenCities) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
 		Scanner input = new Scanner(System.in);
 		System.out.println("NEW CONNECTION");
@@ -79,10 +90,12 @@ public class MapDemo {
 		do {
 			System.out.println("Insert the FIRST letter of the first city:");
 			first = input.nextLine();
+			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			System.out.println("Insert the FIRST letter of the second city:");
 			second = input.nextLine();
+			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
 		while (cityIterator.hasNext()) {
@@ -100,10 +113,10 @@ public class MapDemo {
 		}
 	}
 
-	public static void removeConnection(Map map) {
+	public static void removeConnection(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
 		Scanner input = new Scanner(System.in);
 		System.out.println("REMOVE CONNECTION");
@@ -111,10 +124,12 @@ public class MapDemo {
 		do {
 			System.out.println("Insert the FIRST letter of the first city:");
 			first = input.nextLine();
+			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			System.out.println("Insert the FIRST letter of the second city:");
 			second = input.nextLine();
+			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
 		while (cityIterator.hasNext()) {
@@ -128,10 +143,10 @@ public class MapDemo {
 		map.unconnectCities(city1, city2);
 	}
 
-	public static void countDistance(Map map) {
+	public static void countDistance(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
-		ArrayList<City> cities = map.getMap();
+		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
 		Scanner input = new Scanner(System.in);
 		System.out.println("COUNT DISTANCE:");
@@ -139,10 +154,12 @@ public class MapDemo {
 		do {
 			System.out.println("Insert the FIRST letter of the first city:");
 			first = input.nextLine();
+			first = input.nextLine();
 		} while (first.length() > 1);
 		do {
 			System.out.println("Insert the FIRST letter of the second city:");
 			second = input.nextLine();
+			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
 		while (cityIterator.hasNext()) {

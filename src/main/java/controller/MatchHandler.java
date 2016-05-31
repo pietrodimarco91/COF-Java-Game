@@ -223,10 +223,20 @@ public class MatchHandler extends Thread {
 					}
 				break;
 			case 4:
-				this.board.printMatrix();
+				try {
+					connector.writeToClient(printMatrix());
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+				
 				break;
 			case 5:
-				this.board.printConnections();
+				try {
+					connector.writeToClient(printConnections());
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+				
 				break;
 			case 6:
 				try {
@@ -239,7 +249,12 @@ public class MatchHandler extends Thread {
 				countDistance(this.board,connector);
 				break;
 			case 8:
-				this.board.printDistances();
+				try {
+					connector.writeToClient(printDistances());	
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+				
 				break;
 			default:
 				try {

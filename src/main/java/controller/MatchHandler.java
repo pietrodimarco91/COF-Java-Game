@@ -96,10 +96,6 @@ public class MatchHandler extends Thread {
 
 	public void run() {
 		boardConfiguration(creator);
-		boolean stop = false;
-		while (!stop) {
-
-		}
 		mapConfiguration(creator.getConnector());
 		pending = true; // Player has finished to set the match
 

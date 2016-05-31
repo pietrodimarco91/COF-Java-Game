@@ -4,6 +4,7 @@
 /.settings/
 /.idea/
 /_mac/
+/config/
 /inspection/
 databseSettings.xml
 debugger.xml

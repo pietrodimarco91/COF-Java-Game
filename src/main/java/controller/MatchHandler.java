@@ -272,7 +272,8 @@ public class MatchHandler extends Thread {
 	* 
 	*/
 	public void generateConnection(Board map, ConnectorInt connector) {
-		String first, second;
+		String first=null;
+		String second=null;
 		City city1 = null, city2 = null, tempCity;
 		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
@@ -288,9 +289,11 @@ public class MatchHandler extends Thread {
 				connector.writeToClient("Insert the FIRST letter of the first city:\n");
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}try {
+				first= connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			System.out.println("");
-			first = input.nextLine();
 			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
@@ -299,7 +302,11 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
-			second = input.nextLine();
+			try {
+				second= connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
 			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
@@ -326,11 +333,12 @@ public class MatchHandler extends Thread {
 	 * 
 	 */
 	public void removeConnection(Board map, ConnectorInt connector) {
-		String first, second;
+		String first=null;
+		String second=null;
 		City city1 = null, city2 = null, tempCity;
 		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
-		Scanner input = new Scanner(System.in);
+		
 		try {
 			connector.writeToClient("REMOVE CONNECTION\n");
 		} catch (RemoteException e) {
@@ -342,7 +350,11 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
-			first = input.nextLine();
+			try {
+				first= connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
 			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
@@ -351,7 +363,11 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}	
-			second = input.nextLine();
+			try {
+				second= connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
 			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
@@ -369,11 +385,12 @@ public class MatchHandler extends Thread {
 	 * 
 	 */
 	public void countDistance(Board map,ConnectorInt connector) {
-		String first, second;
+		String first=null;
+		String second=null;
 		City city1 = null, city2 = null, tempCity;
 		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
-		Scanner input = new Scanner(System.in);
+		
 		try {
 			connector.writeToClient("COUNT DISTANCE:\n");
 		} catch (RemoteException e) {
@@ -386,8 +403,12 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
-			first = input.nextLine();
-			first = input.nextLine();
+			try {
+				first= connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			try {
@@ -395,7 +416,11 @@ public class MatchHandler extends Thread {
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
-			second = input.nextLine();
+			try {
+				second= connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
 			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 

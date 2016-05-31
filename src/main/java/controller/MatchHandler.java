@@ -75,7 +75,7 @@ public class MatchHandler extends Thread {
 		this.date = date;
 		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
-		logger.log(Level.FINEST, "[MATCH "+id+"]: Started running...");
+		logger.log(Level.FINEST, "[MATCH " + id + "]: Started running...");
 	}
 
 	/**
@@ -89,6 +89,7 @@ public class MatchHandler extends Thread {
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
 		// Start the match
+		waitingForPlayers();
 		countdown();
 		startGame();
 	}
@@ -149,7 +150,7 @@ public class MatchHandler extends Thread {
 							config = configFileManager.getConfiguration(id);
 							correctID = true;
 							boardSetup(config);
-							this.numberOfPlayers=config.getNumberOfPlayers();
+							this.numberOfPlayers = config.getNumberOfPlayers();
 							playerConnector.writeToClient(
 									"Board correctly generated with selected parameters! Now we're about to start...");
 						} catch (UnexistingConfigurationException e) {
@@ -239,7 +240,7 @@ public class MatchHandler extends Thread {
 		}
 		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 				linksBetweenCities);
-		this.numberOfPlayers=numberOfPlayers;
+		this.numberOfPlayers = numberOfPlayers;
 		try {
 			playerConnector
 					.writeToClient("Board correctly generated with selected parameters! Now we're about to start...");
@@ -301,16 +302,20 @@ public class MatchHandler extends Thread {
 		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 				linksBetweenCities);
 	}
-	
+
 	/**
 	 * NEEDS JAVADOC
 	 */
 	public void waitingForPlayers() {
-		logger.log(Level.FINEST, "[Match ID: "+id+"] Currently waiting for players...");
+
+		logger.log(Level.FINEST, "[Match ID: " + id + "] Currently waiting for players...");
 		try {
-			creator.getConnector().writeToClient("[Match ID: "+id+"] Currently waiting for players...");
+			creator.getConnector().writeToClient("[Match ID: " + id + "] Currently waiting for players...");
 		} catch (RemoteException e) {
 			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+		}
+		while (this.players.size() < 2) {
+			// Match starts with at least two players
 		}
 		try {
 			Thread.sleep(20000);
@@ -318,7 +323,7 @@ public class MatchHandler extends Thread {
 			logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
 		}
 	}
-	
+
 	/**
 	 * NEEDS JAVADOC
 	 */
@@ -550,6 +555,13 @@ public class MatchHandler extends Thread {
 		return this.players.size() >= this.numberOfPlayers;
 	}
 	
+	/**
+	 * 
+	 */
+	public ArrayList<Player> getPlayers() {
+		return this.players;
+	}
+
 	/**
 	 * 
 	 */

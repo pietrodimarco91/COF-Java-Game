@@ -16,3 +16,4 @@ ui.lnf.xml
 web-browsers.xml
 *.iml
 colors.scheme.xml
+.sonar_lock

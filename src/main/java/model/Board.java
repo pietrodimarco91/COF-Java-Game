@@ -580,7 +580,7 @@ public class Board {
 	/**
 	 * This method prints the matrix representing the cities in the map.
 	 */
-	public void printMatrix() {
+	public String printMatrix() {
 		String print = "";
 		for (int i = 0; i < MATRIX_ROWS; i++) {
 			for (int j = 0; j < MATRIX_COLUMNS; j++) {
@@ -588,37 +588,40 @@ public class Board {
 			}
 			print += "\n";
 		}
-		System.out.println(print);
+		return print;
 	}
 
 	/**
 	 * This method is invoked during the print of the matrix, to visualize which
 	 * cities each city is connected to.
 	 */
-	public void printConnections() {
+	public String printConnections() {
+		String string="";
 		for (City city : cities) {
-			System.out.println("Cities connected to " + city.getName() + ":");
+			string+="Cities connected to " + city.getName() + ":\n";
 			for (City cityConnected : city.getConnectedCities()) {
-				System.out.print(cityConnected.getName() + " ");
+				string+=cityConnected.getName() + " ";
 			}
-			System.out.println("\n");
+			string+="\n";
 		}
+		return string;
 	}
 
 	/**
 	 * This methods prints the distances between all the cities of the map.
 	 */
-	public void printDistances() {
+	public String printDistances() {
+		String string="";
 		for (City city1 : cities) {
 			for (City city2 : cities) {
 				int distance = countDistance(city1, city2);
 				if (distance != -1) {
-					System.out.println(
-							"Distance between " + city1.getName() + " and " + city2.getName() + " is: " + distance);
+					string+="Distance between " + city1.getName() + " and " + city2.getName() + " is: " + distance+"\n";
 				} else
-					System.out.println(city1.getName() + " and " + city2.getName() + " are not connected.");
+					string+=city1.getName() + " and " + city2.getName() + " are not connected.\n";
 			}
 		}
+		return string;
 	}
 
 	@Override

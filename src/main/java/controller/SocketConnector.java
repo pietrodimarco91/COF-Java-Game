@@ -46,6 +46,4 @@ public class SocketConnector implements ConnectorInt {
     public String receiveStringFromClient() {
         return input.nextLine();
     }
-
-
 }

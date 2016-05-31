@@ -7,7 +7,10 @@ import exceptions.InvalidSlotException;
 import exceptions.UnexistingConfigurationException;
 import model.*;
 
+import java.io.PrintStream;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +19,8 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -24,6 +29,9 @@ import java.util.logging.Logger;
 public class MatchHandler extends Thread {
 
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
+
+	private PrintStream out;
+
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
 	 */
@@ -75,7 +83,9 @@ public class MatchHandler extends Thread {
 		this.date = date;
 		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
-		logger.log(Level.FINEST, "[MATCH " + id + "]: Started running...");
+		out = new PrintStream(System.out);
+		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+		out.println("[MATCH " + id + "]: Started running...");
 	}
 
 	/**
@@ -91,7 +101,7 @@ public class MatchHandler extends Thread {
 		// Start the match
 		waitingForPlayers();
 		countdown();
-		startGame();
+		play();
 	}
 
 	/**
@@ -308,7 +318,7 @@ public class MatchHandler extends Thread {
 	 */
 	public void waitingForPlayers() {
 
-		logger.log(Level.FINEST, "[Match ID: " + id + "] Currently waiting for players...");
+		out.println("[Match ID: " + id + "] Currently waiting for players...");
 		try {
 			creator.getConnector().writeToClient("[Match ID: " + id + "] Currently waiting for players...");
 		} catch (RemoteException e) {
@@ -323,7 +333,7 @@ public class MatchHandler extends Thread {
 			}
 		}
 		try {
-			Thread.sleep(20000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
 		}
@@ -352,11 +362,12 @@ public class MatchHandler extends Thread {
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
-	public void startGame() {// To add UML scheme
-		Player player;
-		for (int i = 0; i < this.players.size(); i++) {
-
-		}
+	public void play() {// To add UML scheme
+		/*
+		 * Player player; for (int i = 0; i < this.players.size(); i++) {
+		 * 
+		 * }
+		 */
 
 	}
 
@@ -409,7 +420,11 @@ public class MatchHandler extends Thread {
 			try {
 				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
 			} catch (InvalidSlotException e) {
-				logger.log(Level.SEVERE, e.showError(), e);
+				try {
+					player.getConnector().writeToClient(e.showError());
+				} catch (RemoteException e1) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+				}
 			}
 		} else
 			System.out.println("You were not able to satisfy the specified Council with these Politic Cards");
@@ -445,7 +460,11 @@ public class MatchHandler extends Thread {
 		try {
 			region.electCouncillor(councillorColor);
 		} catch (CouncillorNotFoundException e) {
-			logger.log(Level.SEVERE, e.showError(), e);
+			try {
+				player.getConnector().writeToClient(e.showError());
+			} catch (RemoteException e1) {
+				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+			}
 			return false;
 		}
 		player.addCoins(4);
@@ -513,9 +532,11 @@ public class MatchHandler extends Thread {
 			try {
 				region.electCouncillor(councillorColor);
 			} catch (CouncillorNotFoundException e) {
-
-				logger.log(Level.SEVERE, e.showError(), e);
-
+				try {
+					player.getConnector().writeToClient(e.showError());
+				} catch (RemoteException e1) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
+				}
 			}
 			return true;
 		} else
@@ -529,7 +550,7 @@ public class MatchHandler extends Thread {
 		Player player = new Player(connectorInt);
 		this.players.add(player);
 		if (isFull())
-			this.startGame();
+			this.play();
 	}
 
 	/**
@@ -559,7 +580,7 @@ public class MatchHandler extends Thread {
 	public boolean isFull() {
 		return this.players.size() >= this.numberOfPlayers;
 	}
-	
+
 	/**
 	 * 
 	 */

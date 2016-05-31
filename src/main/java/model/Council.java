@@ -7,7 +7,7 @@ import java.util.Queue;
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public abstract class Council {
+public abstract class Council{
 
 	/**
 	 * Queue of councillors,I used LinkedList Queue type
@@ -60,5 +60,6 @@ public abstract class Council {
 		}
 		return string;
 	}
+	
 
 }

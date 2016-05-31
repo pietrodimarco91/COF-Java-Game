@@ -1,13 +1,21 @@
 package controller;
 
-import model.Map;
+import exceptions.ConfigAlreadyExistingException;
+import exceptions.CouncillorNotFoundException;
+import exceptions.InvalidInputException;
+import exceptions.InvalidSlotException;
+import exceptions.UnexistingConfigurationException;
+import model.*;
 
-import java.net.Socket;
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.Scanner;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -15,6 +23,7 @@ import java.util.Date;
  */
 public class MatchHandler extends Thread {
 
+	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
 	 */
@@ -26,80 +35,239 @@ public class MatchHandler extends Thread {
 	private Date date;
 
 	/**
-	 * A reference to the local GraphMap for this match.
+	 * A reference to the local Board for this match.
 	 */
-	private Map map;
+	private Board board;
 
 	/**
-	 * An ArrayList of player in this MatchHandler.
+	 * An ArrayList of players in this MatchHandler.
 	 */
 	private ArrayList<Player> players; // To add UML scheme
 
 	/**
-	 * Number of player in this Match
+	 * 
 	 */
-	private int playersNumber; // To add UML scheme
-	
+	private Player creator;
+
 	/**
-	 * An boolean value used to know if the first player has decided the total
-	 * number of player. It's true when he has finished to set the number else
-	 * it's false.
+	 * Number of players in this Match
 	 */
-	private boolean pending = false; // To add UML scheme
+	private int numberOfPlayers; // To add UML scheme
+
+	/**
+	 * A boolean value used to know if the first player has decided the total
+	 * number of players. It's true when he has finished to set the number false
+	 * otherwise
+	 */
+	private boolean pending; // To add UML scheme
+
+	private ConfigFileManager configFileManager;
 
 	/**
 	 * Default constructor
+	 */
+
+	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
+		this.players = new ArrayList<Player>();
+		this.creator = new Player(connectorInt);
+		this.players.add(creator);
+		this.id = id;
+		this.date = date;
+		this.configFileManager = new ConfigFileManager();
+		this.pending = false;
+		logger.log(Level.FINEST, "[MATCH "+id+"]: Started running...");
+	}
+
+	/**
+	 * MUST BE ADAPTED TO THE LAST VERSION OF MAP CONSTRUCTOR
 	 */
 
 	public void run() {
-		String receiveFromClient;
-		int numberOfPlayers;
-		Connector playerOneConnector=this.players.get(0).getConnector(); //PlayerOne is the creator of this match and for this reason i use him Connector
-		playerOneConnector.writeToClient(
-				"Inserisci il numero di giocatori massimo per questa partita.\n Puoi inserire un valore massimo di 8 giocatori.");
-		numberOfPlayers = playerOneConnector.receiveIntFromClient();
-		// Player has to add a correct number between 2 and 8
-		while (numberOfPlayers < 2 || numberOfPlayers > 8) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra 2 e 8.");
-			numberOfPlayers = playerOneConnector.receiveIntFromClient();
-		}
+		boardConfiguration(creator);
+		pending = true; // Player has finished to set the match
 
-		int linksBetweenCities;
-		playerOneConnector.writeToClient("Inserisci il numero massimo di collegamenti tra le citta");
-		linksBetweenCities = playerOneConnector.receiveIntFromClient();
-		// Player has to add a correct number between x and y
-		while (linksBetweenCities < 2 || linksBetweenCities > 4) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			linksBetweenCities = playerOneConnector.receiveIntFromClient();
-		}
+		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
-		int bonusNumber;
-		playerOneConnector.writeToClient("Inserisci il numero di bonus.");
-		bonusNumber = playerOneConnector.receiveIntFromClient();
-		while (bonusNumber < 1 || bonusNumber > 3) {
-			playerOneConnector.writeToClient("ATTENZIONE!\n Devi inserire un numero compreso tra X e Y.");
-			bonusNumber = playerOneConnector.receiveIntFromClient();
-		}
-		
-		pending=true; //Player has finished to set the match
-
-		mapSetup(numberOfPlayers, linksBetweenCities, bonusNumber);
-		
-		//Aggiungi controllo per verificare se ArrayList è pieno di giocatori 
-		
-		//Start the match
+		// Start the match
+		countdown();
+		startGame();
 	}
-		
-	/**
-	 * Default constructor
-	 */
 
-	public MatchHandler(int id, Date date, Connector connector) {
-		this.players=new ArrayList<Player>();
-		Player player= new Player(connector);
-		this.players.add(player);
-		this.id = id;
-		this.date = date;	
+	/**
+	 * NEEDS JAVADOC
+	 * 
+	 * @param player
+	 */
+	public void boardConfiguration(Player player) {
+		boolean correctAnswer = false;
+		int choice = 0;
+		ConfigObject config;
+		ConnectorInt playerConnector = player.getConnector();
+		try {
+			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+		while (!correctAnswer) {
+			try {
+				playerConnector
+						.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				choice = playerConnector.receiveIntFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+			if (choice != 1 && choice != 2) {
+				try {
+					playerConnector.writeToClient("ERROR: incorrect input. Please retry\n");
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+			} else
+				correctAnswer = true;
+		}
+
+		if (choice == 1) {
+			newConfiguration(playerConnector);
+		} else {
+			if (configFileManager.getConfigurations().size() > 0) {
+				try {
+					playerConnector.writeToClient("These are the currently existing configurations:\n");
+					ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
+					for (ConfigObject configuration : configurations) {
+						playerConnector.writeToClient(configuration.toString());
+					}
+					int id = -1;
+					boolean correctID = false;
+					while (!correctID) {
+						playerConnector.writeToClient("Choose a configuration by typing its ID\n");
+						id = playerConnector.receiveIntFromClient();
+						try {
+							config = configFileManager.getConfiguration(id);
+							correctID = true;
+							boardSetup(config);
+							this.numberOfPlayers=config.getNumberOfPlayers();
+							playerConnector.writeToClient(
+									"Board correctly generated with selected parameters! Now we're about to start...");
+						} catch (UnexistingConfigurationException e) {
+							playerConnector.writeToClient(e.printError());
+						}
+					}
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+			} else {
+				try {
+					playerConnector
+							.writeToClient("There aren't any configurations yet! Please create a new one :-) \n");
+					newConfiguration(playerConnector);
+
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * NEEDS CODE QUALITY ADJUSTEMENTS
+	 * 
+	 * @param playerConnector
+	 */
+	public void newConfiguration(ConnectorInt playerConnector) {
+		String parameters = "";
+		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
+				nobilityTrackBonusNumber = 0;
+		boolean stop = false;
+		try {
+			playerConnector.writeToClient(
+					"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
+			playerConnector.writeToClient(
+					"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+
+		while (!stop) {
+			try {
+				parameters = playerConnector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+			int[] par = new int[5];
+			int i = 0;
+			StringTokenizer tokenizer = new StringTokenizer(parameters, " ");
+			try {
+				while (tokenizer.hasMoreTokens()) {
+					par[i] = Integer.parseInt(tokenizer.nextToken());
+					i++;
+				}
+				numberOfPlayers = par[0];
+				rewardTokenBonusNumber = par[1];
+				permitTileBonusNumber = par[2];
+				nobilityTrackBonusNumber = par[3];
+				linksBetweenCities = par[4];
+			} catch (NumberFormatException e) {
+				try {
+					playerConnector.writeToClient("Error: Expected integers values! Retry!");
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			}
+			try {
+				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				stop = true;
+			} catch (InvalidInputException e) {
+				try {
+					playerConnector.writeToClient(e.printError());
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			} catch (ConfigAlreadyExistingException e) {
+				try {
+					playerConnector.writeToClient(e.printError());
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			}
+		}
+		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
+		this.numberOfPlayers=numberOfPlayers;
+		try {
+			playerConnector
+					.writeToClient("Board correctly generated with selected parameters! Now we're about to start...");
+		} catch (RemoteException e1) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e1);
+		}
+	}
+
+	/**
+	 * Checks whether the specified parameters respect the rules or not.
+	 * 
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 * @throws InvalidInputException
+	 */
+	public void parametersValidation(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
+		if (numberOfPlayers < 2 || numberOfPlayers > 8)
+			throw new InvalidInputException();
+		if ((rewardTokenBonusNumber < 1 || rewardTokenBonusNumber > 3)
+				|| (permitTileBonusNumber < 1 || permitTileBonusNumber > 3)
+				|| (nobilityTrackBonusNumber < 1 || nobilityTrackBonusNumber > 3))
+			throw new InvalidInputException();
+		if (linksBetweenCities < 2 && linksBetweenCities > 4)
+			throw new InvalidInputException();
 	}
 
 	/**
@@ -109,56 +277,283 @@ public class MatchHandler extends Thread {
 	 * @param numberOfPlayers
 	 *            the number of players of the match
 	 * @param linksBetweenCities
-	 *            the number of MAXIMUM connections between the cities; in
-	 *            detail, this number represents the maximum number of streets
-	 *            that come out from each city (vertex)
+	 *            the number of MAXIMUM outgoing connections from each city
 	 */
-	public void mapSetup(int numberOfPlayers, int linksBetweenCities, int bonusNumber) {
-		map = new Map(numberOfPlayers, bonusNumber,linksBetweenCities);
+	public void boardSetup(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) {
+		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
 	}
 
-	public void startGame() {//To add UML scheme
-		Player player;
-		for(int i=0;i<this.players.size();i++){
-			
+	/**
+	 * NEEDS JAVADOC
+	 * 
+	 * @param config
+	 */
+	public void boardSetup(ConfigObject config) {
+		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
+				nobilityTrackBonusNumber = 0;
+		numberOfPlayers = config.getNumberOfPlayers();
+		linksBetweenCities = config.getLinksBetweenCities();
+		rewardTokenBonusNumber = config.getRewardTokenBonusNumber();
+		permitTileBonusNumber = config.getPermitTileBonusNumber();
+		nobilityTrackBonusNumber = config.getNobilityTrackBonusNumber();
+		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 */
+	public void waitingForPlayers() {
+		logger.log(Level.FINEST, "[Match ID: "+id+"] Currently waiting for players...");
+		try {
+			creator.getConnector().writeToClient("[Match ID: "+id+"] Currently waiting for players...");
+		} catch (RemoteException e) {
+			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 		}
-		
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+		}
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 */
+	public void countdown() {
+		for (int i = 20; i > 0; i--) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+			}
+			for (Player player : players) {
+				try {
+					player.getConnector().writeToClient("MATCH STARTING IN: " + i + "\n");
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * NEEDS IMPLEMENTATION
+	 */
+	public void startGame() {// To add UML scheme
+		Player player;
+		for (int i = 0; i < this.players.size(); i++) {
+
+		}
 
 	}
 
+	/**
+	 * INCOMPLETE IMPLEMENTATION
+	 */
 	public String toString() {
 		String string = "";
-		string += "Match numero " + this.id + "\nLanciato in data: ";
+		string += "Match numero " + this.id + "\n";
+		string += "Lanciato in data: ";
 		DateFormat dateFormat = new SimpleDateFormat();
 		string += dateFormat.format(date) + "\n";
-
-		// Needs more implementation: the current status of the match should be
-		// displayed
 		return string;
 	}
 
+	/**
+	 * This method allows to know whether the current match is pending or not
+	 * 
+	 * @return true is it currently pending, false otherwise
+	 */
 	public boolean isPending() {
 		return this.pending;
 	}
 
-	public Connector getPlayerConnector(int numPlayer) {//To add UML scheme
-		Player player=players.get(numPlayer);
+	/**
+	 * NEEDS REVISION AFTER IMPLEMENTATION. Especially the try/catch and the
+	 * exceptions.
+	 * 
+	 * @param player
+	 * @param regionName
+	 */
+	public void buyPermitTile(Player player, String regionName) {
+		int playerPayment;
+		int numberOfCouncillorSatisfied;
+		PermitTileDeck regionDeck;
+		Region region = this.getRegion(regionName);
+		region = this.getRegion(regionName);
+		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
+		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
+		Scanner input = new Scanner(System.in);
+		if (numberOfCouncillorSatisfied > 0) {
+			System.out.println("You are able to satisfy the region Council with " + numberOfCouncillorSatisfied
+					+ " Politic Cards!");
+			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			player.performPayment(playerPayment);
+			player.removeCardsFromHand(cardsChosenForCouncilSatisfaction);
+			regionDeck = region.getDeck();
+			System.out.println("Choose slot: 1 or 2?");
+			int slot = input.nextInt();
+			try {
+				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
+			} catch (InvalidSlotException e) {
+				logger.log(Level.SEVERE, e.showError(), e);
+			}
+		} else
+			System.out.println("You were not able to satisfy the specified Council with these Politic Cards");
+	}
+
+	/**
+	 * This method allows a player to draw a Politic Card at the beginning of
+	 * his turn.
+	 */
+	public void drawPoliticCard(Player player) {
+		player.addCardOnHand(PoliticCardDeck.generateRandomPoliticCard());
+	}
+
+	/**
+	 * @return the connector of the player with the specified player number.
+	 */
+	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML
+																// scheme
+		Player player = players.get(playerNumber);
 		return player.getConnector();
 	}
-	
-	public void addPlayer(Connector connector) {//To add UML scheme
-		Player player= new Player(connector);
+
+	/**
+	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
+	 * be handled inside a while loop untile the move is correctly performed.
+	 * 
+	 * @return
+	 */
+	public boolean electCoucillor(Player player, String regionName, String councillorColor) {
+		regionName = regionName.toUpperCase();
+		regionName = regionName.trim();
+		Region region = this.getRegion(regionName);
+		try {
+			region.electCouncillor(councillorColor);
+		} catch (CouncillorNotFoundException e) {
+			logger.log(Level.SEVERE, e.showError(), e);
+			return false;
+		}
+		player.addCoins(4);
+		return true;
+	}
+
+	/**
+	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
+	 * be handled inside a while loop untile the move is correctly performed.
+	 * 
+	 * @return
+	 */
+	public boolean engageAssistant(Player player) {
+		int coins = player.getCoins();
+		if (coins >= 3) {
+			player.removeCoins(3);
+			player.addAssistant();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * NEEDS REVISION: the parameters communication must be implemented inside
+	 * the method.
+	 * 
+	 * @return
+	 */
+	public boolean changeBusinessPermitTiles(Player player, String regionName) {
+		Region region = this.getRegion(regionName);
+		if (player.getNumberOfAssistants() >= 1) {
+			region.getDeck().switchPermitTiles();
+			player.removeAssistant();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
+	 * 
+	 * @return
+	 */
+	/*
+	 * public boolean buildEmporiumWithPermitTile(Player player,String cityName)
+	 * { ArrayList<City> city; int i; PermitTile
+	 * permitTile=player.getUnusedPermitTile(tileChose);
+	 * city=permitTile.getCities(); for(i=0;i<city.size();i++)
+	 * if(city.get(i).getName().equals(cityName) &&
+	 * !(city.get(i).checkPresenceOfEmporium(player))){
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
+
+	/**
+	 * @return
+	 */
+	public boolean sendAssistantToElectCouncillor(Player player, String regionName, String councillorColor) {
+		if (player.getNumberOfAssistants() >= 1) {
+			Region region = this.getRegion(regionName);
+			try {
+				region.electCouncillor(councillorColor);
+			} catch (CouncillorNotFoundException e) {
+
+				logger.log(Level.SEVERE, e.showError(), e);
+
+			}
+			return true;
+		} else
+			return false;
+	}
+
+	/**
+	 * @return
+	 */
+	public void addPlayer(ConnectorInt connectorInt) {// To add UML scheme
+		Player player = new Player(connectorInt);
 		this.players.add(player);
-		if(isFull())
+		if (isFull())
 			this.startGame();
 	}
 
+	/**
+	 * NEEDS REVISION: the specified name may be incorrect or invalid.
+	 * Exception?
+	 * 
+	 * @return
+	 */
+	public Region getRegion(String regionName) {
+		boolean regionFound = false;
+		Region region = null;
+		Region regions[] = this.board.getRegions();
+		regionName = regionName.toUpperCase();
+		regionName = regionName.trim();
+		for (int i = 0; i < regions.length && !regionFound; i++) {
+			if (regions[i].getName().equals(regionName)) {
+				regionFound = true;
+				region = regions[i];
+			}
+		}
+		return region;
+	}
 
+	/**
+	 * @return
+	 */
 	public boolean isFull() {
-		if(this.players.size()<this.playersNumber)
-		return false;
-		else
-		return true;
+		return this.players.size() >= this.numberOfPlayers;
 	}
 	
+	/**
+	 * 
+	 */
+	public int getIdentifier() {
+		return this.id;
+	}
 }

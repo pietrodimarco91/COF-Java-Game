@@ -4,11 +4,12 @@ import controller.Player;
 
 public class AssistantOnSale extends ItemOnSale {
 
+	public AssistantOnSale(Player seller, int price) {
+		super(seller, price);
+	}
+
 	@Override
 	public void buyItem(Player player) {
-		/*
-		 * The basic idea is that the specified player earns one assistant
-		 */
-		
+		player.addAssistant();
 	}
 }

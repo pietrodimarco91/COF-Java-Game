@@ -1,5 +1,11 @@
 package controller;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,32 +20,54 @@ public class Server {
 	 * must know to connect to the game.
 	 */
 	private static final String ip="localhost";
+	
 	/**
 	 * The port of the specified IP Address (connection parameter).
 	 */
-	private static final int port=80;
+	private static final int port=2000;
+	
 	/**
 	 * Matches Ids
 	 */
 	private static int id=0;
+	SocketConnector socketConnector;
+	RMIServer rmiServer;
 	/**
-	 *This attribute handles every interaction with the user.
-	 */
-	private ConnectorHandler connectorHandler;
-	/**
-	 *These threads are used by Server to handles the different connections coming from the Clients
+	 *These threads are used by Server to handle the different connections coming from the Clients
 	 */
 	private ExecutorService thread;
 	/**
 	 * The Server stores an array of currently on-going matches through their MatchHandlers
 	 */
 	private ArrayList<MatchHandler> matches;
+	private ServerSocket welcomeSocket;
 
 
 	public Server() {
-		this.connectorHandler =new ConnectorHandler(port);
 		thread= Executors.newCachedThreadPool();
 		this.matches=new ArrayList<MatchHandler>();
+		try {
+			java.rmi.registry.LocateRegistry.createRegistry(1099);
+			RMIServerInt b=new RMIServer(matches,thread);
+			try {
+				try {
+					Naming.bind("rmi://127.0.0.1/registry", b);
+				} catch (AlreadyBoundException e) {
+					e.printStackTrace();
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			System.out.println("Server is ready to recive RMI invocations.");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		try {
+			this.welcomeSocket=new ServerSocket(port);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Server is ready to recive Socket Connections.");
 		this.waitConnection();
 	}
 
@@ -47,14 +75,21 @@ public class Server {
 		return id++;
 	}
 
+
 	/**
 	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
 	private void waitConnection() {
 		while(true){
-			thread.submit(new UserHandler(connectorHandler.getConnector(), matches));
+			try {
+				socketConnector=new SocketConnector(welcomeSocket.accept());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			thread.submit(new ClientHandler(socketConnector, matches));
 		}
 	}
-	
+
+
 
 }

@@ -47,9 +47,6 @@ public class ClientHandler implements Runnable {
 	 */
 	public synchronized void launchNewMatch(Date date) {
 		int id = Server.getId();
-		MatchHandler matchHandler = new MatchHandler(id, date, connectorInt);
-		matches.add(matchHandler);
-		matchHandler.start();
 		DateFormat dateFormat = new SimpleDateFormat();
 		try {
 			connectorInt.writeToClient(
@@ -57,6 +54,10 @@ public class ClientHandler implements Runnable {
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: could not write to client while launching a new match\n", e);
 		}
+		
+		MatchHandler matchHandler = new MatchHandler(id, date, connectorInt);
+		matches.add(matchHandler);
+		matchHandler.start();
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class ClientHandler implements Runnable {
 				matchInList.addPlayer(connectorInt);
 				try {
 					connectorInt.writeToClient(
-							"You joined an already existing match still pending, with ID " + matchInList.getId()+"\n");
+							"You joined an already existing match still pending, with ID " + matchInList.getIdentifier()+"\n");
 				} catch (RemoteException e) {
 					logger.log(Level.INFO, "Error: could not write to client while trying to join a match\n", e);
 				}

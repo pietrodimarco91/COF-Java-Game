@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,11 @@ public class MatchHandler extends Thread {
 	private ArrayList<Player> players; // To add UML scheme
 
 	/**
+	 * 
+	 */
+	private Player creator;
+
+	/**
 	 * Number of players in this Match
 	 */
 	private int numberOfPlayers; // To add UML scheme
@@ -63,12 +69,13 @@ public class MatchHandler extends Thread {
 
 	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
 		this.players = new ArrayList<Player>();
-		Player player = new Player(connectorInt);
-		this.players.add(player);
+		this.creator = new Player(connectorInt);
+		this.players.add(creator);
 		this.id = id;
 		this.date = date;
 		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
+		logger.log(Level.FINEST, "[MATCH "+id+"]: Started running...");
 	}
 
 	/**
@@ -76,16 +83,19 @@ public class MatchHandler extends Thread {
 	 */
 
 	public void run() {
-		boardConfiguration(players.get(0));
+		boardConfiguration(creator);
 		pending = true; // Player has finished to set the match
 
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
 
 		// Start the match
+		countdown();
+		startGame();
 	}
 
 	/**
 	 * NEEDS JAVADOC
+	 * 
 	 * @param player
 	 */
 	public void boardConfiguration(Player player) {
@@ -96,30 +106,28 @@ public class MatchHandler extends Thread {
 		try {
 			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
 		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: could't write to client", e);
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 		while (!correctAnswer) {
 			try {
 				playerConnector
 						.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
 			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: could't write to client", e);
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
 			try {
 				choice = playerConnector.receiveIntFromClient();
 			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: could't receive from client", e);
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
 			}
-			if (choice != 0) {
-				if (choice != 1 && choice != 2) {
-					try {
-						playerConnector.writeToClient("ERROR: incorrect input. Please retry\n");
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: could't write to client", e);
-					}
-				} else
-					correctAnswer = true;
-			}
+			if (choice != 1 && choice != 2) {
+				try {
+					playerConnector.writeToClient("ERROR: incorrect input. Please retry\n");
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+			} else
+				correctAnswer = true;
 		}
 
 		if (choice == 1) {
@@ -135,19 +143,21 @@ public class MatchHandler extends Thread {
 					int id = -1;
 					boolean correctID = false;
 					while (!correctID) {
-
-						// must add configuration choice from client
-
+						playerConnector.writeToClient("Choose a configuration by typing its ID\n");
+						id = playerConnector.receiveIntFromClient();
 						try {
 							config = configFileManager.getConfiguration(id);
 							correctID = true;
 							boardSetup(config);
+							this.numberOfPlayers=config.getNumberOfPlayers();
+							playerConnector.writeToClient(
+									"Board correctly generated with selected parameters! Now we're about to start...");
 						} catch (UnexistingConfigurationException e) {
 							playerConnector.writeToClient(e.printError());
 						}
 					}
 				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: could't write to client", e);
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
 				}
 			} else {
 				try {
@@ -156,14 +166,14 @@ public class MatchHandler extends Thread {
 					newConfiguration(playerConnector);
 
 				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: could't write to client", e);
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
 				}
 			}
 		}
 	}
 
 	/**
-	 * INCOMPLETE IMPLEMENTATION!
+	 * NEEDS CODE QUALITY ADJUSTEMENTS
 	 * 
 	 * @param playerConnector
 	 */
@@ -178,39 +188,64 @@ public class MatchHandler extends Thread {
 			playerConnector.writeToClient(
 					"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
 		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: could't write to client", e);
-		}
-		try {
-			parameters = playerConnector.receiveStringFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: could't receive from client", e);
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 
 		while (!stop) {
-
-			// now we received all parameters
-
 			try {
-				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
-						nobilityTrackBonusNumber, linksBetweenCities);
+				parameters = playerConnector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+			int[] par = new int[5];
+			int i = 0;
+			StringTokenizer tokenizer = new StringTokenizer(parameters, " ");
+			try {
+				while (tokenizer.hasMoreTokens()) {
+					par[i] = Integer.parseInt(tokenizer.nextToken());
+					i++;
+				}
+				numberOfPlayers = par[0];
+				rewardTokenBonusNumber = par[1];
+				permitTileBonusNumber = par[2];
+				nobilityTrackBonusNumber = par[3];
+				linksBetweenCities = par[4];
+			} catch (NumberFormatException e) {
+				try {
+					playerConnector.writeToClient("Error: Expected integers values! Retry!");
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			}
+			try {
 				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
 						nobilityTrackBonusNumber, linksBetweenCities);
 				stop = true;
 			} catch (InvalidInputException e) {
 				try {
 					playerConnector.writeToClient(e.printError());
 				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: could't write to client", e1);
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
 				}
 			} catch (ConfigAlreadyExistingException e) {
 				try {
 					playerConnector.writeToClient(e.printError());
 				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: could't write to client", e1);
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
 				}
 			}
 		}
-		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities);
+		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
+		this.numberOfPlayers=numberOfPlayers;
+		try {
+			playerConnector
+					.writeToClient("Board correctly generated with selected parameters! Now we're about to start...");
+		} catch (RemoteException e1) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e1);
+		}
 	}
 
 	/**
@@ -228,8 +263,8 @@ public class MatchHandler extends Thread {
 		if (numberOfPlayers < 2 || numberOfPlayers > 8)
 			throw new InvalidInputException();
 		if ((rewardTokenBonusNumber < 1 || rewardTokenBonusNumber > 3)
-				&& (permitTileBonusNumber < 1 || permitTileBonusNumber > 3)
-				&& (nobilityTrackBonusNumber < 1 || nobilityTrackBonusNumber > 3))
+				|| (permitTileBonusNumber < 1 || permitTileBonusNumber > 3)
+				|| (nobilityTrackBonusNumber < 1 || nobilityTrackBonusNumber > 3))
 			throw new InvalidInputException();
 		if (linksBetweenCities < 2 && linksBetweenCities > 4)
 			throw new InvalidInputException();
@@ -252,20 +287,58 @@ public class MatchHandler extends Thread {
 
 	/**
 	 * NEEDS JAVADOC
+	 * 
 	 * @param config
 	 */
 	public void boardSetup(ConfigObject config) {
 		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
 				nobilityTrackBonusNumber = 0;
-		numberOfPlayers=config.getNumberOfPlayers();
-		linksBetweenCities=config.getLinksBetweenCities();
-		rewardTokenBonusNumber=config.getRewardTokenBonusNumber();
-		permitTileBonusNumber=config.getPermitTileBonusNumber();
-		nobilityTrackBonusNumber=config.getNobilityTrackBonusNumber();
+		numberOfPlayers = config.getNumberOfPlayers();
+		linksBetweenCities = config.getLinksBetweenCities();
+		rewardTokenBonusNumber = config.getRewardTokenBonusNumber();
+		permitTileBonusNumber = config.getPermitTileBonusNumber();
+		nobilityTrackBonusNumber = config.getNobilityTrackBonusNumber();
 		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
 				linksBetweenCities);
 	}
 	
+	/**
+	 * NEEDS JAVADOC
+	 */
+	public void waitingForPlayers() {
+		logger.log(Level.FINEST, "[Match ID: "+id+"] Currently waiting for players...");
+		try {
+			creator.getConnector().writeToClient("[Match ID: "+id+"] Currently waiting for players...");
+		} catch (RemoteException e) {
+			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+		}
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+		}
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 */
+	public void countdown() {
+		for (int i = 20; i > 0; i--) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+			}
+			for (Player player : players) {
+				try {
+					player.getConnector().writeToClient("MATCH STARTING IN: " + i + "\n");
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+				}
+			}
+		}
+	}
+
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
@@ -476,5 +549,11 @@ public class MatchHandler extends Thread {
 	public boolean isFull() {
 		return this.players.size() >= this.numberOfPlayers;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public int getIdentifier() {
+		return this.id;
+	}
 }

@@ -36,8 +36,8 @@ public class MapDemo {
 				System.out.println("Maximum number of connections between the cities (between 2 and 4)");
 				linksBetweenCities = input.nextInt();
 			} while (linksBetweenCities > 4 || linksBetweenCities < 2);
-			Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-					linksBetweenCities);
+			Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+					nobilityTrackBonusNumber, linksBetweenCities);
 			while (!stop) {
 				System.out.println("Next choice?");
 				System.out.println(
@@ -90,10 +90,12 @@ public class MapDemo {
 		do {
 			System.out.println("Insert the FIRST letter of the first city:");
 			first = input.nextLine();
+			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			System.out.println("Insert the FIRST letter of the second city:");
 			second = input.nextLine();
+			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
 		while (cityIterator.hasNext()) {
@@ -122,10 +124,12 @@ public class MapDemo {
 		do {
 			System.out.println("Insert the FIRST letter of the first city:");
 			first = input.nextLine();
+			first = first.toUpperCase();
 		} while (first.length() > 1);
 		do {
 			System.out.println("Insert the FIRST letter of the second city:");
 			second = input.nextLine();
+			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
 		while (cityIterator.hasNext()) {
@@ -150,10 +154,12 @@ public class MapDemo {
 		do {
 			System.out.println("Insert the FIRST letter of the first city:");
 			first = input.nextLine();
+			first = input.nextLine();
 		} while (first.length() > 1);
 		do {
 			System.out.println("Insert the FIRST letter of the second city:");
 			second = input.nextLine();
+			second = second.toUpperCase();
 		} while (second.length() > 1 || second.equals(first));
 
 		while (cityIterator.hasNext()) {

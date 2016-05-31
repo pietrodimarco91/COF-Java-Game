@@ -38,6 +38,7 @@ public class MapDemo {
 			} while (linksBetweenCities > 4 || linksBetweenCities < 2);
 			Board map = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
 					nobilityTrackBonusNumber, linksBetweenCities);
+			
 			while (!stop) {
 				System.out.println("Next choice?");
 				System.out.println(
@@ -45,7 +46,7 @@ public class MapDemo {
 				choice = input.nextInt();
 				switch (choice) {
 				case 1:
-					generateConnection(map, linksBetweenCities);
+					generateConnection(map);
 					break;
 				case 2:
 					removeConnection(map);
@@ -79,7 +80,7 @@ public class MapDemo {
 		}
 	}
 
-	public static void generateConnection(Board map, int linksBetweenCities) {
+	public static void generateConnection(Board map) {
 		String first, second;
 		City city1 = null, city2 = null, tempCity;
 		List<City> cities = map.getMap();
@@ -106,7 +107,7 @@ public class MapDemo {
 				city2 = tempCity;
 			}
 		}
-		if (map.checkPossibilityOfNewConnection(city1, city2, linksBetweenCities))
+		if (map.checkPossibilityOfNewConnection(city1, city2))
 			map.connectCities(city1, city2);
 		else {
 			System.out.println("Error: cities cannot be connected");

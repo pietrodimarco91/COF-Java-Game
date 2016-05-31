@@ -92,14 +92,21 @@ public class Player {
 	private ConnectorInt playerConnectorInt;// To add UML scheme
 
 	/**
+	 * 
+	 */
+	private final static int INITIAL_COINS = 10;
+
+	/**
 	 * Default constructor
 	 */
-	public Player(ConnectorInt playerConnectorInt) {
+	public Player(ConnectorInt playerConnectorInt, int id) {
+		this.turnNumber = id;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
 		this.playerConnectorInt = playerConnectorInt;
 		initializeFirstHand();// Distributes the first hand of politic cards
+		this.victoryPoints = 0;
 	}
 
 	/**
@@ -130,16 +137,17 @@ public class Player {
 	 * @return
 	 */
 	public int getRageQuits() {
-	
+
 		return 0;
 	}
-	
+
 	/**
 	 * @return
 	 */
-	public Tile getUnusedPermitTile(Tile tileChose) {// metodo da risistemare e da aggiungere UML
-		int i=this.unusedPermitTiles.indexOf(tileChose);
-		
+	public Tile getUnusedPermitTile(Tile tileChose) {// metodo da risistemare e
+														// da aggiungere UML
+		int i = this.unusedPermitTiles.indexOf(tileChose);
+
 		return this.unusedPermitTiles.get(i);
 
 	}
@@ -292,6 +300,13 @@ public class Player {
 	 */
 	public void removeCoins(int coins) {
 		this.coins -= coins;
+	}
+
+	/**
+	 * @return set the initial coins of one player
+	 */
+	public int setInitialCoins(int turnNumber) {
+		return INITIAL_COINS + turnNumber;
 	}
 
 	/**

@@ -12,6 +12,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -69,7 +71,7 @@ public class MatchHandler extends Thread {
 
 	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
 		this.players = new ArrayList<Player>();
-		this.creator = new Player(connectorInt);
+		this.creator = new Player(connectorInt, 1);
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
@@ -84,6 +86,11 @@ public class MatchHandler extends Thread {
 
 	public void run() {
 		boardConfiguration(creator);
+		boolean stop = false;
+		while (!stop) {
+
+		}
+		mapConfiguration(creator.getConnector());
 		pending = true; // Player has finished to set the match
 
 		// Aggiungi controllo per verificare se ArrayList è pieno di giocatori
@@ -171,6 +178,222 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
+	}
+
+	/**
+	 *
+	 */
+	public void mapConfiguration(ConnectorInt connector) {
+		boolean stop = false;
+		int choice=0;
+		while (!stop) {
+			try {
+				connector.writeToClient(
+						"Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View graphic map\n5) View links\n6) View map status\n7) Count distance\n8) Show all distances\n ");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				choice = connector.receiveIntFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive to client", e);
+			}
+			switch (choice) {
+			case 1:
+				generateConnection(this.board,connector);
+				break;
+			case 2:
+				removeConnection(this.board,connector);
+				break;
+			case 3:
+				if (this.board.graphIsConnected()) {
+					stop = true;
+					break;
+				} else
+					try {
+						connector.writeToClient("Error: map is not connected. Add the necessary connections.\n");
+					} catch (RemoteException e) {
+						logger.log(Level.INFO, "Error: couldn't write to client", e);
+					}
+				break;
+			case 4:
+				this.board.printMatrix();
+				break;
+			case 5:
+				this.board.printConnections();
+				break;
+			case 6:
+				try {
+					connector.writeToClient(this.board.toString());
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+				break;
+			case 7:
+				countDistance(this.board,connector);
+				break;
+			case 8:
+				this.board.printDistances();
+				break;
+			default:
+				try {
+					connector.writeToClient("Error: invalid number\n");
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e);
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	* 
+	*/
+	public void generateConnection(Board map, ConnectorInt connector) {
+		String first, second;
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = map.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		Scanner input = new Scanner(System.in);
+		try {
+			connector.writeToClient("NEW CONNECTION\n");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+
+		do {
+			try {
+				connector.writeToClient("Insert the FIRST letter of the first city:\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			System.out.println("");
+			first = input.nextLine();
+			first = first.toUpperCase();
+		} while (first.length() > 1);
+		do {
+			try {
+				connector.writeToClient("Insert the FIRST letter of the second city:\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			second = input.nextLine();
+			second = second.toUpperCase();
+		} while (second.length() > 1 || second.equals(first));
+
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (map.checkPossibilityOfNewConnection(city1, city2))
+			map.connectCities(city1, city2);
+		else {
+			try {
+				connector.writeToClient("Error: cities cannot be connected\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void removeConnection(Board map, ConnectorInt connector) {
+		String first, second;
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = map.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		Scanner input = new Scanner(System.in);
+		try {
+			connector.writeToClient("REMOVE CONNECTION\n");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+		do {
+			try {
+				connector.writeToClient("Insert the FIRST letter of the first city:\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			first = input.nextLine();
+			first = first.toUpperCase();
+		} while (first.length() > 1);
+		do {
+			try {
+				connector.writeToClient("Insert the FIRST letter of the second city:\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}	
+			second = input.nextLine();
+			second = second.toUpperCase();
+		} while (second.length() > 1 || second.equals(first));
+
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		map.unconnectCities(city1, city2);
+	}
+	/**
+	 * 
+	 */
+	public void countDistance(Board map,ConnectorInt connector) {
+		String first, second;
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = map.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		Scanner input = new Scanner(System.in);
+		try {
+			connector.writeToClient("COUNT DISTANCE:\n");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+
+		do {
+			try {
+				connector.writeToClient("Insert the FIRST letter of the first city:\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			first = input.nextLine();
+			first = input.nextLine();
+		} while (first.length() > 1);
+		do {
+			try {
+				connector.writeToClient("Insert the FIRST letter of the second city:\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			second = input.nextLine();
+			second = second.toUpperCase();
+		} while (second.length() > 1 || second.equals(first));
+
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (city1 != null && city2 != null)
+			try {
+				connector.writeToClient("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
+						+ map.countDistance(city1, city2)+"\n");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			
 	}
 
 	/**
@@ -525,7 +748,8 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ConnectorInt connectorInt) {// To add UML scheme
+	public void addPlayer(ConnectorInt connectorInt, int id) {// To add UML
+																// scheme
 		Player player = new Player(connectorInt);
 		this.players.add(player);
 		if (isFull())
@@ -559,7 +783,7 @@ public class MatchHandler extends Thread {
 	public boolean isFull() {
 		return this.players.size() >= this.numberOfPlayers;
 	}
-	
+
 	/**
 	 * 
 	 */

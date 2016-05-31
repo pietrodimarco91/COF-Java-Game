@@ -22,6 +22,11 @@ public class Board {
 	private ArrayList<City> cities;
 
 	/**
+	 * 
+	 */
+	private int linksBetweenCities;
+	
+	/**
 	 * The number of cities is an important parameter, depending on the number
 	 * of players.
 	 */
@@ -81,6 +86,7 @@ public class Board {
 	 */
 	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
+		this.linksBetweenCities=linksBetweenCities;
 		cities = new ArrayList<>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
 		constantsInitialization(numberOfPlayers);
@@ -130,7 +136,7 @@ public class Board {
 	 *            the maximum number of links between the cities.
 	 * @return true if the new connection is possible, false otherwise.
 	 */
-	public boolean checkPossibilityOfNewConnection(City city1, City city2, int linksBetweenCities) {
+	public boolean checkPossibilityOfNewConnection(City city1, City city2) {
 		if (city1.getConnectedCities().contains(city2))
 			return false;
 		return city1.getConnectedCities().size() < linksBetweenCities

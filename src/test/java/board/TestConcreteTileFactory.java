@@ -1,4 +1,4 @@
-package map;
+package board;
 
 import model.ConcreteTileFactory;
 import model.Board;

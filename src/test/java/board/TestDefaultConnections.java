@@ -1,4 +1,4 @@
-package map;
+package board;
 
 import static org.junit.Assert.*;
 

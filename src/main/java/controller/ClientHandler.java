@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
 		while (iterator.hasNext() && !joined) {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
-				matchInList.addPlayer(connectorInt);
+				matchInList.addPlayer(connectorInt,matchInList.getPlayers().size());
 				try {
 					connectorInt.writeToClient("You joined an already existing match still pending, with ID "
 							+ matchInList.getIdentifier() + "\n");

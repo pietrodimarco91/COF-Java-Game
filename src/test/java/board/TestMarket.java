@@ -39,11 +39,11 @@ public class TestMarket {
 		assertEquals(items.getClass(),Market.getItemsOnSale().getClass());
 		
 		ConnectorInt connectorInt1 = new SocketConnector(new Socket());
-		Player player1 = new Player(connectorInt1);
+		Player player1 = new Player(connectorInt1,1);
 		ConnectorInt connectorInt2 = new SocketConnector(new Socket());
-		Player player2 = new Player(connectorInt2);
+		Player player2 = new Player(connectorInt2,2);
 		ConnectorInt connectorInt3 = new SocketConnector(new Socket());
-		Player player3 = new Player(connectorInt3);
+		Player player3 = new Player(connectorInt3,3);
 		
 		ItemFactory itemFactory = new ConcreteItemFactory();
 		ItemOnSale item1 = itemFactory.createAssistantOnSale(player1, 5);
@@ -57,7 +57,7 @@ public class TestMarket {
 		assertEquals(3,Market.getItemsOnSale().size());
 		
 		ConnectorInt connectorInt4 = new SocketConnector(new Socket());
-		Player player4 = new Player(connectorInt1);
+		Player player4 = new Player(connectorInt1,4);
 		player4.addCoins(3);
 		try {
 			Market.buyItemOnSale(player4, item1);

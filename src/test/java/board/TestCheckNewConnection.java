@@ -27,11 +27,11 @@ public class TestCheckNewConnection {
 			for (City city1 : cities) {
 				for (City city2 : cities) {
 					if (city1.getConnectedCities().contains(city2))
-						assertEquals(false, map.checkPossibilityOfNewConnection(city1, city2, i));
+						assertEquals(false, map.checkPossibilityOfNewConnection(city1, city2));
 					else if (city1.getConnectedCities().size() < i && city2.getConnectedCities().size() < i)
-						assertEquals(true, map.checkPossibilityOfNewConnection(city1, city2, i));
+						assertEquals(true, map.checkPossibilityOfNewConnection(city1, city2));
 					else
-						assertEquals(false, map.checkPossibilityOfNewConnection(city1, city2, i));
+						assertEquals(false, map.checkPossibilityOfNewConnection(city1, city2));
 				}
 			}
 		}

@@ -771,7 +771,7 @@ public class MatchHandler extends Thread {
 	 */
 	public void addPlayer(ConnectorInt connectorInt, int id) {// To add UML
 																// scheme
-		Player player = new Player(connectorInt);
+		Player player = new Player(connectorInt,id);
 		this.players.add(player);
 		if (isFull())
 			this.play();

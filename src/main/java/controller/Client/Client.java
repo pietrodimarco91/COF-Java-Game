@@ -9,6 +9,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
+import client.view.cli.ClientOutputPrinter;
+
 /**
  * 
  */
@@ -24,7 +26,7 @@ public class Client {
 	 */
 	public Client() {
 		Scanner input = new Scanner(System.in);
-		System.out.println("How do you want to connect?\n1)RMI\n2)Socket");
+		ClientOutputPrinter.printLine("How do you want to connect?\n1)RMI\n2)Socket");
 		switch (input.nextInt()){
 			case 1:
 				this.startRMIConnection();

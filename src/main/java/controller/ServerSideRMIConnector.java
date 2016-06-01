@@ -1,16 +1,17 @@
 package controller;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Created by pietro on 01/06/16.
  */
-public class ServerSideRMIConnector implements Connector, Remote {
+public class ServerSideRMIConnector extends UnicastRemoteObject implements Connector {
 
     ClientSideRMIConnectorInt clientSideRMIConnectorInt;
 
-    public ServerSideRMIConnector(ClientSideRMIConnectorInt clientSideRMIConnectorInt) {
+    public ServerSideRMIConnector(ClientSideRMIConnectorInt clientSideRMIConnectorInt) throws RemoteException {
+        super();
         this.clientSideRMIConnectorInt=clientSideRMIConnectorInt;
     }
 

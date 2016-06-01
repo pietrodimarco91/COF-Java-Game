@@ -21,6 +21,12 @@ public class MatchHandler extends Thread {
 
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 
+	/**
+	 * This constant represents the number of the parameters decided for the
+	 * board configuration
+	 */
+	private static final int NUMBER_OF_PARAMETERS = 5;
+
 	private PrintStream out;
 
 	/**
@@ -44,7 +50,7 @@ public class MatchHandler extends Thread {
 	private ArrayList<Player> players; // To add UML scheme
 
 	/**
-	 * 
+	 * This attribute represents the creator of the match
 	 */
 	private Player creator;
 
@@ -52,6 +58,12 @@ public class MatchHandler extends Thread {
 	 * Number of players in this Match
 	 */
 	private int numberOfPlayers; // To add UML scheme
+
+	/**
+	 * This attribute is needed to temporary save the parameters after the
+	 * configuration has been set up
+	 */
+	private int[] configParameters;
 
 	/**
 	 * A boolean value used to know if the first player has decided the total
@@ -72,6 +84,7 @@ public class MatchHandler extends Thread {
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
+		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
 		out = new PrintStream(System.out);
@@ -81,11 +94,11 @@ public class MatchHandler extends Thread {
 
 	public void run() {
 		boardConfiguration(creator);
-		mapConfiguration(creator.getConnector());
-		pending = true; // Player has finished to set the board parameters
-		// Start the match
 		waitingForPlayers();
 		countdown();
+		setDefinitiveNumberOfPlayers();
+		boardInitialization();
+		mapConfiguration(creator.getConnector());
 		play();
 	}
 
@@ -144,7 +157,7 @@ public class MatchHandler extends Thread {
 						try {
 							config = configFileManager.getConfiguration(id);
 							correctID = true;
-							boardSetup(config);
+							saveConfig(config);
 							this.numberOfPlayers = config.getNumberOfPlayers();
 							playerConnector.writeToClient(
 									"Board correctly generated with selected parameters! Now we're about to start...");
@@ -272,7 +285,7 @@ public class MatchHandler extends Thread {
 			}
 
 		}
-
+		pending=true;
 	}
 
 	/**
@@ -529,8 +542,7 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
-		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
+		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities);
 		this.numberOfPlayers = numberOfPlayers;
 		try {
 			playerConnector
@@ -563,35 +575,46 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
-	 * This method is invoked to setup the map before a match starts. The
+	 * This method is invoked to initialize the board before a match starts. The
 	 * parameters are set by the first player that joins the match.
-	 * 
-	 * @param numberOfPlayers
-	 *            the number of players of the match
-	 * @param linksBetweenCities
-	 *            the number of MAXIMUM outgoing connections from each city
 	 */
-	public void boardSetup(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
-			int nobilityTrackBonusNumber, int linksBetweenCities) {
-		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
+	public void boardInitialization() {
+		board = new Board(configParameters[0],configParameters[1],configParameters[2],configParameters[3],configParameters[4]);
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 */
+	public void setDefinitiveNumberOfPlayers() {
+		configParameters[0]=this.players.size();
 	}
 
 	/**
 	 * NEEDS JAVADOC
-	 * 
 	 * @param config
 	 */
-	public void boardSetup(ConfigObject config) {
-		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
-				nobilityTrackBonusNumber = 0;
-		numberOfPlayers = config.getNumberOfPlayers();
-		linksBetweenCities = config.getLinksBetweenCities();
-		rewardTokenBonusNumber = config.getRewardTokenBonusNumber();
-		permitTileBonusNumber = config.getPermitTileBonusNumber();
-		nobilityTrackBonusNumber = config.getNobilityTrackBonusNumber();
-		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
+	public void saveConfig(ConfigObject config) {
+		configParameters[0] = config.getNumberOfPlayers();
+		configParameters[1] = config.getRewardTokenBonusNumber();
+		configParameters[2] = config.getPermitTileBonusNumber();
+		configParameters[3] = config.getNobilityTrackBonusNumber();
+		configParameters[4] = config.getLinksBetweenCities();
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 */
+	public void saveConfig(int numberOfPlayers,int rewardTokenBonusNumber,int permitTileBonusNumber,int nobilityTrackBonusNumber,int linksBetweenCities) {
+		configParameters[0]=numberOfPlayers;
+		configParameters[1]=rewardTokenBonusNumber;
+		configParameters[2]=permitTileBonusNumber;
+		configParameters[3]=nobilityTrackBonusNumber;
+		configParameters[4]=linksBetweenCities;
 	}
 
 	/**
@@ -722,8 +745,10 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public ClientSideRMIConnectorInt getPlayerConnector(int playerNumber) {// To add UML
-																// scheme
+	public ClientSideRMIConnectorInt getPlayerConnector(int playerNumber) {// To
+																			// add
+																			// UML
+		// scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
 	}
@@ -792,43 +817,44 @@ public class MatchHandler extends Thread {
 
 	public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
-		int permitTileChoice=-1;
-		String cityChoice=null;
-		ClientSideRMIConnectorInt connector=player.getConnector();
-		
-		do{
-			
-		try {
-			connector.writeToClient("Which card do you want to choose?");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			connector.writeToClient(player.showPermitTileCards());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			permitTileChoice=connector.receiveIntFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't receive from client", e);
-		}
-		}while(permitTileChoice<0 || permitTileChoice>(player.getNumberOfPermitTile()-1));
-		
+		int permitTileChoice = -1;
+		String cityChoice = null;
+		ClientSideRMIConnectorInt connector = player.getConnector();
+
+		do {
+
+			try {
+				connector.writeToClient("Which card do you want to choose?");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				connector.writeToClient(player.showPermitTileCards());
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				permitTileChoice = connector.receiveIntFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+		} while (permitTileChoice < 0 || permitTileChoice > (player.getNumberOfPermitTile() - 1));
+
 		PermitTile permitTile = (PermitTile) player.getUnusedPermitTile(permitTileChoice);
-		
-		do{
-		try {
-			connector.writeToClient("Which city do you want to build?");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			cityChoice=connector.receiveStringFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't receive from client", e);
-		}
-		}while(!checkCorrectCityNameChoice(permitTile, cityChoice) || !checkPresenceOfEmporium(permitTile, player, cityChoice));
+
+		do {
+			try {
+				connector.writeToClient("Which city do you want to build?");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				cityChoice = connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+		} while (!checkCorrectCityNameChoice(permitTile, cityChoice)
+				|| !checkPresenceOfEmporium(permitTile, player, cityChoice));
 		buildEmporium(permitTile, player, cityChoice);
 		try {
 			connector.writeToClient("Your emporium has been successfully built!:D");
@@ -861,8 +887,10 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ClientSideRMIConnectorInt clientSideRMIConnectorInt, int id) {// To add UML
-																// scheme
+	public void addPlayer(ClientSideRMIConnectorInt clientSideRMIConnectorInt, int id) {// To
+																						// add
+																						// UML
+		// scheme
 		Player player = new Player(clientSideRMIConnectorInt, id);
 		this.players.add(player);
 		if (isFull())
@@ -916,8 +944,8 @@ public class MatchHandler extends Thread {
 	 */
 	public boolean checkCorrectCityNameChoice(PermitTile permitTile, String cityChoice) {
 		List<City> cities = permitTile.getCities();
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
+		cityChoice = cityChoice.trim();
+		cityChoice = cityChoice.toUpperCase();
 		String allCity = "";
 		for (City tempCities : cities) {
 			allCity += tempCities.getName();
@@ -929,8 +957,8 @@ public class MatchHandler extends Thread {
 		List<City> cities = permitTile.getCities();
 		City tempCity;
 		boolean find = false;
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
+		cityChoice = cityChoice.trim();
+		cityChoice = cityChoice.toUpperCase();
 		for (int i = 0; i < cities.size() && !find; i++) {
 			tempCity = cities.get(i);
 			if (tempCity.getName().equals(cityChoice))
@@ -939,13 +967,13 @@ public class MatchHandler extends Thread {
 		return find;
 
 	}
-	
-	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice){
+
+	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice) {
 		List<City> cities = permitTile.getCities();
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
+		cityChoice = cityChoice.trim();
+		cityChoice = cityChoice.toUpperCase();
 		for (City tempCities : cities) {
-			if(tempCities.getName().equals(cityChoice))
+			if (tempCities.getName().equals(cityChoice))
 				tempCities.buildEmporium(player);
 		}
 	}

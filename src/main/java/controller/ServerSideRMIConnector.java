@@ -13,7 +13,6 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
     public ServerSideRMIConnector(ClientSideRMIConnectorInt clientSideRMIConnectorInt) throws RemoteException {
         super();
         this.clientSideRMIConnectorInt=clientSideRMIConnectorInt;
-        System.out.println(clientSideRMIConnectorInt.receiveIntFromClient());
     }
 
 

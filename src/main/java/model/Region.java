@@ -180,7 +180,7 @@ public class Region implements Cloneable {
 	 */
 	public String toString() {
 		String regionInformation;
-		regionInformation = ("This in the region called: " + this.name + "\n");
+		regionInformation = ("This is the region called: " + this.name + "\n");
 		regionInformation += ("This region is composed by these councillors: ");
 		regionInformation += this.council.toString();
 		regionInformation += ("\nIn this region there are these cities: ");

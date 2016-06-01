@@ -108,6 +108,7 @@ public class Player {
 	public Player(ConnectorInt playerConnectorInt, int id) {
 		Random random = new Random();
 		this.turnNumber = id;
+		this.coins=INITIAL_COINS+id;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
@@ -327,6 +328,13 @@ public class Player {
 	public int getCoins() {
 		return this.coins;
 	}
+	
+	/**
+	 * @return
+	 */
+	public int getNumberOfEmporium() {
+		return this.emporiums;
+	}
 
 	/**
 	 * @return
@@ -359,12 +367,40 @@ public class Player {
 	/**
 	 * @return
 	 */
+	public int getVictoryPoints() {
+		return this.victoryPoints;
+	}
+	
+	/**
+	 * @return
+	 */
 	public String showPermitTileCards() {
 		String permitTile="";
+		if(this.unusedPermitTiles.size()==0)
+			permitTile+="You don't have got any Permit Tile unused";
+		else{
 		int i=0;
 		for(Tile tile:this.unusedPermitTiles){
 			permitTile+=i+")"+" "+tile.toString()+"\n";
 			i++;
+		}
+		}
+		return permitTile;
+	}
+	
+	/**
+	 * @return
+	 */
+	public String showUsedPermitTileCards() {
+		String permitTile="";
+		if(this.usedPermitTiles.size()==0)
+			permitTile+="You don't have got any Permit Tile used";
+		else{
+		int i=0;
+		for(Tile tile:this.usedPermitTiles){
+			permitTile+=i+")"+" "+tile.toString()+"\n";
+			i++;
+		}
 		}
 		return permitTile;
 	}
@@ -373,8 +409,12 @@ public class Player {
 	 */
 	public String showPoliticCards() {
 		String politicCards="";
+		if(this.politicCards.size()==0)
+			politicCards+="You don't have got any Politic Card";
+		else{
 		for(PoliticCard tempPoliticCard:this.politicCards)
 			politicCards+=tempPoliticCard.getColorCard()+" ";
+		}
 		return politicCards;
 	}
 	

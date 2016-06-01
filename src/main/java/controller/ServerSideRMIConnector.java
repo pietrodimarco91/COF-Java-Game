@@ -6,18 +6,26 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * Created by pietro on 01/06/16.
  */
-public class ServerSideRMIConnector extends UnicastRemoteObject implements ServerSideRMIInt{
-    /**
-     * Creates and exports a new UnicastRemoteObject object using an
-     * anonymous port.
-     * <p>
-     * <p>The object is exported with a server socket
-     * created using the {@link RMISocketFactory} class.
-     *
-     * @throws RemoteException if failed to export object
-     * @since JDK1.1
-     * @param a
-     */
+public class ServerSideRMIConnector extends UnicastRemoteObject implements Connector{
+
+    ClientSideRMIInt clientSideRMIInt;
+
     protected ServerSideRMIConnector(ClientSideRMIInt a) throws RemoteException {
+        this.clientSideRMIInt=a;
+    }
+
+    @Override
+    public void writeToClient(String s) throws RemoteException {
+
+    }
+
+    @Override
+    public int receiveIntFromClient() throws RemoteException {
+        return 0;
+    }
+
+    @Override
+    public String receiveStringFromClient() throws RemoteException {
+        return null;
     }
 }

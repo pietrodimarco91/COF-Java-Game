@@ -286,9 +286,7 @@ public class MatchHandler extends Thread {
 					logger.log(Level.INFO, "Error: couldn't write to client", e);
 				}
 			}
-
 		}
-		pending = true;
 	}
 
 	/**
@@ -597,6 +595,7 @@ public class MatchHandler extends Thread {
 	 */
 	public void setDefinitiveNumberOfPlayers() {
 		configParameters[0] = this.players.size();
+		this.numberOfPlayers=this.players.size();
 	}
 
 	/**
@@ -641,7 +640,7 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e) {
 			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 		}
-		while (this.players.size() < this.numberOfPlayers) {
+		while (this.players.size() < this.MINUMUM_NUMBER_OF_PLAYERS) {
 			// Match starts with at least two players
 			try {
 				Thread.sleep(1000);

@@ -90,17 +90,6 @@ public class Client {
 	}
 
 
-
-
-
-	/**
-	 * @return
-	 */
-	public void buildEmporiumWithPermitTile() {
-		// TODO implement here
-
-	}
-
 	/**
 	 * @return
 	 */
@@ -114,12 +103,5 @@ public class Client {
 
 
 
-	/**
-	 * @return
-	 */
-	public void performAdditionalMainAction() {
-		// TODO implement here
-
-	}
 
 }

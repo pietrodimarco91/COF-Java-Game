@@ -6,7 +6,7 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * Created by pietro on 01/06/16.
  */
-public class ServerSideRMIConnector extends UnicastRemoteObject implements Connector {
+public class ServerSideRMIConnector extends UnicastRemoteObject implements ConnectorInt {
 
     ClientSideRMIConnectorInt clientSideRMIConnectorInt;
 
@@ -14,6 +14,8 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
         super();
         this.clientSideRMIConnectorInt=clientSideRMIConnectorInt;
     }
+
+
 
     @Override
     public void writeToClient(String s) throws RemoteException {

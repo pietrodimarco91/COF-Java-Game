@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SocketConnector implements Connector {
+public class SocketConnector implements ConnectorInt {
 
 	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
 	

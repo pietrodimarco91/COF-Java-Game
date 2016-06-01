@@ -1,14 +1,11 @@
 package controller;
 
-import java.awt.Color;
-import java.util.*;
+import model.*;
 
-import model.City;
-import model.CouncillorColors;
-import model.PermitTile;
-import model.PoliticCard;
-import model.PoliticCardDeck;
-import model.Tile;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  * 
@@ -16,55 +13,49 @@ import model.Tile;
 public class Player {
 
 	/**
-	 * 
+	 *
+	 */
+	private final static int INITIAL_COINS = 10;
+	/**
+	 *
 	 */
 	private String userName;
-
 	/**
-	 * 
+	 *
 	 */
 	private String password;
-
 	/**
-	 * 
+	 *
 	 */
 	private int matchesWon;
-
 	/**
-	 * 
+	 *
 	 */
 	private int rageQuits;
-
 	/**
 	*
 	*/
 	private String ipAddress;
-
 	/**
 	 *
 	 */
 	private int port;
-
 	/**
 	 *
 	 */
 	private int coins;
-
 	/**
 	 *
 	 */
 	private int assistants;
-
 	/**
 	 *
 	 */
 	private int turnNumber;
-
 	/**
 	 *
 	 */
 	private ArrayList<PoliticCard> politicCards;
-
 	/**
 	 *
 	 */
@@ -81,37 +72,29 @@ public class Player {
 	 *
 	 */
 	private int emporiums;
-
 	/**
 	 *
 	 */
 	private ArrayList<City> controlledCities;
-
 	/**
 	 * The color of the player in the current match
 	 */
 	private String color;
-	
 	/**
-	 * 
+	 *
 	 */
-	private ConnectorInt playerConnectorInt;// To add UML scheme
-
-	/**
-	 * 
-	 */
-	private final static int INITIAL_COINS = 10;
+	private ClientSideRMIInt playerClientSideRMIInt;// To add UML scheme
 
 	/**
 	 * Default constructor
 	 */
-	public Player(ConnectorInt playerConnectorInt, int id) {
+	public Player(ClientSideRMIInt playerClientSideRMIInt, int id) {
 		Random random = new Random();
 		this.turnNumber = id;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
-		this.playerConnectorInt = playerConnectorInt;
+		this.playerClientSideRMIInt = playerClientSideRMIInt;
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
 		this.color=String.valueOf(new Color(random.nextFloat(),random.nextFloat(),random.nextFloat()));
@@ -167,8 +150,8 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public ConnectorInt getConnector() { // Da aggiungere UML
-		return this.playerConnectorInt;
+	public ClientSideRMIInt getConnector() { // Da aggiungere UML
+		return this.playerClientSideRMIInt;
 	}
 
 	/**
@@ -289,7 +272,7 @@ public class Player {
 	 * Permit Tiles of the player.
 	 */
 	public void addUnusedPermitTiles(Tile permitTile) {
-		this.unusedPermitTiles.add((PermitTile) permitTile);
+		this.unusedPermitTiles.add(permitTile);
 	}
 
 	/**

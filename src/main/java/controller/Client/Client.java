@@ -1,6 +1,6 @@
 package controller.Client;
 
-import controller.RMIServerInt;
+import controller.RMIConnectionInt;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -13,8 +13,8 @@ import java.util.Scanner;
  */
 public class Client {
 
-	Connector connector;
-	RMIServerInt rmiServerInt;
+	ClientSideRMI connector;
+	RMIConnectionInt rmiConnectionInt;
 	ClientSocket clientSocket;
 	
 	/**
@@ -41,9 +41,9 @@ public class Client {
 
 	private void startRMIConnection() {
 		try {
-			connector=new Connector();
-			rmiServerInt= (RMIServerInt) Naming.lookup("rmi://127.0.0.1/registry");
-			rmiServerInt.connect(connector);
+			connector=new ClientSideRMI();
+			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://127.0.0.1/registry");
+			rmiConnectionInt.connect(connector);
 		} catch (NotBoundException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {

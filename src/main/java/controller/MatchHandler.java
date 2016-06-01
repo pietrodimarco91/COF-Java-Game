@@ -1,24 +1,13 @@
 package controller;
 
-import exceptions.ConfigAlreadyExistingException;
-import exceptions.CouncillorNotFoundException;
-import exceptions.InvalidInputException;
-import exceptions.InvalidSlotException;
-import exceptions.UnexistingConfigurationException;
+import exceptions.*;
 import model.*;
 
 import java.io.PrintStream;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -77,9 +66,9 @@ public class MatchHandler extends Thread {
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
+	public MatchHandler(int id, Date date, ClientSideRMIInt clientSideRMIInt) {
 		this.players = new ArrayList<Player>();
-		this.creator = new Player(connectorInt, 1);
+		this.creator = new Player(clientSideRMIInt, 1);
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
@@ -109,7 +98,7 @@ public class MatchHandler extends Thread {
 		boolean correctAnswer = false;
 		int choice = 0;
 		ConfigObject config;
-		ConnectorInt playerConnector = player.getConnector();
+		ClientSideRMIInt playerConnector = player.getConnector();
 		try {
 			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
 		} catch (RemoteException e) {
@@ -182,7 +171,7 @@ public class MatchHandler extends Thread {
 	/**
 	 *
 	 */
-	public void mapConfiguration(ConnectorInt connector) {
+	public void mapConfiguration(ClientSideRMIInt connector) {
 		boolean stop = false;
 		int choice = 0;
 		while (!stop) {
@@ -290,7 +279,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
+	public void generateConnection(Board map, ClientSideRMIInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -357,7 +346,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
+	public void removeConnection(Board map, ClientSideRMIInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -414,7 +403,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
+	public void countDistance(Board map, ClientSideRMIInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -480,7 +469,7 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @param playerConnector
 	 */
-	public void newConfiguration(ConnectorInt playerConnector) {
+	public void newConfiguration(ClientSideRMIInt playerConnector) {
 		String parameters = "";
 		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
 				nobilityTrackBonusNumber = 0;
@@ -733,7 +722,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML
+	public ClientSideRMIInt getPlayerConnector(int playerNumber) {// To add UML
 																// scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
@@ -805,7 +794,7 @@ public class MatchHandler extends Thread {
 		ArrayList<City> cities;
 		int permitTileChoice=-1;
 		String cityChoice=null;
-		ConnectorInt connector=player.getConnector();
+		ClientSideRMIInt connector=player.getConnector();
 		
 		do{
 			
@@ -872,9 +861,9 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ConnectorInt connectorInt, int id) {// To add UML
+	public void addPlayer(ClientSideRMIInt clientSideRMIInt, int id) {// To add UML
 																// scheme
-		Player player = new Player(connectorInt, id);
+		Player player = new Player(clientSideRMIInt, id);
 		this.players.add(player);
 		if (isFull())
 			this.play();
@@ -933,10 +922,7 @@ public class MatchHandler extends Thread {
 		for (City tempCities : cities) {
 			allCity += tempCities.getName();
 		}
-		if (allCity.contains(cityChoice))
-			return true;
-		else
-			return false;
+		return allCity.contains(cityChoice);
 	}
 
 	public boolean checkPresenceOfEmporium(PermitTile permitTile, Player player, String cityChoice) {

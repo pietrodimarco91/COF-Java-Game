@@ -45,7 +45,7 @@ public class Client {
 		try {
 			clientSideRMIConnector=new ClientSideRMIConnector();
 			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://127.0.0.1/registry");
-			serverSideConnector=rmiConnectionInt.connect(connector);
+			serverSideConnector=rmiConnectionInt.connect(clientSideRMIConnector);
 		} catch (NotBoundException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {

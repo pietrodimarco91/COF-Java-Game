@@ -1,8 +1,7 @@
 package controller.Client;
 
-import controller.ConnectorInt;
+import controller.ClientSideRMIConnectorInt;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
@@ -10,9 +9,9 @@ import java.util.Scanner;
 /**
  * Created by pietro on 29/05/16.
  */
-public class Connector extends UnicastRemoteObject implements ConnectorInt {
+public class ClientSideRMIConnector extends UnicastRemoteObject implements ClientSideRMIConnectorInt {
 
-	protected Connector() throws RemoteException {
+	protected ClientSideRMIConnector() throws RemoteException {
 	}
 
 	@Override

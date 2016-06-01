@@ -1,24 +1,13 @@
 package controller;
 
-import exceptions.ConfigAlreadyExistingException;
-import exceptions.CouncillorNotFoundException;
-import exceptions.InvalidInputException;
-import exceptions.InvalidSlotException;
-import exceptions.UnexistingConfigurationException;
+import exceptions.*;
 import model.*;
 
 import java.io.PrintStream;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -31,6 +20,12 @@ import java.util.logging.StreamHandler;
 public class MatchHandler extends Thread {
 
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
+
+	/**
+	 * This constant represents the number of the parameters decided for the
+	 * board configuration
+	 */
+	private static final int NUMBER_OF_PARAMETERS = 5;
 
 	private PrintStream out;
 
@@ -55,7 +50,7 @@ public class MatchHandler extends Thread {
 	private ArrayList<Player> players; // To add UML scheme
 
 	/**
-	 * 
+	 * This attribute represents the creator of the match
 	 */
 	private Player creator;
 
@@ -63,6 +58,12 @@ public class MatchHandler extends Thread {
 	 * Number of players in this Match
 	 */
 	private int numberOfPlayers; // To add UML scheme
+
+	/**
+	 * This attribute is needed to temporary save the parameters after the
+	 * configuration has been set up
+	 */
+	private int[] configParameters;
 
 	/**
 	 * A boolean value used to know if the first player has decided the total
@@ -77,12 +78,15 @@ public class MatchHandler extends Thread {
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
+	public MatchHandler(int id, Date date, ClientSideRMIConnectorInt clientSideRMIConnectorInt) {
 		this.players = new ArrayList<Player>();
-		this.creator = new Player(connectorInt, 0);
+
+		this.creator = new Player(clientSideRMIConnectorInt, 1);
+
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
+		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
 		out = new PrintStream(System.out);
@@ -92,11 +96,11 @@ public class MatchHandler extends Thread {
 
 	public void run() {
 		boardConfiguration(creator);
-		mapConfiguration(creator.getConnector());
-		pending = true; // Player has finished to set the board parameters
-		// Start the match
 		waitingForPlayers();
 		countdown();
+		setDefinitiveNumberOfPlayers();
+		boardInitialization();
+		mapConfiguration(creator.getConnector());
 		play();
 	}
 
@@ -109,7 +113,7 @@ public class MatchHandler extends Thread {
 		boolean correctAnswer = false;
 		int choice = 0;
 		ConfigObject config;
-		ConnectorInt playerConnector = player.getConnector();
+		ClientSideRMIConnectorInt playerConnector = player.getConnector();
 		try {
 			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
 		} catch (RemoteException e) {
@@ -155,7 +159,7 @@ public class MatchHandler extends Thread {
 						try {
 							config = configFileManager.getConfiguration(id);
 							correctID = true;
-							boardSetup(config);
+							saveConfig(config);
 							this.numberOfPlayers = config.getNumberOfPlayers();
 							playerConnector.writeToClient(
 									"Board correctly generated with selected parameters! Now we're about to start...");
@@ -182,7 +186,7 @@ public class MatchHandler extends Thread {
 	/**
 	 *
 	 */
-	public void mapConfiguration(ConnectorInt connector) {
+	public void mapConfiguration(ClientSideRMIConnectorInt connector) {
 		boolean stop = false;
 		int choice = 0;
 		while (!stop) {
@@ -283,14 +287,14 @@ public class MatchHandler extends Thread {
 			}
 
 		}
-
+		pending=true;
 	}
 
 	/**
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
+	public void generateConnection(Board map, ClientSideRMIConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -357,7 +361,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
+	public void removeConnection(Board map, ClientSideRMIConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -414,7 +418,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
+	public void countDistance(Board map, ClientSideRMIConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -480,7 +484,7 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @param playerConnector
 	 */
-	public void newConfiguration(ConnectorInt playerConnector) {
+	public void newConfiguration(ClientSideRMIConnectorInt playerConnector) {
 		String parameters = "";
 		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
 				nobilityTrackBonusNumber = 0;
@@ -540,8 +544,7 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
-		boardSetup(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
+		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities);
 		this.numberOfPlayers = numberOfPlayers;
 		try {
 			playerConnector
@@ -574,35 +577,46 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
-	 * This method is invoked to setup the map before a match starts. The
+	 * This method is invoked to initialize the board before a match starts. The
 	 * parameters are set by the first player that joins the match.
-	 * 
-	 * @param numberOfPlayers
-	 *            the number of players of the match
-	 * @param linksBetweenCities
-	 *            the number of MAXIMUM outgoing connections from each city
 	 */
-	public void boardSetup(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
-			int nobilityTrackBonusNumber, int linksBetweenCities) {
-		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
+	public void boardInitialization() {
+		board = new Board(configParameters[0],configParameters[1],configParameters[2],configParameters[3],configParameters[4]);
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 */
+	public void setDefinitiveNumberOfPlayers() {
+		configParameters[0]=this.players.size();
 	}
 
 	/**
 	 * NEEDS JAVADOC
-	 * 
 	 * @param config
 	 */
-	public void boardSetup(ConfigObject config) {
-		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
-				nobilityTrackBonusNumber = 0;
-		numberOfPlayers = config.getNumberOfPlayers();
-		linksBetweenCities = config.getLinksBetweenCities();
-		rewardTokenBonusNumber = config.getRewardTokenBonusNumber();
-		permitTileBonusNumber = config.getPermitTileBonusNumber();
-		nobilityTrackBonusNumber = config.getNobilityTrackBonusNumber();
-		board = new Board(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
+	public void saveConfig(ConfigObject config) {
+		configParameters[0] = config.getNumberOfPlayers();
+		configParameters[1] = config.getRewardTokenBonusNumber();
+		configParameters[2] = config.getPermitTileBonusNumber();
+		configParameters[3] = config.getNobilityTrackBonusNumber();
+		configParameters[4] = config.getLinksBetweenCities();
+	}
+	
+	/**
+	 * NEEDS JAVADOC
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 */
+	public void saveConfig(int numberOfPlayers,int rewardTokenBonusNumber,int permitTileBonusNumber,int nobilityTrackBonusNumber,int linksBetweenCities) {
+		configParameters[0]=numberOfPlayers;
+		configParameters[1]=rewardTokenBonusNumber;
+		configParameters[2]=permitTileBonusNumber;
+		configParameters[3]=nobilityTrackBonusNumber;
+		configParameters[4]=linksBetweenCities;
 	}
 
 	/**
@@ -737,8 +751,10 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML
-																// scheme
+	public ClientSideRMIConnectorInt getPlayerConnector(int playerNumber) {// To
+																			// add
+																			// UML
+		// scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
 	}
@@ -809,7 +825,9 @@ public class MatchHandler extends Thread {
 		ArrayList<City> cities;
 		int permitTileChoice = -1;
 		String cityChoice = null;
-		ConnectorInt connector = player.getConnector();
+
+		ClientSideRMIConnectorInt connector = player.getConnector();
+
 
 		do {
 
@@ -878,9 +896,11 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ConnectorInt connectorInt, int id) {// To add UML
-																// scheme
-		Player player = new Player(connectorInt, id);
+	public void addPlayer(ClientSideRMIConnectorInt clientSideRMIConnectorInt, int id) {// To
+																						// add
+																						// UML
+		// scheme
+		Player player = new Player(clientSideRMIConnectorInt, id);
 		this.players.add(player);
 		if (isFull())
 			this.play();
@@ -1078,10 +1098,7 @@ public class MatchHandler extends Thread {
 		for (City tempCities : cities) {
 			allCity += tempCities.getName();
 		}
-		if (allCity.contains(cityChoice))
-			return true;
-		else
-			return false;
+		return allCity.contains(cityChoice);
 	}
 /**
  * 

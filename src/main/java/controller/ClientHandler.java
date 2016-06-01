@@ -22,11 +22,11 @@ public class ClientHandler implements Runnable {
 	/**
 	 * This attribute handles every interaction with the user.
 	 */
-	private ConnectorInt connectorInt;
+	private ClientSideRMIConnectorInt clientSideRMIConnectorInt;
 
-	public ClientHandler(ConnectorInt connectorInt, ArrayList<MatchHandler> matches) {
+	public ClientHandler(ClientSideRMIConnectorInt clientSideRMIConnectorInt, ArrayList<MatchHandler> matches) {
 		this.matches = matches;
-		this.connectorInt = connectorInt;
+		this.clientSideRMIConnectorInt = clientSideRMIConnectorInt;
 	}
 
 	/**
@@ -49,13 +49,13 @@ public class ClientHandler implements Runnable {
 		int id = Server.getId();
 		DateFormat dateFormat = new SimpleDateFormat();
 		try {
-			connectorInt.writeToClient("You launched a new match of Council Of Four on " + dateFormat.format(date)
+			clientSideRMIConnectorInt.writeToClient("You launched a new match of Council Of Four on " + dateFormat.format(date)
 					+ " with ID " + id + "\n");
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: could not write to client while launching a new match\n", e);
 		}
 
-		MatchHandler matchHandler = new MatchHandler(id, date, connectorInt);
+		MatchHandler matchHandler = new MatchHandler(id, date, clientSideRMIConnectorInt);
 		matches.add(matchHandler);
 		matchHandler.start();
 	}
@@ -73,15 +73,15 @@ public class ClientHandler implements Runnable {
 		while (iterator.hasNext() && !joined) {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
-				matchInList.addPlayer(connectorInt,matchInList.getPlayers().size());
+				matchInList.addPlayer(clientSideRMIConnectorInt,matchInList.getPlayers().size());
 				try {
-					connectorInt.writeToClient("You joined an already existing match still pending, with ID "
+					clientSideRMIConnectorInt.writeToClient("You joined an already existing match still pending, with ID "
 							+ matchInList.getIdentifier() + "\n");
 					ArrayList<Player> players = matchInList.getPlayers();
-					ConnectorInt tempConnector;
+					ClientSideRMIConnectorInt tempConnector;
 					for(Player player:players){
 						tempConnector=player.getConnector();
-						if(tempConnector!=this.connectorInt){
+						if(tempConnector!=this.clientSideRMIConnectorInt){
 							tempConnector.writeToClient("New player has joined in this match!\n");
 						}
 						

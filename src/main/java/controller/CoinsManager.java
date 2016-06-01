@@ -12,14 +12,7 @@ public abstract class CoinsManager {
      */
     public CoinsManager() {
     }
-   
-    /**
-     * This method decides what is the correct payment that one player has to do,
-     * according to the number of councillors satisfied in a specific region.
-     * 
-     * @param is the integer number of the satisfied councillors.
-     * @return the integer payment according to the number of councillors satisfied.
-     */
+
     public static int paymentForPermitTile(int numberOfCouncillorSatisfied){
     	int coins=0;
     	switch(numberOfCouncillorSatisfied){

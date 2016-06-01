@@ -1,26 +1,18 @@
 package board;
 
-import static org.junit.Assert.*;
+import controller.ClientSideRMIConnectorInt;
+import controller.Player;
+import controller.SocketConnector;
+import exceptions.UnsufficientCoinsException;
+import model.*;
+import org.junit.Test;
 
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.Test;
-
-import controller.ConnectorInt;
-import controller.Player;
-import controller.SocketConnector;
-import exceptions.UnsufficientCoinsException;
-import model.Board;
-import model.ConcreteItemFactory;
-import model.ItemFactory;
-import model.ItemOnSale;
-import model.Market;
-import model.PermitTile;
-import model.PoliticCard;
-import model.Tile;
+import static org.junit.Assert.assertEquals;
 
 /**
  * This test verifies that the Market works correctly
@@ -38,12 +30,12 @@ public class TestMarket {
 		String string="";
 		assertEquals(items.getClass(),Market.getItemsOnSale().getClass());
 		
-		ConnectorInt connectorInt1 = new SocketConnector(new Socket());
-		Player player1 = new Player(connectorInt1,1);
-		ConnectorInt connectorInt2 = new SocketConnector(new Socket());
-		Player player2 = new Player(connectorInt2,2);
-		ConnectorInt connectorInt3 = new SocketConnector(new Socket());
-		Player player3 = new Player(connectorInt3,3);
+		ClientSideRMIConnectorInt clientSideRMIInt1 = new SocketConnector(new Socket());
+		Player player1 = new Player(clientSideRMIInt1,1);
+		ClientSideRMIConnectorInt clientSideRMIInt2 = new SocketConnector(new Socket());
+		Player player2 = new Player(clientSideRMIInt2,2);
+		ClientSideRMIConnectorInt clientSideRMIInt3 = new SocketConnector(new Socket());
+		Player player3 = new Player(clientSideRMIInt3,3);
 		
 		ItemFactory itemFactory = new ConcreteItemFactory();
 		ItemOnSale item1 = itemFactory.createAssistantOnSale(player1, 5);
@@ -55,9 +47,9 @@ public class TestMarket {
 		Market.putItemOnSale(item2);
 		Market.putItemOnSale(item3);
 		assertEquals(3,Market.getItemsOnSale().size());
-		
-		ConnectorInt connectorInt4 = new SocketConnector(new Socket());
-		Player player4 = new Player(connectorInt1,4);
+
+		ClientSideRMIConnectorInt clientSideRMIInt4 = new SocketConnector(new Socket());
+		Player player4 = new Player(clientSideRMIInt1,4);
 		player4.addCoins(3);
 		try {
 			Market.buyItemOnSale(player4, item1);

@@ -285,6 +285,7 @@ public class MatchHandler extends Thread {
 		City city1 = null, city2 = null, tempCity;
 		List<City> cities = map.getMap();
 		Iterator<City> cityIterator = cities.iterator();
+		Scanner input = new Scanner(System.in);
 		try {
 			connector.writeToClient("NEW CONNECTION\n");
 		} catch (RemoteException e) {
@@ -343,7 +344,7 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
-	 * @throws InvalidInputException
+	 * @throws InvalidInputException 
 	 * 
 	 */
 	public void removeConnection(Board map, ClientSideRMIInt connector) throws InvalidInputException {
@@ -400,7 +401,7 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
-	 * @throws InvalidInputException
+	 * @throws InvalidInputException 
 	 * 
 	 */
 	public void countDistance(Board map, ClientSideRMIInt connector) throws InvalidInputException {
@@ -704,7 +705,7 @@ public class MatchHandler extends Thread {
 				try {
 					player.getConnector().writeToClient(e.showError());
 				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
 				}
 			}
 		} else
@@ -789,6 +790,7 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
+<<<<<<< HEAD
 
 	public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
@@ -837,6 +839,22 @@ public class MatchHandler extends Thread {
 		}
 
 	}
+=======
+	/*
+	 * public boolean buildEmporiumWithPermitTile(Player player,String cityName)
+	 * { ArrayList<City> city; int i; PermitTile
+	 * permitTile=player.getUnusedPermitTile(tileChose);
+	 * city=permitTile.getCities(); for(i=0;i<city.size();i++)
+	 * if(city.get(i).getName().equals(cityName) &&
+	 * !(city.get(i).checkPresenceOfEmporium(player))){
+	 * 
+	 * }
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
+>>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 
 	/**
 	 * @return
@@ -910,6 +928,7 @@ public class MatchHandler extends Thread {
 	public int getIdentifier() {
 		return this.id;
 	}
+<<<<<<< HEAD
 
 	/**
 	 * 
@@ -950,4 +969,6 @@ public class MatchHandler extends Thread {
 		}
 	}
 
+=======
+>>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 }

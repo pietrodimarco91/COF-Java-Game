@@ -56,7 +56,7 @@ public abstract class Council{
 		Iterator<Councillor> iterator = councillors.iterator();
 		String string="";
 		while(iterator.hasNext()) {
-			string+=iterator.next().toString()+"\n";
+			string+=iterator.next().toString()+" ";
 		}
 		return string;
 	}

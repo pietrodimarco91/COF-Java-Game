@@ -28,6 +28,6 @@ public class Councillor {
 	}
 	
 	public String toString() {
-		return "I'm a Councillor and my color is "+color;
+		return color;
 	}
 }

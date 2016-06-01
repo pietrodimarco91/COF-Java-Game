@@ -33,5 +33,6 @@ public class PoliticCard {
 	public String getColorCard() {
 		return this.color;
 	}
-
+	
+	
 }

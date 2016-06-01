@@ -181,12 +181,12 @@ public class Region implements Cloneable {
 	public String toString() {
 		String regionInformation;
 		regionInformation = ("This in the region called: " + this.name + "\n");
-		regionInformation += ("This region is composed by these councillors: \n");
+		regionInformation += ("This region is composed by these councillors: ");
 		regionInformation += this.council.toString();
-		regionInformation += ("In this region there are these cities: \n");
+		regionInformation += ("\nIn this region there are these cities: ");
 
 		for (int i = 0; i < this.cities.size(); i++) {
-			regionInformation += (cities.get(i).getName() + "\n");
+			regionInformation += (cities.get(i).getName() + " ");
 		}
 
 		return regionInformation;

@@ -368,6 +368,23 @@ public class Player {
 		}
 		return permitTile;
 	}
+	/**
+	 * @return
+	 */
+	public String showPoliticCards() {
+		String politicCards="";
+		for(PoliticCard tempPoliticCard:this.politicCards)
+			politicCards+=tempPoliticCard.getColorCard()+" ";
+		return politicCards;
+	}
+	
+	/**
+	 * @return
+	 */
+	public void fromUnusedToUsedPermitTile(Player player, PermitTile permitTile) {
+		this.unusedPermitTiles.remove(permitTile);
+		this.usedPermitTiles.add(permitTile);
+	}
 
 
 }

@@ -655,11 +655,15 @@ public class MatchHandler extends Thread {
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void play() {// To add UML scheme
-		/*
-		 * Player player; for (int i = 0; i < this.players.size(); i++) {
-		 * 
-		 * }
-		 */
+
+		Player player;
+		for (int i = 0; i < this.players.size(); i++) {
+			player=this.players.get(i);
+			showMap(player);
+			showRegionContent(player);
+			showPlayerPoliticCards(player);
+
+		}
 
 	}
 
@@ -803,49 +807,51 @@ public class MatchHandler extends Thread {
 
 	public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
-		int permitTileChoice=-1;
-		String cityChoice=null;
-		ConnectorInt connector=player.getConnector();
-		
-		do{
-			
-		try {
-			connector.writeToClient("Which card do you want to choose?");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			connector.writeToClient(player.showPermitTileCards());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			permitTileChoice=connector.receiveIntFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't receive from client", e);
-		}
-		}while(permitTileChoice<0 || permitTileChoice>(player.getNumberOfPermitTile()-1));
-		
+		int permitTileChoice = -1;
+		String cityChoice = null;
+		ConnectorInt connector = player.getConnector();
+
+		do {
+
+			try {
+				connector.writeToClient("Which card do you want to choose?");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				connector.writeToClient(player.showPermitTileCards());
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				permitTileChoice = connector.receiveIntFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+		} while (permitTileChoice < 0 || permitTileChoice > (player.getNumberOfPermitTile() - 1));
+
 		PermitTile permitTile = (PermitTile) player.getUnusedPermitTile(permitTileChoice);
-		
-		do{
-		try {
-			connector.writeToClient("Which city do you want to build?");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			cityChoice=connector.receiveStringFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't receive from client", e);
-		}
-		}while(!checkCorrectCityNameChoice(permitTile, cityChoice) || !checkPresenceOfEmporium(permitTile, player, cityChoice));
+
+		do {
+			try {
+				connector.writeToClient("Which city do you want to build?");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				cityChoice = connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+		} while (!checkCorrectCityNameChoice(permitTile, cityChoice)
+				|| !checkPresenceOfEmporium(permitTile, player, cityChoice));
 		buildEmporium(permitTile, player, cityChoice);
 		try {
 			connector.writeToClient("Your emporium has been successfully built!:D");
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
+		player.fromUnusedToUsedPermitTile(player, permitTile);
 
 	}
 
@@ -902,6 +908,46 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * 
+	 */
+	public void showMap(Player player) {
+		try {
+			player.getConnector().writeToClient(this.board.printMatrix());
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public void showRegionContent(Player player) {
+		Region regions[] = this.board.getRegions();
+		for (int i = 0; i < regions.length; i++)
+			try {
+				player.getConnector().writeToClient(regions[i].toString());
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+	}
+
+	/**
+	 * @return
+	 */
+	public void showPlayerPoliticCards(Player player) {
+		try {
+			player.getConnector().writeToClient("You have these Politic Cars: ");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+		try {
+			player.getConnector().writeToClient(player.showPoliticCards());
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+	}
+
+	/**
 	 * @return
 	 */
 	public boolean isFull() {
@@ -927,8 +973,8 @@ public class MatchHandler extends Thread {
 	 */
 	public boolean checkCorrectCityNameChoice(PermitTile permitTile, String cityChoice) {
 		List<City> cities = permitTile.getCities();
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
+		cityChoice = cityChoice.trim();
+		cityChoice = cityChoice.toUpperCase();
 		String allCity = "";
 		for (City tempCities : cities) {
 			allCity += tempCities.getName();
@@ -943,8 +989,8 @@ public class MatchHandler extends Thread {
 		List<City> cities = permitTile.getCities();
 		City tempCity;
 		boolean find = false;
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
+		cityChoice = cityChoice.trim();
+		cityChoice = cityChoice.toUpperCase();
 		for (int i = 0; i < cities.size() && !find; i++) {
 			tempCity = cities.get(i);
 			if (tempCity.getName().equals(cityChoice))
@@ -953,13 +999,13 @@ public class MatchHandler extends Thread {
 		return find;
 
 	}
-	
-	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice){
+
+	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice) {
 		List<City> cities = permitTile.getCities();
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
+		cityChoice = cityChoice.trim();
+		cityChoice = cityChoice.toUpperCase();
 		for (City tempCities : cities) {
-			if(tempCities.getName().equals(cityChoice))
+			if (tempCities.getName().equals(cityChoice))
 				tempCities.buildEmporium(player);
 		}
 	}

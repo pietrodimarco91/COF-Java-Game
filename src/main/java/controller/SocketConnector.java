@@ -36,7 +36,7 @@ public class SocketConnector implements ConnectorInt {
 
     @Override
     public int receiveIntFromClient() {
-        return 0;
+        return input.nextInt();
     }
 
 

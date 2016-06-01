@@ -46,5 +46,12 @@ public class NobilityCell {
 		}
 		return string;
 	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<String> getBonus(){
+		return this.bonus;
+	}
 
 }

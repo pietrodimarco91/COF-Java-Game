@@ -26,6 +26,7 @@ public class MatchHandler extends Thread {
 	 * board configuration
 	 */
 	private static final int NUMBER_OF_PARAMETERS = 5;
+	private static final int NUMBER_OF_PLAYERS_TO_PLAY = 2;
 
 	private PrintStream out;
 
@@ -82,7 +83,7 @@ public class MatchHandler extends Thread {
 		this.players = new ArrayList<Player>();
 
 		this.creator = new Player(connector, 1);
-
+		this.numberOfPlayers = NUMBER_OF_PLAYERS_TO_PLAY;
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
@@ -122,8 +123,9 @@ public class MatchHandler extends Thread {
 
 		while (!correctAnswer) {
 			try {
-				playerConnector.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
-						
+				playerConnector
+						.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
+
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
@@ -162,8 +164,8 @@ public class MatchHandler extends Thread {
 							correctID = true;
 							saveConfig(config);
 							this.numberOfPlayers = config.getNumberOfPlayers();
-							playerConnector.writeToClient(
-									"You've chosen the Board Configuration number "+id+": Now waiting for new players...");
+							playerConnector.writeToClient("You've chosen the Board Configuration number " + id
+									+ ": Now waiting for new players...");
 						} catch (UnexistingConfigurationException e) {
 							playerConnector.writeToClient(e.printError());
 						}
@@ -174,7 +176,7 @@ public class MatchHandler extends Thread {
 			} else {
 				try {
 					playerConnector
-							.writeToClient("There aren't any configurations yet! Please create a new one :-) \n");
+							.writeToClient("There aren't any configurations yet! Please create a new one\n");
 					newConfiguration(playerConnector);
 
 				} catch (RemoteException e) {
@@ -182,7 +184,7 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
-		pending=true;
+		pending = true;
 	}
 
 	/**
@@ -289,7 +291,7 @@ public class MatchHandler extends Thread {
 			}
 
 		}
-		pending=true;
+		pending = true;
 	}
 
 	/**
@@ -546,7 +548,8 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
-		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities);
+		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
 		this.numberOfPlayers = numberOfPlayers;
 		try {
 			playerConnector
@@ -554,7 +557,7 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e1) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e1);
 		}
-		pending=true;
+		pending = true;
 	}
 
 	/**
@@ -584,18 +587,20 @@ public class MatchHandler extends Thread {
 	 * parameters are set by the first player that joins the match.
 	 */
 	public void boardInitialization() {
-		board = new Board(configParameters[0],configParameters[1],configParameters[2],configParameters[3],configParameters[4]);
-	}
-	
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void setDefinitiveNumberOfPlayers() {
-		configParameters[0]=this.players.size();
+		board = new Board(configParameters[0], configParameters[1], configParameters[2], configParameters[3],
+				configParameters[4]);
 	}
 
 	/**
 	 * NEEDS JAVADOC
+	 */
+	public void setDefinitiveNumberOfPlayers() {
+		configParameters[0] = this.players.size();
+	}
+
+	/**
+	 * NEEDS JAVADOC
+	 * 
 	 * @param config
 	 */
 	public void saveConfig(ConfigObject config) {
@@ -605,21 +610,23 @@ public class MatchHandler extends Thread {
 		configParameters[3] = config.getNobilityTrackBonusNumber();
 		configParameters[4] = config.getLinksBetweenCities();
 	}
-	
+
 	/**
 	 * NEEDS JAVADOC
+	 * 
 	 * @param numberOfPlayers
 	 * @param rewardTokenBonusNumber
 	 * @param permitTileBonusNumber
 	 * @param nobilityTrackBonusNumber
 	 * @param linksBetweenCities
 	 */
-	public void saveConfig(int numberOfPlayers,int rewardTokenBonusNumber,int permitTileBonusNumber,int nobilityTrackBonusNumber,int linksBetweenCities) {
-		configParameters[0]=numberOfPlayers;
-		configParameters[1]=rewardTokenBonusNumber;
-		configParameters[2]=permitTileBonusNumber;
-		configParameters[3]=nobilityTrackBonusNumber;
-		configParameters[4]=linksBetweenCities;
+	public void saveConfig(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) {
+		configParameters[0] = numberOfPlayers;
+		configParameters[1] = rewardTokenBonusNumber;
+		configParameters[2] = permitTileBonusNumber;
+		configParameters[3] = nobilityTrackBonusNumber;
+		configParameters[4] = linksBetweenCities;
 	}
 
 	/**
@@ -633,7 +640,7 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e) {
 			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 		}
-		while (this.players.size() < 2) {
+		while (this.players.size() < this.numberOfPlayers) {
 			// Match starts with at least two players
 			try {
 				Thread.sleep(1000);
@@ -673,13 +680,8 @@ public class MatchHandler extends Thread {
 	 */
 	public void play() {// To add UML scheme
 
-		Player player;
-		for (int i = 0; i < this.players.size(); i++) {
-			player=this.players.get(i);
-			showMap(player);
-			showRegionContent(player);
-			showPlayerInfo(player);
-
+		while (true) {
+			roundsOfPlayer();
 		}
 
 	}
@@ -705,6 +707,75 @@ public class MatchHandler extends Thread {
 		return this.pending;
 	}
 
+	public void roundsOfPlayer() {
+		Player player;
+		int choice = 0;
+		ConnectorInt connector;
+		for (int i = 0; i < this.players.size(); i++) {
+			player = this.players.get(i);
+			connector = player.getConnector();
+			showMap(player);
+			showRegionContent(player);
+			drawPoliticCard(player);
+			showPlayerInfo(player);
+			try {
+				connector.writeToClient("You have drawn a Politic Card!");
+			} catch (RemoteException e) {
+				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+			}
+			do {
+				try {
+					connector.writeToClient("Do you wanna choose firstly:\n1)Main Actions\n2)Quick Actions?");
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+				}
+				try {
+					choice = connector.receiveIntFromClient();
+
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+				}
+			} while (choice != 1 || choice != 2);
+			if (choice == 1) {
+				showMainActions(player);
+				try {
+					choice = connector.receiveIntFromClient();
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+				}
+			} else {
+				showQuickActions(player);
+
+				try {
+					choice = connector.receiveIntFromClient();
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+				}
+
+			}
+		}
+	}
+
+	public void mainActions(Player player, int choice) {
+		switch (choice) {
+		case 1:
+			showMap(player);
+			buyPermitTile(player);
+			break;
+		case 2:
+			// da implementare
+			break;
+		case 3:
+			showMap(player);
+			electCoucillor(player);
+			break;
+		case 4:
+			showMap(player);
+			buildEmporiumWithPermitTile(player);
+			break;	
+		}
+	}
+
 	/**
 	 * NEEDS REVISION AFTER IMPLEMENTATION. Especially the try/catch and the
 	 * exceptions.
@@ -712,15 +783,33 @@ public class MatchHandler extends Thread {
 	 * @param player
 	 * @param regionName
 	 */
-	public void buyPermitTile(Player player, String regionName) {
+	public void buyPermitTile(Player player) {
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
+		int slot = 0;
+		String regionName = "";
 		PermitTileDeck regionDeck;
+
+		try {
+			player.getConnector().writeToClient("Which region do you want to buy a Permit Tile? ");
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+		}
+
+		try {
+			regionName = player.getConnector().receiveStringFromClient();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+		}
+		regionName=regionName.trim();
+		regionName=regionName.toUpperCase();
 		Region region = this.getRegion(regionName);
 		region = this.getRegion(regionName);
 		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
-		Scanner input = new Scanner(System.in);
+
 		if (numberOfCouncillorSatisfied > 0) {
 			System.out.println("You are able to satisfy the region Council with " + numberOfCouncillorSatisfied
 					+ " Politic Cards!");
@@ -728,8 +817,18 @@ public class MatchHandler extends Thread {
 			player.performPayment(playerPayment);
 			player.removeCardsFromHand(cardsChosenForCouncilSatisfaction);
 			regionDeck = region.getDeck();
-			System.out.println("Choose slot: 1 or 2?");
-			int slot = input.nextInt();
+			try {
+				player.getConnector().writeToClient("Choose slot: 1 or 2?");
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+			}
+			try {
+				slot = player.getConnector().receiveIntFromClient();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+			}
 			try {
 				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
 			} catch (InvalidSlotException e) {
@@ -755,11 +854,23 @@ public class MatchHandler extends Thread {
 	 * @return the connector of the player with the specified player number.
 	 */
 	public ConnectorInt getPlayerConnector(int playerNumber) {// To
-																			// add
-																			// UML
+																// add
+																// UML
 		// scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
+	}
+
+	/**
+	 * @return
+	 */
+	public void performAdditionalMainAction(Player player) {
+		if (player.getNumberOfAssistants() > 3) {
+			player.removeMoreAssistants(3);
+			showMainActions(player);
+
+		}
+
 	}
 
 	/**
@@ -768,9 +879,36 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
-	public boolean electCoucillor(Player player, String regionName, String councillorColor) {
+	public boolean electCoucillor(Player player) {
+		String regionName="";
+		String councillorColor="";
+		try {
+			player.getConnector().writeToClient("Which region do you want elect a councillor?");
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+		}
+		try {
+			regionName=player.getConnector().receiveStringFromClient();
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+		}
+		
 		regionName = regionName.toUpperCase();
 		regionName = regionName.trim();
+		
+		try {
+			player.getConnector().writeToClient("Which color do you want to choose?");
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+		}
+		try {
+			councillorColor=player.getConnector().receiveStringFromClient();
+		} catch (RemoteException e) {
+			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+		}
+		councillorColor = councillorColor.toUpperCase();
+		councillorColor = councillorColor.trim();
+		
 		Region region = this.getRegion(regionName);
 		try {
 			region.electCouncillor(councillorColor);
@@ -778,7 +916,7 @@ public class MatchHandler extends Thread {
 			try {
 				player.getConnector().writeToClient(e.showError());
 			} catch (RemoteException e1) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+				logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
 			}
 			return false;
 		}
@@ -830,7 +968,6 @@ public class MatchHandler extends Thread {
 		String cityChoice = null;
 
 		ConnectorInt connector = player.getConnector();
-
 
 		do {
 
@@ -900,8 +1037,8 @@ public class MatchHandler extends Thread {
 	 * @return
 	 */
 	public void addPlayer(ConnectorInt connector, int id) {// To
-																						// add
-																						// UML
+															// add
+															// UML
 		// scheme
 		Player player = new Player(connector, id);
 		this.players.add(player);
@@ -942,6 +1079,33 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * 
+	 * @param player
+	 */
+	public void showMainActions(Player player) {
+		try {
+			player.getConnector().writeToClient(
+					"MAIN ACTIONS\n1)Elect Councillor\n2)Buy Permit Tile\n3)Build and emporium using Permit Tile\n4)Build and emporium using King's help");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+	}
+
+	/**
+	 * 
+	 * @param player
+	 */
+	public void showQuickActions(Player player) {
+		try {
+			player.getConnector().writeToClient(
+					"QUICK ACTIONS\n1)Buy an Assistant\n2)Switch Permit Tile\n3)Send an Assistant to Elect a Coucillor\n4)Do another Main Action");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+
+	}
+
+	/**
 	 * @return
 	 */
 	public void showRegionContent(Player player) {
@@ -969,63 +1133,65 @@ public class MatchHandler extends Thread {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 	}
+
 	/**
 	 * 
 	 * @param player
 	 */
 	public void showPlayerCoins(Player player) {
-		int coins=player.getCoins();
+		int coins = player.getCoins();
 		try {
-			player.getConnector().writeToClient("COINS: "+ coins+" ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerAssistants(Player player) {
-		int assistants=player.getNumberOfAssistants();
-		try {
-			player.getConnector().writeToClient("ASSISTANTS: "+ assistants+" ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerVictoryPoints(Player player) {
-		int victoryPoints=player.getVictoryPoints();
-		try {
-			player.getConnector().writeToClient("VICTORY POINTS: "+ victoryPoints+" ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerNumberOfEmporium(Player player) {
-		int emporium=player.getNumberOfEmporium();
-		try {
-			player.getConnector().writeToClient("NUMBER OF EMPORIUM: "+emporium+" ");
+			player.getConnector().writeToClient("COINS: " + coins + " ");
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 	}
 
+	/**
+	 * 
+	 * @param player
+	 */
+	public void showPlayerAssistants(Player player) {
+		int assistants = player.getNumberOfAssistants();
+		try {
+			player.getConnector().writeToClient("ASSISTANTS: " + assistants + " ");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+	}
+
+	/**
+	 * 
+	 * @param player
+	 */
+	public void showPlayerVictoryPoints(Player player) {
+		int victoryPoints = player.getVictoryPoints();
+		try {
+			player.getConnector().writeToClient("VICTORY POINTS: " + victoryPoints + " ");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+	}
+
+	/**
+	 * 
+	 * @param player
+	 */
+	public void showPlayerNumberOfEmporium(Player player) {
+		int emporium = player.getNumberOfEmporium();
+		try {
+			player.getConnector().writeToClient("NUMBER OF EMPORIUM: " + emporium + " ");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+	}
 
 	/**
 	 * 
 	 * @param player
 	 */
 	public void showPlayerPermitTileUnused(Player player) {
-		String permitTileUnused=player.showPermitTileCards();
+		String permitTileUnused = player.showPermitTileCards();
 		try {
 			player.getConnector().writeToClient("PERMIT TILE UNUSED:\n");
 		} catch (RemoteException e) {
@@ -1037,13 +1203,13 @@ public class MatchHandler extends Thread {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param player
 	 */
 	public void showPlayerPermitTileUsed(Player player) {
-		String permitTileUsed=player.showUsedPermitTileCards();
+		String permitTileUsed = player.showUsedPermitTileCards();
 		try {
 			player.getConnector().writeToClient("PERMIT TILE USED:\n");
 		} catch (RemoteException e) {
@@ -1055,6 +1221,7 @@ public class MatchHandler extends Thread {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 	}
+
 	/**
 	 * 
 	 * @param player
@@ -1068,7 +1235,7 @@ public class MatchHandler extends Thread {
 		showPlayerPermitTileUnused(player);
 		showPlayerPermitTileUsed(player);
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -1103,13 +1270,14 @@ public class MatchHandler extends Thread {
 		}
 		return allCity.contains(cityChoice);
 	}
-/**
- * 
- * @param permitTile
- * @param player
- * @param cityChoice
- * @return
- */
+
+	/**
+	 * 
+	 * @param permitTile
+	 * @param player
+	 * @param cityChoice
+	 * @return
+	 */
 	public boolean checkPresenceOfEmporium(PermitTile permitTile, Player player, String cityChoice) {
 		List<City> cities = permitTile.getCities();
 		City tempCity;
@@ -1123,6 +1291,13 @@ public class MatchHandler extends Thread {
 		}
 		return find;
 
+	}
+
+	public boolean hasBuiltLastEmporium(Player player) {
+		if (player.getNumberOfEmporium() > 0)
+			return true;
+		else
+			return false;
 	}
 
 	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice) {

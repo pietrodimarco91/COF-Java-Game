@@ -19,6 +19,10 @@ public class Player {
 	/**
 	 *
 	 */
+	private final static int INITIAL_ASSISTANT= 3;
+	/**
+	 *
+	 */
 	private String userName;
 	/**
 	 *
@@ -92,6 +96,7 @@ public class Player {
 		Random random = new Random();
 		this.turnNumber = id;
 		this.coins=INITIAL_COINS+id;
+		this.assistants=INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
@@ -338,6 +343,13 @@ public class Player {
 	 */
 	public void removeAssistant() {
 		this.assistants--;
+	}
+	
+	/**
+	 * This method removes an assistant from the owned assistants of the player
+	 */
+	public void removeMoreAssistants(int numberOfAssistants) {
+		this.assistants-=numberOfAssistants;
 	}
 
 	/**

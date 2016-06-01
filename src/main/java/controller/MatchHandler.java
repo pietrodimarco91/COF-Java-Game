@@ -792,6 +792,7 @@ public class MatchHandler extends Thread {
 	 */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
@@ -843,6 +844,8 @@ public class MatchHandler extends Thread {
 =======
 =======
 >>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
+=======
+>>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 	/*
 	 * public boolean buildEmporiumWithPermitTile(Player player,String cityName)
 	 * { ArrayList<City> city; int i; PermitTile
@@ -858,6 +861,9 @@ public class MatchHandler extends Thread {
 	 * }
 	 */
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
+=======
 >>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 =======
 >>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
@@ -936,6 +942,7 @@ public class MatchHandler extends Thread {
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	/**
 	 * 
@@ -976,6 +983,8 @@ public class MatchHandler extends Thread {
 		}
 	}
 
+=======
+>>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 =======
 >>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 =======

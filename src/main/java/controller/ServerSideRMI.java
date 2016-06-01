@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
 /**
- * This class is used in case of RMIConnection Connection, it handles the real interaction with the user.
+ * This class is used in case of ServerSideRMI Connection, it handles the real interaction with the user.
  */
-public class RMIConnection extends UnicastRemoteObject implements RMIConnectionInt {
+public class ServerSideRMI extends UnicastRemoteObject implements ServerSideRMIInt {
 
     ArrayList<MatchHandler> matches;
 
@@ -18,13 +18,13 @@ public class RMIConnection extends UnicastRemoteObject implements RMIConnectionI
     private ExecutorService thread;
 
 
-    public RMIConnection(ArrayList<MatchHandler> matches, ExecutorService thread) throws RemoteException {
+    public ServerSideRMI(ArrayList<MatchHandler> matches, ExecutorService thread) throws RemoteException {
         this.matches=matches;
         this.thread=thread;
 
     }
     @Override
-    public ServerSideRMIConnector connect(ClientSideRMIInt a) throws RemoteException {
+    public ServerSideRMIConnector connect(ConnectorInt a) throws RemoteException {
         a.writeToClient("Connection RMI established");
         ServerSideRMIConnector serverSideRMIConnector=new ServerSideRMIConnector(a);
         thread.submit(new ClientHandler(serverSideRMIConnector,matches));

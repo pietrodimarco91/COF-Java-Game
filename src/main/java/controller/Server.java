@@ -31,7 +31,7 @@ public class Server {
 	 */
 	private static int id=0;
 	SocketConnector socketConnector;
-	RMIConnection rmiServer;
+	ServerSideRMI rmiServer;
 	/**
 	 *These threads are used by Server to handle the different connections coming from the Clients
 	 */
@@ -48,7 +48,7 @@ public class Server {
 		this.matches=new ArrayList<MatchHandler>();
 		try {
 			java.rmi.registry.LocateRegistry.createRegistry(1099);
-			RMIConnectionInt b=new RMIConnection(matches,thread);
+			ServerSideRMIInt b=new ServerSideRMI(matches,thread);
 			try {
 				try {
 					Naming.bind("rmi://127.0.0.1/registry", b);

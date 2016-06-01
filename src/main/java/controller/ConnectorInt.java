@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 /**
  * Created by pietro on 21/05/16.
  */
-public interface ClientSideRMIInt extends Remote {
+public interface ConnectorInt extends Remote {
 
 	void writeToClient(String s) throws RemoteException;
 

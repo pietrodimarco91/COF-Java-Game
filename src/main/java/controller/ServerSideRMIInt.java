@@ -1,10 +1,9 @@
 package controller;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-/**
- * Created by pietro on 01/06/16.
- */
-public interface ServerSideRMIInt extends Remote{
+public interface ServerSideRMIInt extends Remote {
 
+    ServerSideRMIConnector connect(ConnectorInt a)throws RemoteException;
 }

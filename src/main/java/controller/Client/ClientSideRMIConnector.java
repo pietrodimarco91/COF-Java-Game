@@ -6,17 +6,20 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
+import client.view.cli.ClientOutputPrinter;
+
 /**
  * Created by pietro on 29/05/16.
  */
 public class ClientSideRMIConnector extends UnicastRemoteObject implements ClientSideRMIConnectorInt {
 
 	protected ClientSideRMIConnector() throws RemoteException {
+		
 	}
 
 	@Override
 	public void writeToClient(String s) throws RemoteException {
-		System.out.println(s);
+		ClientOutputPrinter.printLine(s);
 	}
 
 	@Override
@@ -31,7 +34,6 @@ public class ClientSideRMIConnector extends UnicastRemoteObject implements Clien
 		String string = "";
 		Scanner input = new Scanner(System.in);
 		string = input.nextLine();
-
 		return string;
 	}
 }

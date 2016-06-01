@@ -473,8 +473,12 @@ public class MatchHandler extends Thread {
 		}
 		if (city1 != null && city2 != null)
 			try {
+				if(map.countDistance(city1, city2)!=-1) {
 				connector.writeToClient("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
 						+ map.countDistance(city1, city2) + "\n");
+				} else {
+					connector.writeToClient(city1.getName() + " and " + city2.getName() + "are not connected\n");
+				}
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}

@@ -15,8 +15,6 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
         this.clientSideRMIConnectorInt=clientSideRMIConnectorInt;
     }
 
-
-
     @Override
     public void writeToClient(String s) throws RemoteException {
         clientSideRMIConnectorInt.writeToClient(s);
@@ -29,8 +27,7 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
 
     @Override
     public String receiveStringFromClient() throws RemoteException {
-        //Sarà un metodo invocato dal client!bisogna gestirla internamente controllando lo stato del Server!
-        return null;
+        return clientSideRMIConnectorInt.receiveStringFromClient();
     }
 
     @Override

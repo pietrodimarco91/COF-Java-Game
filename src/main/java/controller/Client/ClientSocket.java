@@ -14,12 +14,13 @@ public class ClientSocket {
     private PrintWriter output;
     private Scanner input;
     private Socket socket;
+    private static final String address="localhost";
     private static final int port=2000;
 
 
     public ClientSocket(){
         try {
-            socket=new Socket("127.0.0.1",port);
+            socket=new Socket(address,port);
             output=new PrintWriter(socket.getOutputStream());
             input=new Scanner(socket.getInputStream());
         } catch (IOException e) {

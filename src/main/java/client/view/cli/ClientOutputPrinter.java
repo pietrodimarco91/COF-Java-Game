@@ -8,12 +8,12 @@ import java.io.PrintStream;
  *
  */
 public abstract class ClientOutputPrinter {
-	private PrintStream printer=new PrintStream(System.out,true);
+	private static PrintStream printer=new PrintStream(System.out,true);
 	
 	/**
 	 * @param toPrint the string to print on the console
 	 */
-	public void printLine(String toPrint) {
+	public static void printLine(String toPrint) {
 		printer.println(toPrint);
 	}
 	
@@ -21,7 +21,7 @@ public abstract class ClientOutputPrinter {
 	 * 
 	 * @param num the integer number to print on the console
 	 */
-	public void printLine(int num) {
+	public static void printLine(int num) {
 		printer.println(num);
 	}
 	
@@ -29,7 +29,7 @@ public abstract class ClientOutputPrinter {
 	 * This method will automatically invoke the toString() method of the specified object
 	 * @param object the object on which the toString() method should be invoked
 	 */
-	public void printObject(Object object) {
+	public static void printObject(Object object) {
 		printer.println(object);
 	}	
 }

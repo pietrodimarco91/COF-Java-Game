@@ -1,11 +1,12 @@
 package controller;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
  * Created by pietro on 01/06/16.
  */
-public class ServerSideRMIConnector implements Connector {
+public class ServerSideRMIConnector implements Connector, Remote {
 
     ClientSideRMIConnectorInt clientSideRMIConnectorInt;
 

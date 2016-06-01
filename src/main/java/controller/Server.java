@@ -30,7 +30,7 @@ public class Server {
 	 * Matches Ids
 	 */
 	private static int id=0;
-	SocketClientSideRMI socketConnector;
+	SocketConnector socketConnector;
 	RMIConnection rmiServer;
 	/**
 	 *These threads are used by Server to handle the different connections coming from the Clients
@@ -82,7 +82,7 @@ public class Server {
 	private void waitConnection() {
 		while(true){
 			try {
-				socketConnector=new SocketClientSideRMI(welcomeSocket.accept());
+				socketConnector=new SocketConnector(welcomeSocket.accept());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

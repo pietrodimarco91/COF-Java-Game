@@ -26,20 +26,9 @@ public class PermitTile extends Tile {
 		}
 		bonus = PermitTileBonusType.random(bonusNumber);
 	}
-
-	public List<City> getCities() {
+	
+	public List<City> getCities(){
 		return this.cities;
-	}
-
-	public String toString() {
-		String permitTileContent = "";
-		for (City cityName : this.cities) {
-			permitTileContent += cityName.getName() + " ";
-		}
-		for (String bonus : bonus) {
-			permitTileContent += bonus + " ";
-		}
-		return permitTileContent;
 	}
 
 }

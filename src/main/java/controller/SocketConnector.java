@@ -3,23 +3,21 @@ package controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * This class is used in case of Socket Connection, it handles the real interaction with the user.
- */
-public class SocketClientSideRMI implements ClientSideRMIInt {
+public class SocketConnector implements Connector {
 
-	private static final Logger logger= Logger.getLogger( SocketClientSideRMI.class.getName() );
+	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
 	
     Socket socket;
     PrintWriter output;
     Scanner input;
 
 
-    public SocketClientSideRMI(Socket socket) {
+    public SocketConnector(Socket socket) {
         this.socket=socket;
         try {
             output=new PrintWriter(socket.getOutputStream());
@@ -45,5 +43,22 @@ public class SocketClientSideRMI implements ClientSideRMIInt {
     @Override
     public String receiveStringFromClient() {
         return input.nextLine();
+    }
+
+    @Override
+    public void writeToServer(String s) throws RemoteException {
+        //bisogna gestirla internamente controllando lo stato del Server!
+    }
+
+    @Override
+    public int receiveIntFromServer() throws RemoteException {
+        //bisogna gestirla internamente controllando lo stato del Server!
+        return 0;
+    }
+
+    @Override
+    public String receiveStringFromServer() throws RemoteException {
+        //bisogna gestirla internamente controllando lo stato del Server!
+        return null;
     }
 }

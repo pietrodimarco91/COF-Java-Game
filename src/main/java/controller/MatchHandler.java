@@ -1,13 +1,24 @@
 package controller;
 
-import exceptions.*;
+import exceptions.ConfigAlreadyExistingException;
+import exceptions.CouncillorNotFoundException;
+import exceptions.InvalidInputException;
+import exceptions.InvalidSlotException;
+import exceptions.UnexistingConfigurationException;
 import model.*;
 
 import java.io.PrintStream;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -66,9 +77,9 @@ public class MatchHandler extends Thread {
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ClientSideRMIInt clientSideRMIInt) {
+	public MatchHandler(int id, Date date, ConnectorInt connectorInt) {
 		this.players = new ArrayList<Player>();
-		this.creator = new Player(clientSideRMIInt, 1);
+		this.creator = new Player(connectorInt, 1);
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
@@ -98,7 +109,7 @@ public class MatchHandler extends Thread {
 		boolean correctAnswer = false;
 		int choice = 0;
 		ConfigObject config;
-		ClientSideRMIInt playerConnector = player.getConnector();
+		ConnectorInt playerConnector = player.getConnector();
 		try {
 			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
 		} catch (RemoteException e) {
@@ -171,7 +182,7 @@ public class MatchHandler extends Thread {
 	/**
 	 *
 	 */
-	public void mapConfiguration(ClientSideRMIInt connector) {
+	public void mapConfiguration(ConnectorInt connector) {
 		boolean stop = false;
 		int choice = 0;
 		while (!stop) {
@@ -279,7 +290,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void generateConnection(Board map, ClientSideRMIInt connector) throws InvalidInputException {
+	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -347,7 +358,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException 
 	 * 
 	 */
-	public void removeConnection(Board map, ClientSideRMIInt connector) throws InvalidInputException {
+	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -404,7 +415,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException 
 	 * 
 	 */
-	public void countDistance(Board map, ClientSideRMIInt connector) throws InvalidInputException {
+	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -470,7 +481,7 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @param playerConnector
 	 */
-	public void newConfiguration(ClientSideRMIInt playerConnector) {
+	public void newConfiguration(ConnectorInt playerConnector) {
 		String parameters = "";
 		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
 				nobilityTrackBonusNumber = 0;
@@ -723,7 +734,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public ClientSideRMIInt getPlayerConnector(int playerNumber) {// To add UML
+	public ConnectorInt getPlayerConnector(int playerNumber) {// To add UML
 																// scheme
 		Player player = players.get(playerNumber);
 		return player.getConnector();
@@ -790,62 +801,6 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-	public void buildEmporiumWithPermitTile(Player player) {
-		ArrayList<City> cities;
-		int permitTileChoice=-1;
-		String cityChoice=null;
-		ClientSideRMIInt connector=player.getConnector();
-		
-		do{
-			
-		try {
-			connector.writeToClient("Which card do you want to choose?");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			connector.writeToClient(player.showPermitTileCards());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			permitTileChoice=connector.receiveIntFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't receive from client", e);
-		}
-		}while(permitTileChoice<0 || permitTileChoice>(player.getNumberOfPermitTile()-1));
-		
-		PermitTile permitTile = (PermitTile) player.getUnusedPermitTile(permitTileChoice);
-		
-		do{
-		try {
-			connector.writeToClient("Which city do you want to build?");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			cityChoice=connector.receiveStringFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't receive from client", e);
-		}
-		}while(!checkCorrectCityNameChoice(permitTile, cityChoice) || !checkPresenceOfEmporium(permitTile, player, cityChoice));
-		buildEmporium(permitTile, player, cityChoice);
-		try {
-			connector.writeToClient("Your emporium has been successfully built!:D");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-	}
-=======
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 	/*
 	 * public boolean buildEmporiumWithPermitTile(Player player,String cityName)
 	 * { ArrayList<City> city; int i; PermitTile
@@ -860,13 +815,6 @@ public class MatchHandler extends Thread {
 	 * 
 	 * }
 	 */
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 
 	/**
 	 * @return
@@ -891,9 +839,9 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ClientSideRMIInt clientSideRMIInt, int id) {// To add UML
+	public void addPlayer(ConnectorInt connectorInt, int id) {// To add UML
 																// scheme
-		Player player = new Player(clientSideRMIInt, id);
+		Player player = new Player(connectorInt, id);
 		this.players.add(player);
 		if (isFull())
 			this.play();
@@ -940,53 +888,4 @@ public class MatchHandler extends Thread {
 	public int getIdentifier() {
 		return this.id;
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-	/**
-	 * 
-	 */
-	public boolean checkCorrectCityNameChoice(PermitTile permitTile, String cityChoice) {
-		List<City> cities = permitTile.getCities();
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
-		String allCity = "";
-		for (City tempCities : cities) {
-			allCity += tempCities.getName();
-		}
-		return allCity.contains(cityChoice);
-	}
-
-	public boolean checkPresenceOfEmporium(PermitTile permitTile, Player player, String cityChoice) {
-		List<City> cities = permitTile.getCities();
-		City tempCity;
-		boolean find = false;
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
-		for (int i = 0; i < cities.size() && !find; i++) {
-			tempCity = cities.get(i);
-			if (tempCity.getName().equals(cityChoice))
-				find = true;
-		}
-		return find;
-
-	}
-	
-	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice){
-		List<City> cities = permitTile.getCities();
-		cityChoice=cityChoice.trim();
-		cityChoice=cityChoice.toUpperCase();
-		for (City tempCities : cities) {
-			if(tempCities.getName().equals(cityChoice))
-				tempCities.buildEmporium(player);
-		}
-	}
-
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
-=======
->>>>>>> parent of f685e89... Added buildEmporium function in MatchHandler
 }

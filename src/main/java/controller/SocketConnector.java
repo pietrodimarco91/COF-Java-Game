@@ -8,6 +8,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import server.view.cli.ServerOutputPrinter;
+
 public class SocketConnector implements ConnectorInt {
 
 	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
@@ -20,23 +22,27 @@ public class SocketConnector implements ConnectorInt {
     public SocketConnector(Socket socket) {
         this.socket=socket;
         try {
-            output=new PrintWriter(socket.getOutputStream());
+            output=new PrintWriter(socket.getOutputStream(),true);
             input=new Scanner(socket.getInputStream());
+            writeToClient("[SERVER] New Socket connection established");
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error while opening the output/input stream for 'socket'", e);
         }
-        System.out.println("Socket connection established");
+       ServerOutputPrinter.printLine("[SERVER] New Socket connection established");
+    }
+    
+    public Socket getSocket() {
+    	return this.socket;
     }
 
     @Override
     public void writeToClient(String s) {
         output.println(s);
-        output.flush();
     }
 
     @Override
     public int receiveIntFromClient() {
-        return 0;
+        return Integer.parseInt(input.nextLine());
     }
 
 

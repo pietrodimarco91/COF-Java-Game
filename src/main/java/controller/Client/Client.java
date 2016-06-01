@@ -40,7 +40,6 @@ public class Client {
 
 	private void startSocketConnection() {
 		clientSocket=new ClientSocket();
-
 	}
 
 	private void startRMIConnection() {

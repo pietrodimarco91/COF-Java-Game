@@ -3,12 +3,15 @@ package controller;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import server.view.cli.ServerOutputPrinter;
 
 /**
  * This class initializes the game engine and the connection among the Clients.
@@ -58,7 +61,7 @@ public class Server {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-			System.out.println("Server is ready to recive RMI invocations.");
+			ServerOutputPrinter.printLine("[SERVER] Ready to receive RMI invocations.");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -67,7 +70,7 @@ public class Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Server is ready to recive Socket Connections.");
+		ServerOutputPrinter.printLine("[SERVER] Ready to receive Socket Connections.");
 		this.waitConnection();
 	}
 
@@ -83,10 +86,10 @@ public class Server {
 		while(true){
 			try {
 				socketConnector=new SocketConnector(welcomeSocket.accept());
+				thread.submit(new ClientHandler(socketConnector, matches));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			thread.submit(new ClientHandler(socketConnector, matches));
 		}
 	}
 

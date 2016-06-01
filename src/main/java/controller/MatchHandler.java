@@ -2,6 +2,7 @@ package controller;
 
 import exceptions.*;
 import model.*;
+import server.view.cli.ServerOutputPrinter;
 
 import java.io.PrintStream;
 import java.rmi.RemoteException;
@@ -26,8 +27,6 @@ public class MatchHandler extends Thread {
 	 * board configuration
 	 */
 	private static final int NUMBER_OF_PARAMETERS = 5;
-
-	private PrintStream out;
 
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
@@ -89,9 +88,8 @@ public class MatchHandler extends Thread {
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
-		out = new PrintStream(System.out);
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-		out.println("[MATCH " + id + "]: Started running...");
+		ServerOutputPrinter.printLine("[MATCH " + id + "]: Started running...");
 	}
 
 	public void run() {
@@ -631,7 +629,7 @@ public class MatchHandler extends Thread {
 	 */
 	public void waitingForPlayers() {
 
-		out.println("[Match ID: " + id + "] Currently waiting for players...");
+		ServerOutputPrinter.printLine("[MATCH " + id + "] Currently waiting for players...");
 		try {
 			creator.getConnector().writeToClient("[Match ID: " + id + "] Currently waiting for players...");
 		} catch (RemoteException e) {

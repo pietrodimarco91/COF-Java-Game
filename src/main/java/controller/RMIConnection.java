@@ -5,6 +5,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
+import server.view.cli.ServerOutputPrinter;
+
 /**
  * This class allows a Client to initialize the RMI Connection, and is used to
  * give the Client a reference of the ServerSideRMIConnector, which is a Remote
@@ -32,6 +34,7 @@ public class RMIConnection extends UnicastRemoteObject implements RMIConnectionI
 	@Override
 	public ServerSideRMIConnectorInt connect(ClientSideRMIConnectorInt a) throws RemoteException {
 		a.writeToClient("[SERVER]: RMI Connection correctly established");
+		ServerOutputPrinter.printLine("[SERVER]: RMI Connection correctly established");
 		ServerSideRMIConnector serverSideRMIConnector = new ServerSideRMIConnector(a);
 		thread.submit(new ClientHandler(serverSideRMIConnector, matches));
 		return serverSideRMIConnector;

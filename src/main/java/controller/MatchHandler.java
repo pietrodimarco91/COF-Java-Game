@@ -163,7 +163,7 @@ public class MatchHandler extends Thread {
 							saveConfig(config);
 							this.numberOfPlayers = config.getNumberOfPlayers();
 							playerConnector.writeToClient(
-									"Board correctly generated with selected parameters! Now we're about to start...");
+									"You've chosen the Board Configuration number "+id+": Now waiting for new players...");
 						} catch (UnexistingConfigurationException e) {
 							playerConnector.writeToClient(e.printError());
 						}
@@ -182,6 +182,7 @@ public class MatchHandler extends Thread {
 				}
 			}
 		}
+		pending=true;
 	}
 
 	/**
@@ -553,6 +554,7 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e1) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e1);
 		}
+		pending=true;
 	}
 
 	/**

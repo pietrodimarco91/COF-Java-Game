@@ -2,12 +2,15 @@ package board;
 
 import controller.ConnectorInt;
 import controller.Player;
+import controller.ServerSideRMIConnector;
 import controller.SocketConnector;
+import controller.Client.ClientSideRMIConnector;
 import exceptions.UnsufficientCoinsException;
 import model.*;
 import org.junit.Test;
 
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,18 +26,18 @@ public class TestMarket {
 
 	private static final Logger logger= Logger.getLogger( TestMarket.class.getName() );
 	@Test
-	public void test() {
+	public void test() throws RemoteException {
 		Board board = new Board(4,2,2,2,2);
 		Market market = new Market();
 		ArrayList<ItemOnSale> items=new ArrayList<>();
 		String string="";
 		assertEquals(items.getClass(),Market.getItemsOnSale().getClass());
 
-		ConnectorInt clientSideRMIInt1 = new SocketConnector(new Socket());
+		ServerSideRMIConnector clientSideRMIInt1 = new ServerSideRMIConnector(new ClientSideRMIConnector());
 		Player player1 = new Player(clientSideRMIInt1,1);
-		ConnectorInt clientSideRMIInt2 = new SocketConnector(new Socket());
+		ServerSideRMIConnector clientSideRMIInt2 = new ServerSideRMIConnector(new ClientSideRMIConnector());
 		Player player2 = new Player(clientSideRMIInt2,2);
-		ConnectorInt clientSideRMIInt3 = new SocketConnector(new Socket());
+		ServerSideRMIConnector clientSideRMIInt3 = new ServerSideRMIConnector(new ClientSideRMIConnector());
 		Player player3 = new Player(clientSideRMIInt3,3);
 		
 		ItemFactory itemFactory = new ConcreteItemFactory();
@@ -48,8 +51,8 @@ public class TestMarket {
 		Market.putItemOnSale(item3);
 		assertEquals(3,Market.getItemsOnSale().size());
 
-		ConnectorInt clientSideRMIInt4 = new SocketConnector(new Socket());
-		Player player4 = new Player(clientSideRMIInt1,4);
+		ServerSideRMIConnector clientSideRMIInt4 = new ServerSideRMIConnector(new ClientSideRMIConnector());
+		Player player4 = new Player(clientSideRMIInt4,4);
 		player4.addCoins(3);
 		try {
 			Market.buyItemOnSale(player4, item1);

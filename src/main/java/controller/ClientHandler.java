@@ -82,7 +82,7 @@ public class ClientHandler implements Runnable {
 					for(Player player:players){
 						tempConnector=player.getConnector();
 						if(tempConnector!=this.connector){
-							tempConnector.writeToClient("New player has joined in this match!\n");
+							tempConnector.writeToClient("New player has just joined this match!\n");
 						}
 						
 					}

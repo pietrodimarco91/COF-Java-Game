@@ -94,11 +94,11 @@ public class MatchHandler extends Thread {
 
 	public void run() {
 		boardConfiguration(creator);
-		mapConfiguration(creator.getConnector());
 		waitingForPlayers();
 		countdown();
 		setDefinitiveNumberOfPlayers();
 		boardInitialization();
+		mapConfiguration(creator.getConnector());
 		play();
 	}
 
@@ -582,6 +582,9 @@ public class MatchHandler extends Thread {
 		board = new Board(configParameters[0],configParameters[1],configParameters[2],configParameters[3],configParameters[4]);
 	}
 	
+	/**
+	 * NEEDS JAVADOC
+	 */
 	public void setDefinitiveNumberOfPlayers() {
 		configParameters[0]=this.players.size();
 	}

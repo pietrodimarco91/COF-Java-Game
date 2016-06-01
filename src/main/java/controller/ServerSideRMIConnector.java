@@ -24,8 +24,7 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
 
     @Override
     public int receiveIntFromClient() throws RemoteException {
-
-        return 0;
+    	return clientSideRMIConnectorInt.receiveIntFromClient();
     }
 
     @Override

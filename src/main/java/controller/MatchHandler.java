@@ -119,10 +119,11 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
+
 		while (!correctAnswer) {
 			try {
-				playerConnector
-						.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
+				playerConnector.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
+						
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}

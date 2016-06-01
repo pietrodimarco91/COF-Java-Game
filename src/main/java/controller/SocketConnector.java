@@ -10,16 +10,16 @@ import java.util.logging.Logger;
 /**
  * This class is used in case of Socket Connection, it handles the real interaction with the user.
  */
-public class SocketClientSideRMI implements ClientSideRMIInt {
+public class SocketConnector implements ClientSideRMIInt {
 
-	private static final Logger logger= Logger.getLogger( SocketClientSideRMI.class.getName() );
+	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
 	
     Socket socket;
     PrintWriter output;
     Scanner input;
 
 
-    public SocketClientSideRMI(Socket socket) {
+    public SocketConnector(Socket socket) {
         this.socket=socket;
         try {
             output=new PrintWriter(socket.getOutputStream());

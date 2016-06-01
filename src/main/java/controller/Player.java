@@ -83,19 +83,19 @@ public class Player {
 	/**
 	 *
 	 */
-	private ClientSideRMIConnectorInt playerClientSideRMIConnectorInt;// To add UML scheme
+	private ConnectorInt connector;// To add UML scheme
 
 	/**
 	 * Default constructor
 	 */
-	public Player(ClientSideRMIConnectorInt playerClientSideRMIConnectorInt, int id) {
+	public Player(ConnectorInt connector, int id) {
 		Random random = new Random();
 		this.turnNumber = id;
 		this.coins=INITIAL_COINS+id;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
-		this.playerClientSideRMIConnectorInt = playerClientSideRMIConnectorInt;
+		this.connector = connector;
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
 		this.color=String.valueOf(new Color(random.nextFloat(),random.nextFloat(),random.nextFloat()));
@@ -151,8 +151,8 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public ClientSideRMIConnectorInt getConnector() { // Da aggiungere UML
-		return this.playerClientSideRMIConnectorInt;
+	public ConnectorInt getConnector() { // Da aggiungere UML
+		return this.connector;
 	}
 
 	/**

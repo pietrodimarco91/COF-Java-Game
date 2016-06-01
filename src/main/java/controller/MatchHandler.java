@@ -78,10 +78,10 @@ public class MatchHandler extends Thread {
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ClientSideRMIConnectorInt clientSideRMIConnectorInt) {
+	public MatchHandler(int id, Date date, ConnectorInt connector) {
 		this.players = new ArrayList<Player>();
 
-		this.creator = new Player(clientSideRMIConnectorInt, 1);
+		this.creator = new Player(connector, 1);
 
 		this.players.add(creator);
 		this.id = id;
@@ -113,7 +113,7 @@ public class MatchHandler extends Thread {
 		boolean correctAnswer = false;
 		int choice = 0;
 		ConfigObject config;
-		ClientSideRMIConnectorInt playerConnector = player.getConnector();
+		ConnectorInt playerConnector = player.getConnector();
 		try {
 			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
 		} catch (RemoteException e) {
@@ -186,7 +186,7 @@ public class MatchHandler extends Thread {
 	/**
 	 *
 	 */
-	public void mapConfiguration(ClientSideRMIConnectorInt connector) {
+	public void mapConfiguration(ConnectorInt connector) {
 		boolean stop = false;
 		int choice = 0;
 		while (!stop) {
@@ -294,7 +294,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void generateConnection(Board map, ClientSideRMIConnectorInt connector) throws InvalidInputException {
+	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -361,7 +361,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void removeConnection(Board map, ClientSideRMIConnectorInt connector) throws InvalidInputException {
+	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -418,7 +418,7 @@ public class MatchHandler extends Thread {
 	 * @throws InvalidInputException
 	 * 
 	 */
-	public void countDistance(Board map, ClientSideRMIConnectorInt connector) throws InvalidInputException {
+	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
 		String first = null;
 		String second = null;
 		City city1 = null, city2 = null, tempCity;
@@ -484,7 +484,7 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @param playerConnector
 	 */
-	public void newConfiguration(ClientSideRMIConnectorInt playerConnector) {
+	public void newConfiguration(ConnectorInt playerConnector) {
 		String parameters = "";
 		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
 				nobilityTrackBonusNumber = 0;
@@ -751,7 +751,7 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return the connector of the player with the specified player number.
 	 */
-	public ClientSideRMIConnectorInt getPlayerConnector(int playerNumber) {// To
+	public ConnectorInt getPlayerConnector(int playerNumber) {// To
 																			// add
 																			// UML
 		// scheme
@@ -826,7 +826,7 @@ public class MatchHandler extends Thread {
 		int permitTileChoice = -1;
 		String cityChoice = null;
 
-		ClientSideRMIConnectorInt connector = player.getConnector();
+		ConnectorInt connector = player.getConnector();
 
 
 		do {
@@ -896,11 +896,11 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ClientSideRMIConnectorInt clientSideRMIConnectorInt, int id) {// To
+	public void addPlayer(ConnectorInt connector, int id) {// To
 																						// add
 																						// UML
 		// scheme
-		Player player = new Player(clientSideRMIConnectorInt, id);
+		Player player = new Player(connector, id);
 		this.players.add(player);
 		if (isFull())
 			this.play();

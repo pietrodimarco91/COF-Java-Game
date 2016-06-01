@@ -1,6 +1,6 @@
 package board;
 
-import controller.ClientSideRMIConnectorInt;
+import controller.ConnectorInt;
 import controller.Player;
 import controller.SocketConnector;
 import exceptions.UnsufficientCoinsException;
@@ -29,12 +29,12 @@ public class TestMarket {
 		ArrayList<ItemOnSale> items=new ArrayList<>();
 		String string="";
 		assertEquals(items.getClass(),Market.getItemsOnSale().getClass());
-		
-		ClientSideRMIConnectorInt clientSideRMIInt1 = new SocketConnector(new Socket());
+
+		ConnectorInt clientSideRMIInt1 = new SocketConnector(new Socket());
 		Player player1 = new Player(clientSideRMIInt1,1);
-		ClientSideRMIConnectorInt clientSideRMIInt2 = new SocketConnector(new Socket());
+		ConnectorInt clientSideRMIInt2 = new SocketConnector(new Socket());
 		Player player2 = new Player(clientSideRMIInt2,2);
-		ClientSideRMIConnectorInt clientSideRMIInt3 = new SocketConnector(new Socket());
+		ConnectorInt clientSideRMIInt3 = new SocketConnector(new Socket());
 		Player player3 = new Player(clientSideRMIInt3,3);
 		
 		ItemFactory itemFactory = new ConcreteItemFactory();
@@ -48,7 +48,7 @@ public class TestMarket {
 		Market.putItemOnSale(item3);
 		assertEquals(3,Market.getItemsOnSale().size());
 
-		ClientSideRMIConnectorInt clientSideRMIInt4 = new SocketConnector(new Socket());
+		ConnectorInt clientSideRMIInt4 = new SocketConnector(new Socket());
 		Player player4 = new Player(clientSideRMIInt1,4);
 		player4.addCoins(3);
 		try {

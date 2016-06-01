@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 /**
  * Created by pietro on 01/06/16.
  */
-public class ServerSideRMIConnector extends Remote implements Connector {
+public class ServerSideRMIConnector implements Connector, Remote {
 
     ClientSideRMIConnectorInt clientSideRMIConnectorInt;
 

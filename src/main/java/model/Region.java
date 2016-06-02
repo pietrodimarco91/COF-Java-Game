@@ -90,9 +90,9 @@ public class Region implements Cloneable {
 			boolean councillorsSatisfied = false;
 			councillor = iterationCouncillors.next();
 
-			for (int i = 0; i < tempArrayList.size() && councillorsSatisfied == false; i++) {
+			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
 				tempPoliticCard = tempArrayList.get(i);
-				if (councillor.getColor() == tempPoliticCard.getColorCard()) {
+				if (councillor.getColor().equals(tempPoliticCard.getColorCard())) {
 					councillorsSatisfied = true;
 					tempArrayList.remove(i);
 					numberOfCouncillorsSatisfied++;

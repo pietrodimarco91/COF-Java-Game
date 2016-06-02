@@ -3,14 +3,21 @@ package controller;
 import model.*;
 
 import java.awt.*;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
  */
 public class Player {
+	/**
+	 * 
+	 */
+	private static final Logger logger = Logger.getLogger(Player.class.getName());
 
 	/**
 	 *
@@ -19,7 +26,7 @@ public class Player {
 	/**
 	 *
 	 */
-	private final static int INITIAL_ASSISTANT= 3;
+	private final static int INITIAL_ASSISTANT = 3;
 	/**
 	 *
 	 */
@@ -95,17 +102,17 @@ public class Player {
 	public Player(ConnectorInt connector, int id) {
 		Random random = new Random();
 		this.turnNumber = id;
-		this.coins=INITIAL_COINS+id;
-		this.assistants=INITIAL_ASSISTANT;
+		this.coins = INITIAL_COINS + id;
+		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
 		this.connector = connector;
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
-		this.color=String.valueOf(new Color(random.nextFloat(),random.nextFloat(),random.nextFloat()));
+		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -149,8 +156,9 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public Tile getUnusedPermitTile(int choice) {// metodo da risistemare e da aggiungere UML
-		return this.unusedPermitTiles.get(choice);												
+	public Tile getUnusedPermitTile(int choice) {// metodo da risistemare e da
+													// aggiungere UML
+		return this.unusedPermitTiles.get(choice);
 	}
 
 	/**
@@ -173,34 +181,74 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
+	public ArrayList<PoliticCard> cardsToCouncilSatisfaction(Player player) {
 		int numberOfCardsUsed = 0;
-		String colorCard;
+		String colorCard="";
 		boolean flagStopChoose = false;
 		ArrayList<PoliticCard> cardsChose = new ArrayList<PoliticCard>();
 		ArrayList<PoliticCard> tempHandCards = new ArrayList<PoliticCard>(this.politicCards);
-		Scanner input = new Scanner(System.in);
+		ConnectorInt connecto = player.getConnector();
 		while (numberOfCardsUsed < 4 && flagStopChoose == false) {
-			System.out.println("Write the color card that you would to use:");
-			colorCard = input.nextLine();
-			System.out.println(colorCard);
-			if (!colorCard.equals("stop")) {
+			try {
+				connector.writeToClient(
+						"Write the color card that you would to use one by one and write 'stop' when you finished:");
+			} catch (RemoteException e) {
+				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+			}
+			try {
+				colorCard=connector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+			}
+			colorCard=colorCard.trim();
+			colorCard=colorCard.toUpperCase();
+			if (!colorCard.equals("STOP")) {
 				while (!checkExistingColor(colorCard)) {
-					System.out.println("You have entered an incorret color Card!");
-					System.out.println("Write the color card that yoy would to use:");
-					colorCard = input.nextLine();
+					try {
+						connector.writeToClient("You have entered an incorret color Card!1\nWrite the color card that yoy would to use:"
+								);
+					} catch (RemoteException e) {
+						logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+					}
+					try {
+						colorCard=connector.receiveStringFromClient();
+					} catch (RemoteException e) {
+						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+					}
+					colorCard=colorCard.trim();
+					colorCard=colorCard.toUpperCase();
 				}
 				while (!checkIfYouOwnThisCard(colorCard, tempHandCards)) {
-					System.out.println("You don't have this card!");
-					System.out.println("Rewrite the color card that you would to use:");
-					colorCard = input.nextLine();
+					try {
+						connector.writeToClient("You have entered an incorret color Card!1\nWrite the color card that yoy would to use:"
+								);
+					} catch (RemoteException e) {
+						logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+					}
+					try {
+						colorCard=connector.receiveStringFromClient();
+					} catch (RemoteException e) {
+						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+					}
+					colorCard=colorCard.trim();
+					colorCard=colorCard.toUpperCase();
 				}
 				PoliticCard politicCard = new PoliticCard(colorCard);
 				cardsChose.add(politicCard);
 				numberOfCardsUsed++;
-				System.out.println("Perfect!");
-			} else if (colorCard.equals("stop") && cardsChose.size() == 0)
-				System.out.println("ERROR: You have to enter at least one card!!");
+				try {
+					connector.writeToClient("PERFECT!");
+							
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+				}
+			} else if (colorCard.equals("STOP") && cardsChose.size() == 0)
+				try {
+				connector.writeToClient("ERROR: You have to enter at least one card!!");
+						
+			} catch (RemoteException e) {
+				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+			}
 			else
 				flagStopChoose = true;
 		}
@@ -316,7 +364,7 @@ public class Player {
 	public int getCoins() {
 		return this.coins;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -344,12 +392,12 @@ public class Player {
 	public void removeAssistant() {
 		this.assistants--;
 	}
-	
+
 	/**
 	 * This method removes an assistant from the owned assistants of the player
 	 */
 	public void removeMoreAssistants(int numberOfAssistants) {
-		this.assistants-=numberOfAssistants;
+		this.assistants -= numberOfAssistants;
 	}
 
 	/**
@@ -358,61 +406,62 @@ public class Player {
 	public int getNumberOfAssistants() {
 		return this.assistants;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public int getVictoryPoints() {
 		return this.victoryPoints;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String showPermitTileCards() {
-		String permitTile="";
-		if(this.unusedPermitTiles.size()==0)
-			permitTile+="You don't have got any Permit Tile unused";
-		else{
-		int i=0;
-		for(Tile tile:this.unusedPermitTiles){
-			permitTile+=i+")"+" "+tile.toString()+"\n";
-			i++;
-		}
+		String permitTile = "";
+		if (this.unusedPermitTiles.size() == 0)
+			permitTile += "You don't have got any Permit Tile unused";
+		else {
+			int i = 0;
+			for (Tile tile : this.unusedPermitTiles) {
+				permitTile += i + ")" + " " + tile.toString() + "\n";
+				i++;
+			}
 		}
 		return permitTile;
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public String showUsedPermitTileCards() {
-		String permitTile="";
-		if(this.usedPermitTiles.size()==0)
-			permitTile+="You don't have got any Permit Tile used";
-		else{
-		int i=0;
-		for(Tile tile:this.usedPermitTiles){
-			permitTile+=i+")"+" "+tile.toString()+"\n";
-			i++;
-		}
+		String permitTile = "";
+		if (this.usedPermitTiles.size() == 0)
+			permitTile += "You don't have got any Permit Tile used";
+		else {
+			int i = 0;
+			for (Tile tile : this.usedPermitTiles) {
+				permitTile += i + ")" + " " + tile.toString() + "\n";
+				i++;
+			}
 		}
 		return permitTile;
 	}
+
 	/**
 	 * @return
 	 */
 	public String showPoliticCards() {
-		String politicCards="";
-		if(this.politicCards.size()==0)
-			politicCards+="You don't have got any Politic Card";
-		else{
-		for(PoliticCard tempPoliticCard:this.politicCards)
-			politicCards+=tempPoliticCard.getColorCard()+" ";
+		String politicCards = "";
+		if (this.politicCards.size() == 0)
+			politicCards += "You don't have got any Politic Card";
+		else {
+			for (PoliticCard tempPoliticCard : this.politicCards)
+				politicCards += tempPoliticCard.getColorCard() + " ";
 		}
 		return politicCards;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -420,6 +469,5 @@ public class Player {
 		this.unusedPermitTiles.remove(permitTile);
 		this.usedPermitTiles.add(permitTile);
 	}
-
 
 }

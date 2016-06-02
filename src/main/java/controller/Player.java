@@ -112,6 +112,22 @@ public class Player {
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 	}
+	
+	/**
+	 * This constructor is realized only for test purposes.
+	 */
+	public Player(int id) {
+		Random random = new Random();
+		this.turnNumber = id;
+		this.coins = INITIAL_COINS + id;
+		this.assistants = INITIAL_ASSISTANT;
+		this.usedPermitTiles = new ArrayList<Tile>();
+		this.unusedPermitTiles = new ArrayList<Tile>();
+		this.controlledCities = new ArrayList<City>();
+		initializeFirstHand();// Distributes the first hand of politic cards
+		this.victoryPoints = 0;
+		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+	}
 
 	/**
 	 * 

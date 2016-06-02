@@ -21,7 +21,7 @@ public abstract class PoliticCardDeck {
 	 * @return an ArrayList of randomized politic card
 	 */
 	public static ArrayList<PoliticCard> distributePoliticCards() {
-		ArrayList<PoliticCard> playerCards = new ArrayList<PoliticCard>();
+		ArrayList<PoliticCard> playerCards = new ArrayList<>();
 
 		for (int i = 0; i < FIRST_HAND_POLITIC_CARDS; i++) {
 			playerCards.add(generateRandomPoliticCard());

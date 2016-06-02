@@ -4,33 +4,38 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Created by Pietro Di Marco on 14/05/16.
- * Enumeration of bonus.
+ * Created by Pietro Di Marco on 14/05/16. Enumeration of bonus.
  */
 public class KingRewardDeck {
 
-    /**
-     * The KingReward pile.
-     */
-    private Queue<KingRewardTile> deck;
+	/**
+	 * The KingReward pile.
+	 */
+	private Queue<Tile> deck;
 
-    /**
-     * This constructor create the deck with 5 KingRewardTile.
-     */
-    public KingRewardDeck() {
-        deck=new LinkedList<KingRewardTile>();
-        deck.add(new KingRewardTile(35));
-        deck.add(new KingRewardTile(30));
-        deck.add(new KingRewardTile(25));
-        deck.add(new KingRewardTile(20));
-        deck.add(new KingRewardTile(15));
-    }
+	/**
+	 * This constructor create the deck with 5 KingRewardTile.
+	 */
+	public KingRewardDeck() {
+		deck = new LinkedList<Tile>();
+		TileFactory factory = new ConcreteTileFactory();
+		deck.add(factory.createKingRewardTile(35));
+		deck.add(factory.createKingRewardTile(30));
+		deck.add(factory.createKingRewardTile(25));
+		deck.add(factory.createKingRewardTile(20));
+		deck.add(factory.createKingRewardTile(15));
+	}
 
-    /**
-     * @return the head of the queue, it's used when a player win a KingRewardTile.
-     */
-    public KingRewardTile getKingReward() {
-        return deck.poll();
-    }
+	/**
+	 * @return the head of the queue, it's used when a player wins a
+	 *         KingRewardTile.
+	 * @throws NoMoreBonusException if the queue of king reward tile is already empty
+	 */
+	public Tile getKingReward() throws NoMoreBonusException {
+		if (!deck.isEmpty())
+			return deck.poll();
+		else
+			throw new NoMoreBonusException("KingReward");
+	}
 
 }

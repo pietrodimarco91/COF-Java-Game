@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import exceptions.CouncillorNotFoundException;
+
 /**
  * This class represents the pool of the Councillors, where each councillor stay
  * when it's not inside a Council.
@@ -53,10 +55,10 @@ public class CouncillorsPool {
 	 * 
 	 * @param color
 	 *            the color of the desired councillor
-	 * @return A councillor of the specified color, if there is one, null
-	 *         otherwise.
+	 * @return A councillor of the specified color, if there is one
+	 * @throws CouncillorNotFoundException if there isn't a councillor of the specified color
 	 */
-	public static Councillor getCouncillor(String color) {
+	public static Councillor getCouncillor(String color) throws CouncillorNotFoundException {
 		Iterator<Councillor> iterator = pool.iterator();
 		Councillor councillor;
 		while (iterator.hasNext()) {
@@ -66,7 +68,7 @@ public class CouncillorsPool {
 				return councillor;
 			}
 		}
-		return null;
+		throw new CouncillorNotFoundException();
 	}
 	
 	/**

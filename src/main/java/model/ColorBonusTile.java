@@ -12,6 +12,14 @@ public class ColorBonusTile extends Tile {
         this.color=color;
         this.points=points;
     }
+    
+    public String getColor() {
+    	return this.color;
+    }
+    
+    public int getPoints() {
+    	return this.points;
+    }
 
 
 

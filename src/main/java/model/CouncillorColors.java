@@ -1,7 +1,6 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by Gabriele Bressan on 13/05/16. Enumaration about colors of the
@@ -25,7 +24,7 @@ public enum CouncillorColors {
 	 * @return
 	 */
 	public static ArrayList<String> getCouncillorColors() {
-		ArrayList<String> colorValues = new ArrayList<String>();
+		ArrayList<String> colorValues = new ArrayList<>();
 		CouncillorColors[] values = CouncillorColors.values();
 		for (int i = 0; i < values.length; i++) {
 			if (!(values[i].equals(MULTICOLOR)))
@@ -35,7 +34,7 @@ public enum CouncillorColors {
 	}
 	
 	public static ArrayList<String> getPoliticCardsColors() {
-		ArrayList<String> colorValues = new ArrayList<String>();
+		ArrayList<String> colorValues = new ArrayList<>();
 		CouncillorColors[] values = CouncillorColors.values();
 		for (int i = 0; i < CouncillorColors.values().length; i++) {
 				colorValues.add(String.valueOf(values[i]));

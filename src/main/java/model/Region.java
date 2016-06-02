@@ -141,7 +141,7 @@ public class Region implements Cloneable {
 		City tempCity;
 		for (i = 0; i < cities.size(); i++) {
 			tempCity = cities.get(i);
-			if (tempCity.checkPresenceOfEmporium(owner) == false)
+			if (!tempCity.checkPresenceOfEmporium(owner))
 				return false;
 		}
 		return true;

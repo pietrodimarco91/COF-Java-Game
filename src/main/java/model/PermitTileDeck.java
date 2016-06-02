@@ -94,7 +94,20 @@ public class PermitTileDeck {
 			throw new InvalidSlotException();
 		}
 	}
+	
+	public Queue<Tile> getDeck() {
+		return this.deck;
+	}
+	
+	public Tile getUnconveredPermitTile1() {
+		return this.uncoveredPermitTile1;
+	}
+	
+	public Tile getUnconveredPermitTile2() {
+		return this.uncoveredPermitTile2;
+	}
 
+	@Override
 	public String toString() {
 		Iterator<Tile> iterator = deck.iterator();
 		String string = "";

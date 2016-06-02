@@ -13,7 +13,7 @@ import client.view.cli.ClientOutputPrinter;
  */
 public class ClientSideRMIConnector extends UnicastRemoteObject implements ClientSideRMIConnectorInt {
 
-	protected ClientSideRMIConnector() throws RemoteException {
+	public ClientSideRMIConnector() throws RemoteException {
 		
 	}
 

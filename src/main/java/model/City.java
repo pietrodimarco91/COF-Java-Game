@@ -47,7 +47,7 @@ public class City {
 	 * of the match.
 	 * 
 	 */
-	private RewardToken rewardToken;
+	private Tile rewardToken;
 
 	/**
 	 * It states whether the king is located in this city or not.
@@ -90,7 +90,7 @@ public class City {
 	 * @param rewardToken
 	 *            The bonus assigned to this city
 	 */
-	public City(String name, String color, Region region, RewardToken rewardToken) {
+	public City(String name, String color, Region region, Tile rewardToken) {
 		this.cityName = name;
 		this.color = color;
 		this.region = region;
@@ -202,7 +202,7 @@ public class City {
 	 * 
 	 * @return The RewardToken assigned to this city
 	 */
-	public RewardToken winBonus() {
+	public Tile winBonus() {
 		return rewardToken;
 	}
 
@@ -280,6 +280,7 @@ public class City {
 		this.coordinates = point;
 	}
 
+	@Override
 	public String toString() {
 		String string = "";
 		string += "City Name: " + this.cityName + "\n";

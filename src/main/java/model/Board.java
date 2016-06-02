@@ -53,6 +53,16 @@ public class Board {
 	 * current match.
 	 */
 	private NobilityTrack nobilityTrack;
+	
+	/**
+	 * This attribute represents the deck of the King Reward Tiles
+	 */
+	private KingRewardDeck kingRewardDeck;
+	
+	/**
+	 * This attribute represents the deck of the color bonus tiles.
+	 */
+	private ColorBonusDeck colorBonusDeck;
 
 	/**
 	 * This attribute is used only to graphically represent the map with the
@@ -89,6 +99,8 @@ public class Board {
 		this.linksBetweenCities=linksBetweenCities;
 		cities = new ArrayList<>();
 		CouncillorsPool councillorsPool = new CouncillorsPool();
+		this.kingRewardDeck = new KingRewardDeck();
+		this.colorBonusDeck = new ColorBonusDeck();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
 		kingCouncil = new KingCouncil();
@@ -375,6 +387,25 @@ public class Board {
 		}
 		return true;
 	}
+	
+	/**
+	 * This method allows to win the Color Bonus of the specified color, when a player builds its emporiums in all the cities of the specified color
+	 * @param color
+	 * @return the Color Bonus Tile, if still available
+	 * @throws NoMoreBonusException if the Color Bonus Tile of the specified color isn't available.
+	 */
+	public Tile winColorBonus(String color) throws NoMoreBonusException {
+		return this.colorBonusDeck.getColorBonus(color);
+	}
+	
+	/**
+	 * This method allows to win one of the King Rewards, if available, when a Player owns a Region Bonus or a Color Bonus.
+	 * @return one of the King Reward Tiles
+	 * @throws NoMoreBonusException if there are no more King Reward Tiles
+	 */
+	public Tile winKingReward() throws NoMoreBonusException {
+		return this.kingRewardDeck.getKingReward();
+	}
 
 	/**
 	 * This method sets the king randomly in a City.
@@ -453,7 +484,8 @@ public class Board {
 	public void citiesInitialization(int rewardTokenBonusNumber, int permitTileBonusNumber) {
 		City city;
 		String name;
-		RewardToken rewardToken;
+		Tile rewardToken;
+		TileFactory factory = new ConcreteTileFactory();
 		ArrayList<City> citiesInRegion;
 		for (int j = 0; j < RegionName.values().length; j++) {
 			citiesInRegion = new ArrayList<>();
@@ -461,7 +493,7 @@ public class Board {
 				do {
 					name = CityNames.random();
 				} while (cityNameAlreadyExisting(name));
-				rewardToken = new RewardToken(rewardTokenBonusNumber);
+				rewardToken = factory.createRewardToken(rewardTokenBonusNumber);
 				city = new City(name, CityColors.random(), regions[j], rewardToken);
 				cities.add(city);
 				citiesInRegion.add(city);

@@ -10,6 +10,9 @@ import java.io.PrintStream;
 public abstract class ClientOutputPrinter {
 	private static PrintStream printer=new PrintStream(System.out,true);
 	
+	private ClientOutputPrinter() {
+		
+	}
 	/**
 	 * @param toPrint the string to print on the console
 	 */

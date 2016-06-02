@@ -30,6 +30,11 @@ public class Server {
 	private static final int port=2000;
 	
 	/**
+	 * The boolean variable to stop the server
+	 */
+	private static boolean stopServer=false;
+	
+	/**
 	 * Matches Ids
 	 */
 	private static int id=0;
@@ -71,7 +76,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		ServerOutputPrinter.printLine("[SERVER] Ready to receive Socket Connections.");
-		this.waitConnection();
+		this.waitSocketConnection();
 	}
 
 	public static int getId() {
@@ -82,8 +87,8 @@ public class Server {
 	/**
 	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
-	private void waitConnection() {
-		while(true){
+	private void waitSocketConnection() {
+		while(!stopServer){
 			try {
 				socketConnector=new SocketConnector(welcomeSocket.accept());
 				thread.submit(new ClientHandler(socketConnector, matches));
@@ -92,7 +97,11 @@ public class Server {
 			}
 		}
 	}
-
-
-
+	
+	/**
+	 * This method is invoked when the server will have to shut down
+	 */
+	public static void stopServer() {
+		stopServer=true;
+	}
 }

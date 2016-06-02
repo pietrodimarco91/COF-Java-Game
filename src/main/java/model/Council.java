@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import exceptions.CouncillorNotFoundException;
+
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
@@ -33,8 +35,9 @@ public abstract class Council{
 
 	/**
 	 * Adds a councillor in the queue of the specified color, from the Councillors Pool.
+	 * @throws CouncillorNotFoundException if there isn't a councillor of the specified color
 	 */
-	public void addCouncillor(String color) {
+	public void addCouncillor(String color) throws CouncillorNotFoundException {
 		councillors.add(CouncillorsPool.getCouncillor(color));
 	}
 

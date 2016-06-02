@@ -8,20 +8,19 @@ import java.net.Socket;
  */
 public class ClientSocket {
 
-    private Socket socket;
-    private SockeOutputThread socketOutputThread;
-    private SocketInputThread socketInputThread;
     private static final String address="localhost";
     private static final int port=2000;
+    private Socket socket;
+    private SocketInputOutputThread socketInputOutputThread;
+    private SocketInput socketInput;
 
 
     public ClientSocket(){
         try {
             socket=new Socket(address,port);
-            socketOutputThread=new SockeOutputThread(socket);
-            socketInputThread=new SocketInputThread(socket);
-            socketOutputThread.start();
-            socketInputThread.start();
+            socketInputOutputThread =new SocketInputOutputThread(socket);
+            socketInput=new SocketInput(socket);
+            socketInputOutputThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }

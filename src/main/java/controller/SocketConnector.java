@@ -1,5 +1,7 @@
 package controller;
 
+import server.view.cli.ServerOutputPrinter;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -8,8 +10,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import server.view.cli.ServerOutputPrinter;
-
 public class SocketConnector implements ConnectorInt {
 
 	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
@@ -17,6 +17,7 @@ public class SocketConnector implements ConnectorInt {
     Socket socket;
     PrintWriter output;
     Scanner input;
+    MatchHandler matchHandler;
 
 
     public SocketConnector(Socket socket) {
@@ -42,6 +43,7 @@ public class SocketConnector implements ConnectorInt {
 
     @Override
     public int receiveIntFromClient() {
+        this.writeToClient("*#*");
         return Integer.parseInt(input.nextLine());
     }
 
@@ -66,5 +68,10 @@ public class SocketConnector implements ConnectorInt {
     public String receiveStringFromServer() throws RemoteException {
         //bisogna gestirla internamente controllando lo stato del Server!
         return null;
+    }
+
+    @Override
+    public void setMatchHandler(MatchHandler matchHandler) {
+        this.matchHandler=matchHandler;
     }
 }

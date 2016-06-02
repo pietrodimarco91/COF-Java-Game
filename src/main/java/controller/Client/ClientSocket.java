@@ -12,14 +12,12 @@ public class ClientSocket {
     private static final int port=2000;
     private Socket socket;
     private SocketInputOutputThread socketInputOutputThread;
-    private SocketInput socketInput;
 
 
     public ClientSocket(){
         try {
             socket=new Socket(address,port);
             socketInputOutputThread =new SocketInputOutputThread(socket);
-            socketInput=new SocketInput(socket);
             socketInputOutputThread.start();
         } catch (IOException e) {
             e.printStackTrace();

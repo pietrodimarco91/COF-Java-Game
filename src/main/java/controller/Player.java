@@ -181,14 +181,13 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public ArrayList<PoliticCard> cardsToCouncilSatisfaction(Player player) {
+	public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
 		int numberOfCardsUsed = 0;
 		String colorCard="";
 		boolean flagStopChoose = false;
 		ArrayList<PoliticCard> cardsChose = new ArrayList<PoliticCard>();
 		ArrayList<PoliticCard> tempHandCards = new ArrayList<PoliticCard>(this.politicCards);
-		ConnectorInt connecto = player.getConnector();
-		while (numberOfCardsUsed < 4 && flagStopChoose == false) {
+		while (numberOfCardsUsed < 4 && !flagStopChoose) {
 			try {
 				connector.writeToClient(
 						"Write the color card that you would to use one by one and write 'stop' when you finished:");
@@ -295,10 +294,18 @@ public class Player {
 	 * player.
 	 */
 	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
-		for (int i = 0; i < cardsChose.size(); i++)
-			if (this.politicCards.contains(cardsChose.get(i)))
-				this.politicCards.remove(i);
+		boolean cardFind;
+		int j;
+		for (int i = 0; i < cardsChose.size(); i++){
+			cardFind=false;
+			for(j=0;j<this.politicCards.size() || !cardFind;j++){
+				if(this.politicCards.get(j).getColorCard().equals(cardsChose.get(i).getColorCard()))
+					this.politicCards.remove(j);
+					cardFind=true;
+			}
+		}
 	}
+	
 
 	/**
 	 * This method adds the specified PoliticCard to the hand of the player

@@ -871,7 +871,7 @@ public class MatchHandler extends Thread {
 		regionName = regionName.toUpperCase();
 		Region region = this.getRegion(regionName);
 		region = this.getRegion(regionName);
-		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction(player);
+		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
 
 		if (numberOfCouncillorSatisfied > 0) {

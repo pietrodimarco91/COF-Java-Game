@@ -9,7 +9,6 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServerSideRMIConnector extends UnicastRemoteObject implements ConnectorInt {
 
     ClientSideRMIConnectorInt clientSideRMIConnectorInt;
-    MatchHandler matchHandler;
 
     public ServerSideRMIConnector(ClientSideRMIConnectorInt clientSideRMIConnectorInt) throws RemoteException {
         super();
@@ -49,8 +48,4 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
         return null;
     }
 
-    @Override
-    public void setMatchHandler(MatchHandler matchHandler) {
-        this.matchHandler=matchHandler;
-    }
 }

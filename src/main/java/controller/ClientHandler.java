@@ -60,7 +60,6 @@ public class ClientHandler implements Runnable {
 
 		MatchHandler matchHandler = new MatchHandler(id, date, connector);
 		matches.add(matchHandler);
-		connector.setMatchHandler(matchHandler);
 		matchHandler.start();
 	}
 

@@ -69,9 +69,4 @@ public class SocketConnector implements ConnectorInt {
         //bisogna gestirla internamente controllando lo stato del Server!
         return null;
     }
-
-    @Override
-    public void setMatchHandler(MatchHandler matchHandler) {
-        this.matchHandler=matchHandler;
-    }
 }

@@ -17,41 +17,25 @@ public class TestGetOwnedCities {
 
 	@Test
 	public void test() {
-		Scanner input = new Scanner(System.in);
 		Board board = new Board(4,3,3,3,3);
 		List<City> map = board.getMap();
+		Region region = board.getRegions()[0];
 		Player player1=new Player(1);
-		String cityName="";
-		City tempCity=null;
-		int counter=0;
-		while(!cityName.equals("stop")) {
-			System.out.println("Where do you want to build your emporium?");
-			System.out.println(board.printMatrix());
-			System.out.println(board.printConnections());
-			cityName=input.nextLine();
-			for(City city : map) {
-				if(city.getName().equals(cityName)) {
-					city.buildEmporium(player1);
-					tempCity=city;
-					System.out.println("EMPORIUM BUILT");
-					counter++;
-				}
-			}
-		}
-		List<City> ownedCities = board.getNearbyOwnedCities(player1,tempCity);
-		assertEquals(counter,ownedCities.size());
-		
-		int k=0;
+		City city1= region.getCities().get(0);
+		City city2=region.getCities().get(1);
+		City city3=region.getCities().get(2);
+		city1.buildEmporium(player1);
+		city2.buildEmporium(player1);
+		city3.buildEmporium(player1);
+		List<City> ownedCities = board.getNearbyOwnedCities(player1,city1);
+		assertEquals(3,ownedCities.size());
 		for(City city:map) {
-			if(board.countDistance(city, tempCity)==-1) {
+			if(board.countDistance(city, city1)==-1&&board.countDistance(city, city2)==-1&&board.countDistance(city, city3)==-1) {
 				city.buildEmporium(player1);
-				k++;
-				counter++;
 			}
 		}
-		
-		ownedCities = board.getNearbyOwnedCities(player1,tempCity);
-		assertEquals(counter-k,ownedCities.size());
+		ownedCities = board.getNearbyOwnedCities(player1,city1);
+		assertEquals(3,ownedCities.size());
 	}
 
 }

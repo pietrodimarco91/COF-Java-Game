@@ -759,7 +759,7 @@ public class MatchHandler extends Thread {
 						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 					}
 				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5);
-				/// AGGIUNGERE METODO QUICK ACTIONS
+				quickActions(player, choice);
 			} else {
 				do {
 					showQuickActions(player);
@@ -770,7 +770,7 @@ public class MatchHandler extends Thread {
 						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 					}
 				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5);
-				/// AGGIUNGERE METODO QUICK ACTIONS
+				quickActions(player, choice);
 				do {
 					showMainActions(player);
 					try {
@@ -781,9 +781,20 @@ public class MatchHandler extends Thread {
 				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
 				mainActions(player, choice);
 			}
+			try {
+				connector.writeToClient("These are your update information! Think very well for the next action... ");
+			} catch (RemoteException e) {
+				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+			}
+			showPlayerInfo(player);
 		}
 	}
 
+	/**
+	 * 
+	 * @param player
+	 * @param choice
+	 */
 	public void mainActions(Player player, int choice) {
 		switch (choice) {
 		case 1:
@@ -796,6 +807,32 @@ public class MatchHandler extends Thread {
 		case 3:
 			showMap(player);
 			electCoucillor(player);
+			break;
+		case 4:
+			showMap(player);
+			buildEmporiumWithPermitTile(player);
+			break;
+		}
+	}
+
+	/**
+	 * 
+	 * @param player
+	 * @param choice
+	 */
+	public void quickActions(Player player, int choice) {
+		switch (choice) {
+		case 1:
+			showMap(player);
+			engageAssistant(player);
+			break;
+		case 2:
+			showMap(player);
+			changeBusinessPermitTiles(player);
+			break;
+		case 3:
+			showMap(player);
+			sendAssistantToElectCouncillor(player);
 			break;
 		case 4:
 			showMap(player);
@@ -835,7 +872,7 @@ public class MatchHandler extends Thread {
 		regionName = regionName.toUpperCase();
 		Region region = this.getRegion(regionName);
 		region = this.getRegion(regionName);
-		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
+		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction(player);
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
 
 		if (numberOfCouncillorSatisfied > 0) {
@@ -914,12 +951,21 @@ public class MatchHandler extends Thread {
 	 * @return
 	 */
 	public void performAdditionalMainAction(Player player) {
+		int choice=0;
 		if (player.getNumberOfAssistants() > 3) {
+			
 			player.removeMoreAssistants(3);
+			do{
 			showMainActions(player);
-
+			try {
+				choice = player.getConnector().receiveIntFromClient();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+			}
+			}while(choice != 1 && choice != 2 && choice != 3 && choice != 4);
+			mainActions(player, choice);
 		}
-
 	}
 
 	/**
@@ -931,50 +977,49 @@ public class MatchHandler extends Thread {
 	public void electCoucillor(Player player) {
 		String regionName = "";
 		String councillorColor = "";
-		boolean checkCouncillorColor=true;
-		do{
-		try {
-			player.getConnector().writeToClient("Which region do you want elect a councillor?");
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-		}
-		try {
-			regionName = player.getConnector().receiveStringFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-		}
-		
-
-		regionName = regionName.toUpperCase();
-		regionName = regionName.trim();
-		}while(!checkCorrectRegionName(regionName));
-		do{
-		try {
-			player.getConnector().writeToClient("Which color do you want to choose?");
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-		}
-		try {
-			councillorColor = player.getConnector().receiveStringFromClient();
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-		}
-		councillorColor = councillorColor.toUpperCase();
-		councillorColor = councillorColor.trim();
-
-		Region region = this.getRegion(regionName);
-		try {
-			region.electCouncillor(councillorColor);
-		} catch (CouncillorNotFoundException e) {
+		boolean checkCouncillorColor = true;
+		do {
 			try {
-				player.getConnector().writeToClient(e.showError());
-			} catch (RemoteException e1) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
+				player.getConnector().writeToClient("Which region do you want elect a councillor?");
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
 			}
-			checkCouncillorColor=false;
-		}
-		}while(!checkCouncillorColor);
-			
+			try {
+				regionName = player.getConnector().receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+			}
+
+			regionName = regionName.toUpperCase();
+			regionName = regionName.trim();
+		} while (!checkCorrectRegionName(regionName));
+		do {
+			try {
+				player.getConnector().writeToClient("Which color do you want to choose?");
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+			}
+			try {
+				councillorColor = player.getConnector().receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+			}
+			councillorColor = councillorColor.toUpperCase();
+			councillorColor = councillorColor.trim();
+
+			Region region = this.getRegion(regionName);
+			try {
+				region.electCouncillor(councillorColor);
+			} catch (CouncillorNotFoundException e) {
+				try {
+					player.getConnector().writeToClient(e.showError());
+				} catch (RemoteException e1) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
+				}
+				checkCouncillorColor = false;
+			}
+		} while (!checkCouncillorColor);
+
 		player.addCoins(4);
 		try {
 			player.getConnector().writeToClient("You have elect a new councillor!");
@@ -1005,7 +1050,21 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
-	public boolean changeBusinessPermitTiles(Player player, String regionName) {
+	public boolean changeBusinessPermitTiles(Player player) {
+		String regionName = "";
+		do {
+			try {
+				player.getConnector().writeToClient("Which region name do you want to switch permit tile?");
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't write to client", e);
+			}
+			try {
+				regionName = player.getConnector().receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+		} while (!checkCorrectRegionName(regionName));
+
 		Region region = this.getRegion(regionName);
 		if (player.getNumberOfAssistants() >= 1) {
 			region.getDeck().switchPermitTiles();
@@ -1069,7 +1128,7 @@ public class MatchHandler extends Thread {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}
 		player.fromUnusedToUsedPermitTile(player, permitTile);
-		
+
 		try {
 			connector.writeToClient("You have built a new Emporium!");
 		} catch (RemoteException e) {
@@ -1080,18 +1139,54 @@ public class MatchHandler extends Thread {
 	/**
 	 * @return
 	 */
-	public boolean sendAssistantToElectCouncillor(Player player, String regionName, String councillorColor) {
+	public boolean sendAssistantToElectCouncillor(Player player) {
+		boolean checkCouncillorColor = true;
+		String councillorColor = "";
+		String regionName = "";
 		if (player.getNumberOfAssistants() >= 1) {
-			Region region = this.getRegion(regionName);
-			try {
-				region.electCouncillor(councillorColor);
-			} catch (CouncillorNotFoundException e) {
+
+			do {
 				try {
-					player.getConnector().writeToClient(e.showError());
-				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
+					player.getConnector().writeToClient("Which region do you want elect a councillor?");
+				} catch (RemoteException e) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
 				}
-			}
+				try {
+					regionName = player.getConnector().receiveStringFromClient();
+				} catch (RemoteException e) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+				}
+
+				regionName = regionName.toUpperCase();
+				regionName = regionName.trim();
+			} while (!checkCorrectRegionName(regionName));
+
+			do {
+				try {
+					player.getConnector().writeToClient("Which color do you want to choose?");
+				} catch (RemoteException e) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+				}
+				try {
+					councillorColor = player.getConnector().receiveStringFromClient();
+				} catch (RemoteException e) {
+					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+				}
+				councillorColor = councillorColor.toUpperCase();
+				councillorColor = councillorColor.trim();
+
+				Region region = this.getRegion(regionName);
+				try {
+					region.electCouncillor(councillorColor);
+				} catch (CouncillorNotFoundException e) {
+					try {
+						player.getConnector().writeToClient(e.showError());
+					} catch (RemoteException e1) {
+						logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
+					}
+					checkCouncillorColor = false;
+				}
+			} while (!checkCouncillorColor);
 			return true;
 		} else
 			return false;
@@ -1162,7 +1257,7 @@ public class MatchHandler extends Thread {
 	public void showQuickActions(Player player) {
 		try {
 			player.getConnector().writeToClient(
-					"QUICK ACTIONS\n1)Buy an Assistant\n2)Switch Permit Tile\n3)Send an Assistant to Elect a Coucillor\n4)Do another Main Action\n5)Jump Quick Action");
+					"QUICK ACTIONS\n1)Engage an Assistant\n2)Switch Permit Tile\n3)Send an Assistant to Elect a Coucillor\n4)Do another Main Action\n5)Jump Quick Action");
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}

@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import org.junit.Test;
 
+import exceptions.CouncillorNotFoundException;
 import model.Council;
 import model.Councillor;
 import model.CouncillorsPool;
@@ -20,7 +21,11 @@ public class TestCouncilMethods {
 		Queue<Councillor>testQueueCouncillors= testCouncil.getCouncillors();
 		assertEquals(4,testQueueCouncillors.size());
 		
-		 testCouncil.addCouncillor("BLACK");
+		 try {
+			testCouncil.addCouncillor("BLACK");
+		} catch (CouncillorNotFoundException e) {
+			e.printStackTrace();
+		}
 		 testQueueCouncillors= testCouncil.getCouncillors();
 		 
 		 assertEquals(5,testQueueCouncillors.size());

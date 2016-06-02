@@ -80,7 +80,7 @@ public class MatchHandler extends Thread {
 	public MatchHandler(int id, Date date, ConnectorInt connector) {
 		this.players = new ArrayList<Player>();
 
-		this.creator = new Player(connector, 1);
+		this.creator = new Player(connector, 0);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
@@ -595,7 +595,6 @@ public class MatchHandler extends Thread {
 	 */
 	public void setDefinitiveNumberOfPlayers() {
 		configParameters[0] = this.players.size();
-		this.numberOfPlayers=this.players.size();
 	}
 
 	/**
@@ -640,7 +639,7 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e) {
 			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 		}
-		while (this.players.size() < this.MINUMUM_NUMBER_OF_PLAYERS) {
+		while (this.players.size() < this.numberOfPlayers) {
 			// Match starts with at least two players
 			try {
 				Thread.sleep(1000);
@@ -731,19 +730,24 @@ public class MatchHandler extends Thread {
 				}
 				try {
 					choice = connector.receiveIntFromClient();
-
+					System.out.println(choice);
+					
 				} catch (RemoteException e) {
 					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+					
 				}
-			} while (choice != 1 || choice != 2);
+			} while (choice != 1 && choice != 2);
 			if (choice == 1) {
+				do{
 				showMainActions(player);
 				try {
 					choice = connector.receiveIntFromClient();
 				} catch (RemoteException e) {
 					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 				}
+				}while(choice!=1 && choice!=2 && choice!=3 && choice!=4);
 			} else {
+				do{
 				showQuickActions(player);
 
 				try {
@@ -751,6 +755,7 @@ public class MatchHandler extends Thread {
 				} catch (RemoteException e) {
 					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 				}
+				}while(choice!=1 && choice!=2 && choice!=3 && choice!=4);
 
 			}
 		}
@@ -1085,7 +1090,7 @@ public class MatchHandler extends Thread {
 	public void showMainActions(Player player) {
 		try {
 			player.getConnector().writeToClient(
-					"MAIN ACTIONS\n1)Elect Councillor\n2)Buy Permit Tile\n3)Build and emporium using Permit Tile\n4)Build and emporium using King's help");
+					"MAIN ACTIONS\n1)Buy Permit Tile\n2)Build and emporium using King's help\n3)Elect Councillor\n4)Build and emporium using Permit Tile");
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: couldn't write to client", e);
 		}

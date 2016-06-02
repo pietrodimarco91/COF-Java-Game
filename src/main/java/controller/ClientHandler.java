@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 /**
  * This Class let every user to create a new match or to join in a pending match
@@ -25,6 +27,7 @@ public class ClientHandler implements Runnable {
 	private ConnectorInt connector;
 
 	public ClientHandler(ConnectorInt connector, ArrayList<MatchHandler> matches) {
+		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.matches = matches;
 		this.connector = connector;
 	}

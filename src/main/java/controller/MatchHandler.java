@@ -596,6 +596,7 @@ public class MatchHandler extends Thread {
 	 */
 	public void setDefinitiveNumberOfPlayers() {
 		configParameters[0] = this.players.size();
+		this.numberOfPlayers=this.players.size();
 	}
 
 	/**
@@ -640,7 +641,7 @@ public class MatchHandler extends Thread {
 		} catch (RemoteException e) {
 			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 		}
-		while (this.players.size() < this.numberOfPlayers) {
+		while (this.players.size() < MINUMUM_NUMBER_OF_PLAYERS) {
 			// Match starts with at least two players
 			try {
 				Thread.sleep(1000);
@@ -731,7 +732,7 @@ public class MatchHandler extends Thread {
 				}
 				try {
 					choice = connector.receiveIntFromClient();
-					System.out.println(choice);
+					ServerOutputPrinter.printLine(String.valueOf(choice));
 
 				} catch (RemoteException e) {
 					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);

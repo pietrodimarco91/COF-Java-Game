@@ -47,4 +47,5 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
         //Sarà un metodo invocato dal client!bisogna gestirla internamente controllando lo stato del Server!
         return null;
     }
+
 }

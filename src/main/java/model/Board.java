@@ -173,7 +173,7 @@ public class Board {
 	 *            the player to check for
 	 * @return the arraylist of the owned cities (where he has an emporium)
 	 */
-	public List<City> getOwnedCities(Player player) {
+	public List<City> getNearbyOwnedCities(Player player,City cityFrom) {
 		ArrayList<City> ownedCities = new ArrayList<>();
 		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand, connectedCity;
@@ -181,7 +181,7 @@ public class Board {
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
 			mapIterator.next().BFSinitialization();
 		}
-		City cityFrom = cities.get(0);
+		ownedCities.add(cityFrom);
 		cityFrom.BFSsourceVisit();
 		grayNodesQueue.add(cityFrom);
 		while (!(grayNodesQueue.isEmpty())) {
@@ -192,8 +192,10 @@ public class Board {
 				if ("WHITE".equals(connectedCity.getBFScolor())) {
 					connectedCity.setBFScolor("GRAY");
 					connectedCity.setBFSdistance(cityToExpand.getBFSdistance() + 1);
-					if (connectedCity.checkPresenceOfEmporium(player))
+					if (connectedCity.checkPresenceOfEmporium(player)) {
 						grayNodesQueue.add(connectedCity);
+						ownedCities.add(connectedCity);
+					}
 				}
 			}
 			cityToExpand.setBFScolor("BLACK");

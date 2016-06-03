@@ -17,7 +17,7 @@ public class TestConcreteTileFactory {
     public void Test(){
         Board map=new Board(4,2,2,2,2);
         ConcreteTileFactory concreteTileFactory=new ConcreteTileFactory();
-        Tile permitTile=concreteTileFactory.createPermitTile(map.getMap(),2);
+        Tile permitTile=concreteTileFactory.createPermitTile(1,map.getMap(),2);
         assertEquals(PermitTile.class,permitTile.getClass());
     }
 }

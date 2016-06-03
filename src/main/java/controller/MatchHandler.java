@@ -1,18 +1,22 @@
 package controller;
 
-import exceptions.*;
+import exceptions.CouncillorNotFoundException;
+import exceptions.InvalidInputException;
+import exceptions.InvalidSlotException;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
+
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
-
-import org.omg.CORBA.AnyHolder;
 
 /**
  * Created by Gabriele on 22/05/16. This class represents the thread always
@@ -73,8 +77,6 @@ public class MatchHandler extends Thread {
 	 */
 	private boolean pending; // To add UML scheme
 
-	private ConfigFileManager configFileManager;
-
 	/**
 	 * Default constructor
 	 */
@@ -88,14 +90,14 @@ public class MatchHandler extends Thread {
 		this.id = id;
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
-		this.configFileManager = new ConfigFileManager();
 		this.pending = false;
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "]: Started running...");
 	}
 
 	public void run() {
-		boardConfiguration(creator);
+		new BoardConfiguration(creator,configParameters,numberOfPlayers);
+		pending = true;
 		waitingForPlayers();
 		countdown();
 		setDefinitiveNumberOfPlayers();
@@ -104,86 +106,7 @@ public class MatchHandler extends Thread {
 		play();
 	}
 
-	/**
-	 * NEEDS JAVADOC
-	 * 
-	 * @param player
-	 */
-	public void boardConfiguration(Player player) {
-		boolean correctAnswer = false;
-		int choice = 0;
-		ConfigObject config;
-		ConnectorInt playerConnector = player.getConnector();
-		try {
-			playerConnector.writeToClient("BOARD CONFIGURATION:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
 
-		while (!correctAnswer) {
-			try {
-				playerConnector
-						.writeToClient("1) Create a new board configuration\n2) Choose an existing configuration\n");
-
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				choice = playerConnector.receiveIntFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-			if (choice != 1 && choice != 2) {
-				try {
-					playerConnector.writeToClient("ERROR: incorrect input. Please retry\n");
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-			} else
-				correctAnswer = true;
-		}
-
-		if (choice == 1) {
-			newConfiguration(playerConnector);
-		} else {
-			if (configFileManager.getConfigurations().size() > 0) {
-				try {
-					playerConnector.writeToClient("These are the currently existing configurations:\n");
-					ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
-					for (ConfigObject configuration : configurations) {
-						playerConnector.writeToClient(configuration.toString());
-					}
-					int id = -1;
-					boolean correctID = false;
-					while (!correctID) {
-						playerConnector.writeToClient("Choose a configuration by typing its ID\n");
-						id = playerConnector.receiveIntFromClient();
-						try {
-							config = configFileManager.getConfiguration(id);
-							correctID = true;
-							saveConfig(config);
-							this.numberOfPlayers = config.getNumberOfPlayers();
-							playerConnector.writeToClient("You've chosen the Board Configuration number " + id
-									+ ": Now waiting for new players...");
-						} catch (UnexistingConfigurationException e) {
-							playerConnector.writeToClient(e.printError());
-						}
-					}
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-			} else {
-				try {
-					playerConnector.writeToClient("There aren't any configurations yet! Please create a new one\n");
-					newConfiguration(playerConnector);
-
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-			}
-		}
-		pending = true;
-	}
 
 	/**
 	 *
@@ -483,104 +406,9 @@ public class MatchHandler extends Thread {
 
 	}
 
-	/**
-	 * NEEDS CODE QUALITY ADJUSTEMENTS
-	 * 
-	 * @param playerConnector
-	 */
-	public void newConfiguration(ConnectorInt playerConnector) {
-		String parameters = "";
-		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
-				nobilityTrackBonusNumber = 0;
-		boolean stop = false;
-		try {
-			playerConnector.writeToClient(
-					"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
-			playerConnector.writeToClient(
-					"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
 
-		while (!stop) {
-			try {
-				parameters = playerConnector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-			int[] par = new int[5];
-			int i = 0;
-			StringTokenizer tokenizer = new StringTokenizer(parameters, " ");
-			try {
-				while (tokenizer.hasMoreTokens()) {
-					par[i] = Integer.parseInt(tokenizer.nextToken());
-					i++;
-				}
-				numberOfPlayers = par[0];
-				rewardTokenBonusNumber = par[1];
-				permitTileBonusNumber = par[2];
-				nobilityTrackBonusNumber = par[3];
-				linksBetweenCities = par[4];
-			} catch (NumberFormatException e) {
-				try {
-					playerConnector.writeToClient("Error: Expected integers values! Retry!");
-				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e1);
-				}
-			}
-			try {
-				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
-						nobilityTrackBonusNumber, linksBetweenCities);
-				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
-						nobilityTrackBonusNumber, linksBetweenCities);
-				stop = true;
-			} catch (InvalidInputException e) {
-				try {
-					playerConnector.writeToClient(e.printError());
-				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e1);
-				}
-			} catch (ConfigAlreadyExistingException e) {
-				try {
-					playerConnector.writeToClient(e.printError());
-				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e1);
-				}
-			}
-		}
-		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
-		this.numberOfPlayers = numberOfPlayers;
-		try {
-			playerConnector
-					.writeToClient("Board correctly generated with selected parameters! Now we're about to start...");
-		} catch (RemoteException e1) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e1);
-		}
-		pending = true;
-	}
 
-	/**
-	 * Checks whether the specified parameters respect the rules or not.
-	 * 
-	 * @param numberOfPlayers
-	 * @param rewardTokenBonusNumber
-	 * @param permitTileBonusNumber
-	 * @param nobilityTrackBonusNumber
-	 * @param linksBetweenCities
-	 * @throws InvalidInputException
-	 */
-	public void parametersValidation(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
-			int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
-		if (numberOfPlayers < 2 || numberOfPlayers > 8)
-			throw new InvalidInputException();
-		if ((rewardTokenBonusNumber < 1 || rewardTokenBonusNumber > 3)
-				|| (permitTileBonusNumber < 1 || permitTileBonusNumber > 3)
-				|| (nobilityTrackBonusNumber < 1 || nobilityTrackBonusNumber > 3))
-			throw new InvalidInputException();
-		if (linksBetweenCities < 2 && linksBetweenCities > 4)
-			throw new InvalidInputException();
-	}
+
 
 	/**
 	 * This method is invoked to initialize the board before a match starts. The
@@ -599,36 +427,9 @@ public class MatchHandler extends Thread {
 		this.numberOfPlayers=this.players.size();
 	}
 
-	/**
-	 * NEEDS JAVADOC
-	 * 
-	 * @param config
-	 */
-	public void saveConfig(ConfigObject config) {
-		configParameters[0] = config.getNumberOfPlayers();
-		configParameters[1] = config.getRewardTokenBonusNumber();
-		configParameters[2] = config.getPermitTileBonusNumber();
-		configParameters[3] = config.getNobilityTrackBonusNumber();
-		configParameters[4] = config.getLinksBetweenCities();
-	}
 
-	/**
-	 * NEEDS JAVADOC
-	 * 
-	 * @param numberOfPlayers
-	 * @param rewardTokenBonusNumber
-	 * @param permitTileBonusNumber
-	 * @param nobilityTrackBonusNumber
-	 * @param linksBetweenCities
-	 */
-	public void saveConfig(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
-			int nobilityTrackBonusNumber, int linksBetweenCities) {
-		configParameters[0] = numberOfPlayers;
-		configParameters[1] = rewardTokenBonusNumber;
-		configParameters[2] = permitTileBonusNumber;
-		configParameters[3] = nobilityTrackBonusNumber;
-		configParameters[4] = linksBetweenCities;
-	}
+
+
 
 	/**
 	 * NEEDS JAVADOC
@@ -1422,10 +1223,7 @@ public class MatchHandler extends Thread {
 	public boolean checkCorrectRegionName(String regionName) {
 		Region tempRegion = null;
 		tempRegion = getRegion(regionName);
-		if (tempRegion == null)
-			return false;
-		else
-			return true;
+		return tempRegion != null;
 	}
 
 	/**
@@ -1465,10 +1263,7 @@ public class MatchHandler extends Thread {
 	}
 
 	public boolean hasBuiltLastEmporium(Player player) {
-		if (player.getNumberOfEmporium() > 0)
-			return true;
-		else
-			return false;
+		return player.getNumberOfEmporium() > 0;
 	}
 
 	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice) {

@@ -1,5 +1,7 @@
 package controller;
 
+import client.actions.Action;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -13,5 +15,9 @@ public interface ServerSideRMIConnectorInt extends Remote {
 
 	int receiveIntFromServer() throws RemoteException;
 
-	String receiveStringFromServer() throws RemoteException;// To add UML Scheme
+	Action sendActionToServer(Action action) throws RemoteException;// To add UML Scheme
+
+	void sentTurn() throws RemoteException;// To add UML Scheme
+
+
 }

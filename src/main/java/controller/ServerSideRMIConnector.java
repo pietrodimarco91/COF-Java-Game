@@ -1,5 +1,7 @@
 package controller;
 
+import client.actions.Action;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -43,9 +45,15 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
     }
 
     @Override
-    public String receiveStringFromServer() throws RemoteException {
-        //Sarà un metodo invocato dal client!bisogna gestirla internamente controllando lo stato del Server!
-        return null;
+    public Action sendActionToServer(Action action) throws RemoteException {
+
+        return action;
     }
+
+    @Override
+    public void sentTurn() throws RemoteException {
+
+    }
+
 
 }

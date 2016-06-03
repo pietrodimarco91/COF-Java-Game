@@ -10,7 +10,7 @@ public class SocketInputOutputThread extends Thread {
 	private Scanner input;
 	private Scanner inputFromServer;
 	private PrintWriter outputToServer;
-	private String recieved;
+	private String received;
 	
 	public SocketInputOutputThread(Socket socket) {
 		 try {
@@ -25,11 +25,11 @@ public class SocketInputOutputThread extends Thread {
 	@Override
 	public void run() {
 		while(true) {
-			recieved=inputFromServer.nextLine();
-			if(recieved.equals("*#*"))
+			received=inputFromServer.nextLine();
+			if(received.equals("*#*"))
 				outputToServer.println(input.nextLine());
 			else
-				System.out.println(recieved);
+				System.out.println(received);
 		}
 	}
 }

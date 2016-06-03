@@ -306,18 +306,18 @@ public class Player {
 	}
 
 	/**
-	 * This method removed the specified PoliticCard from the hand of the
+	 * This method removes the specified PoliticCards from the hand of the
 	 * player.
 	 */
 	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
-		boolean cardFind;
+		boolean cardFound;
 		int j;
 		for (int i = 0; i < cardsChose.size(); i++){
-			cardFind=false;
-			for(j=0;j<this.politicCards.size() || !cardFind;j++){
+			cardFound=false;
+			for(j=0;j<this.politicCards.size() && !cardFound;j++){
 				if(this.politicCards.get(j).getColorCard().equals(cardsChose.get(i).getColorCard()))
 					this.politicCards.remove(j);
-					cardFind=true;
+					cardFound=true;
 			}
 		}
 	}

@@ -22,8 +22,8 @@ public class SimpleBuildEmporiumAction extends Action {
 	 */
 	private String cityName;
 
-	public SimpleBuildEmporiumAction(String type, int actionID, int permitTileID, String cityName) {
-		super(type, actionID);
+	public SimpleBuildEmporiumAction(String type, int permitTileID, String cityName) {
+		super(type);
 		this.id = permitTileID;
 		this.cityName = cityName;
 	}

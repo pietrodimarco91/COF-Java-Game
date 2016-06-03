@@ -24,18 +24,18 @@ public abstract class Action implements Serializable {
 	/**
 	 * The action ID of the specified category (main or quick)
 	 */
-	private int actionID;
 
-	public Action(String typeOfAction, int actionID) {
+	public Action(String typeOfAction) {
 		this.typeOfAction = typeOfAction;
-		this.actionID = actionID;
 	}
 	
 	public String getTypeOfAction() {
 		return this.typeOfAction;
 	}
 	
-	public int getActionID() {
-		return this.actionID;
+	public String toString() {
+		String string="";
+		string+="Type of action: "+typeOfAction+"\n";
+		return string;
 	}
 }

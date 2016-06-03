@@ -29,9 +29,9 @@ public class BuyPermitTileAction extends Action {
 	 */
 	private int slot;
 
-	public BuyPermitTileAction(String typeOfAction, int id, String region, ArrayList<String> politicCardColors,
+	public BuyPermitTileAction(String typeOfAction, String region, ArrayList<String> politicCardColors,
 			int slot) {
-		super(typeOfAction, id);
+		super(typeOfAction);
 		this.region = region;
 		this.politicCardColors = politicCardColors;
 		this.slot = slot;

@@ -26,8 +26,8 @@ public class KingBuildEmporiumAction extends Action {
 	 */
 	private ArrayList<String> politicCardColors;
 
-	public KingBuildEmporiumAction(String typeOfAction, int id, String cityName, ArrayList<String> colors) {
-		super(typeOfAction, id);
+	public KingBuildEmporiumAction(String typeOfAction, String cityName, ArrayList<String> colors) {
+		super(typeOfAction);
 		this.cityName = cityName;
 		this.politicCardColors = colors;
 	}

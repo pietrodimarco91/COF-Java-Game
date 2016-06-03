@@ -42,7 +42,6 @@ public class Client {
 				this.startSocketConnection();
 				break;
 		}
-
 	}
 
 	private void startSocketConnection() {

@@ -50,7 +50,7 @@ public class PermitTileDeck {
 	public void generatePermitTiles(int bonusNumber) {
 		TileFactory tileFactory = new ConcreteTileFactory();
 		for (int i = 0; i < numberOfTiles; i++) {
-			deck.add(tileFactory.createPermitTile(region.getCities(), bonusNumber));
+			deck.add(tileFactory.createPermitTile(i,region.getCities(), bonusNumber));
 		}
 
 		uncoveredPermitTile1 = deck.remove();

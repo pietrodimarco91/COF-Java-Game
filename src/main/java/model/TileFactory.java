@@ -10,7 +10,7 @@ public abstract class TileFactory {
 
     public abstract Tile createRewardToken(int bonusNumber);
 
-    public abstract Tile createPermitTile(List<City> cities, int bonusNumber);
+    public abstract Tile createPermitTile(int id,List<City> cities, int bonusNumber);
 
     public abstract Tile createRegionBonusTile(int points);
 

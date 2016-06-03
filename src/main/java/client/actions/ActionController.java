@@ -12,7 +12,7 @@ import exceptions.InvalidInputException;
  * @author Riccardo
  *
  */
-public abstract class ActionController {
+public class ActionController {
 
 	Scanner input = new Scanner(System.in);
 
@@ -51,7 +51,7 @@ public abstract class ActionController {
 	public void showActions(String type) {
 		if ("MAIN".equals(type)) {
 			ClientOutputPrinter.printLine(
-					"MAIN ACTIONS\n1)Buy Permit Tile\n2)Build an emporium using King's help\n3)Elect Councillor\n4)Build an emporium using Permit Tile");
+					"MAIN ACTIONS\n1)Buy Permit Tile\n2)Build an emporium using King's help\n3)Elect a Councillor\n4)Build an emporium using Permit Tile");
 		} else {
 			ClientOutputPrinter.printLine(
 					"QUICK ACTIONS\n1)Engage an Assistant\n2)Switch Permit Tile\n3)Send an Assistant to Elect a Councillor\n4)Perform an additional Main Action\n5)Skip Quick Action");
@@ -65,14 +65,14 @@ public abstract class ActionController {
 		return s;
 	}
 
-	public static int verifyActionID(String id) throws InvalidInputException {
+	public int verifyActionID(String id) throws InvalidInputException {
 		int num = Integer.parseInt(id);
 		if (num < 1 || num > 4)
 			throw new InvalidInputException();
 		return num;
 	}
 
-	public static void requestBoardStatus() {
+	public void requestBoardStatus() {
 		
 	}
 }

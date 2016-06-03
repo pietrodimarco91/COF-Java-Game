@@ -97,7 +97,6 @@ public class MatchHandler extends Thread {
 
 	public void run() {
 		new BoardConfiguration(creator,configParameters,numberOfPlayers);
-		pending = true;
 		waitingForPlayers();
 		countdown();
 		setDefinitiveNumberOfPlayers();
@@ -435,8 +434,8 @@ public class MatchHandler extends Thread {
 	 * NEEDS JAVADOC
 	 */
 	public void waitingForPlayers() {
-
 		ServerOutputPrinter.printLine("[MATCH " + id + "] Currently waiting for players...");
+		pending = true;
 		try {
 			creator.getConnector().writeToClient("[Match ID: " + id + "] Currently waiting for players...");
 		} catch (RemoteException e) {
@@ -493,8 +492,8 @@ public class MatchHandler extends Thread {
 	 */
 	public String toString() {
 		String string = "";
-		string += "Match numero " + this.id + "\n";
-		string += "Lanciato in data: ";
+		string += "Match number " + this.id + "\n";
+		string += "Launched on: ";
 		DateFormat dateFormat = new SimpleDateFormat();
 		string += dateFormat.format(date) + "\n";
 		return string;
@@ -607,7 +606,7 @@ public class MatchHandler extends Thread {
 			break;
 		case 3:
 			showMap(player);
-			electCoucillor(player);
+			electCouncillor(player);
 			break;
 		case 4:
 			showMap(player);
@@ -775,7 +774,7 @@ public class MatchHandler extends Thread {
 	 * 
 	 * @return
 	 */
-	public void electCoucillor(Player player) {
+	public void electCouncillor(Player player) {
 		String regionName = "";
 		String councillorColor = "";
 		boolean checkCouncillorColor = true;

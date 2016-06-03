@@ -38,4 +38,5 @@ public abstract class Action implements Serializable {
 		string+="Type of action: "+typeOfAction+"\n";
 		return string;
 	}
+
 }

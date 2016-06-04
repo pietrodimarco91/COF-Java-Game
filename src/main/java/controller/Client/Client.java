@@ -1,19 +1,8 @@
 package controller.Client;
 
-import controller.MatchHandler;
-import controller.RMIConnectionInt;
-import controller.ServerSideRMIConnectorInt;
-
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
+import client.actions.ActionController;
 import client.view.cli.ClientOutputPrinter;
 
 /**
@@ -21,94 +10,55 @@ import client.view.cli.ClientOutputPrinter;
  */
 public class Client {
 
-	private static final Logger logger = Logger.getLogger(Client.class.getName());
-	ClientSideRMIConnector clientSideRMIConnector;
-	RMIConnectionInt rmiConnectionInt;
-	ClientSocket clientSocket;
-	ServerSideRMIConnectorInt serverSideConnectorInt;
-	
+	private int currentPlayerID;
+
+	private Scanner input = new Scanner(System.in);
+
+	private ActionController controller;
+
 	/**
 	 * Default constructor
 	 */
 	public Client() {
-		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-		Scanner input = new Scanner(System.in);
-		ClientOutputPrinter.printLine("How do you want to connect?\n1)RMI\n2)Socket");
-		switch (input.nextInt()){
+		controller = new ActionController();
+		currentPlayerID = -1; // this is an important parameter that each client
+								// should be given after correctly connected. It
+								// may be used to state whether he is a creator
+								// or not, and if not he needs to quit all the
+								// input/output streams with the server during
+								// the configuration
+		welcome();
+		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
+		controller.connect();
+		// play(); THIS SHOULD BE DONE AFTER THE BOARD CONFIGURATION
+	}
+
+	public void play() {
+		int choice;
+		while (true) {
+			ClientOutputPrinter.printLine(
+					"Next choice?\n1) Perform action\n2) Request board status\n3) Request my player's status4) Disconnect");
+			choice = input.nextInt();
+			switch (choice) {
 			case 1:
-				this.startRMIConnection();
+				controller.performNewAction();
 				break;
 			case 2:
-				this.startSocketConnection();
+				controller.requestBoardStatus();
 				break;
-		}
-
-	}
-
-	private void startSocketConnection() {
-		clientSocket=new ClientSocket();
-	}
-
-	private void startRMIConnection() {
-		try {
-			clientSideRMIConnector=new ClientSideRMIConnector();
-			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://localhost/registry");
-			serverSideConnectorInt =rmiConnectionInt.connect(clientSideRMIConnector);
-		} catch (NotBoundException e) {
-			logger.log(Level.FINEST, "Error: the object you were looking for is not bounded", e);
-		} catch (MalformedURLException e) {
-			logger.log(Level.FINEST, "Error: the URL specified is invalid", e);
-		} catch (RemoteException e) {
-			logger.log(Level.FINEST, "Error: RemoteException was thrown", e);
+			case 3:
+				controller.requestMyPlayerStatus();
+				break;
+			case 4:
+				controller.disconnect();
+				break;
+			default:
+				ClientOutputPrinter.printLine("Invalid choice... please retry!");
+			}
 		}
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean hasBuiltLastEmporium() {
-		// TODO implement here
-		return false;
+	public void welcome() {
+		ClientOutputPrinter.printLine("Welcome to a new session of 'Council Of Four' Game!");
 	}
-	
-
-	/**
-	 * @return
-	 */
-	public void performActions() {
-		// TODO implement here
-
-	}
-
-	/**
-	 * @return
-	 */
-	public void mainActions() {
-		// TODO implement here
-
-	}
-
-	/**
-	 * @return
-	 */
-	public void quickActions() {
-		// TODO implement here
-
-	}
-
-
-	/**
-	 * @return
-	 */
-	public void buildEmporiumWithKingsHelp() {
-		// TODO implement here
-
-	}
-
-	
-
-
-
-
-
 }

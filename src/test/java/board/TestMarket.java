@@ -45,7 +45,7 @@ public class TestMarket {
 		ItemOnSale item1 = itemFactory.createAssistantOnSale(player1, 6); //player1 has 6 coins
 		PoliticCard pc = new PoliticCard();
 		ItemOnSale item2 = itemFactory.createPoliticCardOnSale(pc, player2, 7); //player2 has 5 coins
-		Tile pt = new PermitTile(board.getMap(),2);
+		Tile pt = new PermitTile(1,board.getMap(),2);
 		ItemOnSale item3 = itemFactory.createPermitTileOnSale(pt, player3, 10); //player3 has 3 coins
 		Market.putItemOnSale(item1);
 		Market.putItemOnSale(item2);

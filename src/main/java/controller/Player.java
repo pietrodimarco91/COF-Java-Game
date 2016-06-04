@@ -112,7 +112,7 @@ public class Player {
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 	}
-	
+
 	/**
 	 * This constructor is realized only for test purposes.
 	 */
@@ -199,7 +199,7 @@ public class Player {
 	 */
 	public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
 		int numberOfCardsUsed = 0;
-		String colorCard="";
+		String colorCard = "";
 		boolean flagStopChoose = false;
 		ArrayList<PoliticCard> cardsChose = new ArrayList<PoliticCard>();
 		ArrayList<PoliticCard> tempHandCards = new ArrayList<PoliticCard>(this.politicCards);
@@ -211,59 +211,59 @@ public class Player {
 				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 			}
 			try {
-				colorCard=connector.receiveStringFromClient();
+				colorCard = connector.receiveStringFromClient();
 			} catch (RemoteException e) {
 				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 			}
-			colorCard=colorCard.trim();
-			colorCard=colorCard.toUpperCase();
+			colorCard = colorCard.trim();
+			colorCard = colorCard.toUpperCase();
 			if (!colorCard.equals("STOP")) {
 				while (!checkExistingColor(colorCard)) {
 					try {
-						connector.writeToClient("You have entered an incorret color Card!1\nWrite the color card that yoy would to use:"
-								);
+						connector.writeToClient(
+								"You have entered an incorret color Card!1\nWrite the color card that yoy would to use:");
 					} catch (RemoteException e) {
 						logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 					}
 					try {
-						colorCard=connector.receiveStringFromClient();
+						colorCard = connector.receiveStringFromClient();
 					} catch (RemoteException e) {
 						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 					}
-					colorCard=colorCard.trim();
-					colorCard=colorCard.toUpperCase();
+					colorCard = colorCard.trim();
+					colorCard = colorCard.toUpperCase();
 				}
 				while (!checkIfYouOwnThisCard(colorCard, tempHandCards)) {
 					try {
-						connector.writeToClient("You have entered an incorret color Card!1\nWrite the color card that yoy would to use:"
-								);
+						connector.writeToClient(
+								"You have entered an incorret color Card!1\nWrite the color card that yoy would to use:");
 					} catch (RemoteException e) {
 						logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 					}
 					try {
-						colorCard=connector.receiveStringFromClient();
+						colorCard = connector.receiveStringFromClient();
 					} catch (RemoteException e) {
 						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
 					}
-					colorCard=colorCard.trim();
-					colorCard=colorCard.toUpperCase();
+					colorCard = colorCard.trim();
+					colorCard = colorCard.toUpperCase();
 				}
 				PoliticCard politicCard = new PoliticCard(colorCard);
 				cardsChose.add(politicCard);
 				numberOfCardsUsed++;
 				try {
 					connector.writeToClient("PERFECT!");
-							
+
 				} catch (RemoteException e) {
 					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 				}
 			} else if (colorCard.equals("STOP") && cardsChose.size() == 0)
 				try {
-				connector.writeToClient("ERROR: You have to enter at least one card!!");
-						
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
+					connector.writeToClient("ERROR: You have to enter at least one card!!");
+
+				} catch (RemoteException e) {
+					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+				}
 			else
 				flagStopChoose = true;
 		}
@@ -312,16 +312,15 @@ public class Player {
 	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
 		boolean cardFound;
 		int j;
-		for (int i = 0; i < cardsChose.size(); i++){
-			cardFound=false;
-			for(j=0;j<this.politicCards.size() && !cardFound;j++){
-				if(this.politicCards.get(j).getColorCard().equals(cardsChose.get(i).getColorCard()))
+		for (int i = 0; i < cardsChose.size(); i++) {
+			cardFound = false;
+			for (j = 0; j < this.politicCards.size() && !cardFound; j++) {
+				if (this.politicCards.get(j).getColorCard().equals(cardsChose.get(i).getColorCard()))
 					this.politicCards.remove(j);
-					cardFound=true;
+				cardFound = true;
 			}
 		}
 	}
-	
 
 	/**
 	 * This method adds the specified PoliticCard to the hand of the player
@@ -491,6 +490,13 @@ public class Player {
 	public void fromUnusedToUsedPermitTile(Player player, PermitTile permitTile) {
 		this.unusedPermitTiles.remove(permitTile);
 		this.usedPermitTiles.add(permitTile);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean hasBuiltLastEmporium() {
+		return this.emporiums==0;
 	}
 
 }

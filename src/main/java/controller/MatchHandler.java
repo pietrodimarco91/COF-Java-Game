@@ -3,6 +3,7 @@ package controller;
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
+import exceptions.UnsufficientCoinsException;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
@@ -636,7 +637,7 @@ public class MatchHandler extends Thread {
 			break;
 		case 4:
 			showMap(player);
-			buildEmporiumWithPermitTile(player);
+			performAdditionalMainAction(player);
 			break;
 		}
 	}
@@ -734,6 +735,24 @@ public class MatchHandler extends Thread {
 	 */
 	public void drawPoliticCard(Player player) {
 		player.addCardOnHand(PoliticCardDeck.generateRandomPoliticCard());
+	}
+	
+	/**
+	 * NEEDS IMPLEMENTATION
+	 * @return
+	 * @throws UnsufficientCoinsException 
+	 */
+	public void buildEmporiumWithKingsHelp(Player player) throws UnsufficientCoinsException {
+		String city=null;
+		ArrayList<String> chosenPoliticCards = new ArrayList<String>();
+		// I obtain the information I need
+		int coinsToPay;
+		City cityTo=null;
+		City cityFrom=board.findKingCity();
+		coinsToPay=board.countDistance(cityFrom, cityTo)*2;
+		if(player.getCoins()>=coinsToPay)
+			player.removeCoins(coinsToPay);
+		else throw new UnsufficientCoinsException();
 	}
 
 	/**

@@ -30,6 +30,18 @@ public class Player {
 	/**
 	 *
 	 */
+	private final static int MAXIMUN_POSITION = 20;
+	/**
+	 *
+	 */
+	private final static int MAXIMUN_COINS = 20;
+	/**
+	 *
+	 */
+	private final static int INITIAL_POSITION = 0;
+	/**
+	 *
+	 */
 	private String userName;
 	/**
 	 *
@@ -63,6 +75,12 @@ public class Player {
 	 *
 	 */
 	private int turnNumber;
+	
+	/**
+	 *
+	 */
+	private int positionInNobilityTrack;
+	
 	/**
 	 *
 	 */
@@ -105,11 +123,12 @@ public class Player {
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
+		this.positionInNobilityTrack=INITIAL_POSITION;
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
 		this.connector = connector;
 		initializeFirstHand();// Distributes the first hand of politic cards
-		this.victoryPoints = 0;
+		this.victoryPoints = INITIAL_POSITION;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 	}
 	
@@ -175,6 +194,12 @@ public class Player {
 	public Tile getUnusedPermitTile(int choice) {// metodo da risistemare e da
 													// aggiungere UML
 		return this.unusedPermitTiles.get(choice);
+	}
+	/**
+	 * 
+	 */
+	public Tile getUsedPermitTile(int choiche){
+		return this.getUsedPermitTile(choiche);
 	}
 
 	/**
@@ -311,10 +336,10 @@ public class Player {
 	 */
 	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
 		boolean cardFound;
-		int j;
+		
 		for (int i = 0; i < cardsChose.size(); i++){
 			cardFound=false;
-			for(j=0;j<this.politicCards.size() && !cardFound;j++){
+			for( int j=0;j<this.politicCards.size() && !cardFound;j++){
 				if(this.politicCards.get(j).getColorCard().equals(cardsChose.get(i).getColorCard()))
 					this.politicCards.remove(j);
 					cardFound=true;
@@ -358,12 +383,23 @@ public class Player {
 	public int getNumberOfPermitTile() {
 		return this.unusedPermitTiles.size();
 	}
-
+	
+	/**
+	 * 
+	 */
+	public int getNumberOfUsedPermitTile(){
+		return this.usedPermitTiles.size();
+	}
+	
+	
 	/**
 	 * This method adds the specified coins to the coins owned by the player
 	 */
 	public void addCoins(int coins) {
-		this.coins += coins;
+		if(this.coins+coins>MAXIMUN_COINS)
+			this.coins=MAXIMUN_COINS;
+		else
+			this.coins+=coins;
 	}
 
 	/**
@@ -380,7 +416,17 @@ public class Player {
 	public int setInitialCoins(int turnNumber) {
 		return INITIAL_COINS + turnNumber;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public void changePositionInNobilityTrack(int position){
+		if(this.positionInNobilityTrack+position>MAXIMUN_POSITION)
+		this.positionInNobilityTrack=MAXIMUN_POSITION;
+		else
+			this.positionInNobilityTrack+=position;
+		}
+	
 	/**
 	 * @return the coins of the player
 	 */
@@ -394,7 +440,21 @@ public class Player {
 	public int getNumberOfEmporium() {
 		return this.emporiums;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public int getNumberoOfControlledCities(){
+		return this.controlledCities.size();
+	}
+	
+	/**
+	 * 
+	 */
+	public City getSingleControlledCity(int choice){
+		return this.controlledCities.get(choice);
+	}
+	
 	/**
 	 * @return
 	 */
@@ -407,6 +467,13 @@ public class Player {
 	 */
 	public void addAssistant() {
 		this.assistants++;
+	}
+	
+	/**
+	 * 
+	 */
+	public void addMoreAssistant(int number) {
+		this.assistants+=number;
 	}
 
 	/**
@@ -421,6 +488,12 @@ public class Player {
 	 */
 	public void removeMoreAssistants(int numberOfAssistants) {
 		this.assistants -= numberOfAssistants;
+	}
+	/**
+	 * 
+	 */
+	public void setVoctoryPoints(int points){
+		this.victoryPoints+=points;
 	}
 
 	/**

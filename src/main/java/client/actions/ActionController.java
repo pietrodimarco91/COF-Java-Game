@@ -1,8 +1,21 @@
 package client.actions;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import client.view.cli.ClientOutputPrinter;
+import controller.RMIConnectionInt;
+import controller.ServerSideRMIConnectorInt;
+import controller.Client.Client;
+import controller.Client.ClientSideRMIConnector;
+import controller.Client.ClientSocket;
 import exceptions.InvalidInputException;
 
 /**
@@ -14,7 +27,17 @@ import exceptions.InvalidInputException;
  */
 public class ActionController {
 
-	Scanner input = new Scanner(System.in);
+	private static final Logger logger = Logger.getLogger(ActionController.class.getName());
+	private ClientSideRMIConnector clientSideRMIConnector;
+	private RMIConnectionInt rmiConnectionInt;
+	private ClientSocket clientSocket;
+	private ServerSideRMIConnectorInt serverSideConnectorInt;
+	private Scanner input;
+	
+	public ActionController() {
+		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+		input = new Scanner(System.in);
+	}
 
 	public void performNewAction() {
 		String type = null;
@@ -72,7 +95,55 @@ public class ActionController {
 		return num;
 	}
 
+	/**
+	 * NEEDS IMPLEMENTATION
+	 */
 	public void requestBoardStatus() {
 		
+	}
+	
+	/**
+	 * NEEDS IMPLEMENTATION
+	 */
+	public void requestMyPlayerStatus() {
+		
+	}
+	
+	public void connect() {
+		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
+		int choice=Integer.parseInt(input.nextLine());
+		switch (choice) {
+		case 1:
+			this.startRMIConnection();
+			break;
+		case 2:
+			this.startSocketConnection();
+			break;
+		}
+	}
+	
+	/**
+	 * NEEDS IMPLEMENTATION
+	 */
+	public void disconnect() {
+		
+	}
+	
+	public void startSocketConnection() {
+		clientSocket = new ClientSocket();
+	}
+
+	public void startRMIConnection() {
+		try {
+			clientSideRMIConnector = new ClientSideRMIConnector();
+			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://localhost/registry");
+			serverSideConnectorInt = rmiConnectionInt.connect(clientSideRMIConnector);
+		} catch (NotBoundException e) {
+			logger.log(Level.FINEST, "Error: the object you were looking for is not bounded", e);
+		} catch (MalformedURLException e) {
+			logger.log(Level.FINEST, "Error: the URL specified is invalid", e);
+		} catch (RemoteException e) {
+			logger.log(Level.FINEST, "Error: RemoteException was thrown", e);
+		}
 	}
 }

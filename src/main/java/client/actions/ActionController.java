@@ -33,7 +33,7 @@ public class ActionController {
 	private ClientSocket clientSocket;
 	private ServerSideRMIConnectorInt serverSideConnectorInt;
 	private Scanner input;
-	
+
 	public ActionController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		input = new Scanner(System.in);
@@ -63,7 +63,7 @@ public class ActionController {
 			try {
 				num = verifyActionID(id);
 				proceed = true;
-				new ActionCreator(type,num);
+				new ActionCreator(type, num);
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}
@@ -99,36 +99,43 @@ public class ActionController {
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void requestBoardStatus() {
-		
+
 	}
-	
+
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void requestMyPlayerStatus() {
-		
+
 	}
-	
+
 	public void connect() {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
-		int choice=Integer.parseInt(input.nextLine());
-		switch (choice) {
-		case 1:
-			this.startRMIConnection();
-			break;
-		case 2:
-			this.startSocketConnection();
-			break;
+		int choice = Integer.parseInt(input.nextLine());
+		boolean proceed = false;
+		while (!proceed) {
+			switch (choice) {
+			case 1:
+				this.startRMIConnection();
+				proceed = true;
+				break;
+			case 2:
+				this.startSocketConnection();
+				proceed = true;
+				break;
+			default:
+				ClientOutputPrinter.printLine("Error: invalid input... please retry!");
+			}
 		}
 	}
-	
+
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void disconnect() {
-		
+
 	}
-	
+
 	public void startSocketConnection() {
 		clientSocket = new ClientSocket();
 	}

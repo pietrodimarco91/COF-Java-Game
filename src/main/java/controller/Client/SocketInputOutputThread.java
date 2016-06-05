@@ -34,6 +34,7 @@ public class SocketInputOutputThread extends Thread {
 			if (received.equals("*#*")) {
 				try {
 					outputToServer.writeObject(new EngageAssistantAction("QUICK"));
+					outputToServer.flush();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

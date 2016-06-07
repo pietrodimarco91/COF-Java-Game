@@ -1,6 +1,15 @@
 package client.actions;
 
+import client.view.cli.ClientOutputPrinter;
+import controller.Client.ClientSideRMIConnector;
+import controller.Client.SocketInputOutputThread;
+import controller.RMIConnectionInt;
+import controller.ServerSideRMIConnectorInt;
+import exceptions.InvalidInputException;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -9,14 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
-
-import client.view.cli.ClientOutputPrinter;
-import controller.RMIConnectionInt;
-import controller.ServerSideRMIConnectorInt;
-import controller.Client.Client;
-import controller.Client.ClientSideRMIConnector;
-import controller.Client.ClientSocket;
-import exceptions.InvalidInputException;
 
 /**
  * This class represents the controller client side to verify that a specified
@@ -28,11 +29,13 @@ import exceptions.InvalidInputException;
 public class ActionController {
 
 	private static final Logger logger = Logger.getLogger(ActionController.class.getName());
+	private final String ADDRESS="localhost";
+	private final int PORT=2000;
 	private ClientSideRMIConnector clientSideRMIConnector;
 	private RMIConnectionInt rmiConnectionInt;
-	private ClientSocket clientSocket;
-	private ServerSideRMIConnectorInt serverSideConnectorInt;
+	private ServerSideRMIConnectorInt actionSenderInt;
 	private Scanner input;
+	private SocketInputOutputThread socketInputOutputThread;
 
 	public ActionController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
@@ -63,7 +66,7 @@ public class ActionController {
 			try {
 				num = verifyActionID(id);
 				proceed = true;
-				new ActionCreator(type, num);
+				new ActionCreator(type, num,actionSenderInt);
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}
@@ -137,14 +140,18 @@ public class ActionController {
 	}
 
 	public void startSocketConnection() {
-		clientSocket = new ClientSocket();
+		try {
+			actionSenderInt=new SocketInputOutputThread(new Socket(ADDRESS,PORT));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void startRMIConnection() {
 		try {
 			clientSideRMIConnector = new ClientSideRMIConnector();
 			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://localhost/registry");
-			serverSideConnectorInt = rmiConnectionInt.connect(clientSideRMIConnector);
+			actionSenderInt = rmiConnectionInt.connect(clientSideRMIConnector);
 		} catch (NotBoundException e) {
 			logger.log(Level.FINEST, "Error: the object you were looking for is not bounded", e);
 		} catch (MalformedURLException e) {

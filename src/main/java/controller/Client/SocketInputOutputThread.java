@@ -1,26 +1,30 @@
 package controller.Client;
 
+import client.actions.Action;
+import client.view.cli.ClientOutputPrinter;
+import controller.ServerSideRMIConnectorInt;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
-import client.actions.EngageAssistantAction;
-
-public class SocketInputOutputThread extends Thread {
+public class SocketInputOutputThread extends Thread implements ServerSideRMIConnectorInt{
 
 	private Scanner input;
-	private Scanner inputFromServer;
-	private ObjectOutputStream outputToServer;
-	//private PrintWriter outputToServer;
+	private Scanner inputStringFromServer;
+	private ObjectOutputStream outputObjectToServer;
+	private PrintWriter outputStringToServer;
 	private String received;
 
 	public SocketInputOutputThread(Socket socket) {
 		try {
-			inputFromServer = new Scanner(socket.getInputStream());
-			outputToServer = new ObjectOutputStream(socket.getOutputStream());
-			//outputToServer = new PrintWriter(socket.getOutputStream(), true);
+
+			inputStringFromServer = new Scanner(socket.getInputStream());
+			outputObjectToServer = new ObjectOutputStream(socket.getOutputStream());
+			outputStringToServer = new PrintWriter(socket.getOutputStream(), true);
 			input = new Scanner(System.in);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -30,17 +34,36 @@ public class SocketInputOutputThread extends Thread {
 	@Override
 	public void run() {
 		while (true) {
-			received = inputFromServer.nextLine();
+			received = inputStringFromServer.nextLine();
 			if (received.equals("*#*")) {
-				try {
-					outputToServer.writeObject(new EngageAssistantAction("QUICK"));
-					outputToServer.flush();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				// outputToServer.println(input.nextLine());
+					outputStringToServer.println(input.nextLine());
 			} else
-				System.out.println(received);
+				ClientOutputPrinter.printLine(received);
 		}
+	}
+
+
+	@Override
+	public void writeToServer(String s) throws RemoteException {
+
+	}
+
+	@Override
+	public int receiveIntFromServer() throws RemoteException {
+		return 0;
+	}
+
+	@Override
+	public void sendActionToServer(Action action) throws RemoteException {
+		try {
+			outputObjectToServer.writeObject(action);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void sentTurn() throws RemoteException {
+
 	}
 }

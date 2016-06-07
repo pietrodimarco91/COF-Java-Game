@@ -1,9 +1,9 @@
 package controller.Client;
 
-import java.util.Scanner;
-
 import client.actions.ActionController;
 import client.view.cli.ClientOutputPrinter;
+
+import java.util.Scanner;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class Client {
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
 		controller.connect();
-		// play(); THIS SHOULD BE DONE AFTER THE BOARD CONFIGURATION
+		play();
 	}
 
 	public void play() {

@@ -11,9 +11,16 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServerSideRMIConnector extends UnicastRemoteObject implements ConnectorInt {
 
     ClientSideRMIConnectorInt clientSideRMIConnectorInt;
+    private boolean yourTurn;
+    private Action pendingAction;
+    private boolean actionSent;
+    private boolean matchStarted;
 
     public ServerSideRMIConnector(ClientSideRMIConnectorInt clientSideRMIConnectorInt) throws RemoteException {
         super();
+        yourTurn=false;
+        matchStarted=false;
+        actionSent=false;
         this.clientSideRMIConnectorInt=clientSideRMIConnectorInt;
     }
 
@@ -45,14 +52,48 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
     }
 
     @Override
-    public Action sendActionToServer(Action action) throws RemoteException {
+    public void sendActionToServer(Action action) throws RemoteException {
+            if (yourTurn) {
+                pendingAction = action;
+                actionSent=true;
+            }
+    }
 
-        return action;
+
+    @Override
+    public void setTurn(boolean value) throws RemoteException {
+        yourTurn=value;
     }
 
     @Override
-    public void sentTurn() throws RemoteException {
+    public Action getAction() throws RemoteException {
+        while(!actionSent){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        actionSent=false;
+        return pendingAction;
+    }
 
+
+
+    @Override
+    public void waitStart() {
+        while(!matchStarted){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setMatchStarted() {
+        matchStarted=true;
     }
 
 

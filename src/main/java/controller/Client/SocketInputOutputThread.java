@@ -18,10 +18,11 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 	private ObjectOutputStream outputObjectToServer;
 	private PrintWriter outputStringToServer;
 	private String received;
+	private boolean waitStart;
 
 	public SocketInputOutputThread(Socket socket) {
 		try {
-
+			waitStart=false;
 			inputStringFromServer = new Scanner(socket.getInputStream());
 			outputObjectToServer = new ObjectOutputStream(socket.getOutputStream());
 			outputStringToServer = new PrintWriter(socket.getOutputStream(), true);
@@ -39,6 +40,8 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 					outputStringToServer.println(input.nextLine());
 			} else
 				ClientOutputPrinter.printLine(received);
+			if(received.equals("START"))
+				waitStart=true;
 		}
 	}
 
@@ -62,8 +65,30 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 		}
 	}
 
+	//ARE NECESSARY ONLY FOR THE SERVeR
+
 	@Override
-	public void sentTurn() throws RemoteException {
+	public void setTurn(boolean value) throws RemoteException {
+	}
+
+	@Override
+	public Action getAction() throws RemoteException {
+		return null;
+	}
+
+	@Override
+	public void waitStart() {
+		while (!waitStart){
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void setMatchStarted() {
 
 	}
 }

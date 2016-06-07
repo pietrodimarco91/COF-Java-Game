@@ -1,12 +1,11 @@
 package controller.Client;
 
+import client.view.cli.ClientOutputPrinter;
 import controller.ClientSideRMIConnectorInt;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
-
-import client.view.cli.ClientOutputPrinter;
 
 /**
  * Created by pietro on 29/05/16.
@@ -36,4 +35,5 @@ public class ClientSideRMIConnector extends UnicastRemoteObject implements Clien
 		string = input.nextLine();
 		return string;
 	}
+
 }

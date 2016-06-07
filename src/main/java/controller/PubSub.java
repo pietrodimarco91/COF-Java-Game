@@ -1,9 +1,9 @@
 package controller;
 
+import server.view.cli.ServerOutputPrinter;
+
 import java.rmi.RemoteException;
 import java.util.List;
-
-import server.view.cli.ServerOutputPrinter;
 
 public abstract class PubSub {
 	
@@ -16,4 +16,6 @@ public abstract class PubSub {
 			}
 		}
 	}
+
+
 }

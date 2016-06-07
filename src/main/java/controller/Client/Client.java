@@ -30,6 +30,7 @@ public class Client {
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
 		controller.connect();
+		controller.waitStart();
 		play();
 	}
 

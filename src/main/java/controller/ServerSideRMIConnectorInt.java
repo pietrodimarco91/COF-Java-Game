@@ -17,7 +17,11 @@ public interface ServerSideRMIConnectorInt extends Remote {
 
 	void sendActionToServer(Action action) throws RemoteException;// To add UML Scheme
 
-	void sentTurn() throws RemoteException;// To add UML Scheme
+	void setTurn(boolean value) throws RemoteException;// To add UML Scheme
 
+	Action getAction() throws RemoteException;
 
+	void waitStart();
+
+	void setMatchStarted();
 }

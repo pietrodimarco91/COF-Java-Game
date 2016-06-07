@@ -160,4 +160,9 @@ public class ActionController {
 			logger.log(Level.FINEST, "Error: RemoteException was thrown", e);
 		}
 	}
+
+	public void waitStart() {
+		actionSenderInt.waitStart();
+
+	}
 }

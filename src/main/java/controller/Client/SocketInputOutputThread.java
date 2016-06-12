@@ -2,7 +2,7 @@ package controller.Client;
 
 import client.actions.Action;
 import client.view.cli.ClientOutputPrinter;
-import controller.ServerSideRMIConnectorInt;
+import controller.ServerSideConnectorInt;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class SocketInputOutputThread extends Thread implements ServerSideRMIConnectorInt{
+public class SocketInputOutputThread extends Thread implements ServerSideConnectorInt {
 
 	private Scanner input;
 	private Scanner inputStringFromServer;

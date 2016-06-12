@@ -3,7 +3,6 @@ package controller;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -91,7 +90,8 @@ public class Server {
 		while(!stopServer){
 			try {
 				socketConnector=new SocketConnector(welcomeSocket.accept());
-				thread.submit(new ClientHandler(socketConnector, matches));
+				socketConnector.sendToClient(new Packet("[SERVER]: RMI Connection correctly established"));
+				thread.submit(new ClientHandler(socketConnector, socketConnector, matches));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

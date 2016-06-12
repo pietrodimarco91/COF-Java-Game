@@ -5,6 +5,6 @@ import java.rmi.RemoteException;
 
 public interface RMIConnectionInt extends Remote {
 
-    ServerSideRMIConnectorInt connect(ClientSideRMIConnectorInt a)throws RemoteException;
+    ServerSideConnectorInt connect(ClientSideConnectorInt a)throws RemoteException;
     
 }

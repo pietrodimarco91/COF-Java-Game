@@ -1,17 +1,12 @@
 package board;
 
-import controller.ConnectorInt;
 import controller.Player;
-import controller.ServerSideRMIConnector;
-import controller.SocketConnector;
-import controller.Client.ClientSideRMIConnector;
 import exceptions.UnsufficientCoinsException;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
 import org.junit.Test;
 
-import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.logging.Level;

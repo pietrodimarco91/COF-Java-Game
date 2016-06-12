@@ -1,7 +1,7 @@
 package controller.Client;
 
 import client.view.cli.ClientOutputPrinter;
-import controller.ClientSideRMIConnectorInt;
+import controller.ClientSideConnectorInt;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -10,9 +10,9 @@ import java.util.Scanner;
 /**
  * Created by pietro on 29/05/16.
  */
-public class ClientSideRMIConnector extends UnicastRemoteObject implements ClientSideRMIConnectorInt {
+public class ClientSideConnector extends UnicastRemoteObject implements ClientSideConnectorInt {
 
-	public ClientSideRMIConnector() throws RemoteException {
+	public ClientSideConnector() throws RemoteException {
 		
 	}
 

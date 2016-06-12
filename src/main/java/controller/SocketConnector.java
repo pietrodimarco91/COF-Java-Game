@@ -13,7 +13,11 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SocketConnector implements ConnectorInt {
+/**
+ * al server servirà solo inviare pacchetti al client mentre il client invocherà le sendToServer in caso di
+ */
+
+public class SocketConnector implements ClientSideConnectorInt, ServerSideConnectorInt {
 
 
 	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
@@ -26,6 +30,7 @@ public class SocketConnector implements ConnectorInt {
     private boolean yourTurn;
     private boolean configSent;
     private ArrayList<Integer> pendingConfig;
+    private MatchHandler matchHandler;
 
 
     public SocketConnector(Socket socket) {
@@ -37,7 +42,6 @@ public class SocketConnector implements ConnectorInt {
             outputStringToClient=new PrintWriter(socket.getOutputStream());
             inputObjectFromClient=new ObjectInputStream(socket.getInputStream());
             inputStringFromClient=new Scanner(socket.getInputStream());
-            writeToClient("[SERVER] New Socket connection established");
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error while opening the output/input stream for 'socket'", e);
         }
@@ -67,99 +71,18 @@ public class SocketConnector implements ConnectorInt {
         }
     }
 
-
     @Override
-    public void writeToClient(String s) {
-        outputStringToClient.println(s);
+    public void sendToClient(Packet packet) throws RemoteException {
+
     }
 
     @Override
-    public int receiveIntFromClient() {
-        this.writeToClient("*#*");
-        return Integer.parseInt(inputStringFromClient.nextLine());
-    }
-
-
-    @Override
-    public String receiveStringFromClient() {
-        return inputStringFromClient.nextLine();
+    public void sendToServer(Packet packet) throws RemoteException {
+        //USED ONLY FOR RMI
     }
 
     @Override
-    public void setTurn(boolean value) {
-        yourTurn=value;
-    }
-
-    @Override
-    public Action getAction() {
-        while(!actionSent){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        actionSent=false;
-        return pendingAction;
-    }
-
-
-    @Override
-    public void waitStart() {
-        //THIS METHOD IS ONLY USED BY RMI
-    }
-
-    @Override
-    public void setMatchStarted() {
-        writeToClient("START");
-    }
-
-    @Override
-    public boolean checkCreator() {
-        //THIS METHOD IS ONLY USED BY RMI
-        return false;
-    }
-
-
-    @Override
-    public void writeToServer(String s) throws RemoteException {
-        //THIS METHOD IS ONLY USED BY RMI
-    }
-
-    @Override
-    public int receiveIntFromServer() throws RemoteException {
-        //THIS METHOD IS ONLY USED BY RMI
-        return 0;
-    }
-
-    @Override
-    public void sendActionToServer(Action action) throws RemoteException {
-        //THIS METHOD IS ONLY USED BY RMI
-    }
-
-    @Override
-    public void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException {
-        //THIS METHOD IS ONLY USED BY RMI
-    }
-
-
-    @Override
-    public void setCreator(boolean b) {
-        if(b){
-            writeToClient("CREATOR");
-        }else
-        writeToClient("NOT CREATOR");
-    }
-
-    @Override
-    public ArrayList<Integer> getBoardConfiguration() {
-        while(!configSent){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return pendingConfig;
+    public void setMatchHandler(MatchHandler matchHandler) {
+        this.matchHandler=matchHandler;
     }
 }

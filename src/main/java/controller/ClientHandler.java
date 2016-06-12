@@ -54,17 +54,15 @@ public class ClientHandler implements Runnable {
 		int id = Server.getId();
 		DateFormat dateFormat = new SimpleDateFormat();
 		try {
-			clientSideConnector.setCreator(true);
-			clientSideConnector.writeToClient("You launched a new match of Council Of Four on " + dateFormat.format(date)
-					+ " with ID " + id + "\n");
+			clientSideConnector.sendToClient(new Packet("You launched a new match of Council Of Four on " + dateFormat.format(date)
+					+ " with ID " + id + "\n"));
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Error: could not write to client while launching a new match\n", e);
 		}
 
-		MatchHandler matchHandler = new MatchHandler(id, date, clientSideConnector);
+		MatchHandler matchHandler = new MatchHandler(id, date, clientSideConnector,serverSideConnector);
 		serverSideConnector.setMatchHandler(matchHandler);
 		matches.add(matchHandler);
-		matchHandler.start();
 	}
 
 	/**
@@ -80,23 +78,8 @@ public class ClientHandler implements Runnable {
 		while (iterator.hasNext() && !joined) {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
-				matchInList.addPlayer(clientSideConnector,matchInList.getPlayers().size());
-				try {
-					clientSideConnector.setCreator(false);
-					clientSideConnector.writeToClient("You joined an already existing match still pending, with ID "
-							+ matchInList.getIdentifier() + "\n");
-					ArrayList<Player> players = matchInList.getPlayers();
-					ClientSideConnectorInt tempConnector;
-					for(Player player:players){
-						tempConnector=player.getConnector();
-						if(tempConnector!=this.clientSideConnector){
-							tempConnector.writeToClient("New player has just joined this match!\n");
-						}
-						
-					}
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: could not write to client while trying to join a match\n", e);
-				}
+				matchInList.addPlayer(clientSideConnector,serverSideConnector,matchInList.getPlayers().size());
+				serverSideConnector.setMatchHandler(matchInList);
 				joined = true;
 			}
 		}

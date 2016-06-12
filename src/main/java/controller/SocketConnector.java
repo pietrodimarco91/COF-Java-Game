@@ -9,9 +9,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * al server servirà solo inviare pacchetti al client mentre il client invocherà le sendToServer in caso di
- */
 
 public class SocketConnector implements ClientSideConnectorInt, ServerSideConnectorInt {
 
@@ -22,6 +19,7 @@ public class SocketConnector implements ClientSideConnectorInt, ServerSideConnec
     private PrintWriter outputStringToClient;
     private Scanner inputStringFromClient;
     private MatchHandler matchHandler;
+    private int playerId;
 
 
     public SocketConnector(Socket socket) {
@@ -36,6 +34,12 @@ public class SocketConnector implements ClientSideConnectorInt, ServerSideConnec
         ServerOutputPrinter.printLine("[SERVER] New Socket connection established");
         receivePacketFromClient();
     }
+
+
+
+
+
+    //*****SERVER SIDE METHOD******//
 
     private void receivePacketFromClient() {
         while (true) {
@@ -55,6 +59,11 @@ public class SocketConnector implements ClientSideConnectorInt, ServerSideConnec
     }
 
     @Override
+    public void setPlayerId(int id) {
+        this.playerId=id;
+    }
+
+    @Override
     public void sendToClient(Packet packet) throws RemoteException {
 
     }
@@ -62,6 +71,35 @@ public class SocketConnector implements ClientSideConnectorInt, ServerSideConnec
 
     @Override
     public void sendToServer(Packet packet) throws RemoteException {
-
+        switch (packet.getHeader()) {
+            case "CONFIGOBJECT":
+                matchHandler.setConfigObject(packet.getMessageString(),playerId);
+                break;
+            case "BOARDSTATUS":
+                matchHandler.getBoardStatus(playerId);
+                break;
+            case "ACTION":
+                matchHandler.evaluateAction(packet.getAction(),playerId);
+                break;
+            case "ADDLINK":
+                matchHandler.addLink(packet.getMessageString(),playerId);
+                break;
+            case "REMOVELINK":
+                matchHandler.removeLink(packet.getMessageString(),playerId);
+                break;
+            case "MESSAGESTRING":
+                matchHandler.messageFromClient(packet.getMessageString(),playerId);
+                break;
+            case "CONFIGID":
+                matchHandler.setExistingConf(packet.getConfigId(),playerId);
+                break;
+            case "MARKET":
+                if(packet.getMarketEvent() instanceof MarketEventBuy)
+                    matchHandler.buyEvent(packet.getMarketEvent(),playerId);
+                else
+                    matchHandler.sellEvent(packet.getMarketEvent(),playerId);
+                break;
+            default:
+        }
     }
 }

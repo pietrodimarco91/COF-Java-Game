@@ -2,6 +2,7 @@ package controller.Client;
 
 import client.view.cli.ClientOutputPrinter;
 import controller.ClientSideConnectorInt;
+import controller.Packet;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,23 +18,7 @@ public class ClientSideConnector extends UnicastRemoteObject implements ClientSi
 	}
 
 	@Override
-	public void writeToClient(String s) throws RemoteException {
-		ClientOutputPrinter.printLine(s);
-	}
+	public void sendToClient(Packet packet) throws RemoteException {
 
-	@Override
-	public int receiveIntFromClient() throws RemoteException {
-		Scanner input = new Scanner(System.in);
-		int choice = input.nextInt();
-		return choice;
 	}
-
-	@Override
-	public String receiveStringFromClient() throws RemoteException {
-		String string = "";
-		Scanner input = new Scanner(System.in);
-		string = input.nextLine();
-		return string;
-	}
-
 }

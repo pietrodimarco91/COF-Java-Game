@@ -1,5 +1,6 @@
 package controller;
 
+import controller.Client.ClientSideConnector;
 import model.*;
 
 import java.awt.*;
@@ -113,12 +114,12 @@ public class Player {
 	/**
 	 *
 	 */
-	private ConnectorInt connector;// To add UML scheme
+	private ClientSideConnectorInt connector;// To add UML scheme
 
 	/**
 	 * Default constructor
 	 */
-	public Player(ConnectorInt connector, int id) {
+	public Player(ClientSideConnectorInt connector, int id) {
 		Random random = new Random();
 		this.turnNumber = id;
 		this.coins = INITIAL_COINS + id;

@@ -1,5 +1,8 @@
 package controller;
 
+import client.actions.Action;
+import controller.Client.Client;
+import controller.Client.ClientSideConnector;
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
@@ -82,10 +85,10 @@ public class MatchHandler{
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ConnectorInt connector) {
+	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector) {
 		this.players = new ArrayList<Player>();
-
-		this.creator = new Player(connector, 0);
+		serverSideConnector.setPlayerId(0);
+		this.creator = new Player(connector,0);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
@@ -95,6 +98,7 @@ public class MatchHandler{
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "]: Started running...");
 	}
+
 
 	public void run() {
 		new BoardConfiguration(creator,configParameters,numberOfPlayers);
@@ -111,13 +115,12 @@ public class MatchHandler{
 	/**
 	 *
 	 */
-	public void mapConfiguration(ConnectorInt connector) {
+	public void mapConfiguration(ClientSideConnector connector) {
 		boolean stop = false;
 		int choice = 0;
 		while (!stop) {
 			try {
-				connector.writeToClient(
-						"Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View graphic map\n5) View links\n6) View map status\n7) Count distance\n8) Show all distances\n ");
+				connector.sendToClient(new Packet("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View graphic map\n5) View links\n6) View map status\n7) Count distance\n8) Show all distances\n ");
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
@@ -1014,10 +1017,11 @@ public class MatchHandler{
 	/**
 	 * @return
 	 */
-	public void addPlayer(ConnectorInt connector, int id) {// To
+	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id) {// To
 															// add
 															// UML
 		// scheme
+		serverSideConnector.setPlayerId(id);
 		Player player = new Player(connector, id);
 		this.players.add(player);
 		if (isFull())
@@ -1294,7 +1298,31 @@ public class MatchHandler{
 		}
 	}
 
-	public void getBoardStatus() {
+	public void getBoardStatus(int playerId) {
 
+	}
+
+	public void setConfigObject(String messageString, int playerId) {
+	}
+
+	public void evaluateAction(Action action, int playerId) {
+	}
+
+	public void addLink(String messageString, int playerId) {
+	}
+
+	public void removeLink(String messageString, int playerId) {
+	}
+
+	public void messageFromClient(String messageString, int playerId) {
+	}
+
+	public void setExistingConf(int configId, int playerId) {
+	}
+
+	public void buyEvent(MarketEvent marketEvent, int playerId) {
+	}
+
+	public void sellEvent(MarketEvent marketEvent, int playerId) {
 	}
 }

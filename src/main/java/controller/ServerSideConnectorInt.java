@@ -15,4 +15,6 @@ public interface ServerSideConnectorInt extends Remote {
 	public void sendToServer(Packet packet) throws RemoteException;
 
 	void setMatchHandler(MatchHandler matchHandler);
+
+	void setPlayerId(int id);
 }

@@ -19,6 +19,7 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
     private boolean creatorHasBeenSet;
     private ArrayList<Integer> pendingConfig;
     private boolean configSent;
+    private MatchHandler matchHandler;
 
     public ServerSideConnector() throws RemoteException {
         super();
@@ -38,55 +39,6 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
     }
 
 
-    public void waitStart() {
-        while(!matchStarted){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void setMatchStarted() {
-        matchStarted=true;
-    }
-
-    public boolean checkCreator() throws RemoteException{
-        while(!creatorHasBeenSet){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return youAreCreator;
-    }
-
-
-    public void setCreator(boolean b) {
-        creatorHasBeenSet=true;
-        youAreCreator=b;
-    }
-
-
-    public void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException {
-        pendingConfig = config;
-        configSent=true;
-
-    }
-
-    public ArrayList<Integer> getBoardConfiguration() {
-        while(!configSent){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return pendingConfig;
-    }
-
     /**
      *IN THIS CASE IT'S USED BY CLIENTS
      */
@@ -95,7 +47,11 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
         switch (packet.getHeader()) {
             case "CONFIGOBJECT":
                 break;
+            case "BOARDSTATUS":
+                matchHandler.getBoardStatus();
+                break;
             case "ACTION":
+                matchHandler.
                 break;
             case "ADDLINK":
                 break;
@@ -113,6 +69,6 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
 
     @Override
     public void setMatchHandler(MatchHandler matchHandler) {
-
+        this.matchHandler=matchHandler;
     }
 }

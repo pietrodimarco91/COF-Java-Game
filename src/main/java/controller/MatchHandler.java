@@ -23,7 +23,7 @@ import java.util.logging.StreamHandler;
  * Created by Gabriele on 22/05/16. This class represents the thread always
  * running while a match is on-going. It stores the core of the game engine.
  */
-public class MatchHandler extends Thread {
+public class MatchHandler{
 
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 
@@ -1294,4 +1294,7 @@ public class MatchHandler extends Thread {
 		}
 	}
 
+	public void getBoardStatus() {
+
+	}
 }

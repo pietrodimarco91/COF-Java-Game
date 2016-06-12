@@ -27,7 +27,10 @@ public class Packet implements Serializable {
     public Packet(ConfigObject configObject){
         header="CONFIGOBJECT";
         this.configObject=configObject;
-
+    }
+    
+    public Packet() {
+    	header="BOARDSTATUS";
     }
 
     public Packet(Action action){

@@ -1,6 +1,7 @@
 package client.actions;
 
 import client.view.cli.ClientOutputPrinter;
+import controller.Packet;
 import controller.ServerSideRMIConnectorInt;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
@@ -221,7 +222,7 @@ public class ActionCreator {
 
 	private void sendAction(Action action) {
 		try {
-			actionSenderInt.sendActionToServer(action);
+			actionSenderInt.sendToServer(new Packet(action));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

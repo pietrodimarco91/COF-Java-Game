@@ -3,10 +3,15 @@ package client.actions;
 import client.view.cli.ClientOutputPrinter;
 import controller.Client.ClientSideRMIConnector;
 import controller.Client.SocketInputOutputThread;
+import controller.MarketEvent;
+import controller.MarketEventBuy;
+import controller.MarketEventSell;
+import controller.Packet;
 import controller.RMIConnectionInt;
 import controller.ServerSideRMIConnectorInt;
 import exceptions.ConfigAlreadyExistingException;
 import exceptions.InvalidInputException;
+import model.ConfigObject;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,14 +36,13 @@ import java.util.logging.StreamHandler;
 public class ActionController {
 
 	private static final Logger logger = Logger.getLogger(ActionController.class.getName());
-	private final String ADDRESS="localhost";
-	private final int PORT=2000;
+	private final String ADDRESS = "localhost";
+	private final int PORT = 2000;
 	private ClientSideRMIConnector clientSideRMIConnector;
 	private RMIConnectionInt rmiConnectionInt;
 	private ServerSideRMIConnectorInt actionSenderInt;
 	private Scanner input;
 	private SocketInputOutputThread socketInputOutputThread;
-
 
 	public ActionController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
@@ -69,7 +73,7 @@ public class ActionController {
 			try {
 				num = verifyActionID(id);
 				proceed = true;
-				new ActionCreator(type, num,actionSenderInt);
+				new ActionCreator(type, num, actionSenderInt);
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}
@@ -101,6 +105,44 @@ public class ActionController {
 		return num;
 	}
 
+	public void sellItemOnMarket() {
+		int choice;
+		Scanner stringInput = new Scanner(System.in);
+		boolean proceed = false;
+		while (!proceed) {
+			ClientOutputPrinter.printLine(
+					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\b4) Return back...");
+			choice = input.nextInt();
+			switch (choice) {
+			case 1:
+				actionSenderInt.sendToServer(new Packet(new MarketEventSell()));
+				break;
+			case 2:
+				ClientOutputPrinter.printLine("Type the color of the Politic Card to sell:");
+				String color = stringInput.nextLine();
+				actionSenderInt.sendToServer(new Packet(new MarketEventSell(color)));
+				break;
+			case 3:
+				ClientOutputPrinter.printLine("Choose the ID of the Permit Tile to sell:");
+				int id = input.nextInt();
+				actionSenderInt.sendToServer(new Packet(new MarketEventSell(id)));
+				break;
+			case 4:
+				return;
+			default:
+				ClientOutputPrinter.printLine("Invalid input, please retry...");
+				break;
+			}
+		}
+	}
+
+	public void buyItemOnMarket() {
+		int id;
+		ClientOutputPrinter.printLine("Type the Item ID you would like to buy:");
+		id=input.nextInt();
+		actionSenderInt.sendToServer(new Packet(new MarketEventBuy(id)));
+	}
+
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
@@ -111,20 +153,19 @@ public class ActionController {
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
-	public void requestMyPlayerStatus() {
+	public void requestPlayerStatus() {
 
 	}
 
-
-
 	/**
 	 * @return true if the client is the creator of the match or false otherwise
+	 * @throws RemoteException
 	 */
-	public boolean connect() {
+	public boolean connect() throws RemoteException {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
-		int choice = Integer.parseInt(input.nextLine());
 		boolean proceed = false;
 		while (!proceed) {
+			int choice = Integer.parseInt(input.nextLine());
 			switch (choice) {
 			case 1:
 				this.startRMIConnection();
@@ -150,7 +191,7 @@ public class ActionController {
 
 	public void startSocketConnection() {
 		try {
-			actionSenderInt=new SocketInputOutputThread(new Socket(ADDRESS,PORT));
+			actionSenderInt = new SocketInputOutputThread(new Socket(ADDRESS, PORT));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -171,45 +212,40 @@ public class ActionController {
 	}
 
 	public void waitStart() {
-		ClientOutputPrinter.printLine("Wait while the creator configures the gameboard");
+		ClientOutputPrinter.printLine("Wait while the creator configures the gameboard...");
 		actionSenderInt.waitStart();
 	}
 
 	public void boardConfiguration() {
-		boolean correctAnswer=false;
-		int choice=0;
-
-
+		boolean correctAnswer = false;
+		int choice = 0;
 		while (!correctAnswer) {
-			ClientOutputPrinter.printLine("1) Create a new board configuration\n2) Choose an existing configuration\n");
-			choice=input.nextInt();
+			ClientOutputPrinter.printLine(
+					"1) Create a new board configuration\n2) Choose an existing configuration\n3) Return back...");
+			choice = input.nextInt();
+			if (choice == 3)
+				return;
 			if (choice != 1 && choice != 2) {
-					ClientOutputPrinter.printLine("ERROR: incorrect input. Please retry\n");
+				ClientOutputPrinter.printLine("ERROR: incorrect input. Please retry\n");
 			} else
 				correctAnswer = true;
 		}
-
 		if (choice == 1) {
 			newConfiguration();
 		} else {
-
-					int id;
-					boolean correctID = false;
-					while (!correctID) {
-						ClientOutputPrinter.printLine("Choose a configuration by typing its ID\n");
-						id = input.nextInt();
-							correctID = true;
-
-
+			int id;
+			boolean correctID = false;
+			while (!correctID) {
+				ClientOutputPrinter.printLine("Choose a configuration by typing its ID\n");
+				try {
+					id = input.nextInt();
+					correctID = true;
+				} catch (NumberFormatException e) {
+					ClientOutputPrinter.printLine("Invalid input... please retry");
 				}
-			} else {
-					playerConnector.writeToClient("There aren't any configurations yet! Please create a new one\n");
-					newConfiguration(playerConnector);
-
+			}
+			actionSenderInt.sendToServer(new Packet(id));
 		}
-
-
-
 	}
 
 	/**
@@ -222,21 +258,13 @@ public class ActionController {
 		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
 				nobilityTrackBonusNumber = 0;
 		boolean stop = false;
-		try {
-			playerConnector.writeToClient(
-					"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
-			playerConnector.writeToClient(
-					"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
+		ClientOutputPrinter.printLine(
+				"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
+		ClientOutputPrinter.printLine(
+				"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
 
 		while (!stop) {
-			try {
-				parameters = playerConnector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
+			parameters = input.nextLine();
 			int[] par = new int[5];
 			int i = 0;
 			StringTokenizer tokenizer = new StringTokenizer(parameters, " ");
@@ -251,40 +279,17 @@ public class ActionController {
 				nobilityTrackBonusNumber = par[3];
 				linksBetweenCities = par[4];
 			} catch (NumberFormatException e) {
-				try {
-					playerConnector.writeToClient("Error: Expected integers values! Retry!");
-				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e1);
-				}
+				ClientOutputPrinter.printLine("Error: Expected integers values! Retry!");
 			}
 			try {
 				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
 						nobilityTrackBonusNumber, linksBetweenCities);
-				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
-						nobilityTrackBonusNumber, linksBetweenCities);
+				actionSenderInt.sendToServer(new Packet(new ConfigObject(numberOfPlayers, rewardTokenBonusNumber,
+						permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities)));
 				stop = true;
 			} catch (InvalidInputException e) {
-				try {
-					playerConnector.writeToClient(e.printError());
-				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e1);
-				}
-			} catch (ConfigAlreadyExistingException e) {
-				try {
-					playerConnector.writeToClient(e.printError());
-				} catch (RemoteException e1) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e1);
-				}
+				ClientOutputPrinter.printLine(e.printError());
 			}
-		}
-		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
-				linksBetweenCities);
-		this.numberOfPlayers = numberOfPlayers;
-		try {
-			playerConnector
-					.writeToClient("Board correctly generated with selected parameters! Now we're about to start...");
-		} catch (RemoteException e1) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e1);
 		}
 	}
 
@@ -299,7 +304,7 @@ public class ActionController {
 	 * @throws InvalidInputException
 	 */
 	public void parametersValidation(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
-									 int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
+			int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
 		if (numberOfPlayers < 2 || numberOfPlayers > 8)
 			throw new InvalidInputException();
 		if ((rewardTokenBonusNumber < 1 || rewardTokenBonusNumber > 3)
@@ -309,3 +314,4 @@ public class ActionController {
 		if (linksBetweenCities < 2 && linksBetweenCities > 4)
 			throw new InvalidInputException();
 	}
+}

@@ -52,6 +52,7 @@ public class ClientHandler implements Runnable {
 		int id = Server.getId();
 		DateFormat dateFormat = new SimpleDateFormat();
 		try {
+			connector.setCreator(true);
 			connector.writeToClient("You launched a new match of Council Of Four on " + dateFormat.format(date)
 					+ " with ID " + id + "\n");
 		} catch (RemoteException e) {
@@ -78,6 +79,7 @@ public class ClientHandler implements Runnable {
 			if (matchInList.isPending() && !(matchInList.isFull())) {
 				matchInList.addPlayer(connector,matchInList.getPlayers().size());
 				try {
+					connector.setCreator(false);
 					connector.writeToClient("You joined an already existing match still pending, with ID "
 							+ matchInList.getIdentifier() + "\n");
 					ArrayList<Player> players = matchInList.getPlayers();

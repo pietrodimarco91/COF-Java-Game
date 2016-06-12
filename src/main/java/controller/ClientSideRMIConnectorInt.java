@@ -13,5 +13,4 @@ public interface ClientSideRMIConnectorInt extends Remote {
 	int receiveIntFromClient() throws RemoteException;
 
 	String receiveStringFromClient() throws RemoteException;// To add UML Scheme
-
 }

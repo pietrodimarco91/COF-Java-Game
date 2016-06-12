@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SocketInputOutputThread extends Thread implements ServerSideRMIConnectorInt{
@@ -19,14 +20,19 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 	private PrintWriter outputStringToServer;
 	private String received;
 	private boolean waitStart;
+	private boolean youAreCreator;
+	private boolean creatorHasBeenSet;
+
 
 	public SocketInputOutputThread(Socket socket) {
 		try {
+			input = new Scanner(System.in);
 			waitStart=false;
+			creatorHasBeenSet=false;
+			youAreCreator=false;
 			inputStringFromServer = new Scanner(socket.getInputStream());
 			outputObjectToServer = new ObjectOutputStream(socket.getOutputStream());
 			outputStringToServer = new PrintWriter(socket.getOutputStream(), true);
-			input = new Scanner(System.in);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -36,12 +42,24 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 	public void run() {
 		while (true) {
 			received = inputStringFromServer.nextLine();
-			if (received.equals("*#*")) {
+			switch (received){
+				case "START":
+					waitStart=true;
+					break;
+				case "*#*":
 					outputStringToServer.println(input.nextLine());
-			} else
-				ClientOutputPrinter.printLine(received);
-			if(received.equals("START"))
-				waitStart=true;
+					break;
+				case "CREATOR":
+					creatorHasBeenSet=true;
+					youAreCreator=true;
+					break;
+				case "NOT CREATOR":
+					creatorHasBeenSet=true;
+					break;
+				default:
+					ClientOutputPrinter.printLine(received);
+
+			}
 		}
 	}
 
@@ -65,14 +83,24 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 		}
 	}
 
-	//ARE NECESSARY ONLY FOR THE SERVeR
+	@Override
+	public void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException {
+		try {
+			outputObjectToServer.writeObject(config);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	@Override
-	public void setTurn(boolean value) throws RemoteException {
+	public void setTurn(boolean value) {
+		//ARE NECESSARY ONLY FOR THE SERVeR
 	}
 
 	@Override
-	public Action getAction() throws RemoteException {
+	public Action getAction()  {
+		//ARE NECESSARY ONLY FOR THE SERVeR
 		return null;
 	}
 
@@ -89,6 +117,29 @@ public class SocketInputOutputThread extends Thread implements ServerSideRMIConn
 
 	@Override
 	public void setMatchStarted() {
+		//ARE NECESSARY ONLY FOR THE SERVeR
+	}
 
+	@Override
+	public void setCreator(boolean b) {
+		//ARE NECESSARY ONLY FOR THE SERVeR
+	}
+
+	@Override
+	public ArrayList<Integer> getBoardConfiguration() {
+		//ARE NECESSARY ONLY FOR THE SERVeR
+		return null;
+	}
+
+	@Override
+	public boolean checkCreator() {
+		while(!creatorHasBeenSet){
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return youAreCreator;
 	}
 }

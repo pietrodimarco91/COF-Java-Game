@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,11 +24,14 @@ public class SocketConnector implements ConnectorInt {
     private Action pendingAction;
     private boolean actionSent;
     private boolean yourTurn;
+    private boolean configSent;
+    private ArrayList<Integer> pendingConfig;
 
 
     public SocketConnector(Socket socket) {
         this.socket=socket;
         actionSent=false;
+        configSent=false;
         yourTurn=false;
         try {
             outputStringToClient=new PrintWriter(socket.getOutputStream());
@@ -38,11 +42,11 @@ public class SocketConnector implements ConnectorInt {
             logger.log(Level.SEVERE, "Error while opening the output/input stream for 'socket'", e);
         }
         ServerOutputPrinter.printLine("[SERVER] New Socket connection established");
-        receiveAction();
+        receiveObjectFromClient();
 
     }
 
-    private void receiveAction() {
+    private void receiveObjectFromClient() {
         Object received =new Object();
         while(true) {
             try {
@@ -55,6 +59,10 @@ public class SocketConnector implements ConnectorInt {
             if (received instanceof Action && yourTurn) {
                 pendingAction = (Action) received;
                 actionSent=true;
+            }
+            if (received instanceof ArrayList) {
+                pendingConfig = (ArrayList<Integer>) received;
+                configSent=true;
             }
         }
     }
@@ -78,12 +86,12 @@ public class SocketConnector implements ConnectorInt {
     }
 
     @Override
-    public void setTurn(boolean value) throws RemoteException {
+    public void setTurn(boolean value) {
         yourTurn=value;
     }
 
     @Override
-    public Action getAction() throws RemoteException {
+    public Action getAction() {
         while(!actionSent){
             try {
                 Thread.sleep(200);
@@ -106,6 +114,12 @@ public class SocketConnector implements ConnectorInt {
         writeToClient("START");
     }
 
+    @Override
+    public boolean checkCreator() {
+        //THIS METHOD IS ONLY USED BY RMI
+        return false;
+    }
+
 
     @Override
     public void writeToServer(String s) throws RemoteException {
@@ -123,5 +137,29 @@ public class SocketConnector implements ConnectorInt {
         //THIS METHOD IS ONLY USED BY RMI
     }
 
+    @Override
+    public void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException {
+        //THIS METHOD IS ONLY USED BY RMI
+    }
 
+
+    @Override
+    public void setCreator(boolean b) {
+        if(b){
+            writeToClient("CREATOR");
+        }else
+        writeToClient("NOT CREATOR");
+    }
+
+    @Override
+    public ArrayList<Integer> getBoardConfiguration() {
+        while(!configSent){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return pendingConfig;
+    }
 }

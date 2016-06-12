@@ -4,6 +4,7 @@ import client.actions.Action;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /**
  * Created by pietro on 01/06/16.
@@ -15,17 +16,25 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
     private Action pendingAction;
     private boolean actionSent;
     private boolean matchStarted;
+    private boolean youAreCreator;
+    private boolean creatorHasBeenSet;
+    private ArrayList<Integer> pendingConfig;
+    private boolean configSent;
 
     public ServerSideRMIConnector(ClientSideRMIConnectorInt clientSideRMIConnectorInt) throws RemoteException {
         super();
         yourTurn=false;
+        configSent=false;
         matchStarted=false;
+        creatorHasBeenSet=false;
         actionSent=false;
+        youAreCreator=false;
         this.clientSideRMIConnectorInt=clientSideRMIConnectorInt;
     }
 
     @Override
     public void writeToClient(String s) throws RemoteException {
+
         clientSideRMIConnectorInt.writeToClient(s);
     }
 
@@ -60,13 +69,15 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
     }
 
 
+
+
     @Override
-    public void setTurn(boolean value) throws RemoteException {
+    public void setTurn(boolean value){
         yourTurn=value;
     }
 
     @Override
-    public Action getAction() throws RemoteException {
+    public Action getAction() {
         while(!actionSent){
             try {
                 Thread.sleep(200);
@@ -94,6 +105,45 @@ public class ServerSideRMIConnector extends UnicastRemoteObject implements Conne
     @Override
     public void setMatchStarted() {
         matchStarted=true;
+    }
+
+    @Override
+    public boolean checkCreator() throws RemoteException{
+        while(!creatorHasBeenSet){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return youAreCreator;
+    }
+
+
+    @Override
+    public void setCreator(boolean b) {
+        creatorHasBeenSet=true;
+        youAreCreator=b;
+    }
+
+
+    @Override
+    public void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException {
+        pendingConfig = config;
+        configSent=true;
+
+    }
+
+    @Override
+    public ArrayList<Integer> getBoardConfiguration() {
+        while(!configSent){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return pendingConfig;
     }
 
 

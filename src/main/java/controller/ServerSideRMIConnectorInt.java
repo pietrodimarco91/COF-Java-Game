@@ -4,6 +4,7 @@ import client.actions.Action;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  * Non possiamo fare a meno di questa classe in quanto se si usasse soltanto la
@@ -17,11 +18,19 @@ public interface ServerSideRMIConnectorInt extends Remote {
 
 	void sendActionToServer(Action action) throws RemoteException;// To add UML Scheme
 
-	void setTurn(boolean value) throws RemoteException;// To add UML Scheme
+	void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException;// To add UML Scheme
 
-	Action getAction() throws RemoteException;
+	boolean checkCreator() throws RemoteException;
+
+	void setTurn(boolean value);// To add UML Scheme
+
+	Action getAction();
 
 	void waitStart();
 
 	void setMatchStarted();
+
+	void setCreator(boolean b);
+
+	ArrayList<Integer> getBoardConfiguration();
 }

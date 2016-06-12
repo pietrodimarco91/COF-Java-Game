@@ -29,7 +29,9 @@ public class Client {
 								// the configuration
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
-		controller.connect();
+		if(controller.connect()){
+			controller.boardConfiguration();
+		}else
 		controller.waitStart();
 		play();
 	}

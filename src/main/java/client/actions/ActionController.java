@@ -5,6 +5,7 @@ import controller.Client.ClientSideRMIConnector;
 import controller.Client.SocketInputOutputThread;
 import controller.RMIConnectionInt;
 import controller.ServerSideRMIConnectorInt;
+import exceptions.ConfigAlreadyExistingException;
 import exceptions.InvalidInputException;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -36,6 +38,7 @@ public class ActionController {
 	private ServerSideRMIConnectorInt actionSenderInt;
 	private Scanner input;
 	private SocketInputOutputThread socketInputOutputThread;
+
 
 	public ActionController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
@@ -112,7 +115,12 @@ public class ActionController {
 
 	}
 
-	public void connect() {
+
+
+	/**
+	 * @return true if the client is the creator of the match or false otherwise
+	 */
+	public boolean connect() {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
 		int choice = Integer.parseInt(input.nextLine());
 		boolean proceed = false;
@@ -130,6 +138,7 @@ public class ActionController {
 				ClientOutputPrinter.printLine("Error: invalid input... please retry!");
 			}
 		}
+		return actionSenderInt.checkCreator();
 	}
 
 	/**
@@ -162,7 +171,141 @@ public class ActionController {
 	}
 
 	public void waitStart() {
+		ClientOutputPrinter.printLine("Wait while the creator configures the gameboard");
 		actionSenderInt.waitStart();
+	}
+
+	public void boardConfiguration() {
+		boolean correctAnswer=false;
+		int choice=0;
+
+
+		while (!correctAnswer) {
+			ClientOutputPrinter.printLine("1) Create a new board configuration\n2) Choose an existing configuration\n");
+			choice=input.nextInt();
+			if (choice != 1 && choice != 2) {
+					ClientOutputPrinter.printLine("ERROR: incorrect input. Please retry\n");
+			} else
+				correctAnswer = true;
+		}
+
+		if (choice == 1) {
+			newConfiguration();
+		} else {
+
+					int id;
+					boolean correctID = false;
+					while (!correctID) {
+						ClientOutputPrinter.printLine("Choose a configuration by typing its ID\n");
+						id = input.nextInt();
+							correctID = true;
+
+
+				}
+			} else {
+					playerConnector.writeToClient("There aren't any configurations yet! Please create a new one\n");
+					newConfiguration(playerConnector);
+
+		}
+
+
 
 	}
-}
+
+	/**
+	 * NEEDS CODE QUALITY ADJUSTEMENTS
+	 *
+	 * @param playerConnector
+	 */
+	public void newConfiguration() {
+		String parameters = "";
+		int numberOfPlayers = 0, linksBetweenCities = 0, rewardTokenBonusNumber = 0, permitTileBonusNumber = 0,
+				nobilityTrackBonusNumber = 0;
+		boolean stop = false;
+		try {
+			playerConnector.writeToClient(
+					"NEW CONFIGURATION:\nInsert the configuration parameters in this order, and each number must be separated by a space");
+			playerConnector.writeToClient(
+					"Maximum number of players, Reward Token bonus number, Permit Tiles bonus number, Nobility Track bonus number, Maximum number of outgoing connections from each City");
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		}
+
+		while (!stop) {
+			try {
+				parameters = playerConnector.receiveStringFromClient();
+			} catch (RemoteException e) {
+				logger.log(Level.INFO, "Error: couldn't receive from client", e);
+			}
+			int[] par = new int[5];
+			int i = 0;
+			StringTokenizer tokenizer = new StringTokenizer(parameters, " ");
+			try {
+				while (tokenizer.hasMoreTokens()) {
+					par[i] = Integer.parseInt(tokenizer.nextToken());
+					i++;
+				}
+				numberOfPlayers = par[0];
+				rewardTokenBonusNumber = par[1];
+				permitTileBonusNumber = par[2];
+				nobilityTrackBonusNumber = par[3];
+				linksBetweenCities = par[4];
+			} catch (NumberFormatException e) {
+				try {
+					playerConnector.writeToClient("Error: Expected integers values! Retry!");
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			}
+			try {
+				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				configFileManager.createConfiguration(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
+						nobilityTrackBonusNumber, linksBetweenCities);
+				stop = true;
+			} catch (InvalidInputException e) {
+				try {
+					playerConnector.writeToClient(e.printError());
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			} catch (ConfigAlreadyExistingException e) {
+				try {
+					playerConnector.writeToClient(e.printError());
+				} catch (RemoteException e1) {
+					logger.log(Level.INFO, "Error: couldn't write to client", e1);
+				}
+			}
+		}
+		saveConfig(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber,
+				linksBetweenCities);
+		this.numberOfPlayers = numberOfPlayers;
+		try {
+			playerConnector
+					.writeToClient("Board correctly generated with selected parameters! Now we're about to start...");
+		} catch (RemoteException e1) {
+			logger.log(Level.INFO, "Error: couldn't write to client", e1);
+		}
+	}
+
+	/**
+	 * Checks whether the specified parameters respect the rules or not.
+	 *
+	 * @param numberOfPlayers
+	 * @param rewardTokenBonusNumber
+	 * @param permitTileBonusNumber
+	 * @param nobilityTrackBonusNumber
+	 * @param linksBetweenCities
+	 * @throws InvalidInputException
+	 */
+	public void parametersValidation(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+									 int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
+		if (numberOfPlayers < 2 || numberOfPlayers > 8)
+			throw new InvalidInputException();
+		if ((rewardTokenBonusNumber < 1 || rewardTokenBonusNumber > 3)
+				|| (permitTileBonusNumber < 1 || permitTileBonusNumber > 3)
+				|| (nobilityTrackBonusNumber < 1 || nobilityTrackBonusNumber > 3))
+			throw new InvalidInputException();
+		if (linksBetweenCities < 2 && linksBetweenCities > 4)
+			throw new InvalidInputException();
+	}

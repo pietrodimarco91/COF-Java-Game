@@ -50,6 +50,10 @@ public class Packet implements Serializable {
         this.messageString=messageString;
     }
 
+    public ConfigObject getConfigObject() {
+        return this.configObject;
+    }
+
     public Packet(Integer configId){
         header="CONFIGID";
         this.configId=configId;

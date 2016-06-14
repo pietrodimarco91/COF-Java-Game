@@ -2,10 +2,7 @@ package controller;
 
 import client.actions.Action;
 import controller.Client.ClientSideConnector;
-import exceptions.CouncillorNotFoundException;
-import exceptions.InvalidInputException;
-import exceptions.InvalidSlotException;
-import exceptions.UnsufficientCoinsException;
+import exceptions.*;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
@@ -36,6 +33,8 @@ public class MatchHandler{
 	private static final int NUMBER_OF_PARAMETERS = 5;
 
 	private static final int MINUMUM_NUMBER_OF_PLAYERS = 2;
+
+	private ConfigFileManager configFileManager;
 
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
@@ -83,13 +82,14 @@ public class MatchHandler{
 
 	/**
 	 * Mapstatus:
-	 * -0 wait board configuration
-	 * -1 wait map configuration
-	 * -2 play
-	 * -3 market
-	 * -4 finisched
+	 * 0 wait board configuration
+	 * 1 wait for players
+	 * 2 wait map configuration
+	 * 3 play
+	 * 4 market
+	 * 5 finished
 	 */
-	private int mapStatus;
+	private int gameStatus;
 
 	/**
 	 * Default constructor
@@ -97,7 +97,8 @@ public class MatchHandler{
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector) {
 		this.players = new ArrayList<Player>();
-		mapStatus=0;
+		gameStatus =0;
+		configFileManager=new ConfigFileManager();
 		serverSideConnector.setPlayerId(0);
 		this.creator = new Player(connector,0);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
@@ -109,18 +110,6 @@ public class MatchHandler{
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "]: Started running...");
 	}
-
-
-	public void run() {
-		new BoardConfiguration(creator,configParameters,numberOfPlayers);
-		waitingForPlayers();
-		countdown();
-		setDefinitiveNumberOfPlayers();
-		boardInitialization();
-		mapConfiguration(creator.getConnector());
-		play();
-	}
-
 
 
 	/**
@@ -420,88 +409,6 @@ public class MatchHandler{
 
 	}
 
-
-
-
-
-	/**
-	 * This method is invoked to initialize the board before a match starts. The
-	 * parameters are set by the first player that joins the match.
-	 */
-	public void boardInitialization() {
-		board = new Board(configParameters[0], configParameters[1], configParameters[2], configParameters[3],
-				configParameters[4]);
-	}
-
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void setDefinitiveNumberOfPlayers() {
-		configParameters[0] = this.players.size();
-		this.numberOfPlayers=this.players.size();
-	}
-
-
-
-
-
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void waitingForPlayers() {
-		ServerOutputPrinter.printLine("[MATCH " + id + "] Currently waiting for players...");
-		pending = true;
-		try {
-			creator.getConnector().writeToClient("[Match ID: " + id + "] Currently waiting for players...");
-		} catch (RemoteException e) {
-			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-		}
-		while (this.players.size() < MINUMUM_NUMBER_OF_PLAYERS) {
-			// Match starts with at least two players
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
-			}
-		}
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
-		}
-	}
-
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void countdown() {
-		for (int i = 20; i > 0; i--) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
-			}
-			for (Player player : players) {
-				try {
-					player.getConnector().writeToClient("MATCH STARTING IN: " + i + "\n");
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * NEEDS IMPLEMENTATION
-	 */
-	public void play() {// To add UML scheme
-
-		while (true) {
-			roundsOfPlayer();
-		}
-
-	}
-
 	/**
 	 * INCOMPLETE IMPLEMENTATION
 	 */
@@ -520,7 +427,7 @@ public class MatchHandler{
 	 * @return true is it currently pending, false otherwise
 	 */
 	public boolean isPending() {
-		return this.pending;
+		return this.gameStatus==1;
 	}
 
 	public void roundsOfPlayer() {
@@ -602,57 +509,6 @@ public class MatchHandler{
 				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
 			}
 			showPlayerInfo(player);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param choice
-	 */
-	public void mainActions(Player player, int choice) {
-		switch (choice) {
-		case 1:
-			showMap(player);
-			buyPermitTile(player);
-			break;
-		case 2:
-			// da implementare
-			break;
-		case 3:
-			showMap(player);
-			electCouncillor(player);
-			break;
-		case 4:
-			showMap(player);
-			buildEmporiumWithPermitTile(player);
-			break;
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param choice
-	 */
-	public void quickActions(Player player, int choice) {
-		switch (choice) {
-		case 1:
-			showMap(player);
-			engageAssistant(player);
-			break;
-		case 2:
-			showMap(player);
-			changeBusinessPermitTiles(player);
-			break;
-		case 3:
-			showMap(player);
-			sendAssistantToElectCouncillor(player);
-			break;
-		case 4:
-			showMap(player);
-			performAdditionalMainAction(player);
-			break;
 		}
 	}
 
@@ -767,17 +623,6 @@ public class MatchHandler{
 		if(player.getCoins()>=coinsToPay)
 			player.removeCoins(coinsToPay);
 		else throw new UnsufficientCoinsException();
-	}
-
-	/**
-	 * @return the connector of the player with the specified player number.
-	 */
-	public ConnectorInt getPlayerConnector(int playerNumber) {// To
-																// add
-																// UML
-		// scheme
-		Player player = players.get(playerNumber);
-		return player.getConnector();
 	}
 
 	/**
@@ -1035,8 +880,6 @@ public class MatchHandler{
 		serverSideConnector.setPlayerId(id);
 		Player player = new Player(connector, id);
 		this.players.add(player);
-		if (isFull())
-			this.play();
 	}
 
 	/**
@@ -1060,34 +903,6 @@ public class MatchHandler{
 		return region;
 	}
 
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showMainActions(Player player) {
-		try {
-			player.getConnector().writeToClient(
-					"MAIN ACTIONS\n1)Buy Permit Tile\n2)Build and emporium using King's help\n3)Elect Councillor\n4)Build and emporium using Permit Tile");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showQuickActions(Player player) {
-		try {
-			player.getConnector().writeToClient(
-					"QUICK ACTIONS\n1)Engage an Assistant\n2)Switch Permit Tile\n3)Send an Assistant to Elect a Coucillor\n4)Do another Main Action\n5)Jump Quick Action");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-	}
-
 	/**
 	 * @return
 	 */
@@ -1099,124 +914,6 @@ public class MatchHandler{
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
-	}
-
-	/**
-	 * @return
-	 */
-	public void showPlayerPoliticCards(Player player) {
-		try {
-			player.getConnector().writeToClient("You have these Politic Cars: ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			player.getConnector().writeToClient(player.showPoliticCards());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerCoins(Player player) {
-		int coins = player.getCoins();
-		try {
-			player.getConnector().writeToClient("COINS: " + coins + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerAssistants(Player player) {
-		int assistants = player.getNumberOfAssistants();
-		try {
-			player.getConnector().writeToClient("ASSISTANTS: " + assistants + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerVictoryPoints(Player player) {
-		int victoryPoints = player.getVictoryPoints();
-		try {
-			player.getConnector().writeToClient("VICTORY POINTS: " + victoryPoints + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerNumberOfEmporium(Player player) {
-		int emporium = player.getNumberOfEmporium();
-		try {
-			player.getConnector().writeToClient("NUMBER OF EMPORIUM: " + emporium + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerPermitTileUnused(Player player) {
-		String permitTileUnused = player.showPermitTileCards();
-		try {
-			player.getConnector().writeToClient("PERMIT TILE UNUSED:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			player.getConnector().writeToClient(permitTileUnused);
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerPermitTileUsed(Player player) {
-		String permitTileUsed = player.showUsedPermitTileCards();
-		try {
-			player.getConnector().writeToClient("PERMIT TILE USED:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			player.getConnector().writeToClient(permitTileUsed);
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerInfo(Player player) {
-		showPlayerVictoryPoints(player);
-		showPlayerCoins(player);
-		showPlayerAssistants(player);
-		showPlayerNumberOfEmporium(player);
-		showPlayerPoliticCards(player);
-		showPlayerPermitTileUnused(player);
-		showPlayerPermitTileUsed(player);
 	}
 
 	/**
@@ -1300,23 +997,27 @@ public class MatchHandler{
 	}
 
 	public void getBoardStatus(int playerId) {
-		try {
-			players.get(playerId).getConnector().sendToClient(new Packet(board.toString()));
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		if(gameStatus>1) {
+				sendMessageToClient(board.toString(),playerId);
+		} else {
+			sendErrorToClient("Board isn't configured yet",playerId);
 		}
 	}
 
-	public void setConfigObject(String messageString, int playerId) {
-		if(mapStatus==0 && creator.getId()==playerId)
-			new BoardConfiguration(playerId,messageString,numberOfPlayers);
-		waitingForPlayers();
-		countdown();
-		setDefinitiveNumberOfPlayers();
-		boardInitialization();
-		mapConfiguration(creator.getConnector());
-		play();
+	public void setConfigObject(ConfigObject config, int playerId) {
+		if(gameStatus ==0 && creator.getId()==playerId) {
+			try {
+				configFileManager.createConfiguration(config.getNumberOfPlayers(),config.getRewardTokenBonusNumber(),config.getPermitTileBonusNumber(),config.getNobilityTrackBonusNumber(),config.getLinksBetweenCities());
+				numberOfPlayers=config.getNumberOfPlayers();
+				configParameters= new int[]{config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(), config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(), config.getLinksBetweenCities()};
+				GameInitializator initializator = new GameInitializator(this.id,this.board,this.configParameters,this.numberOfPlayers,this.gameStatus,this.players,this.MINUMUM_NUMBER_OF_PLAYERS);
+				initializator.start();
+			} catch (ConfigAlreadyExistingException e) {
+				sendErrorToClient(e.printError(),playerId);
+			}
+		}
 	}
+
 
 	public void evaluateAction(Action action, int playerId) {
 
@@ -1332,11 +1033,50 @@ public class MatchHandler{
 	}
 
 	public void setExistingConf(int configId, int playerId) {
+		try {
+			ConfigObject chosenConfig = configFileManager.getConfiguration(configId);
+			configParameters= new int[]{chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(), chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(), chosenConfig.getLinksBetweenCities()};
+			GameInitializator initializator = new GameInitializator(this.id,this.board,this.configParameters,this.numberOfPlayers,this.gameStatus,this.players,this.MINUMUM_NUMBER_OF_PLAYERS);
+			initializator.start();
+		} catch (UnexistingConfigurationException e) {
+			sendErrorToClient(e.printError(),playerId);
+		}
 	}
 
 	public void buyEvent(MarketEvent marketEvent, int playerId) {
 	}
 
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
+	}
+
+	public void sendErrorToClient(String error, int playerId) {
+		String message="[SERVER] Error: "+error;
+		try {
+			players.get(playerId).getConnector().sendToClient(new Packet(message));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendMessageToClient(String s, int playerId) {
+		String message="[SERVER] "+s;
+		try {
+			players.get(playerId).getConnector().sendToClient(new Packet(message));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendConfigurations(int playerId) {
+		ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
+		String string="";
+		for(ConfigObject config : configurations) {
+			string+=config.toString()+"\n";
+		}
+		sendMessageToClient(string,playerId);
+	}
+
+	public void sendPlayerStatus(int playerId) {
+		/*NEEDS IMPLEMENTATION */
 	}
 }

@@ -25,7 +25,7 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
     public void sendToServer(Packet packet) throws RemoteException {
         switch (packet.getHeader()) {
             case "CONFIGOBJECT":
-                matchHandler.setConfigObject(packet.getMessageString(),playerId);
+                matchHandler.setConfigObject(packet.getConfigObject(),playerId);
                 break;
             case "BOARDSTATUS":
                 matchHandler.getBoardStatus(playerId);
@@ -40,7 +40,12 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
                 matchHandler.removeLink(packet.getMessageString(),playerId);
                 break;
             case "MESSAGESTRING":
-                matchHandler.messageFromClient(packet.getMessageString(),playerId);
+                if(packet.getMessageString().equals("REQUESTCONFIG"))
+                    matchHandler.sendConfigurations(playerId);
+                else if(packet.getMessageString().equals("REQUESTPLAYERSTATUS"))
+                    matchHandler.sendPlayerStatus(playerId);
+                else
+                    matchHandler.messageFromClient(packet.getMessageString(),playerId);
                 break;
             case "CONFIGID":
                 matchHandler.setExistingConf(packet.getConfigId(),playerId);

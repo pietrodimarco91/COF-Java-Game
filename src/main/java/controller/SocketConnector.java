@@ -77,7 +77,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
     public void sendToServer(Packet packet) throws RemoteException {
         switch (packet.getHeader()) {
             case "CONFIGOBJECT":
-                matchHandler.setConfigObject(packet.getMessageString(),playerId);
+                matchHandler.setConfigObject(packet.getConfigObject(),playerId);
                 break;
             case "BOARDSTATUS":
                 matchHandler.getBoardStatus(playerId);

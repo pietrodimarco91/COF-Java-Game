@@ -1,6 +1,5 @@
 package controller;
 
-import controller.Client.ClientSideConnector;
 import model.*;
 
 import java.awt.*;
@@ -122,6 +121,7 @@ public class Player {
 	public Player(ClientSideConnectorInt connector, int id) {
 		Random random = new Random();
 		this.turnNumber = id;
+		this.connector=connector;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
@@ -166,6 +166,7 @@ public class Player {
 		return "";
 	}
 
+
 	/**
 	 * @return
 	 */
@@ -207,7 +208,7 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public ConnectorInt getConnector() { // Da aggiungere UML
+	public ClientSideConnectorInt getConnector() { // Da aggiungere UML
 		return this.connector;
 	}
 

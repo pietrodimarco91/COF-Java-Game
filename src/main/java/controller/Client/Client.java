@@ -1,6 +1,6 @@
 package controller.Client;
 
-import client.actions.ActionController;
+import client.actions.ClientPacketController;
 import client.view.cli.ClientOutputPrinter;
 
 import java.rmi.RemoteException;
@@ -15,13 +15,13 @@ public class Client {
 
 	private Scanner input = new Scanner(System.in);
 
-	private ActionController controller;
+	private ClientPacketController controller;
 
 	/**
 	 * Default constructor
 	 */
 	public Client() {
-		controller = new ActionController();
+		controller = new ClientPacketController();
 		currentPlayerID = -1; // this is an important parameter that each client
 								// should be given after correctly connected. It
 								// may be used to state whether he is a creator

@@ -1,15 +1,9 @@
 package client.actions;
 
 import client.view.cli.ClientOutputPrinter;
-import controller.Client.ClientSideRMIConnector;
+import controller.Client.ClientSideConnector;
 import controller.Client.SocketInputOutputThread;
-import controller.MarketEvent;
-import controller.MarketEventBuy;
-import controller.MarketEventSell;
-import controller.Packet;
-import controller.RMIConnectionInt;
-import controller.ServerSideRMIConnectorInt;
-import exceptions.ConfigAlreadyExistingException;
+import controller.*;
 import exceptions.InvalidInputException;
 import model.ConfigObject;
 
@@ -33,18 +27,18 @@ import java.util.logging.StreamHandler;
  * @author Riccardo
  *
  */
-public class ActionController {
+public class ClientPacketController {
 
-	private static final Logger logger = Logger.getLogger(ActionController.class.getName());
+	private static final Logger logger = Logger.getLogger(ClientPacketController.class.getName());
 	private final String ADDRESS = "localhost";
 	private final int PORT = 2000;
-	private ClientSideRMIConnector clientSideRMIConnector;
+	private ClientSideConnector clientSideConnector;
 	private RMIConnectionInt rmiConnectionInt;
-	private ServerSideRMIConnectorInt actionSenderInt;
+	private ServerSideConnectorInt actionSenderInt;
 	private Scanner input;
 	private SocketInputOutputThread socketInputOutputThread;
 
-	public ActionController() {
+	public ClientPacketController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		input = new Scanner(System.in);
 	}

@@ -578,5 +578,30 @@ public class Player {
 	public boolean hasBuiltLastEmporium() {
 		return this.emporiums==0;
 	}
-
+	
+	/**
+	 * to string method
+	 * @return String of player attriute
+	 */
+	public String toString(){
+		String allPlayerInformation="";
+		allPlayerInformation="Your ID: "+id+" Your color: "+color+" Your Coins: "+coins+"\n Your Assistance: "+assistants+" Your position in Victory Points: "+victoryPoints+
+				"Your position in Nobility Track:   "+positionInNobilityTrack+" Your position in Victory Points: "+victoryPoints;
+		allPlayerInformation=" Your cities: ";
+		for(City tempCity: controlledCities)
+			allPlayerInformation=tempCity.getName()+" ";
+			allPlayerInformation="\n Your POLITIC card: ";
+			for(PoliticCard tempPoliticCard: politicCards)
+				allPlayerInformation=tempPoliticCard.getColorCard()+" ";
+			allPlayerInformation="\n Your UNUSED permit tile: ";
+			for(Tile tempPermitTile: unusedPermitTiles)
+				allPlayerInformation=tempPermitTile.toString()+" ";
+			allPlayerInformation="\n Your USED permit tile: ";
+			for(Tile tempPermitTile: usedPermitTiles)
+				allPlayerInformation=tempPermitTile.toString()+" ";
+			return allPlayerInformation;
+		
+				
+	}
+	
 }

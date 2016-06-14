@@ -1,7 +1,6 @@
 package controller;
 
 import client.actions.Action;
-import controller.Client.Client;
 import controller.Client.ClientSideConnector;
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidInputException;
@@ -81,12 +80,24 @@ public class MatchHandler{
 	 */
 	private boolean pending; // To add UML scheme
 
+
+	/**
+	 * Mapstatus:
+	 * -0 wait board configuration
+	 * -1 wait map configuration
+	 * -2 play
+	 * -3 market
+	 * -4 finisched
+	 */
+	private int mapStatus;
+
 	/**
 	 * Default constructor
 	 */
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector) {
 		this.players = new ArrayList<Player>();
+		mapStatus=0;
 		serverSideConnector.setPlayerId(0);
 		this.creator = new Player(connector,0);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
@@ -1049,16 +1060,6 @@ public class MatchHandler{
 		return region;
 	}
 
-	/**
-	 * 
-	 */
-	public void showMap(Player player) {
-		try {
-			player.getConnector().writeToClient(this.board.printMatrix());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
 
 	/**
 	 * 
@@ -1299,13 +1300,26 @@ public class MatchHandler{
 	}
 
 	public void getBoardStatus(int playerId) {
-
+		try {
+			players.get(playerId).getConnector().sendToClient(new Packet(board.toString()));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setConfigObject(String messageString, int playerId) {
+		if(mapStatus==0 && creator.getId()==playerId)
+			new BoardConfiguration(playerId,messageString,numberOfPlayers);
+		waitingForPlayers();
+		countdown();
+		setDefinitiveNumberOfPlayers();
+		boardInitialization();
+		mapConfiguration(creator.getConnector());
+		play();
 	}
 
 	public void evaluateAction(Action action, int playerId) {
+
 	}
 
 	public void addLink(String messageString, int playerId) {

@@ -1,5 +1,7 @@
 package controller;
 
+import server.view.cli.ServerOutputPrinter;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -9,8 +11,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import server.view.cli.ServerOutputPrinter;
 
 /**
  * This class initializes the game engine and the connection among the Clients.
@@ -38,7 +38,6 @@ public class Server {
 	 */
 	private static int id=0;
 	SocketConnector socketConnector;
-	RMIConnection rmiServer;
 	/**
 	 *These threads are used by Server to handle the different connections coming from the Clients
 	 */
@@ -82,7 +81,13 @@ public class Server {
 		return id++;
 	}
 
-
+	/**
+	 * This method is invoked when the server will have to shut down
+	 */
+	public static void stopServer() {
+		stopServer=true;
+	}
+	
 	/**
 	 * This method wait the connection of the Clients and then the different Threads handle the different clients.
 	 */
@@ -90,18 +95,12 @@ public class Server {
 		while(!stopServer){
 			try {
 				socketConnector=new SocketConnector(welcomeSocket.accept());
+				socketConnector.run();
 				socketConnector.sendToClient(new Packet("[SERVER]: RMI Connection correctly established"));
 				thread.submit(new ClientHandler(socketConnector, socketConnector, matches));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	/**
-	 * This method is invoked when the server will have to shut down
-	 */
-	public static void stopServer() {
-		stopServer=true;
 	}
 }

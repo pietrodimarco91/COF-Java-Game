@@ -130,16 +130,4 @@ public class SocketInputOutputThread extends Thread implements ServerSideConnect
 		//ARE NECESSARY ONLY FOR THE SERVeR
 		return null;
 	}
-
-	@Override
-	public boolean checkCreator() {
-		while(!creatorHasBeenSet){
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		return youAreCreator;
-	}
 }

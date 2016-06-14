@@ -2,7 +2,7 @@ package client.actions;
 
 import client.view.cli.ClientOutputPrinter;
 import controller.Packet;
-import controller.ServerSideRMIConnectorInt;
+import controller.ServerSideConnectorInt;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
 import model.CouncillorColors;
@@ -15,12 +15,12 @@ import java.util.Scanner;
 public class ActionCreator {
 
 	private Scanner input;
-	private ServerSideRMIConnectorInt actionSenderInt;
+	private ServerSideConnectorInt actionSenderInt;
 	
-	public ActionCreator(String type, int num, ServerSideRMIConnectorInt actionSenderInt) {
+	public ActionCreator(String type, int num, ServerSideConnectorInt actionSenderInt) {
+		input = new Scanner(System.in);
 		this.actionSenderInt=actionSenderInt;
 		createAction(type, num);
-		input = new Scanner(System.in);
 	}
 
 	public void createAction(String type, int id) {

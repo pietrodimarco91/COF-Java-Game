@@ -5,6 +5,7 @@ import controller.Client.ClientSideConnector;
 import controller.Client.SocketInputOutputThread;
 import controller.*;
 import exceptions.InvalidInputException;
+import model.Board;
 import model.ConfigObject;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class ClientPacketController {
 	private final int PORT = 2000;
 	private ClientSideConnector clientSideConnector;
 	private RMIConnectionInt rmiConnectionInt;
-	private ServerSideConnectorInt actionSenderInt;
+	private ServerSideConnectorInt packetSenderInt;
 	private Scanner input;
 	private SocketInputOutputThread socketInputOutputThread;
 
@@ -67,7 +68,7 @@ public class ClientPacketController {
 			try {
 				num = verifyActionID(id);
 				proceed = true;
-				new ActionCreator(type, num, actionSenderInt);
+				new ActionCreator(type, num, packetSenderInt);
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}
@@ -107,25 +108,31 @@ public class ClientPacketController {
 			ClientOutputPrinter.printLine(
 					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\b4) Return back...");
 			choice = input.nextInt();
-			switch (choice) {
-			case 1:
-				actionSenderInt.sendToServer(new Packet(new MarketEventSell()));
-				break;
-			case 2:
-				ClientOutputPrinter.printLine("Type the color of the Politic Card to sell:");
-				String color = stringInput.nextLine();
-				actionSenderInt.sendToServer(new Packet(new MarketEventSell(color)));
-				break;
-			case 3:
-				ClientOutputPrinter.printLine("Choose the ID of the Permit Tile to sell:");
-				int id = input.nextInt();
-				actionSenderInt.sendToServer(new Packet(new MarketEventSell(id)));
-				break;
-			case 4:
-				return;
-			default:
-				ClientOutputPrinter.printLine("Invalid input, please retry...");
-				break;
+			try {
+				switch (choice) {
+
+				case 1:
+					packetSenderInt.sendToServer(new Packet(new MarketEventSell()));
+					break;
+				case 2:
+					ClientOutputPrinter.printLine("Type the color of the Politic Card to sell:");
+					String color = stringInput.nextLine();
+					packetSenderInt.sendToServer(new Packet(new MarketEventSell(color)));
+					break;
+				case 3:
+					ClientOutputPrinter.printLine("Choose the ID of the Permit Tile to sell:");
+					int id = input.nextInt();
+					packetSenderInt.sendToServer(new Packet(new MarketEventSell(id)));
+					break;
+				case 4:
+					return;
+				default:
+					ClientOutputPrinter.printLine("Invalid input, please retry...");
+					break;
+
+				}
+			} catch (RemoteException e) {
+				ClientOutputPrinter.printLine(e.getMessage());
 			}
 		}
 	}
@@ -133,29 +140,41 @@ public class ClientPacketController {
 	public void buyItemOnMarket() {
 		int id;
 		ClientOutputPrinter.printLine("Type the Item ID you would like to buy:");
-		id=input.nextInt();
-		actionSenderInt.sendToServer(new Packet(new MarketEventBuy(id)));
+		id = input.nextInt();
+		try {
+			packetSenderInt.sendToServer(new Packet(new MarketEventBuy(id)));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
 	}
 
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void requestBoardStatus() {
-
+		try {
+			packetSenderInt.sendToServer(new Packet("REQUESTBOARDSTATUS"));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
 	}
 
 	/**
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void requestPlayerStatus() {
-
+		try {
+			packetSenderInt.sendToServer(new Packet("REQUESTPLAYERSTATUS"));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
 	}
 
 	/**
 	 * @return true if the client is the creator of the match or false otherwise
 	 * @throws RemoteException
 	 */
-	public boolean connect() throws RemoteException {
+	public void connect() throws RemoteException {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
 		boolean proceed = false;
 		while (!proceed) {
@@ -173,7 +192,7 @@ public class ClientPacketController {
 				ClientOutputPrinter.printLine("Error: invalid input... please retry!");
 			}
 		}
-		return actionSenderInt.checkCreator();
+
 	}
 
 	/**
@@ -185,7 +204,7 @@ public class ClientPacketController {
 
 	public void startSocketConnection() {
 		try {
-			actionSenderInt = new SocketInputOutputThread(new Socket(ADDRESS, PORT));
+			packetSenderInt = new SocketInputOutputThread(new Socket(ADDRESS, PORT));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -193,9 +212,9 @@ public class ClientPacketController {
 
 	public void startRMIConnection() {
 		try {
-			clientSideRMIConnector = new ClientSideRMIConnector();
+			clientSideConnector = new ClientSideConnector();
 			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://localhost/registry");
-			actionSenderInt = rmiConnectionInt.connect(clientSideRMIConnector);
+			packetSenderInt = rmiConnectionInt.connect(clientSideConnector);
 		} catch (NotBoundException e) {
 			logger.log(Level.FINEST, "Error: the object you were looking for is not bounded", e);
 		} catch (MalformedURLException e) {
@@ -205,41 +224,115 @@ public class ClientPacketController {
 		}
 	}
 
-	public void waitStart() {
-		ClientOutputPrinter.printLine("Wait while the creator configures the gameboard...");
-		actionSenderInt.waitStart();
-	}
-
 	public void boardConfiguration() {
 		boolean correctAnswer = false;
 		int choice = 0;
 		while (!correctAnswer) {
-			ClientOutputPrinter.printLine(
-					"1) Create a new board configuration\n2) Choose an existing configuration\n3) Return back...");
+			ClientOutputPrinter.printLine("1) Create a new board configuration\n2) Choose an existing configuration");
 			choice = input.nextInt();
-			if (choice == 3)
-				return;
 			if (choice != 1 && choice != 2) {
-				ClientOutputPrinter.printLine("ERROR: incorrect input. Please retry\n");
+				ClientOutputPrinter.printLine("ERROR: incorrect input. Please retry");
 			} else
 				correctAnswer = true;
 		}
 		if (choice == 1) {
 			newConfiguration();
 		} else {
-			int id;
-			boolean correctID = false;
-			while (!correctID) {
-				ClientOutputPrinter.printLine("Choose a configuration by typing its ID\n");
+			boolean finish = false;
+			while (!finish) {
 				try {
-					id = input.nextInt();
-					correctID = true;
-				} catch (NumberFormatException e) {
-					ClientOutputPrinter.printLine("Invalid input... please retry");
+					packetSenderInt.sendToServer(new Packet("REQUESTCONFIGURATIONS"));
+				} catch (RemoteException e) {
+					ClientOutputPrinter.printLine(e.getMessage());
 				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					ClientOutputPrinter.printLine(e.getMessage());
+				}
+				ClientOutputPrinter.printLine("Choose the configuration ID:");
+				choice = input.nextInt();
+
+				try {
+					packetSenderInt.sendToServer(new Packet(new Integer(choice)));
+				} catch (RemoteException e) {
+					ClientOutputPrinter.printLine(e.getMessage());
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					ClientOutputPrinter.printLine(e.getMessage());
+				}
+				ClientOutputPrinter.printLine("Press any key to continue or press 1 to repeat the confguration");
+				choice = input.nextInt();
+				if (choice != 1)
+					finish = true;
+
 			}
-			actionSenderInt.sendToServer(new Packet(id));
+
 		}
+
+	}
+
+	/**
+	 * This method permit to modify the game map
+	 *
+	 * @param player
+	 *            connector
+	 */
+	public void mapConfiguration() {
+		boolean stop = false;
+		int choice = 0;
+		while (!stop) {
+
+			ClientOutputPrinter
+					.printLine("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status ");
+			choice = input.nextInt();
+
+			switch (choice) {
+			case 1:
+				editConnection("ADD");
+				break;
+			case 2:
+				editConnection("REMOVE");
+				break;
+			case 3:
+				stop = true;
+				break;
+			case 4:
+				try {
+					packetSenderInt.sendToServer(new Packet());
+				} catch (RemoteException e) {
+					ClientOutputPrinter.printLine(e.getMessage());
+				}
+				break;
+			default:
+				ClientOutputPrinter.printLine("Invalid input.");
+			}
+		}
+	}
+
+	public void editConnection(String choice) {
+		String city1 = "null";
+		String city2 = "null";
+
+		do {
+			ClientOutputPrinter.printLine("Insert the FIRST letter of the first city:\n");
+			city1 = input.nextLine();
+			ClientOutputPrinter.printLine("Insert the FIRST letter of the second city:\n");
+			city2 = input.nextLine();
+		} while (city1.length() > 1 || city2.length() > 1 || city2.equals(city1));
+		city1 = city1.toUpperCase();
+		city2 = city2.toUpperCase();
+		try {
+			if (choice.equals("ADD"))
+				packetSenderInt.sendToServer(new Packet(city1, city2, "ADD"));
+			else
+				packetSenderInt.sendToServer(new Packet(city1, city2, "REMOVE"));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
+
 	}
 
 	/**
@@ -278,11 +371,13 @@ public class ClientPacketController {
 			try {
 				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
 						nobilityTrackBonusNumber, linksBetweenCities);
-				actionSenderInt.sendToServer(new Packet(new ConfigObject(numberOfPlayers, rewardTokenBonusNumber,
+				packetSenderInt.sendToServer(new Packet(new ConfigObject(numberOfPlayers, rewardTokenBonusNumber,
 						permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities)));
 				stop = true;
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
+			} catch (RemoteException e) {
+				ClientOutputPrinter.printLine(e.getMessage());
 			}
 		}
 	}

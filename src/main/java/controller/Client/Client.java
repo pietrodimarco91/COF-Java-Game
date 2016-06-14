@@ -29,21 +29,29 @@ public class Client {
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
 		try {
-			if (controller.connect()) {
-				controller.boardConfiguration();
-			} else
-				controller.waitStart();
+			controller.connect();
 			play();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+	}
 
+	public void initialConfiguration() {
+		ClientOutputPrinter.printLine(
+				"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press a key to continue..");
+		int choice = input.nextInt();
+		if (choice == 1) {
+			controller.boardConfiguration();
+			controller.mapConfiguration();
+		}
+		play();
 	}
 
 	public void play() {
 		int choice;
 		while (true) {
-			ClientOutputPrinter.printLine("Next choice?\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status");
+			ClientOutputPrinter.printLine(
+					"Next choice?\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration");
 			try {
 				choice = input.nextInt();
 				switch (choice) {
@@ -64,7 +72,10 @@ public class Client {
 					break;
 				case 6:
 					controller.requestPlayerStatus();
-				break;
+					break;
+				case 7:
+					controller.mapConfiguration();
+					break;
 				default:
 					ClientOutputPrinter.printLine("Invalid choice... please retry!");
 				}

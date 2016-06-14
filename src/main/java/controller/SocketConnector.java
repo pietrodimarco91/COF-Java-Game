@@ -1,23 +1,23 @@
 package controller;
+
 import server.view.cli.ServerOutputPrinter;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class SocketConnector implements ClientSideConnectorInt, ServerSideConnectorInt {
+public class SocketConnector extends Thread implements ClientSideConnectorInt, ServerSideConnectorInt {
 
 
 	private static final Logger logger= Logger.getLogger( SocketConnector.class.getName() );
     private Socket socket;
     private ObjectInputStream inputObjectFromClient;
-    private PrintWriter outputStringToClient;
-    private Scanner inputStringFromClient;
+    private ObjectOutputStream outputObjectToClient;
     private MatchHandler matchHandler;
     private int playerId;
 
@@ -25,23 +25,19 @@ public class SocketConnector implements ClientSideConnectorInt, ServerSideConnec
     public SocketConnector(Socket socket) {
         this.socket=socket;
         try {
-            outputStringToClient=new PrintWriter(socket.getOutputStream());
+            outputObjectToClient=new ObjectOutputStream(socket.getOutputStream());
             inputObjectFromClient=new ObjectInputStream(socket.getInputStream());
-            inputStringFromClient=new Scanner(socket.getInputStream());
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error while opening the output/input stream for 'socket'", e);
         }
         ServerOutputPrinter.printLine("[SERVER] New Socket connection established");
-        receivePacketFromClient();
     }
-
-
-
 
 
     //*****SERVER SIDE METHOD******//
 
-    private void receivePacketFromClient() {
+    @Override
+    public void run() {
         while (true) {
             try {
                 sendToServer((Packet) inputObjectFromClient.readObject());
@@ -65,8 +61,16 @@ public class SocketConnector implements ClientSideConnectorInt, ServerSideConnec
 
     @Override
     public void sendToClient(Packet packet) throws RemoteException {
-
+        try {
+            outputObjectToClient.writeObject(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
+    //*****CLIENT SIDE METHOD******//
 
 
     @Override

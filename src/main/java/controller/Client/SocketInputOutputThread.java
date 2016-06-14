@@ -1,133 +1,78 @@
 package controller.Client;
 
-import client.actions.Action;
 import client.view.cli.ClientOutputPrinter;
+import controller.ClientSideConnectorInt;
+import controller.MatchHandler;
+import controller.Packet;
 import controller.ServerSideConnectorInt;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Scanner;
 
-public class SocketInputOutputThread extends Thread implements ServerSideConnectorInt {
+public class SocketInputOutputThread extends Thread implements ClientSideConnectorInt, ServerSideConnectorInt {
 
-	private Scanner input;
-	private Scanner inputStringFromServer;
+	private ObjectInputStream inputObjectFromServer;
 	private ObjectOutputStream outputObjectToServer;
-	private PrintWriter outputStringToServer;
-	private String received;
-	private boolean waitStart;
-	private boolean youAreCreator;
-	private boolean creatorHasBeenSet;
 
 
 	public SocketInputOutputThread(Socket socket) {
 		try {
-			input = new Scanner(System.in);
-			waitStart=false;
-			creatorHasBeenSet=false;
-			youAreCreator=false;
-			inputStringFromServer = new Scanner(socket.getInputStream());
-			outputObjectToServer = new ObjectOutputStream(socket.getOutputStream());
-			outputStringToServer = new PrintWriter(socket.getOutputStream(), true);
+			outputObjectToServer=new ObjectOutputStream(socket.getOutputStream());
+			inputObjectFromServer=new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
+
+	//*****CLIENT SIDE METHOD******//
 
 	@Override
 	public void run() {
-		while (true) {
-			received = inputStringFromServer.nextLine();
-			switch (received){
-				case "START":
-					waitStart=true;
-					break;
-				case "*#*":
-					outputStringToServer.println(input.nextLine());
-					break;
-				case "CREATOR":
-					creatorHasBeenSet=true;
-					youAreCreator=true;
-					break;
-				case "NOT CREATOR":
-					creatorHasBeenSet=true;
-					break;
-				default:
-					ClientOutputPrinter.printLine(received);
-
+			while (true) {
+				try {
+					sendToClient((Packet) inputObjectFromServer.readObject());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
-		}
 	}
 
 
 	@Override
-	public void writeToServer(String s) throws RemoteException {
-
-	}
-
-	@Override
-	public int receiveIntFromServer() throws RemoteException {
-		return 0;
-	}
-
-	@Override
-	public void sendActionToServer(Action action) throws RemoteException {
+	public void sendToServer(Packet packet) throws RemoteException {
 		try {
-			outputObjectToServer.writeObject(action);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void sendConfigurationToServer(ArrayList<Integer> config) throws RemoteException {
-		try {
-			outputObjectToServer.writeObject(config);
+			outputObjectToServer.writeObject(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 
+	//*****SERVER SIDE METHOD******//
+
 	@Override
-	public void setTurn(boolean value) {
-		//ARE NECESSARY ONLY FOR THE SERVeR
+	public void setMatchHandler(MatchHandler matchHandler) {
+
 	}
 
 	@Override
-	public Action getAction()  {
-		//ARE NECESSARY ONLY FOR THE SERVeR
-		return null;
+	public void setPlayerId(int id) {
+
 	}
 
-	@Override
-	public void waitStart() {
-		while (!waitStart){
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	public void sendToClient(Packet packet) throws RemoteException {
+		switch (packet.getHeader()) {
+			case "MESSAGESTRING":
+				ClientOutputPrinter.printLine(packet.getMessageString());
+				break;
+			default:
 		}
-	}
 
-	@Override
-	public void setMatchStarted() {
-		//ARE NECESSARY ONLY FOR THE SERVeR
-	}
-
-	@Override
-	public void setCreator(boolean b) {
-		//ARE NECESSARY ONLY FOR THE SERVeR
-	}
-
-	@Override
-	public ArrayList<Integer> getBoardConfiguration() {
-		//ARE NECESSARY ONLY FOR THE SERVeR
-		return null;
 	}
 }

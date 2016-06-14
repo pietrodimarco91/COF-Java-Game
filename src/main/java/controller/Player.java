@@ -75,7 +75,7 @@ public class Player {
 	/**
 	 *
 	 */
-	private int turnNumber;
+	private int id;
 	
 	/**
 	 *
@@ -120,7 +120,7 @@ public class Player {
 	 */
 	public Player(ClientSideConnectorInt connector, int id) {
 		Random random = new Random();
-		this.turnNumber = id;
+		this.id = id;
 		this.connector=connector;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
@@ -139,7 +139,7 @@ public class Player {
 	 */
 	public Player(int id) {
 		Random random = new Random();
-		this.turnNumber = id;
+		this.id = id;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
@@ -566,6 +566,10 @@ public class Player {
 	public void fromUnusedToUsedPermitTile(Player player, PermitTile permitTile) {
 		this.unusedPermitTiles.remove(permitTile);
 		this.usedPermitTiles.add(permitTile);
+	}
+
+	public int getId(){
+		return id;
 	}
 
 	/**

@@ -662,6 +662,7 @@ public class Board {
 	public String toString() {
 		String string = "";
 		string += "Map status:\n";
+		string+=printMatrix()+"\n";
 		string += "Cities:\n";
 		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {

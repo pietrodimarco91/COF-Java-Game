@@ -10,7 +10,7 @@ public abstract class PubSub {
 	public void notifyAllClients(List<Player> players,String message) {
 		for(Player player : players) {
 			try {
-				player.getConnector().writeToClient(message);
+				player.getConnector().sendToClient(new Packet(message));
 			} catch (RemoteException e) {
 				ServerOutputPrinter.printLine("Error: couldn't write to Client");
 			}

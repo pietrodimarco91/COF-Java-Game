@@ -34,7 +34,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
     }
 
 
-    //*****SERVER SIDE METHOD******//
+ 
 
     @Override
     public void run() {
@@ -48,7 +48,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
             }
         }
     }
-
+    //*****SERVER SIDE METHOD******//
     @Override
     public void setMatchHandler(MatchHandler matchHandler) {
         this.matchHandler=matchHandler;

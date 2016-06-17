@@ -30,6 +30,7 @@ public class Client {
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
 		try {
 			controller.connect();
+			initialConfiguration();
 			play();
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -44,7 +45,6 @@ public class Client {
 			controller.boardConfiguration();
 			controller.mapConfiguration();
 		}
-		play();
 	}
 
 	public void play() {

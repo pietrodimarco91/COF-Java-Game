@@ -9,11 +9,10 @@ import server.view.cli.ServerOutputPrinter;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -80,23 +79,36 @@ public class MatchHandler {
 	 */
 	private boolean pending; // To add UML scheme
 
+	private Queue<Integer> marketBuyTurn;
+
+
+
 	/**
 	 * Mapstatus: 0 wait board configuration 1 wait for players 2 wait map
-	 * configuration 3 play 4 market 5 finished
+	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
 	 */
 	private int gameStatus;
+
+	ExecutorService timers;
 	
 	/**
 	 * 
 	 */
 	private Market market;
-	
+
+	/**
+	 *id player
+	 */
+	private int turn;
 	/**
 	 * Default constructor
 	 */
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector,
 			ServerSideConnectorInt serverSideConnector, String creatorNickName) {
+		marketBuyTurn= new LinkedList<>();
+		turn=0;
+		timers= Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.players = new ArrayList<Player>();
 		gameStatus = 0;
@@ -906,8 +918,10 @@ public class MatchHandler {
 		if (gameStatus != 4) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
+		} else if(playerId==marketBuyTurn.peek()) {
+			//market implementation
+			marketBuyTurn.remove();
 		}
-		
 	}
 
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
@@ -915,6 +929,7 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
+		//market implementation
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -983,7 +998,37 @@ public class MatchHandler {
 	}
 
 	public void notifyEndOfTurn(int playerId) {
-				
+		if(playerId==turn)
+			nextTurn();
 	}
 
+	public void nextTurn() {
+		if(turn==(players.size()-1)){
+			turn=0;
+			startMarketTime();
+		} else {
+			turn++;
+			timers.submit(new TurnTimerThread(this));
+		}
+	}
+
+	private void startMarketTime() {
+		gameStatus=4;
+		PubSub.notifyAllClients(players,"Game Status changed to 'Market Sell Time'");
+		timers.submit(new MarketTimerThread(this));
+	}
+
+	public void startMarketBuyTime() {
+		this.gameStatus=5;
+		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
+		for(Player player : players) {
+			marketBuyTurn.add(new Integer(player.getId()));
+			Collections.shuffle(marketBuyTurn);
+		}
+	}
+
+	public void rewindTurns(){
+		//check if game is not finished
+		turn=0;
+	}
 }

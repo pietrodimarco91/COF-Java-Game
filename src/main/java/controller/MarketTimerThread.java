@@ -2,28 +2,28 @@ package controller;
 
 import server.view.cli.ServerOutputPrinter;
 
-public class TurnTimerThread implements Runnable {
-	
+public class MarketTimerThread implements Runnable {
+
 	private static final int waitingTime=60000;
 	private MatchHandler match;
-	private int playerId;
-	
-	public TurnTimerThread(MatchHandler match,int playerId) {
+
+	public MarketTimerThread(MatchHandler match) {
 		this.match=match;
-		this.playerId=playerId;
 	}
 
 	@Override
 	public void run() {
 		try {
 			Thread.sleep(waitingTime);
-			notifyEndOfTurn();
+			match.startMarketBuyTime();
+			match.setGameStatus(5);
+			Thread.sleep(waitingTime);
+			match.rewindTurns();
+			match.setGameStatus(3);
 		} catch (InterruptedException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
-	public void notifyEndOfTurn() {
-		match.notifyEndOfTurn(playerId);
-	}
+
 	
 }

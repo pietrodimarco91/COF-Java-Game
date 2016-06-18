@@ -106,9 +106,16 @@ public class Player {
 	private ClientSideConnectorInt connector;// To add UML scheme
 
 	/**
+	 *
+	 */
+	private boolean hasPerformedMainAction,hasPerformedQuickAction;
+
+	/**
 	 * Default constructor
 	 */
 	public Player(ClientSideConnectorInt connector, int id,String nickName) {
+		hasPerformedMainAction=false;
+		hasPerformedQuickAction=false;
 		Random random = new Random();
 		this.id = id;
 		this.nickName=nickName;
@@ -601,6 +608,18 @@ public class Player {
 
 	public void setPlayerNickName(String nickName) {
 		this.nickName=nickName;
+	}
+
+	public void mainActionDone(){
+		hasPerformedMainAction=true;
+	}
+	public void quickActionDone(){
+		hasPerformedQuickAction=true;
+	}
+
+	public void resetTurn(){
+		hasPerformedMainAction=false;
+		hasPerformedQuickAction=false;
 	}
 	
 }

@@ -1,21 +1,26 @@
 package client.actions;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import client.view.cli.ClientOutputPrinter;
+import controller.Packet;
+import controller.ServerSideConnectorInt;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
 import model.CouncillorColors;
 import model.RegionName;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class ActionCreator {
 
-	Scanner input;
+	private Scanner input;
+	private ServerSideConnectorInt actionSenderInt;
 	
-	public ActionCreator(String type, int num) {
-		createAction(type, num);
+	public ActionCreator(String type, int num, ServerSideConnectorInt actionSenderInt) {
 		input = new Scanner(System.in);
+		this.actionSenderInt=actionSenderInt;
+		createAction(type, num);
 	}
 
 	public void createAction(String type, int id) {
@@ -53,17 +58,17 @@ public class ActionCreator {
 	}
 
 	public void createAdditionalMainAction(String type) {
-		Action action = new AdditionalMainAction(type);
-		//NEEDS COMPLETION
+		this.sendAction(new AdditionalMainAction(type));
 	}
+
+
 
 	public void createSendAssistant(String type) {
 		String color,regionName;
 		ClientOutputPrinter.printLine("SEND ASSISTANT TO ELECT A COUNCILLOR");
 		regionName=selectRegionName();
 		color=selectCouncillorColor();
-		Action action = new SendAssistantAction(type, regionName, color);
-		//NEEDS COMPLETION
+		this.sendAction(new SendAssistantAction(type, regionName, color));
 	}
 
 	public void createSwitchPermitTiles(String type) {
@@ -81,8 +86,7 @@ public class ActionCreator {
 				ClientOutputPrinter.printLine(e.printError());
 			}
 		}
-		Action action = new SwitchPermitTilesAction(type, regionName);
-		//NEEDS COMPLETION;
+		this.sendAction(new SwitchPermitTilesAction(type, regionName));
 	}
 
 	public void createEngageAssistant(String type) {
@@ -111,8 +115,7 @@ public class ActionCreator {
 		}
 		ClientOutputPrinter.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
 		cityName=input.nextLine();
-		action = new KingBuildEmporiumAction(type, cityName, colors);
-		//NEEDS COMPLETION
+		this.sendAction(new KingBuildEmporiumAction(type, cityName, colors));
 	}
 
 	public String selectCouncillorColor() {
@@ -155,8 +158,7 @@ public class ActionCreator {
 		ClientOutputPrinter.printLine("ELECT A COUNCILLOR");
 		regionName=selectRegionName();
 		color=selectCouncillorColor();
-		action = new ElectCouncillorAction(type, regionName, color);
-		//NEEDS COMPLETION
+		this.sendAction(new ElectCouncillorAction(type, regionName, color));
 	}
 
 	public void createSimpleBuildEmporium(String type) {
@@ -168,8 +170,7 @@ public class ActionCreator {
 		id=Integer.parseInt(input.nextLine());
 		ClientOutputPrinter.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
 		cityName=input.nextLine();
-		action = new SimpleBuildEmporiumAction(type, id, cityName);
-		//NEEDS IMPLEMENTATION
+		this.sendAction(new SimpleBuildEmporiumAction(type, id, cityName));
 	}
 
 	public void createBuyPermitTile(String type) {
@@ -215,8 +216,16 @@ public class ActionCreator {
 				ClientOutputPrinter.printLine(e.showError());
 			}
 		}
-		action = new BuyPermitTileAction(type, regionName, colors, slot);
-		// NEEDS TO BE COMPLETED
+		this.sendAction(new BuyPermitTileAction(type, regionName, colors, slot));
+	}
+
+
+	private void sendAction(Action action) {
+		try {
+			actionSenderInt.sendToServer(new Packet(action));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void verifyRegionName(String region) throws InvalidInputException {

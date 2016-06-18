@@ -50,7 +50,16 @@ public class ConfigObject implements Serializable {
 	 */
 	private Integer permitTileBonusNumber;
 
-	public ConfigObject(int id, int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+	public ConfigObject(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
+			int nobilityTrackBonusNumber, int linksBetweenCities) {
+		this.nobilityTrackBonusNumber = new Integer(nobilityTrackBonusNumber);
+		this.permitTileBonusNumber = new Integer(permitTileBonusNumber);
+		this.rewardTokenBonusNumber = new Integer(rewardTokenBonusNumber);
+		this.linksBetweenCities = new Integer(linksBetweenCities);
+		this.numberOfPlayers = new Integer(numberOfPlayers);
+	}
+	
+	public ConfigObject(int id,int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
 		this.id = new Integer(id);
 		this.nobilityTrackBonusNumber = new Integer(nobilityTrackBonusNumber);
@@ -58,6 +67,10 @@ public class ConfigObject implements Serializable {
 		this.rewardTokenBonusNumber = new Integer(rewardTokenBonusNumber);
 		this.linksBetweenCities = new Integer(linksBetweenCities);
 		this.numberOfPlayers = new Integer(numberOfPlayers);
+	}
+	
+	public void setId(int id) {
+		this.id=id;
 	}
 
 	public int getId() {

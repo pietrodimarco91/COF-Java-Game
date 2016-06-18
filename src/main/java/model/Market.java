@@ -1,20 +1,24 @@
 package model;
 
-import java.util.*;
-
 import controller.Player;
 import exceptions.UnsufficientCoinsException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * 
  */
 public class Market {
-	private static ArrayList<ItemOnSale> itemsOnSale;
+	private ArrayList<ItemOnSale> itemsOnSale;
+
+	private int itemIds;
 
 	/**
 	 * Default constructor: Market implements Singleton pattern
 	 */
 	public Market() {
+		itemIds=0;
 		itemsOnSale = new ArrayList<ItemOnSale>();
 	}
 
@@ -24,8 +28,10 @@ public class Market {
 	 * @param itemOnSale
 	 *            the item on sale to be inserted in the market
 	 */
-	public static void putItemOnSale(ItemOnSale itemOnSale) {
+	public void putItemOnSale(ItemOnSale itemOnSale) {
+		itemOnSale.setId(itemIds);
 		itemsOnSale.add(itemOnSale);
+		itemIds++;
 	}
 
 	/**
@@ -33,7 +39,7 @@ public class Market {
 	 * 
 	 * @return the list of items on sale
 	 */
-	public static ArrayList<ItemOnSale> getItemsOnSale() {
+	public ArrayList<ItemOnSale> getItemsOnSale() {
 		return itemsOnSale;
 	}
 
@@ -43,7 +49,7 @@ public class Market {
 	 * @param item
 	 *            the item to be removed
 	 */
-	public static void removeItemFromMarket(ItemOnSale item) {
+	public void removeItemFromMarket(ItemOnSale item) {
 		boolean stop = false;
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		while (!stop && iterator.hasNext()) {
@@ -64,7 +70,7 @@ public class Market {
 	 *            the item that will be purchased
 	 * @throws UnsufficientCoinsException 
 	 */
-	public static void buyItemOnSale(Player player, ItemOnSale item) throws UnsufficientCoinsException {
+	public void buyItemOnSale(Player player, ItemOnSale item) throws UnsufficientCoinsException {
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		boolean stop = false;
 		while (!stop && iterator.hasNext()) {

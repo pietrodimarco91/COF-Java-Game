@@ -8,6 +8,8 @@ public abstract class ItemOnSale {
 	 */
 	private Player seller;
 
+	private int id;
+
 	/**
 	 * This attribute represents the price (coins) for this item
 	 */
@@ -40,4 +42,7 @@ public abstract class ItemOnSale {
 		return coins>=price;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
 }

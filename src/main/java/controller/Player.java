@@ -6,7 +6,6 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +38,8 @@ public class Player {
 	 *
 	 */
 	private final static int INITIAL_POSITION = 0;
+
+
 	/**
 	 *
 	 */
@@ -74,7 +75,7 @@ public class Player {
 	/**
 	 *
 	 */
-	private int turnNumber;
+	private int id;
 	
 	/**
 	 *
@@ -112,14 +113,15 @@ public class Player {
 	/**
 	 *
 	 */
-	private ConnectorInt connector;// To add UML scheme
+	private ClientSideConnectorInt connector;// To add UML scheme
 
 	/**
 	 * Default constructor
 	 */
-	public Player(ConnectorInt connector, int id) {
+	public Player(ClientSideConnectorInt connector, int id) {
 		Random random = new Random();
-		this.turnNumber = id;
+		this.id = id;
+		this.connector=connector;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
@@ -137,7 +139,7 @@ public class Player {
 	 */
 	public Player(int id) {
 		Random random = new Random();
-		this.turnNumber = id;
+		this.id = id;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
@@ -163,6 +165,7 @@ public class Player {
 		// TODO implement here
 		return "";
 	}
+
 
 	/**
 	 * @return
@@ -205,7 +208,7 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public ConnectorInt getConnector() { // Da aggiungere UML
+	public ClientSideConnectorInt getConnector() { // Da aggiungere UML
 		return this.connector;
 	}
 
@@ -565,11 +568,40 @@ public class Player {
 		this.usedPermitTiles.add(permitTile);
 	}
 
+	public int getId(){
+		return id;
+	}
+
 	/**
 	 * @return
 	 */
 	public boolean hasBuiltLastEmporium() {
 		return this.emporiums==0;
 	}
-
+	
+	/**
+	 * to string method
+	 * @return String of player attriute
+	 */
+	public String toString(){
+		String allPlayerInformation="";
+		allPlayerInformation="Your ID: "+id+" Your color: "+color+" Your Coins: "+coins+"\n Your Assistance: "+assistants+" Your position in Victory Points: "+victoryPoints+
+				"Your position in Nobility Track:   "+positionInNobilityTrack+" Your position in Victory Points: "+victoryPoints;
+		allPlayerInformation=" Your cities: ";
+		for(City tempCity: controlledCities)
+			allPlayerInformation=tempCity.getName()+" ";
+			allPlayerInformation="\n Your POLITIC card: ";
+			for(PoliticCard tempPoliticCard: politicCards)
+				allPlayerInformation=tempPoliticCard.getColorCard()+" ";
+			allPlayerInformation="\n Your UNUSED permit tile: ";
+			for(Tile tempPermitTile: unusedPermitTiles)
+				allPlayerInformation=tempPermitTile.toString()+" ";
+			allPlayerInformation="\n Your USED permit tile: ";
+			for(Tile tempPermitTile: usedPermitTiles)
+				allPlayerInformation=tempPermitTile.toString()+" ";
+			return allPlayerInformation;
+		
+				
+	}
+	
 }

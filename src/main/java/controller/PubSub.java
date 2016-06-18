@@ -1,19 +1,21 @@
 package controller;
 
+import server.view.cli.ServerOutputPrinter;
+
 import java.rmi.RemoteException;
 import java.util.List;
 
-import server.view.cli.ServerOutputPrinter;
-
 public abstract class PubSub {
 	
-	public void notifyAllClients(List<Player> players,String message) {
+	public static void notifyAllClients(List<Player> players,String message) {
 		for(Player player : players) {
 			try {
-				player.getConnector().writeToClient(message);
+				player.getConnector().sendToClient(new Packet("[GAME NOTIFY] "+message));
 			} catch (RemoteException e) {
 				ServerOutputPrinter.printLine("Error: couldn't write to Client");
 			}
 		}
 	}
+
+
 }

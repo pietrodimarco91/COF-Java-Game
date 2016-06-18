@@ -1,46 +1,78 @@
 package controller.Client;
 
+import client.view.cli.ClientOutputPrinter;
+import controller.ClientSideConnectorInt;
+import controller.MatchHandler;
+import controller.Packet;
+import controller.ServerSideConnectorInt;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
+import java.rmi.RemoteException;
 
-import client.actions.EngageAssistantAction;
+public class SocketInputOutputThread extends Thread implements ClientSideConnectorInt, ServerSideConnectorInt {
 
-public class SocketInputOutputThread extends Thread {
+	private ObjectInputStream inputObjectFromServer;
+	private ObjectOutputStream outputObjectToServer;
 
-	private Scanner input;
-	private Scanner inputFromServer;
-	private ObjectOutputStream outputToServer;
-	//private PrintWriter outputToServer;
-	private String received;
 
 	public SocketInputOutputThread(Socket socket) {
 		try {
-			inputFromServer = new Scanner(socket.getInputStream());
-			outputToServer = new ObjectOutputStream(socket.getOutputStream());
-			//outputToServer = new PrintWriter(socket.getOutputStream(), true);
-			input = new Scanner(System.in);
+			outputObjectToServer=new ObjectOutputStream(socket.getOutputStream());
+			inputObjectFromServer=new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+
+	//*****CLIENT SIDE METHOD******//
+
 	@Override
 	public void run() {
-		while (true) {
-			received = inputFromServer.nextLine();
-			if (received.equals("*#*")) {
+			while (true) {
 				try {
-					outputToServer.writeObject(new EngageAssistantAction("QUICK"));
-					outputToServer.flush();
+					sendToClient((Packet) inputObjectFromServer.readObject());
 				} catch (IOException e) {
 					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-				// outputToServer.println(input.nextLine());
-			} else
-				System.out.println(received);
+			}
+	}
+
+
+	@Override
+	public void sendToServer(Packet packet) throws RemoteException {
+		try {
+			outputObjectToServer.writeObject(packet);
+			outputObjectToServer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void setPlayerId(int id) {
+
+	}
+
+	public void sendToClient(Packet packet) throws RemoteException {
+		switch (packet.getHeader()) {
+			case "MESSAGESTRING":
+				ClientOutputPrinter.printLine(packet.getMessageString());
+				break;
+			default:
+		}
+
+	}
+
+	//*****SERVER SIDE METHOD******//
+
+	@Override
+	public void setMatchHandler(MatchHandler matchHandler) {
+
 	}
 }

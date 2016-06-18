@@ -1,9 +1,10 @@
 package controller.Client;
 
-import java.util.Scanner;
-
-import client.actions.ActionController;
+import client.actions.ClientPacketController;
 import client.view.cli.ClientOutputPrinter;
+
+import java.rmi.RemoteException;
+import java.util.Scanner;
 
 /**
  * 
@@ -14,45 +15,71 @@ public class Client {
 
 	private Scanner input = new Scanner(System.in);
 
-	private ActionController controller;
+	private ClientPacketController controller;
 
 	/**
 	 * Default constructor
 	 */
 	public Client() {
-		controller = new ActionController();
+		controller = new ClientPacketController();
 		currentPlayerID = -1; // this is an important parameter that each client
 								// should be given after correctly connected. It
 								// may be used to state whether he is a creator
-								// or not, and if not he needs to quit all the
-								// input/output streams with the server during
-								// the configuration
+								// or not
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
-		controller.connect();
-		// play(); THIS SHOULD BE DONE AFTER THE BOARD CONFIGURATION
+		try {
+			controller.connect();
+			initialConfiguration();
+			play();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void initialConfiguration() {
+		ClientOutputPrinter.printLine(
+				"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any number but 1 to continue..");
+		int choice = input.nextInt();
+		if (choice == 1) {
+			controller.boardConfiguration();
+			controller.mapConfiguration();
+		}
 	}
 
 	public void play() {
 		int choice;
 		while (true) {
 			ClientOutputPrinter.printLine(
-					"Next choice?\n1) Perform action\n2) Request board status\n3) Request my player's status4) Disconnect");
-			choice = input.nextInt();
-			switch (choice) {
-			case 1:
-				controller.performNewAction();
-				break;
-			case 2:
-				controller.requestBoardStatus();
-				break;
-			case 3:
-				controller.requestMyPlayerStatus();
-				break;
-			case 4:
-				controller.disconnect();
-				break;
-			default:
+					"Next choice?\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration");
+			try {
+				choice = input.nextInt();
+				switch (choice) {
+				case 1:
+					controller.performNewAction();
+					break;
+				case 2:
+					controller.requestBoardStatus();
+					break;
+				case 3:
+					controller.disconnect();
+					break;
+				case 4:
+					controller.sellItemOnMarket();
+					break;
+				case 5:
+					controller.buyItemOnMarket();
+					break;
+				case 6:
+					controller.requestPlayerStatus();
+					break;
+				case 7:
+					controller.mapConfiguration();
+					break;
+				default:
+					ClientOutputPrinter.printLine("Invalid choice... please retry!");
+				}
+			} catch (NumberFormatException e) {
 				ClientOutputPrinter.printLine("Invalid choice... please retry!");
 			}
 		}

@@ -225,7 +225,7 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
+	/*public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
 		int numberOfCardsUsed = 0;
 		String colorCard = "";
 		boolean flagStopChoose = false;

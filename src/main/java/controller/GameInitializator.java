@@ -43,7 +43,7 @@ public class GameInitializator extends Thread {
 
     private void waitingForPlayers() {
     	match.setGameStatus(1);
-        ServerOutputPrinter.printLine("[MATCH " + id + "] Game Status changed to Waiting for players'");
+        ServerOutputPrinter.printLine("[MATCH " + id + "] Game Status changed to 'Waiting for players'");
         sendMessageToClient("[MATCH " + id + "] Currently waiting for players...",players.get(0).getId());
         while (players.size() < this.minimumNumberOfPlayers) {
             // Match starts with at least two players

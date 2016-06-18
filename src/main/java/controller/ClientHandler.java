@@ -41,9 +41,9 @@ public class ClientHandler implements Runnable {
 	 */
 	@Override
 	public void run() {
-		//if (!joinMatch()) {
+		if (!joinMatch()) {
 			launchNewMatch(new Date());
-		//}
+		}
 	}
 
 	/**

@@ -108,7 +108,7 @@ public class ClientPacketController {
 		while (!proceed) {
 			ClientOutputPrinter.printLine(
 					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\b4) Return back...");
-			choice = input.nextInt();
+			choice = Integer.parseInt(input.nextLine());
 			try {
 				switch (choice) {
 
@@ -122,7 +122,7 @@ public class ClientPacketController {
 					break;
 				case 3:
 					ClientOutputPrinter.printLine("Choose the ID of the Permit Tile to sell:");
-					int id = input.nextInt();
+					int id = Integer.parseInt(input.nextLine());
 					packetSenderInt.sendToServer(new Packet(new MarketEventSell(id)));
 					break;
 				case 4:
@@ -141,7 +141,7 @@ public class ClientPacketController {
 	public void buyItemOnMarket() {
 		int id;
 		ClientOutputPrinter.printLine("Type the Item ID you would like to buy:");
-		id = input.nextInt();
+		id = Integer.parseInt(input.nextLine());
 		try {
 			packetSenderInt.sendToServer(new Packet(new MarketEventBuy(id)));
 		} catch (RemoteException e) {
@@ -232,7 +232,7 @@ public class ClientPacketController {
 		int choice = 0;
 		while (!correctAnswer) {
 			ClientOutputPrinter.printLine("1) Create a new board configuration\n2) Choose an existing configuration");
-			choice = input.nextInt();
+			choice = Integer.parseInt(input.nextLine());
 			if (choice != 1 && choice != 2) {
 				ClientOutputPrinter.printLine("ERROR: incorrect input. Please retry");
 			} else
@@ -254,7 +254,7 @@ public class ClientPacketController {
 					ClientOutputPrinter.printLine(e.getMessage());
 				}
 				ClientOutputPrinter.printLine("Choose the configuration ID:");
-				choice = input.nextInt();
+				choice = Integer.parseInt(input.nextLine());
 
 				try {
 					packetSenderInt.sendToServer(new Packet(new Integer(choice)));
@@ -268,7 +268,7 @@ public class ClientPacketController {
 				}
 				ClientOutputPrinter.printLine("Press any key to continue or press 1 to repeat the confguration");
 				try {
-				choice = input.nextInt();
+				choice = Integer.parseInt(input.nextLine());
 				if (choice != 1)
 					finish = true;
 				}
@@ -295,7 +295,7 @@ public class ClientPacketController {
 
 			ClientOutputPrinter
 					.printLine("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status\n5) Count distance");
-			choice = input.nextInt();
+			choice = Integer.parseInt(input.nextLine());
 
 			switch (choice) {
 			case 1:

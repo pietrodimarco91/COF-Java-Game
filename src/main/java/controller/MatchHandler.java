@@ -344,11 +344,11 @@ public class MatchHandler {
 	 * 
 	 * @return true is it currently pending, false otherwise
 	 */
-/*	public boolean isPending() {
+	public boolean isPending() {
 		return this.gameStatus == 1;
 	}
 
-	public void roundsOfPlayer() {
+	/*public void roundsOfPlayer() {
 		Player player;
 		int choice = 0;
 		ConnectorInt connector;

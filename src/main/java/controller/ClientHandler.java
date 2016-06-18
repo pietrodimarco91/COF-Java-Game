@@ -72,7 +72,7 @@ public class ClientHandler implements Runnable {
 	 * new player into the match. If there are no available matches it launch a
 	 * new match.
 	 */
-/*	public synchronized boolean joinMatch() {
+	public synchronized boolean joinMatch() {
 		Iterator<MatchHandler> iterator = matches.iterator();
 		MatchHandler matchInList;
 		boolean joined = false;
@@ -99,6 +99,6 @@ public class ClientHandler implements Runnable {
 			}
 		}
 		return joined;
-	}*/
+	}
 
 }

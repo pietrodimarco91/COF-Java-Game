@@ -51,7 +51,7 @@ public class Client {
 		int choice;
 		while (true) {
 			ClientOutputPrinter.printLine(
-					"Next choice?\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration");
+					"||*** MAIN MENU ***||\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration");
 			try {
 				choice = input.nextInt();
 				switch (choice) {

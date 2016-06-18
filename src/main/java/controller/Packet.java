@@ -22,8 +22,6 @@ public class Packet implements Serializable {
 
     private MarketEvent marketEvent;
 
-    private String cityLink;
-
     public Packet(ConfigObject configObject){
         header="CONFIGOBJECT";
         this.configObject=configObject;
@@ -45,7 +43,7 @@ public class Packet implements Serializable {
         	header="REMOVELINK";
         else if(typeOfAction.equals("COUNTDISTANCE"))
         	header="COUNTDISTANCE";
-        cityLink=city1+" "+city2;
+        messageString=city1+" "+city2;
     }
 
     public Packet(String messageString){

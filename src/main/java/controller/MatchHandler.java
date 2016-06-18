@@ -172,7 +172,7 @@ public class MatchHandler {
 			configParameters = new int[] { config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
 					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
 					config.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.board, this.configParameters, this,
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
 					this.players, MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (ConfigAlreadyExistingException e) {
@@ -191,10 +191,11 @@ public class MatchHandler {
 		}
 		try {
 			ConfigObject chosenConfig = configFileManager.getConfiguration(configId);
+			numberOfPlayers = chosenConfig.getNumberOfPlayers();
 			configParameters = new int[] { chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(),
 					chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(),
 					chosenConfig.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.board, this.configParameters, this,
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
 					this.players, MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (UnexistingConfigurationException e) {
@@ -220,6 +221,7 @@ public class MatchHandler {
 		}
 		if (this.board.graphIsConnected()) {
 			this.gameStatus = 3; // we're ready to play!
+			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 		} else
 			try {
 				players.get(playerId).getConnector()
@@ -257,10 +259,14 @@ public class MatchHandler {
 				city2 = tempCity;
 			}
 		}
-		if (board.checkPossibilityOfNewConnection(city1, city2))
+		if(city1==null || city2== null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
+		} else if (board.checkPossibilityOfNewConnection(city1, city2)) {
 			board.connectCities(city1, city2);
+			PubSub.notifyAllClients(players, "Player with ID "+playerId+" connected "+city1.getName()+" with "+city2.getName());
+		}
 		else {
-			sendErrorToClient("Error: cities cannot be connected\n", playerId);
+			sendErrorToClient("Cities cannot be connected\n", playerId);
 		}
 	}
 
@@ -292,7 +298,13 @@ public class MatchHandler {
 				city2 = tempCity;
 			}
 		}
-		board.unconnectCities(city1, city2);
+		if(city1==null || city2== null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
+		}
+		else {
+			board.unconnectCities(city1, city2);
+			PubSub.notifyAllClients(players, "Player with ID "+playerId+" removed connection between "+city1.getName()+" and "+city2.getName());
+		}
 	}
 
 	public void countDistance(String parameter, int playerId) {
@@ -323,7 +335,7 @@ public class MatchHandler {
 				sendMessageToClient(city1.getName() + " and " + city2.getName() + "are not connected\n", playerId);
 			}
 		} else {
-			sendErrorToClient("Error: cities were not found", playerId);
+			sendErrorToClient("Cities were not found", playerId);
 		}
 	}
 
@@ -332,11 +344,11 @@ public class MatchHandler {
 	 * 
 	 * @return true is it currently pending, false otherwise
 	 */
-/*	public boolean isPending() {
+	public boolean isPending() {
 		return this.gameStatus == 1;
 	}
 
-	public void roundsOfPlayer() {
+	/*public void roundsOfPlayer() {
 		Player player;
 		int choice = 0;
 		ConnectorInt connector;
@@ -949,6 +961,10 @@ public class MatchHandler {
 
 	public void setGameStatus(int i) {
 		this.gameStatus = i;
+	}
+	
+	public void setBoard(Board board) {
+		this.board=board;
 	}
 
 	public void setNumberOfPlayers(int i) {

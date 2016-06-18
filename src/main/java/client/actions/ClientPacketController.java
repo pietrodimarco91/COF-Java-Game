@@ -37,6 +37,7 @@ public class ClientPacketController {
 	private ClientSideConnector clientSideConnector;
 	private RMIConnectionInt rmiConnectionInt;
 	private ServerSideConnectorInt packetSenderInt;
+	private SocketInputOutputThread socketInputOutputThread;
 	private Scanner input;
 
 	public ClientPacketController() {
@@ -204,7 +205,9 @@ public class ClientPacketController {
 
 	public void startSocketConnection() {
 		try {
-			packetSenderInt = new SocketInputOutputThread(new Socket(ADDRESS, PORT));
+			socketInputOutputThread=new SocketInputOutputThread(new Socket(ADDRESS, PORT));
+			socketInputOutputThread.start();
+			packetSenderInt = socketInputOutputThread;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

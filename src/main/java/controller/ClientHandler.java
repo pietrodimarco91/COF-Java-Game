@@ -27,11 +27,12 @@ public class ClientHandler implements Runnable {
 	private ClientSideConnectorInt clientSideConnector;
 	private ServerSideConnectorInt serverSideConnector;
 
-	public ClientHandler(ClientSideConnectorInt clientSideConnector, ServerSideConnectorInt serverSideConnector, ArrayList<MatchHandler> matches) {
+	public ClientHandler(ClientSideConnectorInt clientSideConnector, ServerSideConnectorInt serverSideConnector,
+			ArrayList<MatchHandler> matches) {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.matches = matches;
 		this.clientSideConnector = clientSideConnector;
-		this.serverSideConnector= serverSideConnector;
+		this.serverSideConnector = serverSideConnector;
 	}
 
 	/**
@@ -53,15 +54,15 @@ public class ClientHandler implements Runnable {
 	public synchronized void launchNewMatch(Date date) {
 		int id = Server.getId();
 		DateFormat dateFormat = new SimpleDateFormat();
+		MatchHandler matchHandler = new MatchHandler(id, date, clientSideConnector, serverSideConnector);
+		matchHandler.sendMessageToClient(
+				"You launched a new match of Council Of Four on " + dateFormat.format(date) + " with ID " + id + "\nYou are the match creator and your ID is 0",
+				0);
 		try {
-			clientSideConnector.sendToClient(new Packet("You launched a new match of Council Of Four on " + dateFormat.format(date)
-					+ " with ID " + id + "\n"));
+			serverSideConnector.setMatchHandler(matchHandler);
 		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: could not write to client while launching a new match\n", e);
+			logger.log(Level.INFO, "Remote Exception", e);
 		}
-
-		MatchHandler matchHandler = new MatchHandler(id, date, clientSideConnector,serverSideConnector);
-		serverSideConnector.setMatchHandler(matchHandler);
 		matches.add(matchHandler);
 	}
 
@@ -78,8 +79,22 @@ public class ClientHandler implements Runnable {
 		while (iterator.hasNext() && !joined) {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
-				matchInList.addPlayer(clientSideConnector,serverSideConnector,matchInList.getPlayers().size());
-				serverSideConnector.setMatchHandler(matchInList);
+				int myId = matchInList.getPlayers().size();
+				matchInList.addPlayer(clientSideConnector, serverSideConnector, myId);
+				matchInList.sendMessageToClient(
+						"You joined an already existing match of Council Of Four with ID " + matchInList.getId() + "\nYour player ID is "+myId,
+						myId);
+				for (Player player : matchInList.getPlayers()) {
+					if (player.getConnector() != clientSideConnector) {
+						matchInList.sendMessageToClient("A new player joined this match! Currently there are "
+								+ matchInList.getPlayers().size() + " players...", player.getId());
+					}
+				}
+				try {
+					serverSideConnector.setMatchHandler(matchInList);
+				} catch (RemoteException e) {
+					logger.log(Level.INFO, "Remote Exception", e);
+				}
 				joined = true;
 			}
 		}

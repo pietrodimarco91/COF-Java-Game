@@ -95,8 +95,8 @@ public class Server {
 		while(!stopServer){
 			try {
 				socketConnector=new SocketConnector(welcomeSocket.accept());
-				socketConnector.run();
-				socketConnector.sendToClient(new Packet("[SERVER]: RMI Connection correctly established"));
+				socketConnector.start();
+				socketConnector.sendToClient(new Packet("[SERVER] Socket Connection correctly established with Server engine!"));
 				thread.submit(new ClientHandler(socketConnector, socketConnector, matches));
 			} catch (IOException e) {
 				e.printStackTrace();

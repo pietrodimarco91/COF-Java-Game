@@ -39,7 +39,7 @@ public class Client {
 
 	public void initialConfiguration() {
 		ClientOutputPrinter.printLine(
-				"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press a key to continue..");
+				"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any number but 1 to continue..");
 		int choice = input.nextInt();
 		if (choice == 1) {
 			controller.boardConfiguration();

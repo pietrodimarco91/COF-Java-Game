@@ -34,8 +34,8 @@ public class RMIConnection extends UnicastRemoteObject implements RMIConnectionI
 	 */
 	@Override
 	public ServerSideConnectorInt connect(ClientSideConnectorInt a) throws RemoteException {
-		a.sendToClient(new Packet("[SERVER]: RMI Connection correctly established"));
-		ServerOutputPrinter.printLine("[SERVER]: RMI Connection correctly established");
+		a.sendToClient(new Packet("[SERVER] RMI Connection correctly established with Server engine!"));
+		ServerOutputPrinter.printLine("[SERVER] RMI Connection correctly established from a new Client");
 		ServerSideConnectorInt serverSideConnector=new ServerSideConnector();
 		thread.submit(new ClientHandler(a,serverSideConnector, matches));
 		return serverSideConnector;

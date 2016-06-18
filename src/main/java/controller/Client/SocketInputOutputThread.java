@@ -48,19 +48,12 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 	public void sendToServer(Packet packet) throws RemoteException {
 		try {
 			outputObjectToServer.writeObject(packet);
+			outputObjectToServer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
-
-	//*****SERVER SIDE METHOD******//
-
-	@Override
-	public void setMatchHandler(MatchHandler matchHandler) {
-
-	}
-
+	
 	@Override
 	public void setPlayerId(int id) {
 
@@ -73,6 +66,13 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 				break;
 			default:
 		}
+
+	}
+
+	//*****SERVER SIDE METHOD******//
+
+	@Override
+	public void setMatchHandler(MatchHandler matchHandler) {
 
 	}
 }

@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -37,7 +38,6 @@ public class ClientPacketController {
 	private RMIConnectionInt rmiConnectionInt;
 	private ServerSideConnectorInt packetSenderInt;
 	private Scanner input;
-	private SocketInputOutputThread socketInputOutputThread;
 
 	public ClientPacketController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
@@ -153,7 +153,7 @@ public class ClientPacketController {
 	 */
 	public void requestBoardStatus() {
 		try {
-			packetSenderInt.sendToServer(new Packet("REQUESTBOARDSTATUS"));
+			packetSenderInt.sendToServer(new Packet());
 		} catch (RemoteException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
@@ -220,7 +220,7 @@ public class ClientPacketController {
 		} catch (MalformedURLException e) {
 			logger.log(Level.FINEST, "Error: the URL specified is invalid", e);
 		} catch (RemoteException e) {
-			logger.log(Level.FINEST, "Error: RemoteException was thrown", e);
+			logger.log(Level.INFO, "Error: RemoteException was thrown", e);
 		}
 	}
 
@@ -241,7 +241,7 @@ public class ClientPacketController {
 			boolean finish = false;
 			while (!finish) {
 				try {
-					packetSenderInt.sendToServer(new Packet("REQUESTCONFIGURATIONS"));
+					packetSenderInt.sendToServer(new Packet("REQUESTCONFIG"));
 				} catch (RemoteException e) {
 					ClientOutputPrinter.printLine(e.getMessage());
 				}
@@ -264,9 +264,14 @@ public class ClientPacketController {
 					ClientOutputPrinter.printLine(e.getMessage());
 				}
 				ClientOutputPrinter.printLine("Press any key to continue or press 1 to repeat the confguration");
+				try {
 				choice = input.nextInt();
 				if (choice != 1)
 					finish = true;
+				}
+				catch(InputMismatchException e) {
+					ClientOutputPrinter.printLine("Error! Expected integer but it was a string...");
+				}
 
 			}
 
@@ -286,7 +291,7 @@ public class ClientPacketController {
 		while (!stop) {
 
 			ClientOutputPrinter
-					.printLine("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status ");
+					.printLine("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status\n5) Count distance");
 			choice = input.nextInt();
 
 			switch (choice) {
@@ -297,6 +302,11 @@ public class ClientPacketController {
 				editConnection("REMOVE");
 				break;
 			case 3:
+				try {
+					packetSenderInt.sendToServer(new Packet("FINISHMAPCONFIG"));
+				} catch (RemoteException e) {
+					ClientOutputPrinter.printLine(e.getMessage());
+				}
 				stop = true;
 				break;
 			case 4:
@@ -306,10 +316,33 @@ public class ClientPacketController {
 					ClientOutputPrinter.printLine(e.getMessage());
 				}
 				break;
+			case 5:
+				countDistance();
+				break;
 			default:
 				ClientOutputPrinter.printLine("Invalid input.");
 			}
 		}
+	}
+
+	private void countDistance() {
+		String city1 = "null";
+		String city2 = "null";
+
+		do {
+			ClientOutputPrinter.printLine("Insert the FIRST letter of the first city:\n");
+			city1 = input.nextLine();
+			ClientOutputPrinter.printLine("Insert the FIRST letter of the second city:\n");
+			city2 = input.nextLine();
+		} while (city1.length() > 1 || city2.length() > 1 || city2.equals(city1) || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(city1))
+				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(city2)));
+		city1 = city1.toUpperCase();
+		city2 = city2.toUpperCase();
+		try {
+			packetSenderInt.sendToServer(new Packet(city1, city2, "COUNTDISTANCE"));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}		
 	}
 
 	public void editConnection(String choice) {
@@ -321,7 +354,8 @@ public class ClientPacketController {
 			city1 = input.nextLine();
 			ClientOutputPrinter.printLine("Insert the FIRST letter of the second city:\n");
 			city2 = input.nextLine();
-		} while (city1.length() > 1 || city2.length() > 1 || city2.equals(city1));
+		} while (city1.length() > 1 || city2.length() > 1 || city2.equals(city1) || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(city1))
+				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(city2)));
 		city1 = city1.toUpperCase();
 		city2 = city2.toUpperCase();
 		try {

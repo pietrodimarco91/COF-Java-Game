@@ -14,20 +14,18 @@ import java.util.logging.Logger;
 public class GameInitializator extends Thread {
 
     private static final Logger logger = Logger.getLogger(GameInitializator.class.getName());
-    private int gameStatus;
+    private MatchHandler match;
     private ArrayList<Player> players;
     private int minimumNumberOfPlayers;
     private int id;
     private Board board;
     private int[] configParameters;
-    private int numberOfPlayers;
 
-    public GameInitializator(int id, Board board, int[] configParameters, int numberOfPlayers, int gameStatus, ArrayList<Player> players, int minumumNumberOfPlayers) {
+    public GameInitializator(int id, Board board, int[] configParameters, MatchHandler match, ArrayList<Player> players, int minumumNumberOfPlayers) {
         this.id = id;
         this.board = board;
         this.configParameters = configParameters;
-        this.numberOfPlayers = numberOfPlayers;
-        this.gameStatus=gameStatus;
+        this.match=match;
         this.players=players;
         this.minimumNumberOfPlayers=minumumNumberOfPlayers;
     }
@@ -45,6 +43,7 @@ public class GameInitializator extends Thread {
     }
 
     private void waitingForPlayers() {
+    	match.setGameStatus(1);
         ServerOutputPrinter.printLine("[MATCH " + id + "] Currently waiting for players...");
         sendMessageToClient("[Match ID: " + id + "] Currently waiting for players...",players.get(0).getId());
         while (players.size() < this.minimumNumberOfPlayers) {
@@ -80,7 +79,7 @@ public class GameInitializator extends Thread {
                 }
             }
         }
-        gameStatus=2;
+        match.setGameStatus(2);
     }
 
     /**
@@ -88,7 +87,7 @@ public class GameInitializator extends Thread {
      */
     public void setDefinitiveNumberOfPlayers() {
         configParameters[0] = this.players.size();
-        this.numberOfPlayers=this.players.size();
+        match.setNumberOfPlayers(this.players.size());
     }
 
     /**
@@ -98,6 +97,7 @@ public class GameInitializator extends Thread {
     public void boardInitialization() {
         board = new Board(configParameters[0], configParameters[1], configParameters[2], configParameters[3],
                 configParameters[4]);
+        PubSub.notifyAllClients(players,"Board correctly initialized!");
     }
 
     public void sendMessageToClient(String s, int playerId) {

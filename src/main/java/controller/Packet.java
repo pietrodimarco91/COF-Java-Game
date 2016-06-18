@@ -41,7 +41,10 @@ public class Packet implements Serializable {
     public Packet(String city1, String city2,String typeOfAction){
         if(typeOfAction.equals("ADD"))
         header="ADDLINK";
-        else header="REMOVELINK";
+        else if(typeOfAction.equals("REMOVE"))
+        	header="REMOVELINK";
+        else if(typeOfAction.equals("COUNTDISTANCE"))
+        	header="COUNTDISTANCE";
         cityLink=city1+" "+city2;
     }
 

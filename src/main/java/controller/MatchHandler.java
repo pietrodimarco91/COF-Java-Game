@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -22,7 +23,7 @@ import java.util.logging.StreamHandler;
  * Created by Gabriele on 22/05/16. This class represents the thread always
  * running while a match is on-going. It stores the core of the game engine.
  */
-public class MatchHandler{
+public class MatchHandler {
 
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 
@@ -79,15 +80,9 @@ public class MatchHandler{
 	 */
 	private boolean pending; // To add UML scheme
 
-
 	/**
-	 * Mapstatus:
-	 * 0 wait board configuration
-	 * 1 wait for players
-	 * 2 wait map configuration
-	 * 3 play
-	 * 4 market
-	 * 5 finished
+	 * Mapstatus: 0 wait board configuration 1 wait for players 2 wait map
+	 * configuration 3 play 4 market 5 finished
 	 */
 	private int gameStatus;
 
@@ -95,12 +90,18 @@ public class MatchHandler{
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector) {
+	public MatchHandler(int id, Date date, ClientSideConnectorInt connector,
+			ServerSideConnectorInt serverSideConnector) {
+		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.players = new ArrayList<Player>();
-		gameStatus =0;
-		configFileManager=new ConfigFileManager();
-		serverSideConnector.setPlayerId(0);
-		this.creator = new Player(connector,0);
+		gameStatus = 0;
+		configFileManager = new ConfigFileManager();
+		try {
+			serverSideConnector.setPlayerId(0);
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Remote Exception", e);
+		}
+		this.creator = new Player(connector, 0);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
@@ -108,310 +109,9 @@ public class MatchHandler{
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.pending = false;
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-		ServerOutputPrinter.printLine("[MATCH " + id + "]: Started running...");
+		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
 	}
 
-
-	/**
-	 *
-	 */
-	public void mapConfiguration(ClientSideConnector connector) {
-		boolean stop = false;
-		int choice = 0;
-		while (!stop) {
-			try {
-				connector.sendToClient(new Packet("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View graphic map\n5) View links\n6) View map status\n7) Count distance\n8) Show all distances\n ");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				choice = connector.receiveIntFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive to client", e);
-			}
-			switch (choice) {
-			case 1:
-				try {
-					generateConnection(this.board, connector);
-					break;
-				} catch (InvalidInputException e1) {
-					try {
-						creator.getConnector().writeToClient(e1.printError());
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				}
-				break;
-			case 2:
-				try {
-					removeConnection(this.board, connector);
-				} catch (InvalidInputException e1) {
-					try {
-						creator.getConnector().writeToClient(e1.printError());
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				}
-				break;
-			case 3:
-				if (this.board.graphIsConnected()) {
-					stop = true;
-					break;
-				} else
-					try {
-						connector.writeToClient("Error: map is not connected. Add the necessary connections.\n");
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				break;
-			case 4:
-				try {
-					connector.writeToClient(this.board.printMatrix());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-
-				break;
-			case 5:
-				try {
-					connector.writeToClient(this.board.printConnections());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-
-				break;
-			case 6:
-				try {
-					connector.writeToClient(this.board.toString());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-				break;
-			case 7:
-				try {
-					countDistance(this.board, connector);
-				} catch (InvalidInputException e1) {
-					try {
-						creator.getConnector().writeToClient(e1.printError());
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				}
-				break;
-			case 8:
-				try {
-					connector.writeToClient(this.board.printDistances());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-
-				break;
-			default:
-				try {
-					connector.writeToClient("Error: invalid number\n");
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * @throws InvalidInputException
-	 * 
-	 */
-	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
-		String first = null;
-		String second = null;
-		City city1 = null, city2 = null, tempCity;
-		List<City> cities = map.getMap();
-		Iterator<City> cityIterator = cities.iterator();
-		try {
-			connector.writeToClient("NEW CONNECTION\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the first city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				first = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-
-		} while (first.length() > 1);
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the second city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				second = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-
-		} while (second.length() > 1 || second.equals(first));
-		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
-			throw new InvalidInputException();
-		}
-		first = first.toUpperCase();
-		second = second.toUpperCase();
-		while (cityIterator.hasNext()) {
-			tempCity = cityIterator.next();
-			if (tempCity.getName().charAt(0) == first.charAt(0)) {
-				city1 = tempCity;
-			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-				city2 = tempCity;
-			}
-		}
-		if (map.checkPossibilityOfNewConnection(city1, city2))
-			map.connectCities(city1, city2);
-		else {
-			try {
-				connector.writeToClient("Error: cities cannot be connected\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-		}
-	}
-
-	/**
-	 * @throws InvalidInputException
-	 * 
-	 */
-	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
-		String first = null;
-		String second = null;
-		City city1 = null, city2 = null, tempCity;
-		List<City> cities = map.getMap();
-		Iterator<City> cityIterator = cities.iterator();
-
-		try {
-			connector.writeToClient("REMOVE CONNECTION\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the first city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				first = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (first.length() > 1);
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the second city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				second = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (second.length() > 1 || second.equals(first));
-		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
-			throw new InvalidInputException();
-		}
-		first = first.toUpperCase();
-		second = second.toUpperCase();
-		while (cityIterator.hasNext()) {
-			tempCity = cityIterator.next();
-			if (tempCity.getName().charAt(0) == first.charAt(0)) {
-				city1 = tempCity;
-			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-				city2 = tempCity;
-			}
-		}
-		map.unconnectCities(city1, city2);
-	}
-
-	/**
-	 * @throws InvalidInputException
-	 * 
-	 */
-	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
-		String first = null;
-		String second = null;
-		City city1 = null, city2 = null, tempCity;
-		List<City> cities = map.getMap();
-		Iterator<City> cityIterator = cities.iterator();
-
-		try {
-			connector.writeToClient("COUNT DISTANCE:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the first city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				first = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (first.length() > 1);
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the second city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				second = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (second.length() > 1 || second.equals(first));
-		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
-			throw new InvalidInputException();
-		}
-		first = first.toUpperCase();
-		second = second.toUpperCase();
-		while (cityIterator.hasNext()) {
-			tempCity = cityIterator.next();
-			if (tempCity.getName().charAt(0) == first.charAt(0)) {
-				city1 = tempCity;
-			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-				city2 = tempCity;
-			}
-		}
-		if (city1 != null && city2 != null)
-			try {
-				if (map.countDistance(city1, city2) != -1) {
-					connector.writeToClient("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
-							+ map.countDistance(city1, city2) + "\n");
-				} else {
-					connector.writeToClient(city1.getName() + " and " + city2.getName() + "are not connected\n");
-				}
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-
-	}
-
-	/**
-	 * INCOMPLETE IMPLEMENTATION
-	 */
 	public String toString() {
 		String string = "";
 		string += "Match number " + this.id + "\n";
@@ -422,12 +122,218 @@ public class MatchHandler{
 	}
 
 	/**
+	 * @return
+	 */
+	public boolean isFull() {
+		return this.players.size() >= this.numberOfPlayers;
+	}
+
+	/**
+	 * 
+	 */
+	public ArrayList<Player> getPlayers() {
+		return this.players;
+	}
+
+	/**
+	 * 
+	 */
+	public int getId() {
+		return this.id;
+	}
+
+	/**
+	 * @return
+	 */
+	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id) {
+		try {
+			serverSideConnector.setPlayerId(id);
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Remote Exception", e);
+		}
+		Player player = new Player(connector, id);
+		this.players.add(player);
+	}
+
+	public void setConfigObject(ConfigObject config, int playerId) {
+		if (gameStatus != 0) {
+			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
+			return;
+		}
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		try {
+			configFileManager.createConfiguration(config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
+					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
+					config.getLinksBetweenCities());
+			numberOfPlayers = config.getNumberOfPlayers();
+			configParameters = new int[] { config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
+					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
+					config.getLinksBetweenCities() };
+			GameInitializator initializator = new GameInitializator(this.id, this.board, this.configParameters, this,
+					this.players, MINUMUM_NUMBER_OF_PLAYERS);
+			initializator.start();
+		} catch (ConfigAlreadyExistingException e) {
+			sendErrorToClient(e.printError(), playerId);
+		}
+	}
+
+	public void setExistingConf(int configId, int playerId) {
+		if (gameStatus != 0) {
+			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
+			return;
+		}
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		try {
+			ConfigObject chosenConfig = configFileManager.getConfiguration(configId);
+			configParameters = new int[] { chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(),
+					chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(),
+					chosenConfig.getLinksBetweenCities() };
+			GameInitializator initializator = new GameInitializator(this.id, this.board, this.configParameters, this,
+					this.players, MINUMUM_NUMBER_OF_PLAYERS);
+			initializator.start();
+		} catch (UnexistingConfigurationException e) {
+			sendErrorToClient(e.printError(), playerId);
+		}
+	}
+
+	/**
+	 * This method is performed when gameStatus=2 (MAP CONFIGURATION), and it
+	 * checks if the graph map is connected or not. The graph map must be
+	 * connected in order to play.
+	 * 
+	 * @param playerId
+	 */
+	public void checkIfGraphIsConnected(int playerId) {
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		if (gameStatus != 2) {
+			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
+			return;
+		}
+		if (this.board.graphIsConnected()) {
+			this.gameStatus = 3; // we're ready to play!
+		} else
+			try {
+				players.get(playerId).getConnector()
+						.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
+			} catch (RemoteException e) {
+				ServerOutputPrinter.printLine(e.getMessage());
+			}
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public void generateConnection(String parameter, int playerId) {
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		if (gameStatus != 2) {
+			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
+			return;
+		}
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = board.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		StringTokenizer tokenizer = new StringTokenizer(parameter, " ");
+		String first, second;
+		first = tokenizer.nextToken();
+		second = tokenizer.nextToken();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (board.checkPossibilityOfNewConnection(city1, city2))
+			board.connectCities(city1, city2);
+		else {
+			sendErrorToClient("Error: cities cannot be connected\n", playerId);
+		}
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public void removeConnection(String parameter, int playerId) {
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		if (gameStatus != 2) {
+			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
+			return;
+		}
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = board.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		StringTokenizer tokenizer = new StringTokenizer(parameter, " ");
+		String first, second;
+		first = tokenizer.nextToken();
+		second = tokenizer.nextToken();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		board.unconnectCities(city1, city2);
+	}
+
+	public void countDistance(String parameter, int playerId) {
+		if (gameStatus < 2) {
+			sendErrorToClient("Unable to perform this action, match isn't started yet", playerId);
+			return;
+		}
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = board.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		StringTokenizer tokenizer = new StringTokenizer(parameter, " ");
+		String first, second;
+		first = tokenizer.nextToken();
+		second = tokenizer.nextToken();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (city1 != null && city2 != null) {
+			if (board.countDistance(city1, city2) != -1) {
+				sendMessageToClient("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
+						+ board.countDistance(city1, city2) + "\n", playerId);
+			} else {
+				sendMessageToClient(city1.getName() + " and " + city2.getName() + "are not connected\n", playerId);
+			}
+		} else {
+			sendErrorToClient("Error: cities were not found", playerId);
+		}
+	}
+
+	/**
 	 * This method allows to know whether the current match is pending or not
 	 * 
 	 * @return true is it currently pending, false otherwise
 	 */
 	public boolean isPending() {
-		return this.gameStatus==1;
+		return this.gameStatus == 1;
 	}
 
 	public void roundsOfPlayer() {
@@ -606,42 +512,44 @@ public class MatchHandler{
 	public void drawPoliticCard(Player player) {
 		player.addCardOnHand(PoliticCardDeck.generateRandomPoliticCard());
 	}
-	
+
 	/**
 	 * NEEDS IMPLEMENTATION
+	 * 
 	 * @return
-	 * @throws UnsufficientCoinsException 
+	 * @throws UnsufficientCoinsException
 	 */
 	public void buildEmporiumWithKingsHelp(Player player) throws UnsufficientCoinsException {
-		String city=null;
+		String city = null;
 		ArrayList<String> chosenPoliticCards = new ArrayList<String>();
 		// I obtain the information I need
 		int coinsToPay;
-		City cityTo=null;
-		City cityFrom=board.findKingCity();
-		coinsToPay=board.countDistance(cityFrom, cityTo)*2;
-		if(player.getCoins()>=coinsToPay)
+		City cityTo = null;
+		City cityFrom = board.findKingCity();
+		coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
+		if (player.getCoins() >= coinsToPay)
 			player.removeCoins(coinsToPay);
-		else throw new UnsufficientCoinsException();
+		else
+			throw new UnsufficientCoinsException();
 	}
 
 	/**
 	 * @return
 	 */
 	public void performAdditionalMainAction(Player player) {
-		int choice=0;
+		int choice = 0;
 		if (player.getNumberOfAssistants() > 3) {
-			
+
 			player.removeMoreAssistants(3);
-			do{
-			showMainActions(player);
-			try {
-				choice = player.getConnector().receiveIntFromClient();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-			}
-			}while(choice != 1 && choice != 2 && choice != 3 && choice != 4);
+			do {
+				showMainActions(player);
+				try {
+					choice = player.getConnector().receiveIntFromClient();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+				}
+			} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
 			mainActions(player, choice);
 		}
 	}
@@ -757,7 +665,6 @@ public class MatchHandler{
 	 * 
 	 * @return
 	 */
-
 	public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
 		int permitTileChoice = -1;
@@ -871,18 +778,6 @@ public class MatchHandler{
 	}
 
 	/**
-	 * @return
-	 */
-	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id) {// To
-															// add
-															// UML
-		// scheme
-		serverSideConnector.setPlayerId(id);
-		Player player = new Player(connector, id);
-		this.players.add(player);
-	}
-
-	/**
 	 * NEEDS REVISION: the specified name may be incorrect or invalid.
 	 * Exception?
 	 * 
@@ -914,27 +809,6 @@ public class MatchHandler{
 			} catch (RemoteException e) {
 				logger.log(Level.INFO, "Error: couldn't write to client", e);
 			}
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean isFull() {
-		return this.players.size() >= this.numberOfPlayers;
-	}
-
-	/**
-	 * 
-	 */
-	public ArrayList<Player> getPlayers() {
-		return this.players;
-	}
-
-	/**
-	 * 
-	 */
-	public int getIdentifier() {
-		return this.id;
 	}
 
 	/**
@@ -996,61 +870,36 @@ public class MatchHandler{
 		}
 	}
 
-	public void getBoardStatus(int playerId) {
-		if(gameStatus>1) {
-				sendMessageToClient(board.toString(),playerId);
-		} else {
-			sendErrorToClient("Board isn't configured yet",playerId);
-		}
-	}
-
-	public void setConfigObject(ConfigObject config, int playerId) {
-		if(gameStatus ==0 && creator.getId()==playerId) {
-			try {
-				configFileManager.createConfiguration(config.getNumberOfPlayers(),config.getRewardTokenBonusNumber(),config.getPermitTileBonusNumber(),config.getNobilityTrackBonusNumber(),config.getLinksBetweenCities());
-				numberOfPlayers=config.getNumberOfPlayers();
-				configParameters= new int[]{config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(), config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(), config.getLinksBetweenCities()};
-				GameInitializator initializator = new GameInitializator(this.id,this.board,this.configParameters,this.numberOfPlayers,this.gameStatus,this.players,this.MINUMUM_NUMBER_OF_PLAYERS);
-				initializator.start();
-			} catch (ConfigAlreadyExistingException e) {
-				sendErrorToClient(e.printError(),playerId);
-			}
-		}
-	}
-
-
+	/**
+	 * This method must understand which action to perform for the specified
+	 * player, depending on the dynamic dispatching of the Action
+	 * 
+	 * @param action
+	 * @param playerId
+	 */
 	public void evaluateAction(Action action, int playerId) {
 
-	}
-
-	public void addLink(String messageString, int playerId) {
-	}
-
-	public void removeLink(String messageString, int playerId) {
 	}
 
 	public void messageFromClient(String messageString, int playerId) {
 	}
 
-	public void setExistingConf(int configId, int playerId) {
-		try {
-			ConfigObject chosenConfig = configFileManager.getConfiguration(configId);
-			configParameters= new int[]{chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(), chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(), chosenConfig.getLinksBetweenCities()};
-			GameInitializator initializator = new GameInitializator(this.id,this.board,this.configParameters,this.numberOfPlayers,this.gameStatus,this.players,this.MINUMUM_NUMBER_OF_PLAYERS);
-			initializator.start();
-		} catch (UnexistingConfigurationException e) {
-			sendErrorToClient(e.printError(),playerId);
+	public void buyEvent(MarketEvent marketEvent, int playerId) {
+		if (gameStatus != 4) {
+			sendErrorToClient("Game status isn't 'Market'", playerId);
+			return;
 		}
 	}
 
-	public void buyEvent(MarketEvent marketEvent, int playerId) {
-	}
-
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
+		if (gameStatus != 4) {
+			sendErrorToClient("Game status isn't 'Market'", playerId);
+			return;
+		}
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
-		String message="[SERVER] Error: "+error;
+		String message = "[SERVER] Error: " + error;
 		try {
 			players.get(playerId).getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
@@ -1059,7 +908,7 @@ public class MatchHandler{
 	}
 
 	public void sendMessageToClient(String s, int playerId) {
-		String message="[SERVER] "+s;
+		String message = "[MATCH " + this.id + "] " + s;
 		try {
 			players.get(playerId).getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
@@ -1067,16 +916,43 @@ public class MatchHandler{
 		}
 	}
 
-	public void sendConfigurations(int playerId) {
-		ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
-		String string="";
-		for(ConfigObject config : configurations) {
-			string+=config.toString()+"\n";
+	public void sendBoardStatus(int playerId) {
+		if (gameStatus > 1) {
+			sendMessageToClient(
+					board.toString() + board.printMatrix() + board.printConnections() + board.printDistances(),
+					playerId);
+		} else {
+			sendErrorToClient("Board isn't configured yet", playerId);
 		}
-		sendMessageToClient(string,playerId);
+	}
+
+	public void sendConfigurations(int playerId) {
+		if (gameStatus != 0) {
+			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
+			return;
+		}
+		ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
+		String string = "";
+		for (ConfigObject config : configurations) {
+			string += config.toString() + "\n";
+		}
+		sendMessageToClient(string, playerId);
 	}
 
 	public void sendPlayerStatus(int playerId) {
-		/*NEEDS IMPLEMENTATION */
+		if (gameStatus < 3) {
+			sendErrorToClient("The match isn't started yet", playerId);
+			return;
+		}
+		sendMessageToClient(players.get(playerId).toString(), playerId);
 	}
+
+	public void setGameStatus(int i) {
+		this.gameStatus = i;
+	}
+
+	public void setNumberOfPlayers(int i) {
+		this.numberOfPlayers = i;
+	}
+
 }

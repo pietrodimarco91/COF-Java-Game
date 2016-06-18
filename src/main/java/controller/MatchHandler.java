@@ -332,7 +332,7 @@ public class MatchHandler {
 	 * 
 	 * @return true is it currently pending, false otherwise
 	 */
-	public boolean isPending() {
+/*	public boolean isPending() {
 		return this.gameStatus == 1;
 	}
 
@@ -425,7 +425,7 @@ public class MatchHandler {
 	 * @param player
 	 * @param regionName
 	 */
-	public void buyPermitTile(Player player) {
+/*	public void buyPermitTile(Player player) {
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
 		int slot = 0;
@@ -536,7 +536,7 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void performAdditionalMainAction(Player player) {
+	/*public void performAdditionalMainAction(Player player) {
 		int choice = 0;
 		if (player.getNumberOfAssistants() > 3) {
 
@@ -560,7 +560,7 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void electCouncillor(Player player) {
+/*	public void electCouncillor(Player player) {
 		String regionName = "";
 		String councillorColor = "";
 		boolean checkCouncillorColor = true;
@@ -636,7 +636,7 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public boolean changeBusinessPermitTiles(Player player) {
+/*	public boolean changeBusinessPermitTiles(Player player) {
 		String regionName = "";
 		do {
 			try {
@@ -665,7 +665,7 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void buildEmporiumWithPermitTile(Player player) {
+	/*public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
 		int permitTileChoice = -1;
 		String cityChoice = null;
@@ -724,7 +724,7 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public boolean sendAssistantToElectCouncillor(Player player) {
+/*	public boolean sendAssistantToElectCouncillor(Player player) {
 		boolean checkCouncillorColor = true;
 		String councillorColor = "";
 		String regionName = "";
@@ -801,7 +801,7 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void showRegionContent(Player player) {
+	/*public void showRegionContent(Player player) {
 		Region regions[] = this.board.getRegions();
 		for (int i = 0; i < regions.length; i++)
 			try {

@@ -96,7 +96,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 			else if (packet.getMessageString().equals("FINISHMAPCONFIG"))
 				matchHandler.checkIfGraphIsConnected(playerId);
 			else
-				matchHandler.messageFromClient(packet.getMessageString(), playerId);
+				matchHandler.setPlayerNickName(playerId, packet.getMessageString());
 			break;
 		case "CONFIGID":
 			matchHandler.setExistingConf(packet.getConfigId(), playerId);

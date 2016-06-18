@@ -39,6 +39,7 @@ public class GameInitializator extends Thread {
         countdown();
         setDefinitiveNumberOfPlayers();
         boardInitialization();
+        showPlayersInGame();
     }
 
     private void waitingForPlayers() {
@@ -99,6 +100,15 @@ public class GameInitializator extends Thread {
         match.setBoard(board);
         PubSub.notifyAllClients(players,"Board correctly initialized!");
         ServerOutputPrinter.printLine("[MATCH " + id + "] Game Status changed to 'Map Configuration'");
+    }
+    
+    public void showPlayersInGame() {
+    	String string="";
+    	string+="Players in game:\n";
+    	for(Player player : players) {
+    		string+=player.getNickName()+" : ID "+player.getId()+"\n";
+    	}
+    	PubSub.notifyAllClients(players, string);
     }
 
     public void sendMessageToClient(String s, int playerId) {

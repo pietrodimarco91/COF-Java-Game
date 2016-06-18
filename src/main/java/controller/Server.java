@@ -97,7 +97,7 @@ public class Server {
 				socketConnector=new SocketConnector(welcomeSocket.accept());
 				socketConnector.start();
 				socketConnector.sendToClient(new Packet("[SERVER] Socket Connection correctly established with Server engine!"));
-				thread.submit(new ClientHandler(socketConnector, socketConnector, matches));
+				thread.submit(new ClientHandler(socketConnector, socketConnector, matches, "tempNickName"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

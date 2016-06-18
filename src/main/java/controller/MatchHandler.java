@@ -85,13 +85,18 @@ public class MatchHandler {
 	 * configuration 3 play 4 market 5 finished
 	 */
 	private int gameStatus;
-
+	
+	/**
+	 * 
+	 */
+	private Market market;
+	
 	/**
 	 * Default constructor
 	 */
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector,
-			ServerSideConnectorInt serverSideConnector) {
+			ServerSideConnectorInt serverSideConnector, String creatorNickName) {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.players = new ArrayList<Player>();
 		gameStatus = 0;
@@ -101,13 +106,14 @@ public class MatchHandler {
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Remote Exception", e);
 		}
-		this.creator = new Player(connector, 0);
+		this.creator = new Player(connector, 0, creatorNickName);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.pending = false;
+		this.market=new Market();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
 	}
@@ -145,13 +151,13 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id) {
+	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id, String nickName) {
 		try {
 			serverSideConnector.setPlayerId(id);
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Remote Exception", e);
 		}
-		Player player = new Player(connector, id);
+		Player player = new Player(connector, id, nickName);
 		this.players.add(player);
 	}
 
@@ -263,7 +269,7 @@ public class MatchHandler {
 			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
 		} else if (board.checkPossibilityOfNewConnection(city1, city2)) {
 			board.connectCities(city1, city2);
-			PubSub.notifyAllClients(players, "Player with ID "+playerId+" connected "+city1.getName()+" with "+city2.getName());
+			PubSub.notifyAllClients(players, "Player with nickname '"+players.get(playerId).getNickName()+"' connected "+city1.getName()+" with "+city2.getName());
 		}
 		else {
 			sendErrorToClient("Cities cannot be connected\n", playerId);
@@ -303,7 +309,7 @@ public class MatchHandler {
 		}
 		else {
 			board.unconnectCities(city1, city2);
-			PubSub.notifyAllClients(players, "Player with ID "+playerId+" removed connection between "+city1.getName()+" and "+city2.getName());
+			PubSub.notifyAllClients(players, "Player with nickname '"+players.get(playerId).getNickName()+"' removed connection between "+city1.getName()+" and "+city2.getName());
 		}
 	}
 
@@ -901,6 +907,7 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
+		
 	}
 
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
@@ -969,6 +976,10 @@ public class MatchHandler {
 
 	public void setNumberOfPlayers(int i) {
 		this.numberOfPlayers = i;
+	}
+	
+	public void setPlayerNickName(int playerId, String nickName) {
+		this.players.get(playerId).setPlayerNickName(nickName);
 	}
 
 }

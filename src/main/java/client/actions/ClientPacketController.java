@@ -178,18 +178,18 @@ public class ClientPacketController {
 	 * @return true if the client is the creator of the match or false otherwise
 	 * @throws RemoteException
 	 */
-	public void connect() throws RemoteException {
+	public void connect(String nickName) throws RemoteException {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
 		boolean proceed = false;
 		while (!proceed) {
 			int choice = Integer.parseInt(input.nextLine());
 			switch (choice) {
 			case 1:
-				this.startRMIConnection();
+				this.startRMIConnection(nickName);
 				proceed = true;
 				break;
 			case 2:
-				this.startSocketConnection();
+				this.startSocketConnection(nickName);
 				proceed = true;
 				break;
 			default:
@@ -206,21 +206,22 @@ public class ClientPacketController {
 
 	}
 
-	public void startSocketConnection() {
+	public void startSocketConnection(String nickName) {
 		try {
 			socketInputOutputThread=new SocketInputOutputThread(new Socket(ADDRESS, PORT));
 			socketInputOutputThread.start();
 			packetSenderInt = socketInputOutputThread;
+			packetSenderInt.sendToServer(new Packet(nickName));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void startRMIConnection() {
+	public void startRMIConnection(String nickName) {
 		try {
 			clientSideConnector = new ClientSideConnector();
 			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://localhost/registry");
-			packetSenderInt = rmiConnectionInt.connect(clientSideConnector);
+			packetSenderInt = rmiConnectionInt.connect(clientSideConnector, nickName);
 		} catch (NotBoundException e) {
 			logger.log(Level.FINEST, "Error: the object you were looking for is not bounded", e);
 		} catch (MalformedURLException e) {

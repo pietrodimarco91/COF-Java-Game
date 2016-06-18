@@ -982,4 +982,8 @@ public class MatchHandler {
 		this.players.get(playerId).setPlayerNickName(nickName);
 	}
 
+	public void notifyEndOfTurn(int playerId) {
+				
+	}
+
 }

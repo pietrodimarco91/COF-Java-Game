@@ -40,5 +40,10 @@ public class Emporium {
 	public String getCityName() {
 		return cityName;
 	}
+	
+	public String toString() {
+		return "Emporium owned by "+owner.getNickName()+" and its color is "+this.color+"\n";
+		
+	}
 
 }

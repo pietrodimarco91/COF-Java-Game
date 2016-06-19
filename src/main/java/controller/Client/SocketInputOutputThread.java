@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 
 public class SocketInputOutputThread extends Thread implements ClientSideConnectorInt, ServerSideConnectorInt {
@@ -35,6 +36,9 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			while (true) {
 				try {
 					sendToClient((Packet) inputObjectFromServer.readObject());
+				} catch(SocketException e) {
+					ClientOutputPrinter.printLine("Critical error: Server went down and the connection has been closed.");
+					break;
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {

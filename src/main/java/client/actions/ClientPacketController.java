@@ -211,6 +211,11 @@ public class ClientPacketController {
 			socketInputOutputThread=new SocketInputOutputThread(new Socket(ADDRESS, PORT));
 			socketInputOutputThread.start();
 			packetSenderInt = socketInputOutputThread;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			packetSenderInt.sendToServer(new Packet(nickName));
 		} catch (IOException e) {
 			e.printStackTrace();

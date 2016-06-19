@@ -63,19 +63,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 	public void setPlayerId(int id) {
 		this.playerId = id;
 	}
-
-	@Override
-	public void sendToClient(Packet packet) throws RemoteException {
-		try {
-			outputObjectToClient.writeObject(packet);
-			outputObjectToClient.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// *****CLIENT SIDE METHOD******//
-
+	
 	@Override
 	public void sendToServer(Packet packet) throws RemoteException {
 		switch (packet.getHeader()) {
@@ -122,4 +110,17 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 		default:
 		}
 	}
+	
+	// *****SERVER SIDE METHOD******//
+	//in this case this method is used to receive something from client
+	@Override
+	public void sendToClient(Packet packet) throws RemoteException {
+		try {
+			outputObjectToClient.writeObject(packet);
+			outputObjectToClient.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

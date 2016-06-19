@@ -381,6 +381,10 @@ public class MatchHandler {
 
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId)
 			throws UnsufficientCoucillorSatisfiedException {
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
 		String regionName;
 		ArrayList<String> politicCardChoice;
 		int slot;
@@ -405,7 +409,7 @@ public class MatchHandler {
 				regionDeck = region.getDeck();
 				try {
 					regionDeck.drawPermitTile(slot);
-					sendMessageToClient("You bought a new permit Tile", playerId);
+					PubSub.notifyAllClients(this.players, "You bought a new permit Tile");
 				} catch (InvalidSlotException e) {
 					sendErrorToClient(e.showError(), playerId);
 				}
@@ -433,6 +437,11 @@ public class MatchHandler {
 	 */
 	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId)
 			throws UnsufficientCoinsException, UnsufficientCoucillorSatisfiedException {
+		
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
 		String cityName;
 		ArrayList<String> politicCardColors;
 		int numberOfCouncillorSatisfied;
@@ -487,19 +496,26 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int idPlayer) {
+	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
+		
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
 		String regionName;
 		String councillorColor;
 		regionName = electCouncillorAction.getRegion();
 		councillorColor = electCouncillorAction.getColor();
-		Player player = this.players.get(idPlayer);
+		Player player = this.players.get(playerId);
 		Region region = this.getRegion(regionName);
 		try {
 			region.electCouncillor(councillorColor);
+			player.addCoins(4);
+			PubSub.notifyAllClients(this.players, "You bought a new permit Tile");
 		} catch (CouncillorNotFoundException e) {
-			sendErrorToClient(e.getMessage(), idPlayer);
+			sendErrorToClient(e.getMessage(), playerId);
 		}
-		player.addCoins(4);
+		
 	}
 
 	/**
@@ -508,13 +524,18 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void engageAssistant(EngageAssistantAction engageAssistantAction, int idPlayer)
+	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId)
 			throws UnsufficientCoinsException {
-		Player player = this.players.get(idPlayer);
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
+		Player player = this.players.get(playerId);
 		int coins = player.getCoins();
 		if (coins >= 3) {
 			player.removeCoins(3);
 			player.addAssistant();
+			PubSub.notifyAllClients(this.players, "You bought a new permit Tile");
 		} else
 			throw new UnsufficientCoinsException();
 	}
@@ -528,6 +549,11 @@ public class MatchHandler {
 
 	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId)
 			throws UnsufficientAssistantNumberException {
+		
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
 		String regionName;
 		Player player = this.players.get(playerId);
 		regionName = switchPermitTilesAction.getRegionName();
@@ -551,6 +577,11 @@ public class MatchHandler {
 
 	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId)
 			throws NotFindCityFromPermitTileException {
+		
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
 		int permitTileId;
 		String cityName;
 		PermitTile tempPermitTile;
@@ -570,20 +601,24 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int idPlayer)
+	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId)
 			throws UnsufficientAssistantNumberException {
+		if(this.turn!=playerId){
+			sendErrorToClient("Is not your turn!", playerId);
+			return;
+		}
 		String councillorColor = sendAssistantAction.getColor();
 		String regionName = sendAssistantAction.getRegion();
-		Player player = this.players.get(idPlayer);
+		Player player = this.players.get(playerId);
 		if (player.getNumberOfAssistants() >= 1) {
 			Region region = this.getRegion(regionName);
 			try {
 				region.electCouncillor(councillorColor);
 			} catch (CouncillorNotFoundException e) {
-				sendErrorToClient(e.showError(), idPlayer);
+				sendErrorToClient(e.showError(), playerId);
 			}
 			player.removeAssistant();
-			sendMessageToClient("One Councillor is elected with Assistant ", idPlayer);
+			sendMessageToClient("One Councillor is elected with Assistant ", playerId);
 		} else {
 			throw new UnsufficientAssistantNumberException();
 		}

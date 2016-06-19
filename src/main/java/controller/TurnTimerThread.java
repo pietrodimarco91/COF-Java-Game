@@ -4,7 +4,7 @@ import server.view.cli.ServerOutputPrinter;
 
 public class TurnTimerThread implements Runnable {
 	
-	private static final int waitingTime=60000;
+	private static final int waitingTime=30000;
 	private MatchHandler match;
 	private int playerId;
 	
@@ -17,13 +17,9 @@ public class TurnTimerThread implements Runnable {
 	public void run() {
 		try {
 			Thread.sleep(waitingTime);
-			notifyEndOfTurn();
+			match.notifyEndOfTurn(playerId);
 		} catch (InterruptedException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
-	public void notifyEndOfTurn() {
-		match.notifyEndOfTurn(playerId);
-	}
-	
 }

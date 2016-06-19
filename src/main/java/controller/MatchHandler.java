@@ -79,7 +79,7 @@ public class MatchHandler {
 	 */
 	private boolean pending; // To add UML scheme
 
-	private Queue<Integer> marketBuyTurn;
+	private List<Integer> marketBuyTurn;
 
 
 
@@ -106,7 +106,7 @@ public class MatchHandler {
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector,
 			ServerSideConnectorInt serverSideConnector, String creatorNickName) {
-		marketBuyTurn= new LinkedList<>();
+		marketBuyTurn= new ArrayList<>();
 		turn=0;
 		timers= Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
@@ -238,8 +238,9 @@ public class MatchHandler {
 			return;
 		}
 		if (this.board.graphIsConnected()) {
-			this.gameStatus = 3; // we're ready to play!
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
+			ServerOutputPrinter.printLine("Game Status changed to 'PLAY'");
+			startTurns();
 		} else
 			try {
 				players.get(playerId).getConnector()
@@ -918,9 +919,9 @@ public class MatchHandler {
 		if (gameStatus != 4) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
-		} else if(playerId==marketBuyTurn.peek()) {
+		} else if(playerId==marketBuyTurn.get(0)) {
 			//market implementation
-			marketBuyTurn.remove();
+			marketBuyTurn.remove(0);
 		}
 	}
 
@@ -998,8 +999,16 @@ public class MatchHandler {
 	}
 
 	public void notifyEndOfTurn(int playerId) {
-		if(playerId==turn)
+		if(playerId==turn) {
+			PubSub.notifyAllClients(players, "Player '"+players.get(playerId).getNickName()+"', your turn is over.");
 			nextTurn();
+		}
+	}
+	
+	public void startTurns() {
+		this.gameStatus = 3; // we're ready to play!
+		PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
+		timers.submit(new TurnTimerThread(this, turn));
 	}
 
 	public void nextTurn() {
@@ -1008,7 +1017,8 @@ public class MatchHandler {
 			startMarketTime();
 		} else {
 			turn++;
-			timers.submit(new TurnTimerThread(this));
+			PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
+			timers.submit(new TurnTimerThread(this,turn));
 		}
 	}
 
@@ -1023,8 +1033,8 @@ public class MatchHandler {
 		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
 		for(Player player : players) {
 			marketBuyTurn.add(new Integer(player.getId()));
-			Collections.shuffle(marketBuyTurn);
 		}
+		Collections.shuffle(marketBuyTurn);
 	}
 
 	public void rewindTurns(){

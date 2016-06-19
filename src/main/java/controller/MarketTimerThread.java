@@ -4,7 +4,7 @@ import server.view.cli.ServerOutputPrinter;
 
 public class MarketTimerThread implements Runnable {
 
-	private static final int waitingTime=60000;
+	private static final int waitingTime=30000;
 	private MatchHandler match;
 
 	public MarketTimerThread(MatchHandler match) {
@@ -18,8 +18,8 @@ public class MarketTimerThread implements Runnable {
 			match.startMarketBuyTime();
 			match.setGameStatus(5);
 			Thread.sleep(waitingTime);
-			match.rewindTurns();
-			match.setGameStatus(3);
+			//match.rewindTurns();
+			match.startTurns();
 		} catch (InterruptedException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 		}

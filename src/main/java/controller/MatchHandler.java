@@ -409,7 +409,7 @@ public class MatchHandler {
 				regionDeck = region.getDeck();
 				try {
 					regionDeck.drawPermitTile(slot);
-					PubSub.notifyAllClients(this.players, "You bought a new permit Tile");
+					PubSub.notifyAllClients(players, "Player "+player.getNickName()+" bought a Permit Tile");
 				} catch (InvalidSlotException e) {
 					sendErrorToClient(e.showError(), playerId);
 				}
@@ -467,7 +467,7 @@ public class MatchHandler {
 					board.moveKing(cityTo);
 					player.removeCoins(coinsToPay);
 				}
-				sendMessageToClient("You build an Emporium with king's help", playerId);
+				PubSub.notifyAllClients(players, "Player "+player.getNickName()+" build an Emporium in "+cityName+" with king's help");
 			}
 			else
 				throw new UnsufficientCoinsException();
@@ -508,7 +508,7 @@ public class MatchHandler {
 		try {
 			region.electCouncillor(councillorColor);
 			player.addCoins(4);
-			PubSub.notifyAllClients(this.players, "You bought a new permit Tile");
+			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" elected "+councillorColor+" Councillor in "+regionName);
 		} catch (CouncillorNotFoundException e) {
 			sendErrorToClient(e.getMessage(), playerId);
 		}
@@ -532,7 +532,7 @@ public class MatchHandler {
 		if (coins >= 3) {
 			player.removeCoins(3);
 			player.addAssistant();
-			PubSub.notifyAllClients(this.players, "You bought a new permit Tile");
+			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" bought an Assistant!");
 		} else
 			throw new UnsufficientCoinsException();
 	}
@@ -559,7 +559,7 @@ public class MatchHandler {
 		if (player.getNumberOfAssistants() >= 1) {
 			region.getDeck().switchPermitTiles();
 			player.removeAssistant();
-			sendMessageToClient("The Permit Tile are switched!", playerId);
+			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" swhitched Permit Tile in "+regionName+"!");
 		} else {
 			throw new UnsufficientAssistantNumberException();
 		}
@@ -588,7 +588,7 @@ public class MatchHandler {
 		cityName = simpleBuildEmporium.getCityName();
 		tempPermitTile = player.getUnusedPermitTileFromId(permitTileId);
 		if (buildEmporium(tempPermitTile, player, cityName))
-			sendMessageToClient("Your Emporium is build in your choice City!", playerId);
+			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" build an Emporium in "+cityName+"!");
 		else {
 			throw new NotFindCityFromPermitTileException();
 		}
@@ -615,7 +615,7 @@ public class MatchHandler {
 				sendErrorToClient(e.showError(), playerId);
 			}
 			player.removeAssistant();
-			sendMessageToClient("One Councillor is elected with Assistant ", playerId);
+			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" send an Assistant to elect an "+councillorColor+"Councillor in "+regionName+"!");
 		} else {
 			throw new UnsufficientAssistantNumberException();
 		}

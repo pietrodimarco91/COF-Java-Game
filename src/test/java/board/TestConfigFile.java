@@ -43,7 +43,7 @@ public class TestConfigFile {
 		} catch (ConfigAlreadyExistingException e) {
 			e.printError();
 		}
-		assertEquals(7, fileManager.getConfigurations().size());
+		assertEquals(6, fileManager.getConfigurations().size());
 		try {
 			fileManager.createConfiguration(8, 2, 2, 2, 2);
 			fileManager.createConfiguration(4, 2, 2, 2, 2);
@@ -52,7 +52,7 @@ public class TestConfigFile {
 		} catch (ConfigAlreadyExistingException e) {
 			e.printError();
 		}
-		assertEquals(7, fileManager.getConfigurations().size());
+		assertEquals(6, fileManager.getConfigurations().size());
 		
 		fileManager.closeFile();
 	}

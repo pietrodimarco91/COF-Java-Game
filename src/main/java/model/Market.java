@@ -1,25 +1,27 @@
 package model;
 
 import controller.Player;
+import controller.PubSub;
+import exceptions.ItemNotFoundException;
 import exceptions.UnsufficientCoinsException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
  */
 public class Market {
-	private ArrayList<ItemOnSale> itemsOnSale;
-
-	private int itemIds;
+	
+	private List<ItemOnSale> itemsOnSale;
 
 	/**
-	 * Default constructor: Market implements Singleton pattern
+	 * Default constructor:
 	 */
 	public Market() {
-		itemIds=0;
-		itemsOnSale = new ArrayList<ItemOnSale>();
+		itemsOnSale = Collections.synchronizedList(new ArrayList<ItemOnSale>());
 	}
 
 	/**
@@ -28,10 +30,9 @@ public class Market {
 	 * @param itemOnSale
 	 *            the item on sale to be inserted in the market
 	 */
-	public void putItemOnSale(ItemOnSale itemOnSale) {
-		itemOnSale.setId(itemIds);
+	public synchronized void putItemOnSale(ItemOnSale itemOnSale) {
+		itemOnSale.setId(itemsOnSale.size());
 		itemsOnSale.add(itemOnSale);
-		itemIds++;
 	}
 
 	/**
@@ -39,7 +40,7 @@ public class Market {
 	 * 
 	 * @return the list of items on sale
 	 */
-	public ArrayList<ItemOnSale> getItemsOnSale() {
+	public List<ItemOnSale> getItemsOnSale() {
 		return itemsOnSale;
 	}
 
@@ -49,7 +50,7 @@ public class Market {
 	 * @param item
 	 *            the item to be removed
 	 */
-	public void removeItemFromMarket(ItemOnSale item) {
+	public synchronized void removeItemFromMarket(ItemOnSale item) {
 		boolean stop = false;
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		while (!stop && iterator.hasNext()) {
@@ -70,11 +71,13 @@ public class Market {
 	 *            the item that will be purchased
 	 * @throws UnsufficientCoinsException 
 	 */
-	public void buyItemOnSale(Player player, ItemOnSale item) throws UnsufficientCoinsException {
+	public synchronized void buyItemOnSale(Player player, int itemId) throws UnsufficientCoinsException, ItemNotFoundException {
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
-		boolean stop = false;
+		boolean stop = false, found=false;
 		while (!stop && iterator.hasNext()) {
-			if (iterator.next() == item) {
+			if (iterator.next().getId() == itemId) {
+				ItemOnSale item = itemsOnSale.get(itemId);
+				found=true;
 				if (item.hasEnoughCoins(player.getCoins())) {
 					item.buyItem(player);
 					CoinsManager.coinsTransaction(player, item.getSeller(), item.getPrice());
@@ -85,6 +88,17 @@ public class Market {
 					throw new UnsufficientCoinsException();
 			}
 		}
+		if(!found)
+			throw new ItemNotFoundException();
+	}
+	
+	public String toString() {
+		String string="";
+		string+="MARKET STATUS\n";
+		for(ItemOnSale item : itemsOnSale) {
+			string+=item.toString();
+		}
+		return string;
 	}
 
 }

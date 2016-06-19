@@ -107,6 +107,9 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 			else
 				matchHandler.setPlayerNickName(playerId, packet.getMessageString());
 			break;
+		case "CHAT":
+			matchHandler.chat(playerId,packet.getMessageString());
+			break;
 		case "CONFIGID":
 			matchHandler.setExistingConf(packet.getConfigId(), playerId);
 			break;

@@ -14,5 +14,13 @@ public class PermitTileOnSale extends ItemOnSale {
 	public void buyItem(Player player) {
 		player.addUnusedPermitTiles(permitTile);
 	}
+	
+	@Override
+	public String toString() {
+		String string=super.toString();
+		string+="Kind of Item: Permit Tile\n";
+		string+="Info:\n"+this.permitTile.toString();
+		return string;
+	}
 
 }

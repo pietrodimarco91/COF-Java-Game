@@ -102,30 +102,32 @@ public class ClientPacketController {
 	}
 
 	public void sellItemOnMarket() {
-		int choice;
-		Scanner stringInput = new Scanner(System.in);
+		int choice,price;
 		boolean proceed = false;
 		while (!proceed) {
 			ClientOutputPrinter.printLine(
 					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\n4) Return back...");
 			choice = Integer.parseInt(input.nextLine());
+			ClientOutputPrinter.printLine(
+					"Choose the price (in coins) for your item:");
+			price = Integer.parseInt(input.nextLine());
 			try {
 				switch (choice) {
 
 				case 1:
-					packetSenderInt.sendToServer(new Packet(new MarketEventSell()));
+					packetSenderInt.sendToServer(new Packet(new MarketEventSell(price)));
 					proceed=true;
 					break;
 				case 2:
 					ClientOutputPrinter.printLine("Type the color of the Politic Card to sell:");
-					String color = stringInput.nextLine();
-					packetSenderInt.sendToServer(new Packet(new MarketEventSell(color)));
+					String color = input.nextLine();
+					packetSenderInt.sendToServer(new Packet(new MarketEventSell(color,price)));
 					proceed=true;
 					break;
 				case 3:
 					ClientOutputPrinter.printLine("Choose the ID of the Permit Tile to sell:");
 					int id = Integer.parseInt(input.nextLine());
-					packetSenderInt.sendToServer(new Packet(new MarketEventSell(id)));
+					packetSenderInt.sendToServer(new Packet(new MarketEventSell(id,price)));
 					proceed=true;
 					break;
 				case 4:
@@ -448,5 +450,15 @@ public class ClientPacketController {
 			throw new InvalidInputException();
 		if (linksBetweenCities < 2 && linksBetweenCities > 4)
 			throw new InvalidInputException();
+	}
+
+	public void chat() {
+		ClientOutputPrinter.printLine("Write the message to send to the other players:");
+		String message = input.nextLine();
+		try {
+			packetSenderInt.sendToServer(new Packet(message,"***"));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
 	}
 }

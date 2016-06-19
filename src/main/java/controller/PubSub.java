@@ -28,5 +28,17 @@ public abstract class PubSub {
 			}
 		}
 	}
+	
+	public static void chatMessage(int playerId, List<Player> players, String message) {
+		for (Player player : players) {
+			if (player.getId() != playerId) {
+				try {
+					player.getConnector().sendToClient(new Packet("[CHAT] " + message));
+				} catch (RemoteException e) {
+					ServerOutputPrinter.printLine("Error: couldn't write to Client");
+				}
+			}
+		}
+	}
 
 }

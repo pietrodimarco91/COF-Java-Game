@@ -50,6 +50,13 @@ public class Packet implements Serializable {
         header="MESSAGESTRING";
         this.messageString=messageString;
     }
+    
+    public Packet(String messageString, String code) {
+    	if(code.equals("***")) {
+    		header="CHAT";
+    		this.messageString=messageString;
+    	}
+    }
 
     public ConfigObject getConfigObject() {
         return this.configObject;

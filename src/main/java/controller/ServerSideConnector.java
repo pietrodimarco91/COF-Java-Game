@@ -49,6 +49,9 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
 			else
 				matchHandler.messageFromClient(packet.getMessageString(), playerId);
 			break;
+		case "CHAT":
+			matchHandler.chat(playerId,packet.getMessageString());
+			break;
 		case "CONFIGID":
 			matchHandler.setExistingConf(packet.getConfigId(), playerId);
 			break;

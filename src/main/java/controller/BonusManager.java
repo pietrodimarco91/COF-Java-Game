@@ -5,6 +5,7 @@ import java.util.Random;
 
 import model.City;
 import model.NobilityCell;
+import model.PermitTile;
 import model.PoliticCard;
 import model.Tile;
 
@@ -72,16 +73,24 @@ public abstract class BonusManager {
 				supLimit = 3 - infLimit;
 				break;
 			case "DRAWPERMITTILE":
+				player.addCardOnHand(new PoliticCard());
 				break;
 			case "BONUSPERMITTILE":
+				int randomPermitTile;
 				infLimit = 1;
 				supLimit = 2 - infLimit;
 				int deckPermitTileChoice = randomBonus.nextInt(supLimit) + infLimit;
 				if (deckPermitTileChoice == 1) {
-					Tile tempTile = player.getUsedPermitTile(player.getNumberOfUsedPermitTile() - 1);
+					infLimit=0;
+					supLimit=player.getNumberOfUsedPermitTile()-1;
+					randomPermitTile=randomBonus.nextInt(supLimit) + infLimit;
+					Tile tempTile = player.getUsedPermitTile(randomPermitTile);
 					useBonus(tempTile.bonus, player);
 				} else {
-					Tile tempTile = player.getUnusedPermitTile(player.getNumberOfPermitTile());
+					infLimit=0;
+					supLimit=player.getNumberOfPermitTile()-1;
+					randomPermitTile=randomBonus.nextInt(supLimit) + infLimit;
+					Tile tempTile = player.getUnusedPermitTileFromId(randomPermitTile);
 					useBonus(tempTile.bonus, player);
 				}
 				break;

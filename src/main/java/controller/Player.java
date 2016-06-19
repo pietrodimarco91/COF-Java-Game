@@ -203,16 +203,20 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public PermitTile getUnusedPermitTileFromId(int permitTileId) {
+	public Tile getUnusedPermitTileFromId(int permitTileId) {
 		boolean find=false;
+		Tile returnTile=null;
 		PermitTile tempTile=null;
 		for(int i=0;i<this.unusedPermitTiles.size() && !find;i++){
 			tempTile=(PermitTile)this.unusedPermitTiles.get(i);
-			if(tempTile.getId()==permitTileId)
-				find=true;
+			if(tempTile.getId()==permitTileId){
+			returnTile=this.unusedPermitTiles.get(i);
+			find=true;
+			}
 	}
-			return tempTile;
+			return returnTile;
 	}
+	
 	
 	/**
 	 * 

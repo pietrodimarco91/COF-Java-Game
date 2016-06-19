@@ -586,7 +586,7 @@ public class MatchHandler {
 
 		permitTileId = simpleBuildEmporium.getPermitTileID();
 		cityName = simpleBuildEmporium.getCityName();
-		tempPermitTile = player.getUnusedPermitTileFromId(permitTileId);
+		tempPermitTile = (PermitTile)player.getUnusedPermitTileFromId(permitTileId);
 		if (buildEmporium(tempPermitTile, player, cityName))
 			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" build an Emporium in "+cityName+"!");
 		else {

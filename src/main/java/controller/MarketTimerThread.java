@@ -16,7 +16,6 @@ public class MarketTimerThread implements Runnable {
 		try {
 			Thread.sleep(waitingTime);
 			match.startMarketBuyTime();
-			match.setGameStatus(5);
 			Thread.sleep(waitingTime);
 			//match.rewindTurns();
 			match.startTurns();

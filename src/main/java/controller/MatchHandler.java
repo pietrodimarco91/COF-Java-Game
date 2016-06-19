@@ -9,11 +9,10 @@ import server.view.cli.ServerOutputPrinter;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -80,18 +79,36 @@ public class MatchHandler {
 	 */
 	private boolean pending; // To add UML scheme
 
+	private List<Integer> marketBuyTurn;
+
+
+
 	/**
 	 * Mapstatus: 0 wait board configuration 1 wait for players 2 wait map
-	 * configuration 3 play 4 market 5 finished
+	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
 	 */
 	private int gameStatus;
 
+	ExecutorService timers;
+	
+	/**
+	 * 
+	 */
+	private Market market;
+
+	/**
+	 *id player
+	 */
+	private int turn;
 	/**
 	 * Default constructor
 	 */
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector,
-			ServerSideConnectorInt serverSideConnector) {
+			ServerSideConnectorInt serverSideConnector, String creatorNickName) {
+		marketBuyTurn= new ArrayList<>();
+		turn=0;
+		timers= Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.players = new ArrayList<Player>();
 		gameStatus = 0;
@@ -101,13 +118,14 @@ public class MatchHandler {
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Remote Exception", e);
 		}
-		this.creator = new Player(connector, 0);
+		this.creator = new Player(connector, 0, creatorNickName);
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.pending = false;
+		this.market=new Market();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
 	}
@@ -145,13 +163,13 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id) {
+	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id, String nickName) {
 		try {
 			serverSideConnector.setPlayerId(id);
 		} catch (RemoteException e) {
 			logger.log(Level.INFO, "Remote Exception", e);
 		}
-		Player player = new Player(connector, id);
+		Player player = new Player(connector, id, nickName);
 		this.players.add(player);
 	}
 
@@ -172,7 +190,7 @@ public class MatchHandler {
 			configParameters = new int[] { config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
 					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
 					config.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.board, this.configParameters, this,
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
 					this.players, MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (ConfigAlreadyExistingException e) {
@@ -191,10 +209,11 @@ public class MatchHandler {
 		}
 		try {
 			ConfigObject chosenConfig = configFileManager.getConfiguration(configId);
+			numberOfPlayers = chosenConfig.getNumberOfPlayers();
 			configParameters = new int[] { chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(),
 					chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(),
 					chosenConfig.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.board, this.configParameters, this,
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
 					this.players, MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (UnexistingConfigurationException e) {
@@ -219,7 +238,9 @@ public class MatchHandler {
 			return;
 		}
 		if (this.board.graphIsConnected()) {
-			this.gameStatus = 3; // we're ready to play!
+			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
+			ServerOutputPrinter.printLine("Game Status changed to 'PLAY'");
+			startTurns();
 		} else
 			try {
 				players.get(playerId).getConnector()
@@ -257,10 +278,14 @@ public class MatchHandler {
 				city2 = tempCity;
 			}
 		}
-		if (board.checkPossibilityOfNewConnection(city1, city2))
+		if(city1==null || city2== null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
+		} else if (board.checkPossibilityOfNewConnection(city1, city2)) {
 			board.connectCities(city1, city2);
+			PubSub.notifyAllClients(players, "Player with nickname '"+players.get(playerId).getNickName()+"' connected "+city1.getName()+" with "+city2.getName());
+		}
 		else {
-			sendErrorToClient("Error: cities cannot be connected\n", playerId);
+			sendErrorToClient("Cities cannot be connected\n", playerId);
 		}
 	}
 
@@ -292,7 +317,13 @@ public class MatchHandler {
 				city2 = tempCity;
 			}
 		}
-		board.unconnectCities(city1, city2);
+		if(city1==null || city2== null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
+		}
+		else {
+			board.unconnectCities(city1, city2);
+			PubSub.notifyAllClients(players, "Player with nickname '"+players.get(playerId).getNickName()+"' removed connection between "+city1.getName()+" and "+city2.getName());
+		}
 	}
 
 	public void countDistance(String parameter, int playerId) {
@@ -323,7 +354,7 @@ public class MatchHandler {
 				sendMessageToClient(city1.getName() + " and " + city2.getName() + "are not connected\n", playerId);
 			}
 		} else {
-			sendErrorToClient("Error: cities were not found", playerId);
+			sendErrorToClient("Cities were not found", playerId);
 		}
 	}
 
@@ -336,7 +367,7 @@ public class MatchHandler {
 		return this.gameStatus == 1;
 	}
 
-	public void roundsOfPlayer() {
+	/*public void roundsOfPlayer() {
 		Player player;
 		int choice = 0;
 		ConnectorInt connector;
@@ -425,7 +456,7 @@ public class MatchHandler {
 	 * @param player
 	 * @param regionName
 	 */
-	public void buyPermitTile(Player player) {
+/*	public void buyPermitTile(Player player) {
 		int playerPayment;
 		int numberOfCouncillorSatisfied;
 		int slot = 0;
@@ -536,7 +567,7 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void performAdditionalMainAction(Player player) {
+	/*public void performAdditionalMainAction(Player player) {
 		int choice = 0;
 		if (player.getNumberOfAssistants() > 3) {
 
@@ -560,7 +591,7 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void electCouncillor(Player player) {
+/*	public void electCouncillor(Player player) {
 		String regionName = "";
 		String councillorColor = "";
 		boolean checkCouncillorColor = true;
@@ -636,7 +667,7 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public boolean changeBusinessPermitTiles(Player player) {
+/*	public boolean changeBusinessPermitTiles(Player player) {
 		String regionName = "";
 		do {
 			try {
@@ -665,7 +696,7 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void buildEmporiumWithPermitTile(Player player) {
+	/*public void buildEmporiumWithPermitTile(Player player) {
 		ArrayList<City> cities;
 		int permitTileChoice = -1;
 		String cityChoice = null;
@@ -724,7 +755,7 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public boolean sendAssistantToElectCouncillor(Player player) {
+/*	public boolean sendAssistantToElectCouncillor(Player player) {
 		boolean checkCouncillorColor = true;
 		String councillorColor = "";
 		String regionName = "";
@@ -801,7 +832,7 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void showRegionContent(Player player) {
+	/*public void showRegionContent(Player player) {
 		Region regions[] = this.board.getRegions();
 		for (int i = 0; i < regions.length; i++)
 			try {
@@ -889,6 +920,9 @@ public class MatchHandler {
 		if (gameStatus != 4) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
+		} else if(playerId==marketBuyTurn.get(0)) {
+			//market implementation
+			marketBuyTurn.remove(0);
 		}
 	}
 
@@ -897,6 +931,7 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
+		//market implementation
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -951,9 +986,60 @@ public class MatchHandler {
 	public void setGameStatus(int i) {
 		this.gameStatus = i;
 	}
+	
+	public void setBoard(Board board) {
+		this.board=board;
+	}
 
 	public void setNumberOfPlayers(int i) {
 		this.numberOfPlayers = i;
 	}
+	
+	public void setPlayerNickName(int playerId, String nickName) {
+		this.players.get(playerId).setPlayerNickName(nickName);
+	}
 
+	public void notifyEndOfTurn(int playerId) {
+		if(playerId==turn) {
+			PubSub.notifyAllClients(players, "Player '"+players.get(playerId).getNickName()+"', your turn is over.");
+			nextTurn();
+		}
+	}
+	
+	public void startTurns() {
+		this.gameStatus = 3; // we're ready to play!
+		PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
+		timers.submit(new TurnTimerThread(this, turn));
+	}
+
+	public void nextTurn() {
+		if(turn==(players.size()-1)){
+			turn=0;
+			startMarketTime();
+		} else {
+			turn++;
+			PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
+			timers.submit(new TurnTimerThread(this,turn));
+		}
+	}
+
+	private void startMarketTime() {
+		gameStatus=4;
+		PubSub.notifyAllClients(players,"Game Status changed to 'Market Sell Time'");
+		timers.submit(new MarketTimerThread(this));
+	}
+
+	public void startMarketBuyTime() {
+		this.gameStatus=5;
+		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
+		for(Player player : players) {
+			marketBuyTurn.add(new Integer(player.getId()));
+		}
+		Collections.shuffle(marketBuyTurn);
+	}
+
+	public void rewindTurns(){
+		//check if game is not finished
+		turn=0;
+	}
 }

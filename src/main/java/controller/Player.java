@@ -43,11 +43,8 @@ public class Player {
 	/**
 	 *
 	 */
-	private String userName;
-	/**
-	 *
-	 */
-	private String password;
+	private String nickName;
+
 	/**
 	 *
 	 */
@@ -56,14 +53,7 @@ public class Player {
 	 *
 	 */
 	private int rageQuits;
-	/**
-	*
-	*/
-	private String ipAddress;
-	/**
-	 *
-	 */
-	private int port;
+
 	/**
 	 *
 	 */
@@ -116,11 +106,19 @@ public class Player {
 	private ClientSideConnectorInt connector;// To add UML scheme
 
 	/**
+	 *
+	 */
+	private boolean hasPerformedMainAction,hasPerformedQuickAction;
+
+	/**
 	 * Default constructor
 	 */
-	public Player(ClientSideConnectorInt connector, int id) {
+	public Player(ClientSideConnectorInt connector, int id,String nickName) {
+		hasPerformedMainAction=false;
+		hasPerformedQuickAction=false;
 		Random random = new Random();
 		this.id = id;
+		this.nickName=nickName;
 		this.connector=connector;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
@@ -148,6 +146,10 @@ public class Player {
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+	}
+	
+	public String getNickName() {
+		return this.nickName;
 	}
 
 	/**
@@ -225,7 +227,7 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
+	/*public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
 		int numberOfCardsUsed = 0;
 		String colorCard = "";
 		boolean flagStopChoose = false;
@@ -602,6 +604,22 @@ public class Player {
 			return allPlayerInformation;
 		
 				
+	}
+
+	public void setPlayerNickName(String nickName) {
+		this.nickName=nickName;
+	}
+
+	public void mainActionDone(){
+		hasPerformedMainAction=true;
+	}
+	public void quickActionDone(){
+		hasPerformedQuickAction=true;
+	}
+
+	public void resetTurn(){
+		hasPerformedMainAction=false;
+		hasPerformedQuickAction=false;
 	}
 	
 }

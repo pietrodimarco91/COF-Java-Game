@@ -26,13 +26,15 @@ public class ClientHandler implements Runnable {
 	 */
 	private ClientSideConnectorInt clientSideConnector;
 	private ServerSideConnectorInt serverSideConnector;
+	private String clientNickName;
 
 	public ClientHandler(ClientSideConnectorInt clientSideConnector, ServerSideConnectorInt serverSideConnector,
-			ArrayList<MatchHandler> matches) {
+			ArrayList<MatchHandler> matches, String clientNickName) {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.matches = matches;
 		this.clientSideConnector = clientSideConnector;
 		this.serverSideConnector = serverSideConnector;
+		this.clientNickName=clientNickName;
 	}
 
 	/**
@@ -54,7 +56,7 @@ public class ClientHandler implements Runnable {
 	public synchronized void launchNewMatch(Date date) {
 		int id = Server.getId();
 		DateFormat dateFormat = new SimpleDateFormat();
-		MatchHandler matchHandler = new MatchHandler(id, date, clientSideConnector, serverSideConnector);
+		MatchHandler matchHandler = new MatchHandler(id, date, clientSideConnector, serverSideConnector,clientNickName);
 		matchHandler.sendMessageToClient(
 				"You launched a new match of Council Of Four on " + dateFormat.format(date) + " with ID " + id + "\nYou are the match creator and your ID is 0",
 				0);
@@ -80,7 +82,7 @@ public class ClientHandler implements Runnable {
 			matchInList = iterator.next();
 			if (matchInList.isPending() && !(matchInList.isFull())) {
 				int myId = matchInList.getPlayers().size();
-				matchInList.addPlayer(clientSideConnector, serverSideConnector, myId);
+				matchInList.addPlayer(clientSideConnector, serverSideConnector, myId, clientNickName);
 				matchInList.sendMessageToClient(
 						"You joined an already existing match of Council Of Four with ID " + matchInList.getId() + "\nYour player ID is "+myId,
 						myId);

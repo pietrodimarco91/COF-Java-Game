@@ -304,6 +304,14 @@ public class City {
 				string += tempCity.getName();
 		}
 		string += "\n";
+		if(this.emporiums.size()>0) {
+			string+="EMPORIUMS:\n";
+			for(Emporium emporium : emporiums) {
+				string+=emporium.toString();
+			}
+		} else {
+			string+="\nThere aren't any emporiums built in this city.\n";
+		}
 
 		return string;
 	}

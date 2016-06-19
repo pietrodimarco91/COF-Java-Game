@@ -21,9 +21,8 @@ public class GameInitializator extends Thread {
     private Board board;
     private int[] configParameters;
 
-    public GameInitializator(int id, Board board, int[] configParameters, MatchHandler match, ArrayList<Player> players, int minumumNumberOfPlayers) {
+    public GameInitializator(int id, int[] configParameters, MatchHandler match, ArrayList<Player> players, int minumumNumberOfPlayers) {
         this.id = id;
-        this.board = board;
         this.configParameters = configParameters;
         this.match=match;
         this.players=players;
@@ -40,12 +39,13 @@ public class GameInitializator extends Thread {
         countdown();
         setDefinitiveNumberOfPlayers();
         boardInitialization();
+        showPlayersInGame();
     }
 
     private void waitingForPlayers() {
     	match.setGameStatus(1);
-        ServerOutputPrinter.printLine("[MATCH " + id + "] Currently waiting for players...");
-        sendMessageToClient("[Match ID: " + id + "] Currently waiting for players...",players.get(0).getId());
+        ServerOutputPrinter.printLine("[MATCH " + id + "] Game Status changed to 'Waiting for players'");
+        sendMessageToClient("[MATCH " + id + "] Currently waiting for players...",players.get(0).getId());
         while (players.size() < this.minimumNumberOfPlayers) {
             // Match starts with at least two players
             try {
@@ -97,7 +97,18 @@ public class GameInitializator extends Thread {
     public void boardInitialization() {
         board = new Board(configParameters[0], configParameters[1], configParameters[2], configParameters[3],
                 configParameters[4]);
+        match.setBoard(board);
         PubSub.notifyAllClients(players,"Board correctly initialized!");
+        ServerOutputPrinter.printLine("[MATCH " + id + "] Game Status changed to 'Map Configuration'");
+    }
+    
+    public void showPlayersInGame() {
+    	String string="";
+    	string+="Players in game:\n";
+    	for(Player player : players) {
+    		string+=player.getNickName()+" : ID "+player.getId()+"\n";
+    	}
+    	PubSub.notifyAllClients(players, string);
     }
 
     public void sendMessageToClient(String s, int playerId) {

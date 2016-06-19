@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,14 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 		while (true) {
 			try {
 				sendToServer((Packet) inputObjectFromClient.readObject());
+			} catch (SocketException e) {
+				ServerOutputPrinter
+						.printLine("[SERVER] Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName()
+								+ "' and ID " + playerId + " disconnected!");
+				PubSub.notifyAllClientsExceptOne(playerId,matchHandler.getPlayers(),
+						"Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName() + "' and ID "
+								+ playerId + " disconnected!");
+				break;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -96,7 +105,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 			else if (packet.getMessageString().equals("FINISHMAPCONFIG"))
 				matchHandler.checkIfGraphIsConnected(playerId);
 			else
-				matchHandler.messageFromClient(packet.getMessageString(), playerId);
+				matchHandler.setPlayerNickName(playerId, packet.getMessageString());
 			break;
 		case "CONFIGID":
 			matchHandler.setExistingConf(packet.getConfigId(), playerId);

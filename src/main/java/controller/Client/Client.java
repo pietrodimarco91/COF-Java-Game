@@ -16,6 +16,8 @@ public class Client {
 	private Scanner input = new Scanner(System.in);
 
 	private ClientPacketController controller;
+	
+	private String nickName;
 
 	/**
 	 * Default constructor
@@ -29,7 +31,7 @@ public class Client {
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
 		try {
-			controller.connect();
+			controller.connect(nickName);
 			initialConfiguration();
 			play();
 		} catch (RemoteException e) {
@@ -51,7 +53,7 @@ public class Client {
 		int choice;
 		while (true) {
 			ClientOutputPrinter.printLine(
-					"Next choice?\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration");
+					"||*** MAIN MENU ***||\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration");
 			try {
 				choice = input.nextInt();
 				switch (choice) {
@@ -87,5 +89,7 @@ public class Client {
 
 	public void welcome() {
 		ClientOutputPrinter.printLine("Welcome to a new session of 'Council Of Four' Game!");
+		ClientOutputPrinter.printLine("Please, choose a nickname:");
+		nickName=input.nextLine();
 	}
 }

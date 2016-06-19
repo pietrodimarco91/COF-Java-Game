@@ -107,23 +107,26 @@ public class ClientPacketController {
 		boolean proceed = false;
 		while (!proceed) {
 			ClientOutputPrinter.printLine(
-					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\b4) Return back...");
+					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\n4) Return back...");
 			choice = Integer.parseInt(input.nextLine());
 			try {
 				switch (choice) {
 
 				case 1:
 					packetSenderInt.sendToServer(new Packet(new MarketEventSell()));
+					proceed=true;
 					break;
 				case 2:
 					ClientOutputPrinter.printLine("Type the color of the Politic Card to sell:");
 					String color = stringInput.nextLine();
 					packetSenderInt.sendToServer(new Packet(new MarketEventSell(color)));
+					proceed=true;
 					break;
 				case 3:
 					ClientOutputPrinter.printLine("Choose the ID of the Permit Tile to sell:");
 					int id = Integer.parseInt(input.nextLine());
 					packetSenderInt.sendToServer(new Packet(new MarketEventSell(id)));
+					proceed=true;
 					break;
 				case 4:
 					return;
@@ -175,18 +178,18 @@ public class ClientPacketController {
 	 * @return true if the client is the creator of the match or false otherwise
 	 * @throws RemoteException
 	 */
-	public void connect() throws RemoteException {
+	public void connect(String nickName) throws RemoteException {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
 		boolean proceed = false;
 		while (!proceed) {
 			int choice = Integer.parseInt(input.nextLine());
 			switch (choice) {
 			case 1:
-				this.startRMIConnection();
+				this.startRMIConnection(nickName);
 				proceed = true;
 				break;
 			case 2:
-				this.startSocketConnection();
+				this.startSocketConnection(nickName);
 				proceed = true;
 				break;
 			default:
@@ -203,21 +206,27 @@ public class ClientPacketController {
 
 	}
 
-	public void startSocketConnection() {
+	public void startSocketConnection(String nickName) {
 		try {
 			socketInputOutputThread=new SocketInputOutputThread(new Socket(ADDRESS, PORT));
 			socketInputOutputThread.start();
 			packetSenderInt = socketInputOutputThread;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			packetSenderInt.sendToServer(new Packet(nickName));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void startRMIConnection() {
+	public void startRMIConnection(String nickName) {
 		try {
 			clientSideConnector = new ClientSideConnector();
 			rmiConnectionInt = (RMIConnectionInt) Naming.lookup("rmi://localhost/registry");
-			packetSenderInt = rmiConnectionInt.connect(clientSideConnector);
+			packetSenderInt = rmiConnectionInt.connect(clientSideConnector, nickName);
 		} catch (NotBoundException e) {
 			logger.log(Level.FINEST, "Error: the object you were looking for is not bounded", e);
 		} catch (MalformedURLException e) {
@@ -294,7 +303,7 @@ public class ClientPacketController {
 		while (!stop) {
 
 			ClientOutputPrinter
-					.printLine("Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status\n5) Count distance");
+					.printLine("||*** BOARD CONFIGURATION MENU ***||\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status\n5) Count distance");
 			choice = Integer.parseInt(input.nextLine());
 
 			switch (choice) {

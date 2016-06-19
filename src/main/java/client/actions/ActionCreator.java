@@ -187,6 +187,7 @@ public class ActionCreator {
 		while (!proceed) {
 			regionName = input.nextLine();
 			try {
+				regionName=regionName.toUpperCase();
 				verifyRegionName(regionName);
 				proceed = true;
 			} catch (InvalidInputException e) {
@@ -200,6 +201,7 @@ public class ActionCreator {
 		while (numberOfCards < 4) {
 			color = input.nextLine();
 			try {
+				color=color.toUpperCase();
 				verifyColor(color);
 				colors.add(color);
 				numberOfCards++;

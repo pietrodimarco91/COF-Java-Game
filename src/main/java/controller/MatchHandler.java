@@ -1087,6 +1087,7 @@ public class MatchHandler {
 	public void startMarketBuyTime() {
 		this.gameStatus=5;
 		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
+		marketBuyTurn.clear();
 		for(Player player : players) {
 			marketBuyTurn.add(new Integer(player.getId()));
 		}

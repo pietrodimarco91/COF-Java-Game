@@ -80,19 +80,17 @@ public class Region implements Cloneable {
 	 *            of the player
 	 * @return number of councillors satisfied
 	 */
-	public int numberOfCouncillorsSatisfied(ArrayList<PoliticCard> politicCards) {
+	public int numberOfCouncillorsSatisfied(ArrayList<String> politicCards) {
 		Iterator<Councillor> iterationCouncillors = this.council.getCouncillors().iterator();
 		Councillor councillor;
-		PoliticCard tempPoliticCard;
 		int numberOfCouncillorsSatisfied = 0;
-		ArrayList<PoliticCard> tempArrayList = new ArrayList<PoliticCard>(politicCards);
+		ArrayList<String> tempArrayList = new ArrayList<String>(politicCards);
 		while (iterationCouncillors.hasNext()) {
 			boolean councillorsSatisfied = false;
 			councillor = iterationCouncillors.next();
 
 			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
-				tempPoliticCard = tempArrayList.get(i);
-				if (councillor.getColor().equals(tempPoliticCard.getColorCard())) {
+				if (councillor.getColor().equals(tempArrayList.get(i))) {
 					councillorsSatisfied = true;
 					tempArrayList.remove(i);
 					numberOfCouncillorsSatisfied++;
@@ -105,8 +103,7 @@ public class Region implements Cloneable {
 		if (numberOfCouncillorsSatisfied < 4) {
 			int numberOfMulticolorCard = 0;
 			for (int i = 0; i < tempArrayList.size(); i++) {
-				tempPoliticCard = tempArrayList.get(i);
-				if (tempPoliticCard.getColorCard().equals("MULTICOLOR"))
+				if (tempArrayList.get(i).equals("MULTICOLOR"))
 					numberOfMulticolorCard++;
 			}
 			if ((numberOfCouncillorsSatisfied + numberOfMulticolorCard) < 4)

@@ -657,6 +657,47 @@ public class Board {
 		}
 		return string;
 	}
+	
+	/**
+	 * @param politicCards
+	 *            of the player
+	 * @return number of councillors satisfied
+	 */
+	public int numberOfCouncillorsSatisfied(ArrayList<String> politicCards) {
+		Iterator<Councillor> iterationCouncillors = this.kingCouncil.getCouncillors().iterator();
+		Councillor councillor;
+		int numberOfCouncillorsSatisfied = 0;
+		ArrayList<String> tempArrayList = new ArrayList<String>(politicCards);
+		while (iterationCouncillors.hasNext()) {
+			boolean councillorsSatisfied = false;
+			councillor = iterationCouncillors.next();
+
+			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
+				if (councillor.getColor().equals(tempArrayList.get(i))) {
+					councillorsSatisfied = true;
+					tempArrayList.remove(i);
+					numberOfCouncillorsSatisfied++;
+				}
+
+			}
+
+		}
+
+		if (numberOfCouncillorsSatisfied < 4) {
+			int numberOfMulticolorCard = 0;
+			for (int i = 0; i < tempArrayList.size(); i++) {
+				if (tempArrayList.get(i).equals("MULTICOLOR"))
+					numberOfMulticolorCard++;
+			}
+			if ((numberOfCouncillorsSatisfied + numberOfMulticolorCard) < 4)
+				return numberOfCouncillorsSatisfied + numberOfMulticolorCard;
+			else
+				return 4;
+		}
+
+		else
+			return numberOfCouncillorsSatisfied;
+	}
 
 	@Override
 	public String toString() {
@@ -706,5 +747,16 @@ public class Board {
 
 	public NobilityTrack getNobilityTrack() {
 		return this.nobilityTrack;
+	}
+	
+	public City getCityFromName(String cityName) {
+		boolean find=false;
+		City tempCity=null;
+		for(int i=0;i<this.cities.size() && !find;i++){
+			tempCity=this.cities.get(i);
+			if(tempCity.getName().equals(cityName))
+				find=true;
+		}
+		return tempCity;	
 	}
 }

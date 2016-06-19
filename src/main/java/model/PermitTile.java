@@ -37,6 +37,10 @@ public class PermitTile extends Tile {
 		return this.cities;
 	}
 	
+	public int getId(){
+		return this.id;
+	}
+	
 	@Override
 	public String toString() {
 		String string="";

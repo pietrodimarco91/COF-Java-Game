@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import exceptions.UnsufficientCoinsException;
+
 /**
  * 
  */
@@ -196,10 +198,17 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public Tile getUnusedPermitTile(int choice) {// metodo da risistemare e da
-													// aggiungere UML
-		return this.unusedPermitTiles.get(choice);
+	public PermitTile getUnusedPermitTileFromId(int permitTileId) {
+		boolean find=false;
+		PermitTile tempTile=null;
+		for(int i=0;i<this.unusedPermitTiles.size() && !find;i++){
+			tempTile=(PermitTile)this.unusedPermitTiles.get(i);
+			if(tempTile.getId()==permitTileId)
+				find=true;
 	}
+			return tempTile;
+	}
+	
 	/**
 	 * 
 	 */
@@ -339,15 +348,16 @@ public class Player {
 	 * This method removes the specified PoliticCards from the hand of the
 	 * player.
 	 */
-	public void removeCardsFromHand(ArrayList<PoliticCard> cardsChose) {
+	public void removeCardsFromHand(ArrayList<String> cardsChose) {
 		boolean cardFound;
 		int j;
 		for (int i = 0; i < cardsChose.size(); i++) {
 			cardFound = false;
 			for (j = 0; j < this.politicCards.size() && !cardFound; j++) {
-				if (this.politicCards.get(j).getColorCard().equals(cardsChose.get(i).getColorCard()))
+				if (this.politicCards.get(j).getColorCard().equals(cardsChose.get(i))){
 					this.politicCards.remove(j);
-				cardFound = true;
+				    cardFound = true;
+				}
 			}
 		}
 	}
@@ -365,12 +375,11 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public boolean performPayment(int payment) {
+	public void performPayment(int payment) throws UnsufficientCoinsException{
 		if ((this.coins - payment) >= 0) {
 			this.coins -= payment;
-			return true;
 		} else
-			return false;
+			throw new UnsufficientCoinsException();
 	}
 
 	/**

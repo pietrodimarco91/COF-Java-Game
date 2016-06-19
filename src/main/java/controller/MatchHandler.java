@@ -1,11 +1,21 @@
 package controller;
 
 import client.actions.Action;
+import client.actions.AdditionalMainAction;
+import client.actions.BuyPermitTileAction;
+import client.actions.ElectCouncillorAction;
+import client.actions.EngageAssistantAction;
+import client.actions.KingBuildEmporiumAction;
+import client.actions.SendAssistantAction;
+import client.actions.SimpleBuildEmporiumAction;
+import client.actions.SwitchPermitTilesAction;
 import controller.Client.ClientSideConnector;
 import exceptions.*;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
+import java.io.NotActiveException;
+import java.nio.channels.ShutdownChannelGroupException;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -81,8 +91,6 @@ public class MatchHandler {
 
 	private List<Integer> marketBuyTurn;
 
-
-
 	/**
 	 * Mapstatus: 0 wait board configuration 1 wait for players 2 wait map
 	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
@@ -90,25 +98,26 @@ public class MatchHandler {
 	private int gameStatus;
 
 	ExecutorService timers;
-	
+
 	/**
 	 * 
 	 */
 	private Market market;
 
 	/**
-	 *id player
+	 * id player
 	 */
 	private int turn;
+
 	/**
 	 * Default constructor
 	 */
 
-	public MatchHandler(int id, Date date, ClientSideConnectorInt connector,
-			ServerSideConnectorInt serverSideConnector, String creatorNickName) {
-		marketBuyTurn= new ArrayList<>();
-		turn=0;
-		timers= Executors.newCachedThreadPool();
+	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector,
+			String creatorNickName) {
+		marketBuyTurn = new ArrayList<>();
+		turn = 0;
+		timers = Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.players = new ArrayList<Player>();
 		gameStatus = 0;
@@ -125,7 +134,7 @@ public class MatchHandler {
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.pending = false;
-		this.market=new Market();
+		this.market = new Market();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
 	}
@@ -163,7 +172,8 @@ public class MatchHandler {
 	/**
 	 * @return
 	 */
-	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id, String nickName) {
+	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id,
+			String nickName) {
 		try {
 			serverSideConnector.setPlayerId(id);
 		} catch (RemoteException e) {
@@ -190,8 +200,8 @@ public class MatchHandler {
 			configParameters = new int[] { config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
 					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
 					config.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
-					this.players, MINUMUM_NUMBER_OF_PLAYERS);
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this, this.players,
+					MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (ConfigAlreadyExistingException e) {
 			sendErrorToClient(e.printError(), playerId);
@@ -213,8 +223,8 @@ public class MatchHandler {
 			configParameters = new int[] { chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(),
 					chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(),
 					chosenConfig.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
-					this.players, MINUMUM_NUMBER_OF_PLAYERS);
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this, this.players,
+					MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (UnexistingConfigurationException e) {
 			sendErrorToClient(e.printError(), playerId);
@@ -278,13 +288,14 @@ public class MatchHandler {
 				city2 = tempCity;
 			}
 		}
-		if(city1==null || city2== null) {
-			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
+		if (city1 == null || city2 == null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names",
+					playerId);
 		} else if (board.checkPossibilityOfNewConnection(city1, city2)) {
 			board.connectCities(city1, city2);
-			PubSub.notifyAllClients(players, "Player with nickname '"+players.get(playerId).getNickName()+"' connected "+city1.getName()+" with "+city2.getName());
-		}
-		else {
+			PubSub.notifyAllClients(players, "Player with nickname '" + players.get(playerId).getNickName()
+					+ "' connected " + city1.getName() + " with " + city2.getName());
+		} else {
 			sendErrorToClient("Cities cannot be connected\n", playerId);
 		}
 	}
@@ -317,12 +328,13 @@ public class MatchHandler {
 				city2 = tempCity;
 			}
 		}
-		if(city1==null || city2== null) {
-			sendErrorToClient("The specified cities were not found, make sure you choose existing city names", playerId);
-		}
-		else {
+		if (city1 == null || city2 == null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names",
+					playerId);
+		} else {
 			board.unconnectCities(city1, city2);
-			PubSub.notifyAllClients(players, "Player with nickname '"+players.get(playerId).getNickName()+"' removed connection between "+city1.getName()+" and "+city2.getName());
+			PubSub.notifyAllClients(players, "Player with nickname '" + players.get(playerId).getNickName()
+					+ "' removed connection between " + city1.getName() + " and " + city2.getName());
 		}
 	}
 
@@ -367,172 +379,41 @@ public class MatchHandler {
 		return this.gameStatus == 1;
 	}
 
-	/*public void roundsOfPlayer() {
-		Player player;
-		int choice = 0;
-		ConnectorInt connector;
-		for (int i = 0; i < this.players.size(); i++) {
-			player = this.players.get(i);
-			connector = player.getConnector();
-			showMap(player);
-			showRegionContent(player);
-			drawPoliticCard(player);
-			showPlayerInfo(player);
-			try {
-				connector.writeToClient("You have drawn a Politic Card!");
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			do {
-				try {
-					connector.writeToClient("Do you wanna choose firstly:\n1)Main Actions\n2)Quick Actions?");
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-				try {
-					choice = connector.receiveIntFromClient();
-					ServerOutputPrinter.printLine(String.valueOf(choice));
-
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-
-				}
-			} while (choice != 1 && choice != 2);
-			if (choice == 1) {
-				do {
-					showMainActions(player);
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-
-				mainActions(player, choice);
-
-				do {
-					showQuickActions(player);
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5);
-				quickActions(player, choice);
-			} else {
-				do {
-					showQuickActions(player);
-
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5);
-				quickActions(player, choice);
-				do {
-					showMainActions(player);
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-				mainActions(player, choice);
-			}
-			try {
-				connector.writeToClient("These are your update information! Think very well for the next action... ");
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			showPlayerInfo(player);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION AFTER IMPLEMENTATION. Especially the try/catch and the
-	 * exceptions.
-	 * 
-	 * @param player
-	 * @param regionName
-	 */
-/*	public void buyPermitTile(Player player) {
-		int playerPayment;
+	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId)
+			throws UnsufficientCoucillorSatisfiedException {
+		String regionName;
+		ArrayList<String> politicCardChoice;
+		int slot;
 		int numberOfCouncillorSatisfied;
-		int slot = 0;
-		String regionName = "";
+		int playerPayment;
+		Region region;
 		PermitTileDeck regionDeck;
 
-		try {
-			player.getConnector().writeToClient("Which region do you want to buy a Permit Tile? ");
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-		}
+		regionName = buyPermitTileAction.getRegion();
+		politicCardChoice = buyPermitTileAction.getPoliticCardColors();
+		slot = buyPermitTileAction.getSlot();
+		region = getRegion(regionName);
 
-		try {
-			regionName = player.getConnector().receiveStringFromClient();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-		}
-		regionName = regionName.trim();
-		regionName = regionName.toUpperCase();
-		Region region = this.getRegion(regionName);
-		region = this.getRegion(regionName);
-		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
-		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
+		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(politicCardChoice);
 
 		if (numberOfCouncillorSatisfied > 0) {
 			try {
-				player.getConnector().writeToClient("You are able to satisfy the region Council with "
-						+ numberOfCouncillorSatisfied + " Politic Cards!");
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.performPayment(playerPayment);
-			player.removeCardsFromHand(cardsChosenForCouncilSatisfaction);
-			regionDeck = region.getDeck();
-			do {
+				Player player = this.players.get(playerId);
+				playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+				player.performPayment(playerPayment);
+				player.removeCardsFromHand(politicCardChoice);
+				regionDeck = region.getDeck();
 				try {
-					player.getConnector().writeToClient("Choose slot: 1 or 2?");
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+					regionDeck.drawPermitTile(slot);
+					sendMessageToClient("You bought a new permit Tile", playerId);
+				} catch (InvalidSlotException e) {
+					sendErrorToClient(e.showError(), playerId);
 				}
-				try {
-					slot = player.getConnector().receiveIntFromClient();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-				}
-			} while (slot != 1 && slot != 2);
-			try {
-				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
-			} catch (InvalidSlotException e) {
-				try {
-					player.getConnector().writeToClient(e.showError());
-				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
-				}
+			} catch (UnsufficientCoinsException e1) {
+				sendErrorToClient(e1.showError(), playerId);
 			}
-			try {
-				player.getConnector().writeToClient("You bought a Permit Tile");
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-
 		} else {
-			try {
-				player.getConnector()
-						.writeToClient("You were not able to satisfy the specified Council with these Politic Cards");
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
+			throw new UnsufficientCoucillorSatisfiedException();
 		}
 	}
 
@@ -550,99 +431,73 @@ public class MatchHandler {
 	 * @return
 	 * @throws UnsufficientCoinsException
 	 */
-	public void buildEmporiumWithKingsHelp(Player player) throws UnsufficientCoinsException {
-		String city = null;
-		ArrayList<String> chosenPoliticCards = new ArrayList<String>();
-		// I obtain the information I need
-		int coinsToPay;
-		City cityTo = null;
-		City cityFrom = board.findKingCity();
-		coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-		if (player.getCoins() >= coinsToPay)
-			player.removeCoins(coinsToPay);
-		else
-			throw new UnsufficientCoinsException();
+	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId)
+			throws UnsufficientCoinsException, UnsufficientCoucillorSatisfiedException {
+		String cityName;
+		ArrayList<String> politicCardColors;
+		int numberOfCouncillorSatisfied;
+		int playerPayment;
+		Player player = this.players.get(playerId);
+		cityName = kingBuildEmporiumAction.getCityName();
+		politicCardColors = kingBuildEmporiumAction.getPoliticCardColors();
+
+		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(politicCardColors);
+
+		if (numberOfCouncillorSatisfied > 0) {
+			try{
+			int coinsToPay;
+			City cityTo;
+			cityTo = board.getCityFromName(cityName);
+			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			player.performPayment(playerPayment);
+			player.removeCardsFromHand(politicCardColors);
+			City cityFrom = board.findKingCity();
+			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
+			if (player.getCoins() >= coinsToPay)
+				player.removeCoins(coinsToPay);
+			else
+				throw new UnsufficientCoinsException();
+			}catch (UnsufficientCoinsException e1) {
+				sendErrorToClient(e1.showError(), playerId);
+			}
+		} else {
+			throw new UnsufficientCoucillorSatisfiedException();
+		}
 	}
 
 	/**
 	 * @return
 	 */
-	/*public void performAdditionalMainAction(Player player) {
-		int choice = 0;
-		if (player.getNumberOfAssistants() > 3) {
-
-			player.removeMoreAssistants(3);
-			do {
-				showMainActions(player);
-				try {
-					choice = player.getConnector().receiveIntFromClient();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-				}
-			} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-			mainActions(player, choice);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop untile the move is correctly performed.
+	/*
+	 * public void performAdditionalMainAction(Player player) { int choice = 0;
+	 * if (player.getNumberOfAssistants() > 3) {
+	 * 
+	 * player.removeMoreAssistants(3); do { showMainActions(player); try {
+	 * choice = player.getConnector().receiveIntFromClient(); } catch
+	 * (RemoteException e) { // TODO Auto-generated catch block
+	 * logger.log(Level.FINEST, "Error: couldn't receive from client\n", e); } }
+	 * while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
+	 * mainActions(player, choice); } }
+	 * 
+	 * /** NEEDS REVISION: this method must not return a boolean: the try/catch
+	 * must be handled inside a while loop untile the move is correctly
+	 * performed.
 	 * 
 	 * @return
 	 */
-/*	public void electCouncillor(Player player) {
-		String regionName = "";
-		String councillorColor = "";
-		boolean checkCouncillorColor = true;
-		do {
-			try {
-				player.getConnector().writeToClient("Which region do you want elect a councillor?");
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-			try {
-				regionName = player.getConnector().receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-
-			regionName = regionName.toUpperCase();
-			regionName = regionName.trim();
-		} while (!checkCorrectRegionName(regionName));
-		do {
-			try {
-				player.getConnector().writeToClient("Which color do you want to choose?");
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-			try {
-				councillorColor = player.getConnector().receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-			councillorColor = councillorColor.toUpperCase();
-			councillorColor = councillorColor.trim();
-
-			Region region = this.getRegion(regionName);
-			try {
-				region.electCouncillor(councillorColor);
-			} catch (CouncillorNotFoundException e) {
-				try {
-					player.getConnector().writeToClient(e.showError());
-				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
-				}
-				checkCouncillorColor = false;
-			}
-		} while (!checkCouncillorColor);
-
-		player.addCoins(4);
+	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int idPlayer) {
+		String regionName;
+		String councillorColor;
+		regionName = electCouncillorAction.getRegion();
+		councillorColor = electCouncillorAction.getColor();
+		Player player = this.players.get(idPlayer);
+		Region region = this.getRegion(regionName);
 		try {
-			player.getConnector().writeToClient("You have elect a new councillor!");
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
+			region.electCouncillor(councillorColor);
+		} catch (CouncillorNotFoundException e) {
+			sendErrorToClient(e.getMessage(), idPlayer);
 		}
+		player.addCoins(4);
 	}
 
 	/**
@@ -651,14 +506,15 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public boolean engageAssistant(Player player) {
+	public void engageAssistant(EngageAssistantAction engageAssistantAction, int idPlayer)
+			throws UnsufficientCoinsException {
+		Player player = this.players.get(idPlayer);
 		int coins = player.getCoins();
 		if (coins >= 3) {
 			player.removeCoins(3);
 			player.addAssistant();
-			return true;
-		}
-		return false;
+		} else
+			throw new UnsufficientCoinsException();
 	}
 
 	/**
@@ -667,28 +523,22 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-/*	public boolean changeBusinessPermitTiles(Player player) {
-		String regionName = "";
-		do {
-			try {
-				player.getConnector().writeToClient("Which region name do you want to switch permit tile?");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				regionName = player.getConnector().receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (!checkCorrectRegionName(regionName));
+
+	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId)
+			throws UnsufficientAssistantNumberException {
+		String regionName;
+		Player player = this.players.get(playerId);
+		regionName = switchPermitTilesAction.getRegionName();
 
 		Region region = this.getRegion(regionName);
 		if (player.getNumberOfAssistants() >= 1) {
 			region.getDeck().switchPermitTiles();
 			player.removeAssistant();
-			return true;
+			sendMessageToClient("The Permit Tile are switched!", playerId);
+		} else {
+			throw new UnsufficientAssistantNumberException();
 		}
-		return false;
+
 	}
 
 	/**
@@ -696,116 +546,45 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	/*public void buildEmporiumWithPermitTile(Player player) {
-		ArrayList<City> cities;
-		int permitTileChoice = -1;
-		String cityChoice = null;
 
-		ConnectorInt connector = player.getConnector();
+	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId)
+			throws NotFindCityFromPermitTileException {
+		int permitTileId;
+		String cityName;
+		PermitTile tempPermitTile;
+		Player player = this.players.get(playerId);
 
-		do {
-
-			try {
-				connector.writeToClient("Which card do you want to choose?");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				connector.writeToClient(player.showPermitTileCards());
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				permitTileChoice = connector.receiveIntFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (permitTileChoice < 0 || permitTileChoice > (player.getNumberOfPermitTile() - 1));
-
-		PermitTile permitTile = (PermitTile) player.getUnusedPermitTile(permitTileChoice);
-
-		do {
-			try {
-				connector.writeToClient("Which city do you want to build?");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				cityChoice = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (!checkCorrectCityNameChoice(permitTile, cityChoice)
-				|| !checkPresenceOfEmporium(permitTile, player, cityChoice));
-		buildEmporium(permitTile, player, cityChoice);
-		try {
-			connector.writeToClient("Your emporium has been successfully built!:D");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		player.fromUnusedToUsedPermitTile(player, permitTile);
-
-		try {
-			connector.writeToClient("You have built a new Emporium!");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
+		permitTileId = simpleBuildEmporium.getPermitTileID();
+		cityName = simpleBuildEmporium.getCityName();
+		tempPermitTile = player.getUnusedPermitTileFromId(permitTileId);
+		if (buildEmporium(tempPermitTile, player, cityName))
+			sendMessageToClient("Your Emporium is build in your choice City!", playerId);
+		else {
+			throw new NotFindCityFromPermitTileException();
 		}
 	}
 
 	/**
+	 * 
 	 * @return
 	 */
-/*	public boolean sendAssistantToElectCouncillor(Player player) {
-		boolean checkCouncillorColor = true;
-		String councillorColor = "";
-		String regionName = "";
+	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int idPlayer)
+			throws UnsufficientAssistantNumberException {
+		String councillorColor = sendAssistantAction.getColor();
+		String regionName = sendAssistantAction.getRegion();
+		Player player = this.players.get(idPlayer);
 		if (player.getNumberOfAssistants() >= 1) {
-
-			do {
-				try {
-					player.getConnector().writeToClient("Which region do you want elect a councillor?");
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-				try {
-					regionName = player.getConnector().receiveStringFromClient();
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-
-				regionName = regionName.toUpperCase();
-				regionName = regionName.trim();
-			} while (!checkCorrectRegionName(regionName));
-
-			do {
-				try {
-					player.getConnector().writeToClient("Which color do you want to choose?");
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-				try {
-					councillorColor = player.getConnector().receiveStringFromClient();
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-				councillorColor = councillorColor.toUpperCase();
-				councillorColor = councillorColor.trim();
-
-				Region region = this.getRegion(regionName);
-				try {
-					region.electCouncillor(councillorColor);
-				} catch (CouncillorNotFoundException e) {
-					try {
-						player.getConnector().writeToClient(e.showError());
-					} catch (RemoteException e1) {
-						logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
-					}
-					checkCouncillorColor = false;
-				}
-			} while (!checkCouncillorColor);
-			return true;
-		} else
-			return false;
+			Region region = this.getRegion(regionName);
+			try {
+				region.electCouncillor(councillorColor);
+			} catch (CouncillorNotFoundException e) {
+				sendErrorToClient(e.showError(), idPlayer);
+			}
+			player.removeAssistant();
+			sendMessageToClient("One Councillor is elected with Assistant ", idPlayer);
+		} else {
+			throw new UnsufficientAssistantNumberException();
+		}
 	}
 
 	/**
@@ -827,28 +606,6 @@ public class MatchHandler {
 			}
 		}
 		return region;
-	}
-
-	/**
-	 * @return
-	 */
-	/*public void showRegionContent(Player player) {
-		Region regions[] = this.board.getRegions();
-		for (int i = 0; i < regions.length; i++)
-			try {
-				player.getConnector().writeToClient(regions[i].toString());
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-	}
-
-	/**
-	 * 
-	 */
-	public boolean checkCorrectRegionName(String regionName) {
-		Region tempRegion = null;
-		tempRegion = getRegion(regionName);
-		return tempRegion != null;
 	}
 
 	/**
@@ -891,16 +648,21 @@ public class MatchHandler {
 		return player.getNumberOfEmporium() > 0;
 	}
 
-	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice) {
+	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice) {
+		boolean find = false;
 		List<City> cities = permitTile.getCities();
 		cityChoice = cityChoice.trim();
 		cityChoice = cityChoice.toUpperCase();
 		for (City tempCities : cities) {
-			if (tempCities.getName().equals(cityChoice))
+			if (tempCities.getName().equals(cityChoice)) {
 				tempCities.buildEmporium(player);
+				find = true;
+			}
 		}
+		return find;
 	}
 
+	
 	/**
 	 * This method must understand which action to perform for the specified
 	 * player, depending on the dynamic dispatching of the Action
@@ -908,10 +670,37 @@ public class MatchHandler {
 	 * @param action
 	 * @param playerId
 	 */
+	/*
 	public void evaluateAction(Action action, int playerId) {
-		//fare istance of e mettere swhitch case per avviare le 8 mosse
 
-	}
+		if (action instanceof AdditionalMainAction) {
+			AdditionalMainAction mainAction = (AdditionalMainAction) action;
+			this.performAdditionalMainAction(mainAction, playerId);
+		} else if (action instanceof BuyPermitTileAction) {
+			BuyPermitTileAction buyPermitTileAction = (BuyPermitTileAction) action;
+			this.buyPermitTile(buyPermitTileAction, playerId);
+		} else if (action instanceof ElectCouncillorAction) {
+			ElectCouncillorAction electConcillorAction = (ElectCouncillorAction) action;
+			this.electCouncillor(electConcillorAction, playerId);
+		} else if (action instanceof EngageAssistantAction) {
+			EngageAssistantAction engageAssistanAction = (EngageAssistantAction) action;
+			this.engageAssistant(engageAssistanAction, playerId);
+		} else if (action instanceof KingBuildEmporiumAction) {
+			KingBuildEmporiumAction kingBuildEmporiumAction = (KingBuildEmporiumAction) action;
+			this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
+		} else if (action instanceof SendAssistantAction) {
+			SendAssistantAction sendAssistantAction = (SendAssistantAction) action;
+			this.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
+		} else if (action instanceof SimpleBuildEmporiumAction) {
+			SimpleBuildEmporiumAction simpleBuildEmporium = (SimpleBuildEmporiumAction) action;
+			this.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
+		} else if (action instanceof SwitchPermitTilesAction) {
+			SwitchPermitTilesAction switchPermitTilesAction = (SwitchPermitTilesAction) action;
+			this.switchPermitTile(switchPermitTilesAction, playerId);
+		}
+
+	}*/
+	
 
 	public void messageFromClient(String messageString, int playerId) {
 	}
@@ -920,8 +709,8 @@ public class MatchHandler {
 		if (gameStatus != 4) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
-		} else if(playerId==marketBuyTurn.get(0)) {
-			//market implementation
+		} else if (playerId == marketBuyTurn.get(0)) {
+			// market implementation
 			marketBuyTurn.remove(0);
 		}
 	}
@@ -931,7 +720,7 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
-		//market implementation
+		// market implementation
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -986,60 +775,63 @@ public class MatchHandler {
 	public void setGameStatus(int i) {
 		this.gameStatus = i;
 	}
-	
+
 	public void setBoard(Board board) {
-		this.board=board;
+		this.board = board;
 	}
 
 	public void setNumberOfPlayers(int i) {
 		this.numberOfPlayers = i;
 	}
-	
+
 	public void setPlayerNickName(int playerId, String nickName) {
 		this.players.get(playerId).setPlayerNickName(nickName);
 	}
 
 	public void notifyEndOfTurn(int playerId) {
-		if(playerId==turn) {
-			PubSub.notifyAllClients(players, "Player '"+players.get(playerId).getNickName()+"', your turn is over.");
+		if (playerId == turn) {
+			PubSub.notifyAllClients(players,
+					"Player '" + players.get(playerId).getNickName() + "', your turn is over.");
 			nextTurn();
 		}
 	}
-	
+
 	public void startTurns() {
 		this.gameStatus = 3; // we're ready to play!
-		PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
+		PubSub.notifyAllClients(players,
+				"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
 		timers.submit(new TurnTimerThread(this, turn));
 	}
 
 	public void nextTurn() {
-		if(turn==(players.size()-1)){
-			turn=0;
+		if (turn == (players.size() - 1)) {
+			turn = 0;
 			startMarketTime();
 		} else {
 			turn++;
-			PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
-			timers.submit(new TurnTimerThread(this,turn));
+			PubSub.notifyAllClients(players,
+					"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
+			timers.submit(new TurnTimerThread(this, turn));
 		}
 	}
 
 	private void startMarketTime() {
-		gameStatus=4;
-		PubSub.notifyAllClients(players,"Game Status changed to 'Market Sell Time'");
+		gameStatus = 4;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
 		timers.submit(new MarketTimerThread(this));
 	}
 
 	public void startMarketBuyTime() {
-		this.gameStatus=5;
-		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
-		for(Player player : players) {
+		this.gameStatus = 5;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
+		for (Player player : players) {
 			marketBuyTurn.add(new Integer(player.getId()));
 		}
 		Collections.shuffle(marketBuyTurn);
 	}
 
-	public void rewindTurns(){
-		//check if game is not finished
-		turn=0;
+	public void rewindTurns() {
+		// check if game is not finished
+		turn = 0;
 	}
 }

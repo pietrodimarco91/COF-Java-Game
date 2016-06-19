@@ -921,8 +921,18 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		} else if(playerId==marketBuyTurn.get(0)) {
-			//market implementation
-			marketBuyTurn.remove(0);
+			MarketEventBuy event =(MarketEventBuy)marketEvent;
+			try {
+				market.buyItemOnSale(players.get(playerId), event.getItemId());
+				marketBuyTurn.remove(0);
+				PubSub.notifyAllClients(players, "Player '"+players.get(playerId).getNickName()+"' has just bought the item with ID "+event.getItemId()+" from the Market!");
+			} catch (UnsufficientCoinsException e) {
+				sendErrorToClient(e.showError(), playerId);
+			} catch (ItemNotFoundException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
+		} else {
+			sendErrorToClient("You're not allowed to buy now, please wait for your turn!", playerId);
 		}
 	}
 
@@ -931,7 +941,51 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
-		//market implementation
+		Player player = players.get(playerId);
+		MarketEventSell event = (MarketEventSell)marketEvent;
+		ItemFactory factory = new ConcreteItemFactory();
+		ItemOnSale item;
+		String header = event.getHeader();
+		switch(header) {
+		case "PERMITTILE":
+			int permitTileId=event.getPermitTileId();
+			Tile permitTile = player.sellPermitTile(permitTileId); //exception handling should be done!
+			if(permitTile==null) {
+				sendErrorToClient("Ops! A PermitTile with the specified ID was not found!", playerId);
+				return;
+			}
+			item = factory.createPermitTileOnSale(permitTile, player, event.getPrice());
+			market.putItemOnSale(item);
+			PubSub.notifyAllClients(players, "Player '"+player.getNickName()+"' has just put a new Item on sale in the Market!\nInfo:\n"+item.toString());
+			break;
+		case "POLITICCARD":
+			boolean cardFound=false;
+			String politicCardColor=event.getPoliticCardColor();
+			cardFound = player.checkIfYouOwnThisCard(politicCardColor, player.getPoliticCards());
+			if(cardFound) {
+				item = factory.createPoliticCardOnSale(player.sellPoliticCard(politicCardColor), player, event.getPrice());
+				market.putItemOnSale(item);
+				PubSub.notifyAllClients(players, "Player '"+player.getNickName()+"' has just put a new Item on sale in the Market!\nInfo:\n"+item.toString());
+			}
+			else {
+				sendErrorToClient("You don't own a PoliticCard of the color you specified!", playerId);
+			}
+			break;
+		case "ASSISTANT":
+			if(player.getNumberOfAssistants()>0) {
+				item = factory.createAssistantOnSale(player, event.getPrice());
+				market.putItemOnSale(item);
+				PubSub.notifyAllClients(players, "Player '"+player.getNickName()+"' has just put a new Item on sale in the Market!\nInfo:\n"+item.toString());
+			} else {
+				sendErrorToClient("You haven't got Assistants in your pool!", playerId);
+			}
+			break;
+		default:
+		}
+	}
+	
+	public void sendMarketStatus() {
+		PubSub.notifyAllClients(players, market.toString());
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -1015,7 +1069,7 @@ public class MatchHandler {
 	public void nextTurn() {
 		if(turn==(players.size()-1)){
 			turn=0;
-			startMarketTime();
+			startMarketSellTime();
 		} else {
 			turn++;
 			PubSub.notifyAllClients(players, "Player '"+players.get(turn).getNickName()+"', it's your turn. Perform your actions!");
@@ -1023,9 +1077,10 @@ public class MatchHandler {
 		}
 	}
 
-	private void startMarketTime() {
+	private void startMarketSellTime() {
 		gameStatus=4;
 		PubSub.notifyAllClients(players,"Game Status changed to 'Market Sell Time'");
+		sendMarketStatus();
 		timers.submit(new MarketTimerThread(this));
 	}
 
@@ -1036,10 +1091,19 @@ public class MatchHandler {
 			marketBuyTurn.add(new Integer(player.getId()));
 		}
 		Collections.shuffle(marketBuyTurn);
+		String message="In order to buy items from the Market, players must respect this random order:"+"\n";
+		for(Integer id : marketBuyTurn) {
+			message+="Player '"+players.get(id.intValue()).getNickName()+" ID: "+id;
+		}
+		PubSub.notifyAllClients(players, message);		
 	}
 
 	public void rewindTurns(){
 		//check if game is not finished
 		turn=0;
+	}
+
+	public void chat(int playerId, String messageString) {
+		PubSub.chatMessage(playerId, players, messageString);		
 	}
 }

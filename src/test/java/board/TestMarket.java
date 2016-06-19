@@ -1,6 +1,7 @@
 package board;
 
 import controller.Player;
+import exceptions.ItemNotFoundException;
 import exceptions.UnsufficientCoinsException;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
@@ -52,18 +53,22 @@ public class TestMarket {
 		player4.removeCoins(10);; //player4 has 4 coins
 		assertEquals(4,player4.getCoins());
 		try {
-			market.buyItemOnSale(player4, item1); 
+			market.buyItemOnSale(player4, item1.getId()); 
 		} catch (UnsufficientCoinsException e) {
 			ServerOutputPrinter.printLine(e.showError());
 			string=e.showError();
+		} catch (ItemNotFoundException e) {
+			e.printStackTrace();
 		}
 		assertEquals("Unsifficient Coins! The specified coins aren't enough to perform this action",string);
 		player4.addCoins(3); //player4 has 7 coins
 		assertEquals(7,player4.getCoins());
 		try {
-			market.buyItemOnSale(player4, item1);
+			market.buyItemOnSale(player4, item1.getId());
 		} catch (UnsufficientCoinsException e) {
 			ServerOutputPrinter.printLine(e.showError());
+		} catch (ItemNotFoundException e) {
+			e.printStackTrace();
 		}
 		assertEquals(2,market.getItemsOnSale().size());
 		assertEquals(1,player4.getCoins());
@@ -71,10 +76,12 @@ public class TestMarket {
 		player4.addCoins(19); //now player 4 has 40 coins
 		assertEquals(20,player4.getCoins());
 		try {
-			market.buyItemOnSale(player4, item2);
-			market.buyItemOnSale(player4, item3);
+			market.buyItemOnSale(player4, item2.getId());
+			market.buyItemOnSale(player4, item3.getId());
 		} catch (UnsufficientCoinsException e) {
 			logger.log(Level.SEVERE, e.showError(), e);
+		} catch (ItemNotFoundException e) {
+			e.printStackTrace();
 		}
 		assertEquals(0,market.getItemsOnSale().size());
 		assertEquals(3,player4.getCoins());

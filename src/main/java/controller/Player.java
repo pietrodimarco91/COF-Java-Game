@@ -5,6 +5,7 @@ import model.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,6 +151,10 @@ public class Player {
 	
 	public String getNickName() {
 		return this.nickName;
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 
 	/**
@@ -350,6 +355,38 @@ public class Player {
 				cardFound = true;
 			}
 		}
+	}
+	
+	/**
+	 * This method is invoked when a player decides to sell a Politic Card in the Market.
+	 * It removes the chosen card from the arraylist of owned politic cards.
+	 * @param color the color of the chosen Politic Card to sell
+	 * @return The politic card to sell
+	 */
+	public PoliticCard sellPoliticCard(String color) {
+		for(int i=0;i<this.politicCards.size();i++) {
+			if(politicCards.get(i).getColorCard().equals(color)) {
+				return politicCards.remove(i);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * This method is invoked when a player decides to sell a Permit Tile in the Market.
+	 * It removes the chosen tile from the arraylist of unused permit tiles.
+	 * @param id the id of the permit tile to sell
+	 * @return The permit tile to sell
+	 */
+	public Tile sellPermitTile(int id) {
+		PermitTile tile;
+		for(int i=0;i<unusedPermitTiles.size();i++) {
+			tile=(PermitTile)unusedPermitTiles.get(i);
+			if(tile.getId()==id) {
+				return unusedPermitTiles.remove(i);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -570,10 +607,6 @@ public class Player {
 		this.usedPermitTiles.add(permitTile);
 	}
 
-	public int getId(){
-		return id;
-	}
-
 	/**
 	 * @return
 	 */
@@ -587,20 +620,20 @@ public class Player {
 	 */
 	public String toString(){
 		String allPlayerInformation="";
-		allPlayerInformation="Your ID: "+id+" Your color: "+color+" Your Coins: "+coins+"\n Your Assistance: "+assistants+" Your position in Victory Points: "+victoryPoints+
+		allPlayerInformation+="Your ID: "+id+" Your color: "+color+" Your Coins: "+coins+"\n Your Assistance: "+assistants+" Your position in Victory Points: "+victoryPoints+
 				"Your position in Nobility Track:   "+positionInNobilityTrack+" Your position in Victory Points: "+victoryPoints;
-		allPlayerInformation=" Your cities: ";
+		allPlayerInformation+=" Your cities: ";
 		for(City tempCity: controlledCities)
-			allPlayerInformation=tempCity.getName()+" ";
-			allPlayerInformation="\n Your POLITIC card: ";
+			allPlayerInformation+=tempCity.getName()+" ";
+			allPlayerInformation+="\n Your POLITIC card: ";
 			for(PoliticCard tempPoliticCard: politicCards)
-				allPlayerInformation=tempPoliticCard.getColorCard()+" ";
-			allPlayerInformation="\n Your UNUSED permit tile: ";
+				allPlayerInformation+=tempPoliticCard.getColorCard()+" ";
+			allPlayerInformation+="\n Your UNUSED permit tile: ";
 			for(Tile tempPermitTile: unusedPermitTiles)
-				allPlayerInformation=tempPermitTile.toString()+" ";
-			allPlayerInformation="\n Your USED permit tile: ";
+				allPlayerInformation+=tempPermitTile.toString()+" ";
+			allPlayerInformation+="\n Your USED permit tile: ";
 			for(Tile tempPermitTile: usedPermitTiles)
-				allPlayerInformation=tempPermitTile.toString()+" ";
+				allPlayerInformation+=tempPermitTile.toString()+" ";
 			return allPlayerInformation;
 		
 				

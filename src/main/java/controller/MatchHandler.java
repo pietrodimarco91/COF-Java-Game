@@ -449,11 +449,11 @@ public class MatchHandler {
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
 		politicCardColors = kingBuildEmporiumAction.getPoliticCardColors();
-
 		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(politicCardColors);
-
-		if (numberOfCouncillorSatisfied > 0) {
-			try{
+		
+		
+		if (numberOfCouncillorSatisfied == 0)
+			throw new UnsufficientCoucillorSatisfiedException();
 			int coinsToPay;
 			City cityTo;
 			cityTo = board.getCityFromName(cityName);
@@ -462,18 +462,15 @@ public class MatchHandler {
 			player.removeCardsFromHand(politicCardColors);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			if (player.getCoins() >= coinsToPay){
-				player.removeCoins(coinsToPay);
+			if (player.getCoins() >= coinsToPay) {
+				if(coinsToPay>0) {
+					board.moveKing(cityTo);
+					player.removeCoins(coinsToPay);
+				}
 				sendMessageToClient("You build an Emporium with king's help", playerId);
 			}
 			else
 				throw new UnsufficientCoinsException();
-			}catch (UnsufficientCoinsException e1) {
-				sendErrorToClient(e1.showError(), playerId);
-			}
-		} else {
-			throw new UnsufficientCoucillorSatisfiedException();
-		}
 	}
 
 	/**

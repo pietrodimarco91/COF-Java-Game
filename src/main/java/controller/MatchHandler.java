@@ -440,7 +440,6 @@ public class MatchHandler {
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
 		politicCardColors = kingBuildEmporiumAction.getPoliticCardColors();
-
 		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(politicCardColors);
 
 		if (numberOfCouncillorSatisfied > 0) {
@@ -453,8 +452,11 @@ public class MatchHandler {
 			player.removeCardsFromHand(politicCardColors);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			if (player.getCoins() >= coinsToPay)
+			if (player.getCoins() >= coinsToPay) {
+				if(coinsToPay>0)
+					board.moveKing(cityTo);
 				player.removeCoins(coinsToPay);
+			}
 			else
 				throw new UnsufficientCoinsException();
 			}catch (UnsufficientCoinsException e1) {

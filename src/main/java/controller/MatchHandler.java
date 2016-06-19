@@ -453,8 +453,10 @@ public class MatchHandler {
 			player.removeCardsFromHand(politicCardColors);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			if (player.getCoins() >= coinsToPay)
+			if (player.getCoins() >= coinsToPay){
 				player.removeCoins(coinsToPay);
+				sendMessageToClient("You build an Emporium with king's help", playerId);
+			}
 			else
 				throw new UnsufficientCoinsException();
 			}catch (UnsufficientCoinsException e1) {
@@ -670,36 +672,63 @@ public class MatchHandler {
 	 * @param action
 	 * @param playerId
 	 */
-	/*
+	
 	public void evaluateAction(Action action, int playerId) {
 
 		if (action instanceof AdditionalMainAction) {
 			AdditionalMainAction mainAction = (AdditionalMainAction) action;
-			this.performAdditionalMainAction(mainAction, playerId);
+			//this.performAdditionalMainAction(mainAction, playerId);
 		} else if (action instanceof BuyPermitTileAction) {
 			BuyPermitTileAction buyPermitTileAction = (BuyPermitTileAction) action;
-			this.buyPermitTile(buyPermitTileAction, playerId);
+			try {
+				this.buyPermitTile(buyPermitTileAction, playerId);
+			} catch (UnsufficientCoucillorSatisfiedException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
 		} else if (action instanceof ElectCouncillorAction) {
 			ElectCouncillorAction electConcillorAction = (ElectCouncillorAction) action;
 			this.electCouncillor(electConcillorAction, playerId);
 		} else if (action instanceof EngageAssistantAction) {
 			EngageAssistantAction engageAssistanAction = (EngageAssistantAction) action;
-			this.engageAssistant(engageAssistanAction, playerId);
+			try {
+				this.engageAssistant(engageAssistanAction, playerId);
+			} catch (UnsufficientCoinsException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
 		} else if (action instanceof KingBuildEmporiumAction) {
 			KingBuildEmporiumAction kingBuildEmporiumAction = (KingBuildEmporiumAction) action;
-			this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
+			try {
+				this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
+			} catch (UnsufficientCoinsException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}catch (UnsufficientCoucillorSatisfiedException e1){
+				sendErrorToClient(e1.showError(), playerId);
+			}
+			
 		} else if (action instanceof SendAssistantAction) {
 			SendAssistantAction sendAssistantAction = (SendAssistantAction) action;
-			this.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
+			try {
+				this.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
+			} catch (UnsufficientAssistantNumberException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
 		} else if (action instanceof SimpleBuildEmporiumAction) {
 			SimpleBuildEmporiumAction simpleBuildEmporium = (SimpleBuildEmporiumAction) action;
-			this.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
+			try {
+				this.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
+			} catch (NotFindCityFromPermitTileException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
 		} else if (action instanceof SwitchPermitTilesAction) {
 			SwitchPermitTilesAction switchPermitTilesAction = (SwitchPermitTilesAction) action;
-			this.switchPermitTile(switchPermitTilesAction, playerId);
+			try {
+				this.switchPermitTile(switchPermitTilesAction, playerId);
+			} catch (UnsufficientAssistantNumberException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
 		}
 
-	}*/
+	}
 	
 
 	public void messageFromClient(String messageString, int playerId) {

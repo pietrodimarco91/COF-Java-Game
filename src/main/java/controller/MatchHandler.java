@@ -139,6 +139,7 @@ public class MatchHandler {
 		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
 	}
 
+	@Override
 	public String toString() {
 		String string = "";
 		string += "Match number " + this.id + "\n";
@@ -249,7 +250,7 @@ public class MatchHandler {
 		}
 		if (this.board.graphIsConnected()) {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
-			ServerOutputPrinter.printLine("[MATCH "+this.id+"] Game Status changed to 'PLAY'");
+			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
 			startTurns();
 		} else
 			try {
@@ -379,14 +380,16 @@ public class MatchHandler {
 		return this.gameStatus == 1;
 	}
 
-	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId)
-			throws UnsufficientCoucillorSatisfiedException {
-		if(this.turn!=playerId){
-			sendErrorToClient("Is not your turn!", playerId);
+	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
+		if (this.turn != playerId) {
+			sendErrorToClient("It's not your turn!", playerId);
 			return;
 		}
+		if (players.get(playerId).hasPerformedMainAction()) {
+			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
+		}
 		String regionName;
-		ArrayList<String> politicCardChoice;
+		ArrayList<String> chosenPoliticCards;
 		int slot;
 		int numberOfCouncillorSatisfied;
 		int playerPayment;
@@ -394,30 +397,33 @@ public class MatchHandler {
 		PermitTileDeck regionDeck;
 
 		regionName = buyPermitTileAction.getRegion();
-		politicCardChoice = buyPermitTileAction.getPoliticCardColors();
+		chosenPoliticCards = buyPermitTileAction.getPoliticCardColors();
 		slot = buyPermitTileAction.getSlot();
 		region = getRegion(regionName);
 
-		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(politicCardChoice);
-
-		if (numberOfCouncillorSatisfied > 0) {
-			try {
-				Player player = this.players.get(playerId);
-				playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-				player.performPayment(playerPayment);
-				player.removeCardsFromHand(politicCardChoice);
-				regionDeck = region.getDeck();
-				try {
-					regionDeck.drawPermitTile(slot);
-					PubSub.notifyAllClients(players, "Player "+player.getNickName()+" bought a Permit Tile");
-				} catch (InvalidSlotException e) {
-					sendErrorToClient(e.showError(), playerId);
-				}
-			} catch (UnsufficientCoinsException e1) {
-				sendErrorToClient(e1.showError(), playerId);
+		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(chosenPoliticCards);
+		Player player = this.players.get(playerId);
+		try {
+			if (numberOfCouncillorSatisfied > 0)
+				throw new UnsufficientCouncillorsSatisfiedException();
+			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			player.removeCardsFromHand(chosenPoliticCards);
+			regionDeck = region.getDeck();
+			player.performPayment(playerPayment);
+			player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+					+ "' satisfied the Council of the region '" + regionName + "' and bought a Permit Tile");
+			player.mainActionDone(true);
+			if (player.hasPerformedQuickAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
 			}
-		} else {
-			throw new UnsufficientCoucillorSatisfiedException();
+		} catch (InvalidSlotException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (UnsufficientCoinsException e1) {
+			sendErrorToClient(e1.showError(), playerId);
+		} catch (UnsufficientCouncillorsSatisfiedException e) {
+			sendErrorToClient(e.showError(), playerId);
 		}
 	}
 
@@ -426,7 +432,9 @@ public class MatchHandler {
 	 * his turn.
 	 */
 	public void drawPoliticCard(Player player) {
-		player.addCardOnHand(PoliticCardDeck.generateRandomPoliticCard());
+		PoliticCard card = PoliticCardDeck.generateRandomPoliticCard();
+		player.addCardOnHand(card);
+		sendMessageToClient("You've drawn a " + card.getColorCard() + " Politic Card", player.getId());
 	}
 
 	/**
@@ -435,12 +443,14 @@ public class MatchHandler {
 	 * @return
 	 * @throws UnsufficientCoinsException
 	 */
-	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId)
-			throws UnsufficientCoinsException, UnsufficientCoucillorSatisfiedException {
-		
-		if(this.turn!=playerId){
-			sendErrorToClient("Is not your turn!", playerId);
+	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId) {
+
+		if (this.turn != playerId) {
+			sendErrorToClient("It's not your turn!", playerId);
 			return;
+		}
+		if (players.get(playerId).hasPerformedMainAction()) {
+			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
 		}
 		String cityName;
 		ArrayList<String> politicCardColors;
@@ -450,54 +460,66 @@ public class MatchHandler {
 		cityName = kingBuildEmporiumAction.getCityName();
 		politicCardColors = kingBuildEmporiumAction.getPoliticCardColors();
 		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(politicCardColors);
-		
-		
-		if (numberOfCouncillorSatisfied == 0)
-			throw new UnsufficientCoucillorSatisfiedException();
+		try {
+			if (numberOfCouncillorSatisfied == 0)
+				throw new UnsufficientCouncillorsSatisfiedException();
 			int coinsToPay;
-			City cityTo;
-			cityTo = board.getCityFromName(cityName);
+			City cityTo = board.getCityFromName(cityName);
 			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
 			player.performPayment(playerPayment);
 			player.removeCardsFromHand(politicCardColors);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			if (player.getCoins() >= coinsToPay) {
-				if(coinsToPay>0) {
-					board.moveKing(cityTo);
-					player.removeCoins(coinsToPay);
-				}
-				PubSub.notifyAllClients(players, "Player "+player.getNickName()+" build an Emporium in "+cityName+" with king's help");
-			}
-			else
+			if (player.getCoins() < coinsToPay)
 				throw new UnsufficientCoinsException();
+			if (coinsToPay > 0) {
+				board.moveKing(cityTo);
+				player.removeCoins(coinsToPay);
+			}
+			PubSub.notifyAllClients(players,
+					"Player " + player.getNickName() + " has built an Emporium in " + cityName + " with king's help");
+			player.mainActionDone(true);
+			if (player.hasPerformedQuickAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
+			}
+		} catch (UnsufficientCouncillorsSatisfiedException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (UnsufficientCoinsException e) {
+			sendErrorToClient(e.showError(), playerId);
+		}
 	}
 
 	/**
 	 * @return
 	 */
-	/*
-	 * public void performAdditionalMainAction(Player player) { int choice = 0;
-	 * if (player.getNumberOfAssistants() > 3) {
-	 * 
-	 * player.removeMoreAssistants(3); do { showMainActions(player); try {
-	 * choice = player.getConnector().receiveIntFromClient(); } catch
-	 * (RemoteException e) { // TODO Auto-generated catch block
-	 * logger.log(Level.FINEST, "Error: couldn't receive from client\n", e); } }
-	 * while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-	 * mainActions(player, choice); } }
-	 * 
-	 * /** NEEDS REVISION: this method must not return a boolean: the try/catch
-	 * must be handled inside a while loop untile the move is correctly
-	 * performed.
+
+	public void performAdditionalMainAction(AdditionalMainAction action, int playerId) {
+		Player player = players.get(playerId);
+		try {
+			if (player.getNumberOfAssistants() < 3)
+				throw new UnsufficientCoinsException();
+			player.removeMoreAssistants(3);
+			player.mainActionDone(false);
+		} catch (UnsufficientCoinsException e) {
+			sendErrorToClient(e.showError(), playerId);
+		}
+	}
+
+	/**
+	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
+	 * be handled inside a while loop untile the move is correctly performed.
 	 * 
 	 * @return
 	 */
+
 	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
-		
-		if(this.turn!=playerId){
-			sendErrorToClient("Is not your turn!", playerId);
+		if (this.turn != playerId) {
+			sendErrorToClient("It's not your turn!", playerId);
 			return;
+		}
+		if (players.get(playerId).hasPerformedMainAction()) {
+			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
 		}
 		String regionName;
 		String councillorColor;
@@ -508,11 +530,16 @@ public class MatchHandler {
 		try {
 			region.electCouncillor(councillorColor);
 			player.addCoins(4);
-			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" elected "+councillorColor+" Councillor in "+regionName);
+			PubSub.notifyAllClients(players,
+					"Player '" + player.getNickName() + "' elected a " + councillorColor + " Councillor in " + regionName);
+			if (player.hasPerformedQuickAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
+			}
 		} catch (CouncillorNotFoundException e) {
 			sendErrorToClient(e.getMessage(), playerId);
 		}
-		
+
 	}
 
 	/**
@@ -523,7 +550,7 @@ public class MatchHandler {
 	 */
 	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId)
 			throws UnsufficientCoinsException {
-		if(this.turn!=playerId){
+		if (this.turn != playerId) {
 			sendErrorToClient("Is not your turn!", playerId);
 			return;
 		}
@@ -532,7 +559,7 @@ public class MatchHandler {
 		if (coins >= 3) {
 			player.removeCoins(3);
 			player.addAssistant();
-			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" bought an Assistant!");
+			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!");
 		} else
 			throw new UnsufficientCoinsException();
 	}
@@ -546,8 +573,8 @@ public class MatchHandler {
 
 	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId)
 			throws UnsufficientAssistantNumberException {
-		
-		if(this.turn!=playerId){
+
+		if (this.turn != playerId) {
 			sendErrorToClient("Is not your turn!", playerId);
 			return;
 		}
@@ -559,7 +586,8 @@ public class MatchHandler {
 		if (player.getNumberOfAssistants() >= 1) {
 			region.getDeck().switchPermitTiles();
 			player.removeAssistant();
-			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" swhitched Permit Tile in "+regionName+"!");
+			PubSub.notifyAllClients(players,
+					"Player " + player.getNickName() + " swhitched Permit Tile in " + regionName + "!");
 		} else {
 			throw new UnsufficientAssistantNumberException();
 		}
@@ -574,8 +602,8 @@ public class MatchHandler {
 
 	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId)
 			throws NotFindCityFromPermitTileException {
-		
-		if(this.turn!=playerId){
+
+		if (this.turn != playerId) {
 			sendErrorToClient("Is not your turn!", playerId);
 			return;
 		}
@@ -586,9 +614,10 @@ public class MatchHandler {
 
 		permitTileId = simpleBuildEmporium.getPermitTileID();
 		cityName = simpleBuildEmporium.getCityName();
-		tempPermitTile = (PermitTile)player.getUnusedPermitTileFromId(permitTileId);
+		tempPermitTile = (PermitTile) player.getUnusedPermitTileFromId(permitTileId);
 		if (buildEmporium(tempPermitTile, player, cityName))
-			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" build an Emporium in "+cityName+"!");
+			PubSub.notifyAllClients(players,
+					"Player " + player.getNickName() + " build an Emporium in " + cityName + "!");
 		else {
 			throw new NotFindCityFromPermitTileException();
 		}
@@ -600,7 +629,7 @@ public class MatchHandler {
 	 */
 	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId)
 			throws UnsufficientAssistantNumberException {
-		if(this.turn!=playerId){
+		if (this.turn != playerId) {
 			sendErrorToClient("Is not your turn!", playerId);
 			return;
 		}
@@ -615,7 +644,8 @@ public class MatchHandler {
 				sendErrorToClient(e.showError(), playerId);
 			}
 			player.removeAssistant();
-			PubSub.notifyAllClients(players, "Player "+player.getNickName()+" send an Assistant to elect an "+councillorColor+"Councillor in "+regionName+"!");
+			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " send an Assistant to elect an "
+					+ councillorColor + "Councillor in " + regionName + "!");
 		} else {
 			throw new UnsufficientAssistantNumberException();
 		}
@@ -696,7 +726,6 @@ public class MatchHandler {
 		return find;
 	}
 
-	
 	/**
 	 * This method must understand which action to perform for the specified
 	 * player, depending on the dynamic dispatching of the Action
@@ -704,19 +733,15 @@ public class MatchHandler {
 	 * @param action
 	 * @param playerId
 	 */
-	
+
 	public void evaluateAction(Action action, int playerId) {
 
 		if (action instanceof AdditionalMainAction) {
 			AdditionalMainAction mainAction = (AdditionalMainAction) action;
-			//this.performAdditionalMainAction(mainAction, playerId);
+			// this.performAdditionalMainAction(mainAction, playerId);
 		} else if (action instanceof BuyPermitTileAction) {
 			BuyPermitTileAction buyPermitTileAction = (BuyPermitTileAction) action;
-			try {
-				this.buyPermitTile(buyPermitTileAction, playerId);
-			} catch (UnsufficientCoucillorSatisfiedException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}
+			this.buyPermitTile(buyPermitTileAction, playerId);
 		} else if (action instanceof ElectCouncillorAction) {
 			ElectCouncillorAction electConcillorAction = (ElectCouncillorAction) action;
 			this.electCouncillor(electConcillorAction, playerId);
@@ -729,14 +754,8 @@ public class MatchHandler {
 			}
 		} else if (action instanceof KingBuildEmporiumAction) {
 			KingBuildEmporiumAction kingBuildEmporiumAction = (KingBuildEmporiumAction) action;
-			try {
-				this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
-			} catch (UnsufficientCoinsException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}catch (UnsufficientCoucillorSatisfiedException e1){
-				sendErrorToClient(e1.showError(), playerId);
-			}
-			
+			this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
+
 		} else if (action instanceof SendAssistantAction) {
 			SendAssistantAction sendAssistantAction = (SendAssistantAction) action;
 			try {
@@ -761,7 +780,6 @@ public class MatchHandler {
 		}
 
 	}
-	
 
 	public void messageFromClient(String messageString, int playerId) {
 	}
@@ -770,12 +788,13 @@ public class MatchHandler {
 		if (gameStatus != 4) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
-		} else if(playerId==marketBuyTurn.get(0)) {
-			MarketEventBuy event =(MarketEventBuy)marketEvent;
+		} else if (playerId == marketBuyTurn.get(0)) {
+			MarketEventBuy event = (MarketEventBuy) marketEvent;
 			try {
 				market.buyItemOnSale(players.get(playerId), event.getItemId());
 				marketBuyTurn.remove(0);
-				PubSub.notifyAllClients(players, "Player '"+players.get(playerId).getNickName()+"' has just bought the item with ID "+event.getItemId()+" from the Market!");
+				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
+						+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
 			} catch (UnsufficientCoinsException e) {
 				sendErrorToClient(e.showError(), playerId);
 			} catch (ItemNotFoundException e) {
@@ -791,42 +810,48 @@ public class MatchHandler {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
-		
+
 		Player player = players.get(playerId);
-		MarketEventSell event = (MarketEventSell)marketEvent;
+		MarketEventSell event = (MarketEventSell) marketEvent;
 		ItemFactory factory = new ConcreteItemFactory();
 		ItemOnSale item;
 		String header = event.getHeader();
-		switch(header) {
+		switch (header) {
 		case "PERMITTILE":
-			int permitTileId=event.getPermitTileId();
-			Tile permitTile = player.sellPermitTile(permitTileId); //exception handling should be done!
-			if(permitTile==null) {
+			int permitTileId = event.getPermitTileId();
+			Tile permitTile = player.sellPermitTile(permitTileId); // exception
+																	// handling
+																	// should be
+																	// done!
+			if (permitTile == null) {
 				sendErrorToClient("Ops! A PermitTile with the specified ID was not found!", playerId);
 				return;
 			}
 			item = factory.createPermitTileOnSale(permitTile, player, event.getPrice());
 			market.putItemOnSale(item);
-			PubSub.notifyAllClients(players, "Player '"+player.getNickName()+"' has just put a new Item on sale in the Market!\nInfo:\n"+item.toString());
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+					+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
 			break;
 		case "POLITICCARD":
-			boolean cardFound=false;
-			String politicCardColor=event.getPoliticCardColor();
+			boolean cardFound = false;
+			String politicCardColor = event.getPoliticCardColor();
 			cardFound = player.checkIfYouOwnThisCard(politicCardColor, player.getPoliticCards());
-			if(cardFound) {
-				item = factory.createPoliticCardOnSale(player.sellPoliticCard(politicCardColor), player, event.getPrice());
+			if (cardFound) {
+				item = factory.createPoliticCardOnSale(player.sellPoliticCard(politicCardColor), player,
+						event.getPrice());
 				market.putItemOnSale(item);
-				PubSub.notifyAllClients(players, "Player '"+player.getNickName()+"' has just put a new Item on sale in the Market!\nInfo:\n"+item.toString());
-			}
-			else {
+				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
+			} else {
 				sendErrorToClient("You don't own a PoliticCard of the color you specified!", playerId);
 			}
 			break;
 		case "ASSISTANT":
-			if(player.getNumberOfAssistants()>0) {
+			if (player.getNumberOfAssistants() > 0) {
 				item = factory.createAssistantOnSale(player, event.getPrice());
 				market.putItemOnSale(item);
-				PubSub.notifyAllClients(players, "Player '"+player.getNickName()+"' has just put a new Item on sale in the Market!\nInfo:\n"+item.toString());
+				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
 			} else {
 				sendErrorToClient("You haven't got Assistants in your pool!", playerId);
 			}
@@ -834,7 +859,7 @@ public class MatchHandler {
 		default:
 		}
 	}
-	
+
 	public void sendMarketStatus() {
 		PubSub.notifyAllClients(players, market.toString());
 
@@ -917,44 +942,45 @@ public class MatchHandler {
 		this.gameStatus = 3; // we're ready to play!
 		PubSub.notifyAllClients(players,
 				"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
+		drawPoliticCard(players.get(turn));
 		timers.submit(new TurnTimerThread(this, turn));
 	}
 
 	public void nextTurn() {
 
-		if(turn==(players.size()-1)){
-			turn=0;
+		if (turn == (players.size() - 1)) {
+			turn = 0;
 			startMarketSellTime();
 
 		} else {
 			turn++;
 			PubSub.notifyAllClients(players,
 					"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
+			drawPoliticCard(players.get(turn));
 			timers.submit(new TurnTimerThread(this, turn));
 		}
 	}
 
-
 	private void startMarketSellTime() {
-		gameStatus=4;
-		PubSub.notifyAllClients(players,"Game Status changed to 'Market Sell Time'");
+		gameStatus = 4;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
 		sendMarketStatus();
 		timers.submit(new MarketTimerThread(this));
 	}
 
 	public void startMarketBuyTime() {
-		this.gameStatus=5;
-		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
+		this.gameStatus = 5;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
 		marketBuyTurn.clear();
-		for(Player player : players) {
+		for (Player player : players) {
 			marketBuyTurn.add(new Integer(player.getId()));
 		}
 		Collections.shuffle(marketBuyTurn);
-		String message="In order to buy items from the Market, players must respect this random order:"+"\n";
-		for(Integer id : marketBuyTurn) {
-			message+="Player '"+players.get(id.intValue()).getNickName()+" ID: "+id+"\n";
+		String message = "In order to buy items from the Market, players must respect this random order:" + "\n";
+		for (Integer id : marketBuyTurn) {
+			message += "Player '" + players.get(id.intValue()).getNickName() + " ID: " + id + "\n";
 		}
-		PubSub.notifyAllClients(players, message);		
+		PubSub.notifyAllClients(players, message);
 	}
 
 	public void rewindTurns() {
@@ -963,6 +989,6 @@ public class MatchHandler {
 	}
 
 	public void chat(int playerId, String messageString) {
-		PubSub.chatMessage(playerId, players, messageString);		
+		PubSub.chatMessage(playerId, players, messageString);
 	}
 }

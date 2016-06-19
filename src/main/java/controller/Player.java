@@ -656,9 +656,18 @@ public class Player {
 		this.nickName=nickName;
 	}
 
-	public void mainActionDone(){
-		hasPerformedMainAction=true;
+	public void mainActionDone(boolean value){
+		hasPerformedMainAction=value;
 	}
+	
+	public boolean hasPerformedMainAction() {
+		return this.hasPerformedMainAction;
+	}
+	
+	public boolean hasPerformedQuickAction() {
+		return this.hasPerformedQuickAction;
+	}
+	
 	public void quickActionDone(){
 		hasPerformedQuickAction=true;
 	}

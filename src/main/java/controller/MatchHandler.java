@@ -249,7 +249,7 @@ public class MatchHandler {
 		}
 		if (this.board.graphIsConnected()) {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
-			ServerOutputPrinter.printLine("Game Status changed to 'PLAY'");
+			ServerOutputPrinter.printLine("[MATCH "+this.id+"] Game Status changed to 'PLAY'");
 			startTurns();
 		} else
 			try {
@@ -882,15 +882,16 @@ public class MatchHandler {
 	}
 
 	public void startMarketBuyTime() {
-		this.gameStatus = 5;
-		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
-		for (Player player : players) {
+		this.gameStatus=5;
+		PubSub.notifyAllClients(players,"Game Status changed to 'Market Buy Time'");
+		marketBuyTurn.clear();
+		for(Player player : players) {
 			marketBuyTurn.add(new Integer(player.getId()));
 		}
 		Collections.shuffle(marketBuyTurn);
 		String message="In order to buy items from the Market, players must respect this random order:"+"\n";
 		for(Integer id : marketBuyTurn) {
-			message+="Player '"+players.get(id.intValue()).getNickName()+" ID: "+id;
+			message+="Player '"+players.get(id.intValue()).getNickName()+" ID: "+id+"\n";
 		}
 		PubSub.notifyAllClients(players, message);		
 	}

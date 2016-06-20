@@ -44,4 +44,8 @@ public class NobilityTrack {
 		}
 		return string;
 	}
+	
+	public NobilityCell getNobilityTrackCell(int index) {
+		return track[index];
+	}
 }

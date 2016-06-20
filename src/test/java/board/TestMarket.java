@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +29,7 @@ public class TestMarket {
 	public void test() throws RemoteException {
 		Board board = new Board(4,2,2,2,2);
 		Market market = new Market();
-		ArrayList<ItemOnSale> items=new ArrayList<>();
+		List<ItemOnSale> items=Collections.synchronizedList(new ArrayList<>());
 		String string="";
 		assertEquals(items.getClass(),market.getItemsOnSale().getClass());
 

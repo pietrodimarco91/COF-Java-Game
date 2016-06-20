@@ -9,18 +9,14 @@ import client.actions.KingBuildEmporiumAction;
 import client.actions.SendAssistantAction;
 import client.actions.SimpleBuildEmporiumAction;
 import client.actions.SwitchPermitTilesAction;
-import controller.Client.ClientSideConnector;
 import exceptions.*;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
-import java.io.NotActiveException;
-import java.nio.channels.ShutdownChannelGroupException;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -60,6 +56,11 @@ public class MatchHandler {
 	 * A reference to the local Board for this match.
 	 */
 	private Board board;
+	
+	/**
+	 * The bonus manager that assigns the bonuses to the players
+	 */
+	private BonusManager bonusManager;
 
 	/**
 	 * An ArrayList of players in this MatchHandler.
@@ -97,7 +98,7 @@ public class MatchHandler {
 	 */
 	private int gameStatus;
 
-	ExecutorService timers;
+	private ExecutorService timers;
 
 	/**
 	 * 
@@ -251,6 +252,7 @@ public class MatchHandler {
 		if (this.board.graphIsConnected()) {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
+			bonusManager=new BonusManager(board.getNobilityTrack());
 			startTurns();
 		} else {
 			Player player = players.get(playerId);
@@ -403,12 +405,12 @@ public class MatchHandler {
 		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
 		PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
 				+ rewardToken + " after building an Emporium in " + city.getName());
-		BonusManager.takeBonusFromTile(rewardToken, player);
+		bonusManager.takeBonusFromTile(rewardToken, player);
 		for (City ownedCity : ownedCities) {
 			rewardToken = ownedCity.winBonus();
 			PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
 					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName());
-			BonusManager.takeBonusFromTile(rewardToken, player);
+			bonusManager.takeBonusFromTile(rewardToken, player);
 		}
 	}
 
@@ -418,13 +420,13 @@ public class MatchHandler {
 		if (board.isEligibleForColorBonus(player, city.getColor())) {
 			try {
 				colorBonus = board.winColorBonus(city.getColor());
-				BonusManager.takeBonusFromTile(colorBonus, player);
+				bonusManager.takeBonusFromTile(colorBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
 			try {
 				kingReward = board.winKingReward();
-				BonusManager.takeBonusFromTile(kingReward, player);
+				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
@@ -432,13 +434,13 @@ public class MatchHandler {
 		if (region.isEligibleForRegionBonus(player)) {
 			try {
 				regionBonus = region.winRegionBonus(player);
-				BonusManager.takeBonusFromTile(regionBonus, player);
+				bonusManager.takeBonusFromTile(regionBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
 			try {
 				kingReward = board.winKingReward();
-				BonusManager.takeBonusFromTile(kingReward, player);
+				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
@@ -822,7 +824,7 @@ public class MatchHandler {
 		}
 		if (action instanceof AdditionalMainAction) {
 			AdditionalMainAction mainAction = (AdditionalMainAction) action;
-			// this.performAdditionalMainAction(mainAction, playerId);
+			this.performAdditionalMainAction(mainAction, playerId);
 		} else if (action instanceof BuyPermitTileAction) {
 			BuyPermitTileAction buyPermitTileAction = (BuyPermitTileAction) action;
 			this.buyPermitTile(buyPermitTileAction, playerId);

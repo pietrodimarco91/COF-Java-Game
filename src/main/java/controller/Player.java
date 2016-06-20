@@ -241,6 +241,10 @@ public class Player {
 	public void initializeFirstHand() {
 		this.politicCards = PoliticCardDeck.distributePoliticCards();
 	}
+	
+	public int getPositionInNobilityTrack() {
+		return this.positionInNobilityTrack;
+	}
 
 	/**
 	 * NEEDS REVISION: must implement exceptions and correct communication with
@@ -654,5 +658,4 @@ public class Player {
 	public boolean playerIsOffline(){
 		return this.disconnected;
 	}
-
 }

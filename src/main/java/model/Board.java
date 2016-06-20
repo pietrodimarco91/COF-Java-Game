@@ -721,10 +721,10 @@ public class Board {
 		string += CouncillorsPool.poolStatus() + "\n";
 		string += "\nNOBILITY TRACK:\n";
 		string += nobilityTrack.toString() + "\n";
-		string+="\nCOLOR BONUS DECK:\n";
+		/*string+="\nCOLOR BONUS DECK:\n";
 		string+=colorBonusDeck.toString()+"\n";
 		string+="\nKING REWARD DECK:\n";
-		string+=kingRewardDeck.toString()+"\n";
+		string+=kingRewardDeck.toString()+"\n";*/
 		return string;
 	}
 	

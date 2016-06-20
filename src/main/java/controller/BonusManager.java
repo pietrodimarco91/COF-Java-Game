@@ -5,6 +5,7 @@ import java.util.Random;
 
 import model.City;
 import model.NobilityCell;
+import model.NobilityTrack;
 import model.PermitTile;
 import model.PoliticCard;
 import model.Tile;
@@ -12,23 +13,29 @@ import model.Tile;
 /**
  * Created by Gabriele Bressan on 31/05/16.
  */
-public abstract class BonusManager {
-
+public class BonusManager {
+	
+	NobilityTrack track;
+	
+	public BonusManager(NobilityTrack track) {
+		this.track=track;
+	}
+	
 	/**
 	 * 
 	 * @param nobilityCell
 	 * @return
 	 */
-	public static void takeBonusFromNobilityTrack(NobilityCell nobilityCell, Player player) {
+	public void takeBonusFromNobilityTrack(NobilityCell nobilityCell, Player player) {
 		useBonus(nobilityCell.getBonus(), player);
 
 	}
 
-	public static void takeBonusFromTile(Tile tile, Player player) {
+	public void takeBonusFromTile(Tile tile, Player player) {
 		useBonus(tile.getBonus(), player);
 	}
 
-	public static void useBonus(ArrayList<String> bonus, Player player) {
+	public void useBonus(ArrayList<String> bonus, Player player) {
 		Random randomBonus = new Random();
 		int supLimit, infLimit;
 		for (String singleBonus : bonus) {
@@ -55,6 +62,10 @@ public abstract class BonusManager {
 			case "NOBILITYTRACK":
 				infLimit = 1;
 				supLimit = 3 - infLimit;
+				player.changePositionInNobilityTrack(randomBonus.nextInt(supLimit) + infLimit);
+				int position = player.getPositionInNobilityTrack();
+				NobilityCell cell = this.track.getNobilityTrackCell(position);
+				takeBonusFromNobilityTrack(cell, player);
 				break;
 			case "DRAWPERMITTILE":
 				player.addCardOnHand(new PoliticCard());

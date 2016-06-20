@@ -62,7 +62,7 @@ public class Client {
 		int choice;
 		while (true) {
 			ClientOutputPrinter.printLine(
-					"||*** MAIN MENU ***||\n1) Perform action\n2) Request board status\n3) Disconnect\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration\n8) Chat");
+					"||*** MAIN MENU ***||\n1) Perform action\n2) Request board status\n3) Quit\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration\n8) Chat");
 			try {
 				choice = input.nextInt();
 				switch (choice) {

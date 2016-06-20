@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.rmi.Naming;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -205,7 +207,12 @@ public class ClientPacketController {
 	 * NEEDS IMPLEMENTATION
 	 */
 	public void disconnect() {
-
+		try {
+			UnicastRemoteObject.unexportObject(clientSideConnector, true);
+			System.exit(0);
+		} catch (NoSuchObjectException e) {
+		ClientOutputPrinter.printLine(e.getMessage());
+	}
 	}
 
 	public void startSocketConnection(String nickName) {

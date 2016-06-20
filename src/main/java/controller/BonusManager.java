@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import model.City;
@@ -15,10 +16,14 @@ import model.Tile;
  */
 public class BonusManager {
 	
-	NobilityTrack track;
+	private NobilityTrack track;
 	
-	public BonusManager(NobilityTrack track) {
+	private List<Player> players;
+	
+	
+	public BonusManager(List<Player> players, NobilityTrack track) {
 		this.track=track;
+		this.players=players;
 	}
 	
 	/**

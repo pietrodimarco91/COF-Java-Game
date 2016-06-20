@@ -252,7 +252,7 @@ public class MatchHandler {
 		if (this.board.graphIsConnected()) {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
-			bonusManager=new BonusManager(board.getNobilityTrack());
+			bonusManager=new BonusManager(players, board.getNobilityTrack());
 			startTurns();
 		} else {
 			Player player = players.get(playerId);
@@ -474,9 +474,11 @@ public class MatchHandler {
 			player.removeCardsFromHand(chosenPoliticCards);
 			regionDeck = region.getDeck();
 			player.performPayment(playerPayment);
-			player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
+			Tile permitTile = regionDeck.drawPermitTile(slot);
+			player.addUnusedPermitTiles(permitTile);
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
 					+ "' satisfied the Council of the region '" + regionName + "' and bought a Permit Tile");
+			bonusManager.takeBonusFromTile(permitTile, player);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
 				notifyEndOfTurn(playerId);

@@ -57,7 +57,7 @@ public class Server {
 			RMIConnectionInt b=new RMIConnection(matches,thread);
 			try {
 				try {
-					Naming.bind("rmi://127.0.0.1/registry", b);
+					Naming.bind("rmi://localhost/registry", b);
 				} catch (AlreadyBoundException e) {
 					e.printStackTrace();
 				}

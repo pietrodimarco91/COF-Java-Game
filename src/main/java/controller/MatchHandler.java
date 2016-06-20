@@ -1080,7 +1080,7 @@ public class MatchHandler {
 				playersInDraw.add(player);
 			}
 		}
-		if(playersInDraw.isEmpty())
+		if(playersInDraw.isEmpty()&&winner!=null)
 			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
 		else {
 			for(Player player : playersInDraw) {
@@ -1090,7 +1090,8 @@ public class MatchHandler {
 					maxAssistants=player.getNumberOfAssistants();
 				}
 			}
-			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+			if(winner!=null)
+				PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
 		}
 	}
 	
@@ -1132,7 +1133,8 @@ public class MatchHandler {
 				tempWinner=player;
 			}
 		}
-		tempWinner.addVictoryPoints(3);
+		if(tempWinner!=null)
+			tempWinner.addVictoryPoints(3);
 	}
 
 	private void startMarketSellTime() {

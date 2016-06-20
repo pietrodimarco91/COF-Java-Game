@@ -37,19 +37,21 @@ public class BonusManager {
 
 	public void useBonus(ArrayList<String> bonus, Player player) {
 		Random randomBonus = new Random();
-		int supLimit, infLimit;
+		int supLimit, infLimit,numberOfBonus;
 		for (String singleBonus : bonus) {
 
 			switch (singleBonus) {
 			case "ASSISTANT":
 				infLimit = 1;
 				supLimit = 5 - infLimit;
-				player.addMoreAssistant(randomBonus.nextInt(supLimit) + infLimit);
+				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
+				player.addMoreAssistant(numberOfBonus);
 				break;
 			case "VICTORYTRACK":
 				infLimit = 1;
 				supLimit = 15 - infLimit;
-				player.setVoctoryPoints(randomBonus.nextInt(supLimit) + infLimit);
+				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
+				player.setVoctoryPoints(numberOfBonus);
 				break;
 			case "POLITIC":
 				player.addCardOnHand(new PoliticCard());
@@ -57,12 +59,14 @@ public class BonusManager {
 			case "COINS":
 				infLimit = 1;
 				supLimit = 7 - infLimit;
-				player.addCoins(randomBonus.nextInt(supLimit) + infLimit);
+				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
+				player.addCoins(numberOfBonus);
 				break;
 			case "NOBILITYTRACK":
 				infLimit = 1;
 				supLimit = 3 - infLimit;
-				player.changePositionInNobilityTrack(randomBonus.nextInt(supLimit) + infLimit);
+				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
+				player.changePositionInNobilityTrack(numberOfBonus);
 				int position = player.getPositionInNobilityTrack();
 				NobilityCell cell = this.track.getNobilityTrackCell(position);
 				takeBonusFromNobilityTrack(cell, player);

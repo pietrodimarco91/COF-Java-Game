@@ -4,6 +4,7 @@ import client.actions.ClientPacketController;
 import client.view.cli.ClientOutputPrinter;
 
 import java.rmi.RemoteException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -40,13 +41,21 @@ public class Client {
 	}
 
 	public void initialConfiguration() {
+		boolean correct=false;
+		do{
 		ClientOutputPrinter.printLine(
 				"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any number but 1 to continue..");
+		try{
 		int choice = input.nextInt();
 		if (choice == 1) {
 			controller.boardConfiguration();
 			controller.mapConfiguration();
+			correct=true;
 		}
+		}catch(InputMismatchException e){
+		ClientOutputPrinter.printLine("Please insert a correct input!");
+		}
+		}while(!correct);
 	}
 
 	public void play() {
@@ -92,7 +101,17 @@ public class Client {
 
 	public void welcome() {
 		ClientOutputPrinter.printLine("Welcome to a new session of 'Council Of Four' Game!");
-		ClientOutputPrinter.printLine("Please, choose a nickname:");
+		do{
+		ClientOutputPrinter.printLine("Please, choose a nickname with at least 4 char and without space:");
 		nickName=input.nextLine();
+		checkCorrectNickName(nickName);
+		}while(checkCorrectNickName(nickName));
+	}
+	
+	public boolean checkCorrectNickName(String nickName){
+		boolean correct=false;
+		if(nickName.contains(" ") || nickName.length()<4)
+		 correct=true;
+		return correct;
 	}
 }

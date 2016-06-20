@@ -112,6 +112,7 @@ public abstract class BonusManager {
 
 				break;
 			case "NEWMAINACTION":
+				// da completare
 				break;
 
 			}

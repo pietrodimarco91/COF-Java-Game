@@ -209,10 +209,13 @@ public class ClientPacketController {
 	public void disconnect() {
 		try {
 			UnicastRemoteObject.unexportObject(clientSideConnector, true);
-			System.exit(0);
 		} catch (NoSuchObjectException e) {
 		ClientOutputPrinter.printLine(e.getMessage());
-	}
+		} finally {
+			if(socketInputOutputThread!=null)
+				socketInputOutputThread.disconnect();
+			System.exit(0);
+		}
 	}
 
 	public void startSocketConnection(String nickName) {

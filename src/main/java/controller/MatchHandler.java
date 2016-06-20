@@ -185,7 +185,7 @@ public class MatchHandler {
 	}
 
 	public void setConfigObject(ConfigObject config, int playerId) {
-		if (gameStatus != 0) {
+		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
 			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
 			return;
 		}
@@ -210,7 +210,7 @@ public class MatchHandler {
 	}
 
 	public void setExistingConf(int configId, int playerId) {
-		if (gameStatus != 0) {
+		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
 			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
 			return;
 		}
@@ -244,7 +244,7 @@ public class MatchHandler {
 			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
 			return;
 		}
-		if (gameStatus != 2) {
+		if (gameStatus != GameStatusConstants.MAP_CONFIG) {
 			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
 			return;
 		}
@@ -274,7 +274,7 @@ public class MatchHandler {
 			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
 			return;
 		}
-		if (gameStatus != 2) {
+		if (gameStatus != GameStatusConstants.MAP_CONFIG) {
 			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
 			return;
 		}
@@ -314,7 +314,7 @@ public class MatchHandler {
 			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
 			return;
 		}
-		if (gameStatus != 2) {
+		if (gameStatus != GameStatusConstants.MAP_CONFIG) {
 			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
 			return;
 		}
@@ -344,7 +344,7 @@ public class MatchHandler {
 	}
 
 	public void countDistance(String parameter, int playerId) {
-		if (gameStatus < 2) {
+		if (gameStatus < GameStatusConstants.MAP_CONFIG) {
 			sendErrorToClient("Unable to perform this action, match isn't started yet", playerId);
 			return;
 		}
@@ -381,7 +381,7 @@ public class MatchHandler {
 	 * @return true is it currently pending, false otherwise
 	 */
 	public boolean isPending() {
-		return this.gameStatus == 1;
+		return this.gameStatus == GameStatusConstants.WAIT_FOR_PLAYERS;
 	}
 
 	/**
@@ -781,7 +781,7 @@ public class MatchHandler {
 		}
 		return allCity.contains(cityChoice);
 	}
-
+	
 	public boolean hasBuiltLastEmporium(Player player) {
 		return player.getNumberOfEmporium() == 0;
 	}
@@ -812,7 +812,7 @@ public class MatchHandler {
 	 */
 
 	public void evaluateAction(Action action, int playerId) {
-		if (gameStatus != 3) {
+		if (gameStatus != GameStatusConstants.PLAY) {
 			sendErrorToClient("You can't perform an action at the moment!", playerId);
 			return;
 		}
@@ -852,7 +852,7 @@ public class MatchHandler {
 	}
 
 	public void buyEvent(MarketEvent marketEvent, int playerId) {
-		if (gameStatus != 5) {
+		if (gameStatus != GameStatusConstants.MARKET_BUY) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		} else if (playerId == marketBuyTurn.get(0)) {
@@ -873,7 +873,7 @@ public class MatchHandler {
 	}
 
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
-		if (gameStatus != 4) {
+		if (gameStatus != GameStatusConstants.MARKET_SELL) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		}
@@ -957,7 +957,7 @@ public class MatchHandler {
 	}
 
 	public void sendBoardStatus(int playerId) {
-		if (gameStatus > 1) {
+		if (gameStatus > GameStatusConstants.WAIT_FOR_PLAYERS) {
 			sendMessageToClient(
 					board.toString() + board.printMatrix() + board.printConnections() + board.printDistances(),
 					playerId);
@@ -967,7 +967,7 @@ public class MatchHandler {
 	}
 
 	public void sendConfigurations(int playerId) {
-		if (gameStatus != 0) {
+		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
 			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
 			return;
 		}
@@ -980,7 +980,7 @@ public class MatchHandler {
 	}
 
 	public void sendPlayerStatus(int playerId) {
-		if (gameStatus < 3) {
+		if (gameStatus < GameStatusConstants.PLAY) {
 			sendErrorToClient("The match isn't started yet", playerId);
 			return;
 		}
@@ -1012,7 +1012,7 @@ public class MatchHandler {
 	}
 
 	public void startTurns() {
-		this.gameStatus = 3; // we're ready to play!
+		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
 		if (!players.get(turn).playerIsOffline()) {
 			PubSub.notifyAllClients(players,
 					"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
@@ -1040,14 +1040,14 @@ public class MatchHandler {
 	}
 
 	private void startMarketSellTime() {
-		gameStatus = 4;
+		gameStatus = GameStatusConstants.MARKET_SELL;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
 		sendMarketStatus();
 		timers.submit(new MarketTimerThread(this));
 	}
 
 	public void startMarketBuyTime() {
-		this.gameStatus = 5;
+		this.gameStatus = GameStatusConstants.MARKET_BUY;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
 		marketBuyTurn.clear();
 		for (Player player : players) {

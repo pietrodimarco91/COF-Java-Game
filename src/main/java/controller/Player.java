@@ -655,4 +655,8 @@ public class Player {
 		return this.disconnected;
 	}
 
+	public void addVictoryPoints(int i) {
+		this.victoryPoints+=i;
+		}
+
 }

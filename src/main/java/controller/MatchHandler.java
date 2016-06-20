@@ -544,6 +544,12 @@ public class MatchHandler {
 						+ cityTo.getName() + " with king's help");
 				winBuildingBonuses(cityTo, player);
 				player.mainActionDone(true);
+				if (hasBuiltLastEmporium(player)) {
+					PubSub.notifyAllClients(this.players, "Player " + player.getNickName()
+							+ " has built his last Emporium!!\n This is your last turn!");
+					gameStatus = GameStatusConstants.FINISH;
+					player.addVictoryPoints(3);
+				}
 				if (player.hasPerformedQuickAction()) {
 					notifyEndOfTurn(playerId);
 					player.resetTurn();
@@ -704,6 +710,12 @@ public class MatchHandler {
 					"Player " + player.getNickName() + " build an Emporium in " + cityName + "!");
 			winBuildingBonuses(board.getCityFromName(cityName), player);
 			player.mainActionDone(true);
+			if (hasBuiltLastEmporium(player)) {
+				PubSub.notifyAllClients(this.players,
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!");
+				gameStatus = GameStatusConstants.FINISH;
+				player.addVictoryPoints(3);
+			}
 			if (player.hasPerformedQuickAction()) {
 				notifyEndOfTurn(playerId);
 				player.resetTurn();
@@ -781,7 +793,7 @@ public class MatchHandler {
 		}
 		return allCity.contains(cityChoice);
 	}
-	
+
 	public boolean hasBuiltLastEmporium(Player player) {
 		return player.getNumberOfEmporium() == 0;
 	}
@@ -1025,6 +1037,12 @@ public class MatchHandler {
 	public void nextTurn() {
 
 		if (turn == (players.size() - 1)) {
+			if (GameStatusConstants.FINISH == gameStatus) {
+				PubSub.notifyAllClients(this.players, "Turns are over!");
+				notifyMatchWinner();
+				return;
+			}
+
 			turn = 0;
 			startMarketSellTime();
 		} else {
@@ -1037,6 +1055,33 @@ public class MatchHandler {
 			} else
 				nextTurn();
 		}
+	}
+
+	private void notifyMatchWinner() {
+		Iterator<Player> iterator0 = this.players.iterator();
+		Iterator<Player> iterator1 = this.players.iterator();
+		Player player, winner = null,tempWinner=null;
+		int maxVictoryPoints = 0;
+		int maxNumberOfPermitTile=0;
+		NobilityTrack nobilityTrack=board.getNobilityTrack();//da aggiungere punti guadagnati dal nobility track
+		while(iterator0.hasNext()){
+			player=iterator0.next();
+			if(player.getNumberOfPermitTile()+player.getNumberOfUsedPermitTile()>maxNumberOfPermitTile){
+				maxNumberOfPermitTile=player.getNumberOfPermitTile()+player.getNumberOfUsedPermitTile();
+				tempWinner=player;
+			}
+		}
+		
+		while (iterator1.hasNext()) {
+			player = iterator1.next();
+			if (player.getVictoryPoints() > maxVictoryPoints) {
+				maxVictoryPoints = player.getVictoryPoints();
+				winner = player;
+			}
+		}
+		
+		PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+
 	}
 
 	private void startMarketSellTime() {

@@ -50,7 +50,11 @@ public class TestMarket {
 		
 		Player player4 = new Player(4); //player4 has 14 coins
 		assertEquals(14,player4.getCoins());
-		player4.removeCoins(10);; //player4 has 4 coins
+		try {
+			player4.performPayment(10); //player4 has 4 coins
+		} catch (UnsufficientCoinsException e1) {
+			e1.printStackTrace();
+		}
 		assertEquals(4,player4.getCoins());
 		try {
 			market.buyItemOnSale(player4, item1.getId()); 

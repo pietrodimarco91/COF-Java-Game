@@ -727,7 +727,7 @@ public class Board {
 		string+=kingRewardDeck.toString()+"\n";
 		return string;
 	}
-
+	
 	public int getNumberOfCities() {
 		return this.numberOfCities;
 	}

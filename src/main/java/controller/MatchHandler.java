@@ -252,17 +252,17 @@ public class MatchHandler {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
 			startTurns();
-		} else{
-			Player player=players.get(playerId);
+		} else {
+			Player player = players.get(playerId);
 			try {
-				if(!player.playerIsOffline())
-				player.getConnector()
-						.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
+				if (!player.playerIsOffline())
+					player.getConnector()
+							.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
 				ServerOutputPrinter.printLine(e.getMessage());
 			}
-			}
+		}
 	}
 
 	/**
@@ -385,60 +385,66 @@ public class MatchHandler {
 	}
 
 	/**
-	 * This method allows to make a player win all the possible bonuses after the construction of an emporium
-	 * @param city the city where the emporium has been built
-	 * @param player the player who built the emporium
+	 * This method allows to make a player win all the possible bonuses after
+	 * the construction of an emporium
+	 * 
+	 * @param city
+	 *            the city where the emporium has been built
+	 * @param player
+	 *            the player who built the emporium
 	 */
 	public void winBuildingBonuses(City city, Player player) {
-		winRewardTokensFromOwnedCities(city,player);
+		winRewardTokensFromOwnedCities(city, player);
 		winImportantBonuses(city, player);
 	}
-	
+
 	public void winRewardTokensFromOwnedCities(City city, Player player) {
 		Tile rewardToken = city.winBonus();
-		List<City> ownedCities=board.getNearbyOwnedCities(player, city);
-		PubSub.notifyAllClients(players, "Player '"+player+"' has just won the following Reward Token:\n"+rewardToken+" after building an Emporium in "+city.getName());
+		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
+		PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
+				+ rewardToken + " after building an Emporium in " + city.getName());
 		BonusManager.takeBonusFromTile(rewardToken, player);
-		for(City ownedCity : ownedCities) {
-			rewardToken=ownedCity.winBonus();
-			PubSub.notifyAllClients(players, "Player '"+player+"' has just won the following Reward Token:\n"+rewardToken+" from  "+ownedCity.getName()+", as it is connected to "+city.getName());
+		for (City ownedCity : ownedCities) {
+			rewardToken = ownedCity.winBonus();
+			PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
+					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName());
 			BonusManager.takeBonusFromTile(rewardToken, player);
 		}
 	}
-	
+
 	public void winImportantBonuses(City city, Player player) {
 		Region region = city.getRegion();
 		Tile colorBonus, regionBonus, kingReward;
-		if(board.isEligibleForColorBonus(player, city.getColor())) {
+		if (board.isEligibleForColorBonus(player, city.getColor())) {
 			try {
-				colorBonus=board.winColorBonus(city.getColor());
+				colorBonus = board.winColorBonus(city.getColor());
 				BonusManager.takeBonusFromTile(colorBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
 			try {
-				kingReward=board.winKingReward();
+				kingReward = board.winKingReward();
 				BonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
 		}
-		if(region.isEligibleForRegionBonus(player)) {
+		if (region.isEligibleForRegionBonus(player)) {
 			try {
-				regionBonus=region.winRegionBonus(player);
+				regionBonus = region.winRegionBonus(player);
 				BonusManager.takeBonusFromTile(regionBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
 			try {
-				kingReward=board.winKingReward();
+				kingReward = board.winKingReward();
 				BonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError());
 			}
 		}
 	}
-	
+
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
 			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
@@ -448,7 +454,7 @@ public class MatchHandler {
 		ArrayList<String> chosenPoliticCards;
 		int slot;
 		int numberOfCouncillorSatisfied;
-		int playerPayment=0;
+		int playerPayment = 0;
 		Region region;
 		PermitTileDeck regionDeck;
 
@@ -477,12 +483,12 @@ public class MatchHandler {
 		} catch (UnsufficientCouncillorsSatisfiedException e) {
 			sendErrorToClient(e.showError(), playerId);
 		} catch (UnsufficientCoinsException e) {
-			for(int i=0;i<chosenPoliticCards.size();i++)
+			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			sendErrorToClient(e.showError(), playerId);
 		} catch (InvalidSlotException e) {
 			player.addCoins(playerPayment);
-			for(int i=0;i<chosenPoliticCards.size();i++)
+			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			sendErrorToClient(e.showError(), playerId);
 		}
@@ -512,8 +518,8 @@ public class MatchHandler {
 		String cityName;
 		ArrayList<String> chosenPoliticCards;
 		int numberOfCouncillorSatisfied;
-		int playerPayment=0;
-		int coinsToPay=0;
+		int playerPayment = 0;
+		int coinsToPay = 0;
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
 		chosenPoliticCards = kingBuildEmporiumAction.getPoliticCardColors();
@@ -521,12 +527,12 @@ public class MatchHandler {
 		try {
 			if (numberOfCouncillorSatisfied == 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
-			
+
 			City cityTo = board.getCityFromName(cityName);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
 			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.performPayment(playerPayment+coinsToPay);
+			player.performPayment(playerPayment + coinsToPay);
 			player.removeCardsFromHand(chosenPoliticCards);
 			if (coinsToPay > 0) {
 				board.moveKing(cityTo);
@@ -548,8 +554,8 @@ public class MatchHandler {
 		} catch (UnsufficientCoinsException e) {
 			sendErrorToClient(e.showError(), playerId);
 		} catch (AlreadyOwnedEmporiumException e) {
-			player.addCoins(playerPayment+coinsToPay);
-			for(int i=0;i<chosenPoliticCards.size();i++)
+			player.addCoins(playerPayment + coinsToPay);
+			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			sendErrorToClient(e.showError(), playerId);
 		}
@@ -780,14 +786,15 @@ public class MatchHandler {
 		return player.getNumberOfEmporium() == 0;
 	}
 
-	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice) throws AlreadyOwnedEmporiumException {
+	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice)
+			throws AlreadyOwnedEmporiumException {
 		boolean found = false;
 		List<City> cities = permitTile.getCities();
 		cityChoice = cityChoice.trim();
 		cityChoice = cityChoice.toUpperCase();
 		for (City tempCities : cities) {
 			if (tempCities.getName().equals(cityChoice)) {
-				if(tempCities.buildEmporium(player))
+				if (tempCities.buildEmporium(player))
 					found = true;
 				else
 					throw new AlreadyOwnedEmporiumException();
@@ -927,10 +934,10 @@ public class MatchHandler {
 
 	public void sendErrorToClient(String error, int playerId) {
 		String message = "[SERVER] Error: " + error;
-		Player player=players.get(playerId);
+		Player player = players.get(playerId);
 		try {
-			if(!player.playerIsOffline())
-			player.getConnector().sendToClient(new Packet(message));
+			if (!player.playerIsOffline())
+				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
 			e.printStackTrace();
@@ -939,10 +946,10 @@ public class MatchHandler {
 
 	public void sendMessageToClient(String s, int playerId) {
 		String message = "[MATCH " + this.id + "] " + s;
-		Player player=players.get(playerId);
+		Player player = players.get(playerId);
 		try {
-			if(!player.playerIsOffline())
-			player.getConnector().sendToClient(new Packet(message));
+			if (!player.playerIsOffline())
+				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
 			e.printStackTrace();
@@ -1006,10 +1013,13 @@ public class MatchHandler {
 
 	public void startTurns() {
 		this.gameStatus = 3; // we're ready to play!
-		PubSub.notifyAllClients(players,
-				"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
-		drawPoliticCard(players.get(turn));
-		timers.submit(new TurnTimerThread(this, turn));
+		if (!players.get(turn).playerIsOffline()) {
+			PubSub.notifyAllClients(players,
+					"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
+			drawPoliticCard(players.get(turn));
+			timers.submit(new TurnTimerThread(this, turn));
+		} else
+			nextTurn();
 	}
 
 	public void nextTurn() {
@@ -1017,13 +1027,15 @@ public class MatchHandler {
 		if (turn == (players.size() - 1)) {
 			turn = 0;
 			startMarketSellTime();
-
 		} else {
 			turn++;
-			PubSub.notifyAllClients(players,
-					"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
-			drawPoliticCard(players.get(turn));
-			timers.submit(new TurnTimerThread(this, turn));
+			if (!players.get(turn).playerIsOffline()) {
+				PubSub.notifyAllClients(players,
+						"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
+				drawPoliticCard(players.get(turn));
+				timers.submit(new TurnTimerThread(this, turn));
+			} else
+				nextTurn();
 		}
 	}
 
@@ -1057,9 +1069,9 @@ public class MatchHandler {
 	public void chat(int playerId, String messageString) {
 		PubSub.chatMessage(playerId, players, messageString);
 	}
-	
+
 	public void setPlayerOffline(int playerId) {
-		Player player=this.players.get(playerId);
+		Player player = this.players.get(playerId);
 		player.setPlayerOffline();
 	}
 }

@@ -225,7 +225,7 @@ public class ActionCreator {
 		try {
 			actionSenderInt.sendToServer(new Packet(action));
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 

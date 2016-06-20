@@ -658,4 +658,8 @@ public class Player {
 	public boolean playerIsOffline(){
 		return this.disconnected;
 	}
+
+	public void addVictoryPoints(int i) {
+		this.victoryPoints+=i;
+	}
 }

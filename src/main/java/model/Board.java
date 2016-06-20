@@ -750,12 +750,12 @@ public class Board {
 	}
 	
 	public City getCityFromName(String cityName) {
-		boolean find=false;
+		boolean found=false;
 		City tempCity=null;
-		for(int i=0;i<this.cities.size() && !find;i++){
+		for(int i=0;i<this.cities.size() && !found;i++){
 			tempCity=this.cities.get(i);
-			if(tempCity.getName().equals(cityName))
-				find=true;
+			if(String.valueOf(tempCity.getName().charAt(0)).equals(String.valueOf(cityName.charAt(0))))
+				found=true;
 		}
 		return tempCity;	
 	}

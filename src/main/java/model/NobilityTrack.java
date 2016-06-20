@@ -48,4 +48,8 @@ public class NobilityTrack {
 	public NobilityCell getNobilityTrackCell(int index) {
 		return track[index];
 	}
+	
+	public int getLength() {
+		return LENGTH;
+	}
 }

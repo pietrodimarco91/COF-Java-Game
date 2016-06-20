@@ -1060,30 +1060,77 @@ public class MatchHandler {
 	}
 
 	private void notifyMatchWinner() {
-		Iterator<Player> iterator0 = this.players.iterator();
-		Iterator<Player> iterator1 = this.players.iterator();
-		Player player, winner = null,tempWinner=null;
-		int maxVictoryPoints = 0;
+		List<Player> playersInDraw=new ArrayList<>();
+		Player winner = null;
+		int maxVictoryPoints = 0, maxAssistants=0, maxPoliticCardsInHand=0;		
+		
+		assignFinalPermitTilePoints();
+		assignFinalNobilityTrackPoints();
+		
+		for(Player player : players) {
+			if (player.getVictoryPoints() > maxVictoryPoints) {
+				maxVictoryPoints = player.getVictoryPoints();
+				winner = player;
+				playersInDraw.clear();
+			} else if(player.getVictoryPoints() == maxVictoryPoints) {
+				if(!playersInDraw.contains(winner))
+					playersInDraw.add(winner);
+				playersInDraw.add(player);
+			}
+		}
+		if(playersInDraw.isEmpty())
+			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+		else {
+			for(Player player : playersInDraw) {
+				if(player.getPoliticCards().size()+player.getNumberOfAssistants()>maxAssistants+maxPoliticCardsInHand) {
+					winner=player;
+					maxPoliticCardsInHand=player.getPoliticCards().size();
+					maxAssistants=player.getNumberOfAssistants();
+				}
+			}
+			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+		}
+	}
+	
+	public void assignFinalNobilityTrackPoints() {
+		NobilityTrack nobilityTrack=board.getNobilityTrack();
+		List<Player> playersInFirstPosition = new ArrayList<>();
+		List<Player> playersInSecondPosition = new ArrayList<>();
+		for(Player player : players ) {
+			if(player.getPositionInNobilityTrack()==nobilityTrack.getLength()) {
+				playersInFirstPosition.add(player);
+			}
+			if(player.getPositionInNobilityTrack()==nobilityTrack.getLength()-1) {
+				playersInSecondPosition.add(player);
+			}
+		}
+		if(playersInFirstPosition.size()==1) {
+			playersInFirstPosition.get(0).addVictoryPoints(5);
+			if(playersInSecondPosition.size()==1)
+				playersInSecondPosition.get(0).addVictoryPoints(2);
+			else {
+				for(Player player : playersInSecondPosition) {
+					player.addVictoryPoints(2);
+				}
+			}
+		} else {
+			for(Player player : playersInFirstPosition)
+				player.addVictoryPoints(5);
+		}
+	}
+	
+	public void assignFinalPermitTilePoints() {
+		Iterator<Player> iterator = players.iterator();
+		Player player, tempWinner=null;
 		int maxNumberOfPermitTile=0;
-		NobilityTrack nobilityTrack=board.getNobilityTrack();//da aggiungere punti guadagnati dal nobility track
-		while(iterator0.hasNext()){
-			player=iterator0.next();
+		while(iterator.hasNext()){
+			player=iterator.next();
 			if(player.getNumberOfPermitTile()+player.getNumberOfUsedPermitTile()>maxNumberOfPermitTile){
 				maxNumberOfPermitTile=player.getNumberOfPermitTile()+player.getNumberOfUsedPermitTile();
 				tempWinner=player;
 			}
 		}
-		
-		while (iterator1.hasNext()) {
-			player = iterator1.next();
-			if (player.getVictoryPoints() > maxVictoryPoints) {
-				maxVictoryPoints = player.getVictoryPoints();
-				winner = player;
-			}
-		}
-		
-		PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
-
+		tempWinner.addVictoryPoints(3);
 	}
 
 	private void startMarketSellTime() {

@@ -117,6 +117,7 @@ public class ActionCreator {
 		}
 		ClientOutputPrinter.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
 		cityName=input.nextLine();
+		cityName=cityName.toUpperCase();
 		this.sendAction(new KingBuildEmporiumAction(type, cityName, colors));
 	}
 

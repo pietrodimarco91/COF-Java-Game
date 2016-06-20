@@ -483,8 +483,9 @@ public class MatchHandler {
 				board.moveKing(cityTo);
 				player.removeCoins(coinsToPay);
 			}
+			cityTo.buildEmporium(player);
 			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " has built an Emporium in " + cityName + " with king's help");
+					"Player " + player.getNickName() + " has built an Emporium in " + cityTo.getName() + " with king's help");
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
 				notifyEndOfTurn(playerId);

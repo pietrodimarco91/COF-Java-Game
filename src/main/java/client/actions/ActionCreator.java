@@ -102,13 +102,15 @@ public class ActionCreator {
 		ClientOutputPrinter.printLine("BUILD AN EMPOIUM WITH KING'S HELP");
 		ClientOutputPrinter.printLine(
 				"Type the color of the Politic Cards you would like to use to satisfy the King's Council ");
-		ClientOutputPrinter.printLine("Type the colors one per line");
-		while (numberOfCards < 4) {
-			color = input.nextLine();
+		ClientOutputPrinter.printLine("Type the colors one per line, type 'stop' to stop");
+		color = input.nextLine();
+		while (numberOfCards == 0 || !color.equals("stop")) {
 			try {
 				verifyColor(color);
 				colors.add(color);
 				numberOfCards++;
+				if(numberOfCards==4)
+					break;
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}

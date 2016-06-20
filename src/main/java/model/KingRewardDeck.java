@@ -35,7 +35,15 @@ public class KingRewardDeck {
 		if (!deck.isEmpty())
 			return deck.poll();
 		else
-			throw new NoMoreBonusException("KingReward");
+			throw new NoMoreBonusException("KING REWARD");
+	}
+	
+	public String toString() {
+		String string="KING REWARD DECK\n";
+		for(Tile tile : deck) {
+			string+=tile.toString()+"\n";
+		}
+		return string;
 	}
 
 }

@@ -384,6 +384,61 @@ public class MatchHandler {
 		return this.gameStatus == 1;
 	}
 
+	/**
+	 * This method allows to make a player win all the possible bonuses after the construction of an emporium
+	 * @param city the city where the emporium has been built
+	 * @param player the player who built the emporium
+	 */
+	public void winBuildingBonuses(City city, Player player) {
+		winRewardTokensFromOwnedCities(city,player);
+		winImportantBonuses(city, player);
+	}
+	
+	public void winRewardTokensFromOwnedCities(City city, Player player) {
+		Tile rewardToken = city.winBonus();
+		List<City> ownedCities=board.getNearbyOwnedCities(player, city);
+		PubSub.notifyAllClients(players, "Player '"+player+"' has just won the following Reward Token:\n"+rewardToken+" after building an Emporium in "+city.getName());
+		BonusManager.takeBonusFromTile(rewardToken, player);
+		for(City ownedCity : ownedCities) {
+			rewardToken=ownedCity.winBonus();
+			PubSub.notifyAllClients(players, "Player '"+player+"' has just won the following Reward Token:\n"+rewardToken+" from  "+ownedCity.getName()+", as it is connected to "+city.getName());
+			BonusManager.takeBonusFromTile(rewardToken, player);
+		}
+	}
+	
+	public void winImportantBonuses(City city, Player player) {
+		Region region = city.getRegion();
+		Tile colorBonus, regionBonus, kingReward;
+		if(board.isEligibleForColorBonus(player, city.getColor())) {
+			try {
+				colorBonus=board.winColorBonus(city.getColor());
+				BonusManager.takeBonusFromTile(colorBonus, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError());
+			}
+			try {
+				kingReward=board.winKingReward();
+				BonusManager.takeBonusFromTile(kingReward, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError());
+			}
+		}
+		if(region.isEligibleForRegionBonus(player)) {
+			try {
+				regionBonus=region.winRegionBonus(player);
+				BonusManager.takeBonusFromTile(regionBonus, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError());
+			}
+			try {
+				kingReward=board.winKingReward();
+				BonusManager.takeBonusFromTile(kingReward, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError());
+			}
+		}
+	}
+	
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
 			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
@@ -481,7 +536,7 @@ public class MatchHandler {
 			else {
 				PubSub.notifyAllClients(players, "Player " + player.getNickName() + " has built an Emporium in "
 						+ cityTo.getName() + " with king's help");
-				//TO ADD CONTROLS FOR BONUSES
+				winBuildingBonuses(cityTo, player);
 				player.mainActionDone(true);
 				if (player.hasPerformedQuickAction()) {
 					notifyEndOfTurn(playerId);
@@ -526,7 +581,6 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-
 	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
 			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
@@ -642,7 +696,7 @@ public class MatchHandler {
 				throw new CityNotFoundFromPermitTileException();
 			PubSub.notifyAllClients(players,
 					"Player " + player.getNickName() + " build an Emporium in " + cityName + "!");
-			//TO ADD CONTROLS FOR BONUSES
+			winBuildingBonuses(board.getCityFromName(cityName), player);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
 				notifyEndOfTurn(playerId);

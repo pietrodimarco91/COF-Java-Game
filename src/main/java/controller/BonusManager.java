@@ -9,26 +9,10 @@ import model.PermitTile;
 import model.PoliticCard;
 import model.Tile;
 
+/**
+ * Created by Gabriele Bressan on 31/05/16.
+ */
 public abstract class BonusManager {
-	/**
-	 * Created by Gabriele Bressan on 31/05/16.
-	 */
-
-	/**
-	 * Default constructor
-	 */
-	public BonusManager() {
-	}
-
-	/**
-	 * 
-	 * @param tile
-	 * @return
-	 */
-	public static String takeBonusFromTile(Tile tile) {
-		String bonus = "";
-		return bonus;
-	}
 
 	/**
 	 * 

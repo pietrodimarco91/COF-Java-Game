@@ -15,6 +15,6 @@ public class NoMoreBonusException extends Exception {
 	}
 
 	public String showError() {
-		return "You aren't able to win the " + typeOfBonus + ": these bonuses are no more available for this match!";
+		return "There isn't any " + typeOfBonus + " available for this match!";
 	}
 }

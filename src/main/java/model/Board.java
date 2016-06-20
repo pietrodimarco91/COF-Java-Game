@@ -702,25 +702,29 @@ public class Board {
 	@Override
 	public String toString() {
 		String string = "";
-		string += "Map status:\n";
-		string+=printMatrix()+"\n";
-		string += "Cities:\n";
+		string += "MAP STATUS:\n";
+		string+=printMatrix()+"\n\n";
+		string += "CITIES:\n";
 		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
 			string += iterator.next().toString() + "\n";
 		}
-		string += "Number of Permit Tiles: " + numberOfPermitTiles + "\n";
-		string += "Number of Cities: " + numberOfCities + "\n";
-		string += "Regions:\n";
+		string += "\nNUMBER OF PERMIT TILES: " + numberOfPermitTiles + "\n";
+		string += "\nNUMBER OF CITIES: " + numberOfCities + "\n";
+		string += "\nREGIONS:\n";
 		for (int i = 0; i < regions.length; i++) {
 			string += regions[i].toString() + "\n";
 		}
-		string += "King's Council:\n";
+		string += "\nKING'S COUNCIL:\n";
 		string += kingCouncil.toString() + "\n";
-		string += "Councillors Pool: current content of the pool is:\n";
+		string += "\nCOUNCILLOR POOL: current content of the pool is:\n";
 		string += CouncillorsPool.poolStatus() + "\n";
-		string += "Nobility Track:\n";
+		string += "\nNOBILITY TRACK:\n";
 		string += nobilityTrack.toString() + "\n";
+		string+="\nCOLOR BONUS DECK:\n";
+		string+=colorBonusDeck.toString()+"\n";
+		string+="\nKING REWARD DECK:\n";
+		string+=kingRewardDeck.toString()+"\n";
 		return string;
 	}
 

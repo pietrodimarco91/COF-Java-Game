@@ -14,6 +14,13 @@ public class KingRewardTile extends Tile {
     public KingRewardTile(int points) {
         this.points=points;
     }
+    
+    @Override
+    public String toString() {
+    	String string="King Reward Tile\n";
+    	string+="Points: "+points+"\n";
+    	return string;
+    }
 
 
 

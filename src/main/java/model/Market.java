@@ -31,7 +31,8 @@ public class Market {
 	 *            the item on sale to be inserted in the market
 	 */
 	public synchronized void putItemOnSale(ItemOnSale itemOnSale) {
-		itemOnSale.setId(itemsOnSale.size());
+		int id=itemsOnSale.size();
+		itemOnSale.setId(id);
 		itemsOnSale.add(itemOnSale);
 	}
 
@@ -75,8 +76,8 @@ public class Market {
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		boolean stop = false, found=false;
 		while (!stop && iterator.hasNext()) {
-			if (iterator.next().getId() == itemId) {
-				ItemOnSale item = itemsOnSale.get(itemId);
+			ItemOnSale item=iterator.next();
+			if (item.getId() == itemId) {
 				found=true;
 				if (item.hasEnoughCoins(player.getCoins())) {
 					item.buyItem(player);

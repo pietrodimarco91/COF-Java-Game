@@ -20,6 +20,14 @@ public class ColorBonusTile extends Tile {
     public int getPoints() {
     	return this.points;
     }
+    
+    @Override
+    public String toString() {
+    	String string="ColorBonusTile:\n";
+    	string+="Color: "+color+"\n";
+    	string+="Points: "+points+"\n";
+    	return string;
+    }
 
 
 

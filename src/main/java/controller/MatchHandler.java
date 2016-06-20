@@ -381,16 +381,9 @@ public class MatchHandler {
 	}
 
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
-		if (gameStatus != 3) {
-			sendErrorToClient("You can't perform an action at the moment!", playerId);
-			return;
-		}
-		if (this.turn != playerId) {
-			sendErrorToClient("It's not your turn!", playerId);
-			return;
-		}
 		if (players.get(playerId).hasPerformedMainAction()) {
 			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
+			return;
 		}
 		String regionName;
 		ArrayList<String> chosenPoliticCards;
@@ -448,16 +441,9 @@ public class MatchHandler {
 	 * @throws UnsufficientCoinsException
 	 */
 	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId) {
-		if (gameStatus != 3) {
-			sendErrorToClient("You can't perform an action at the moment!", playerId);
-			return;
-		}
-		if (this.turn != playerId) {
-			sendErrorToClient("It's not your turn!", playerId);
-			return;
-		}
 		if (players.get(playerId).hasPerformedMainAction()) {
 			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
+			return;
 		}
 		String cityName;
 		ArrayList<String> politicCardColors;
@@ -483,17 +469,23 @@ public class MatchHandler {
 				board.moveKing(cityTo);
 				player.removeCoins(coinsToPay);
 			}
-			cityTo.buildEmporium(player);
-			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " has built an Emporium in " + cityTo.getName() + " with king's help");
-			player.mainActionDone(true);
-			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(playerId);
-				player.resetTurn();
+			if (!cityTo.buildEmporium(player))
+				throw new AlreadyOwnedEmporiumException();
+			else {
+				PubSub.notifyAllClients(players, "Player " + player.getNickName() + " has built an Emporium in "
+						+ cityTo.getName() + " with king's help");
+				//TO ADD CONTROLS FOR BONUSES
+				player.mainActionDone(true);
+				if (player.hasPerformedQuickAction()) {
+					notifyEndOfTurn(playerId);
+					player.resetTurn();
+				}
 			}
 		} catch (UnsufficientCouncillorsSatisfiedException e) {
 			sendErrorToClient(e.showError(), playerId);
 		} catch (UnsufficientCoinsException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (AlreadyOwnedEmporiumException e) {
 			sendErrorToClient(e.showError(), playerId);
 		}
 	}
@@ -503,8 +495,8 @@ public class MatchHandler {
 	 */
 
 	public void performAdditionalMainAction(AdditionalMainAction action, int playerId) {
-		if (gameStatus != 3) {
-			sendErrorToClient("You can't perform an action at the moment!", playerId);
+		if (players.get(playerId).hasPerformedQuickAction()) {
+			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
 			return;
 		}
 		Player player = players.get(playerId);
@@ -526,16 +518,9 @@ public class MatchHandler {
 	 */
 
 	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
-		if (gameStatus != 3) {
-			sendErrorToClient("You can't perform an action at the moment!", playerId);
-			return;
-		}
-		if (this.turn != playerId) {
-			sendErrorToClient("It's not your turn!", playerId);
-			return;
-		}
 		if (players.get(playerId).hasPerformedMainAction()) {
 			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
+			return;
 		}
 		String regionName;
 		String councillorColor;
@@ -546,8 +531,9 @@ public class MatchHandler {
 		try {
 			region.electCouncillor(councillorColor);
 			player.addCoins(4);
-			PubSub.notifyAllClients(players,
-					"Player '" + player.getNickName() + "' elected a " + councillorColor + " Councillor in " + regionName);
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' elected a " + councillorColor
+					+ " Councillor in " + regionName);
+			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
 				notifyEndOfTurn(playerId);
 				player.resetTurn();
@@ -564,20 +550,27 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId)
-			throws UnsufficientCoinsException {
-		if (this.turn != playerId) {
-			sendErrorToClient("Is not your turn!", playerId);
+	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId) {
+		if (players.get(playerId).hasPerformedQuickAction()) {
+			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
 			return;
 		}
 		Player player = this.players.get(playerId);
 		int coins = player.getCoins();
-		if (coins >= 3) {
+		try {
+			if (coins < 3)
+				throw new UnsufficientCoinsException();
 			player.removeCoins(3);
 			player.addAssistant();
 			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!");
-		} else
-			throw new UnsufficientCoinsException();
+			player.quickActionDone();
+			if (player.hasPerformedMainAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
+			}
+		} catch (UnsufficientCoinsException e) {
+			sendErrorToClient(e.showError(), playerId);
+		}
 	}
 
 	/**
@@ -587,11 +580,9 @@ public class MatchHandler {
 	 * @return
 	 */
 
-	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId)
-			throws UnsufficientAssistantNumberException {
-
-		if (this.turn != playerId) {
-			sendErrorToClient("Is not your turn!", playerId);
+	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId) {
+		if (players.get(playerId).hasPerformedQuickAction()) {
+			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
 			return;
 		}
 		String regionName;
@@ -599,13 +590,20 @@ public class MatchHandler {
 		regionName = switchPermitTilesAction.getRegionName();
 
 		Region region = this.getRegion(regionName);
-		if (player.getNumberOfAssistants() >= 1) {
+		try {
+			if (player.getNumberOfAssistants() < 1)
+				throw new UnsufficientAssistantNumberException();
 			region.getDeck().switchPermitTiles();
 			player.removeAssistant();
 			PubSub.notifyAllClients(players,
 					"Player " + player.getNickName() + " swhitched Permit Tile in " + regionName + "!");
-		} else {
-			throw new UnsufficientAssistantNumberException();
+			player.quickActionDone();
+			if (player.hasPerformedMainAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
+			}
+		} catch (UnsufficientAssistantNumberException e) {
+			sendErrorToClient(e.showError(), playerId);
 		}
 
 	}
@@ -616,11 +614,9 @@ public class MatchHandler {
 	 * @return
 	 */
 
-	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId)
-			throws NotFindCityFromPermitTileException {
-
-		if (this.turn != playerId) {
-			sendErrorToClient("Is not your turn!", playerId);
+	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId) {
+		if (players.get(playerId).hasPerformedMainAction()) {
+			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
 			return;
 		}
 		int permitTileId;
@@ -631,11 +627,21 @@ public class MatchHandler {
 		permitTileId = simpleBuildEmporium.getPermitTileID();
 		cityName = simpleBuildEmporium.getCityName();
 		tempPermitTile = (PermitTile) player.getUnusedPermitTileFromId(permitTileId);
-		if (buildEmporium(tempPermitTile, player, cityName))
+		try {
+			if (!buildEmporium(tempPermitTile, player, cityName))
+				throw new CityNotFoundFromPermitTileException();
 			PubSub.notifyAllClients(players,
 					"Player " + player.getNickName() + " build an Emporium in " + cityName + "!");
-		else {
-			throw new NotFindCityFromPermitTileException();
+			//TO ADD CONTROLS FOR BONUSES
+			player.mainActionDone(true);
+			if (player.hasPerformedQuickAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
+			}
+		} catch (CityNotFoundFromPermitTileException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (AlreadyOwnedEmporiumException e) {
+			sendErrorToClient(e.showError(), playerId);
 		}
 	}
 
@@ -643,27 +649,31 @@ public class MatchHandler {
 	 * 
 	 * @return
 	 */
-	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId)
-			throws UnsufficientAssistantNumberException {
-		if (this.turn != playerId) {
-			sendErrorToClient("Is not your turn!", playerId);
+	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId) {
+		if (players.get(playerId).hasPerformedQuickAction()) {
+			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
 			return;
 		}
 		String councillorColor = sendAssistantAction.getColor();
 		String regionName = sendAssistantAction.getRegion();
 		Player player = this.players.get(playerId);
-		if (player.getNumberOfAssistants() >= 1) {
+		try {
+			if (player.getNumberOfAssistants() == 0)
+				throw new UnsufficientAssistantNumberException();
 			Region region = this.getRegion(regionName);
-			try {
-				region.electCouncillor(councillorColor);
-			} catch (CouncillorNotFoundException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}
+			region.electCouncillor(councillorColor);
 			player.removeAssistant();
-			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " send an Assistant to elect an "
+			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " sent an Assistant to elect a "
 					+ councillorColor + "Councillor in " + regionName + "!");
-		} else {
-			throw new UnsufficientAssistantNumberException();
+			player.quickActionDone();
+			if (player.hasPerformedMainAction()) {
+				notifyEndOfTurn(playerId);
+				player.resetTurn();
+			}
+		} catch (CouncillorNotFoundException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (UnsufficientAssistantNumberException e) {
+			sendErrorToClient(e.showError(), playerId);
 		}
 	}
 
@@ -702,44 +712,24 @@ public class MatchHandler {
 		return allCity.contains(cityChoice);
 	}
 
-	/**
-	 * 
-	 * @param permitTile
-	 * @param player
-	 * @param cityChoice
-	 * @return
-	 */
-	public boolean checkPresenceOfEmporium(PermitTile permitTile, Player player, String cityChoice) {
-		List<City> cities = permitTile.getCities();
-		City tempCity;
-		boolean find = false;
-		cityChoice = cityChoice.trim();
-		cityChoice = cityChoice.toUpperCase();
-		for (int i = 0; i < cities.size() && !find; i++) {
-			tempCity = cities.get(i);
-			if (tempCity.getName().equals(cityChoice))
-				find = true;
-		}
-		return find;
-
-	}
-
 	public boolean hasBuiltLastEmporium(Player player) {
-		return player.getNumberOfEmporium() > 0;
+		return player.getNumberOfEmporium() == 0;
 	}
 
-	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice) {
-		boolean find = false;
+	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice) throws AlreadyOwnedEmporiumException {
+		boolean found = false;
 		List<City> cities = permitTile.getCities();
 		cityChoice = cityChoice.trim();
 		cityChoice = cityChoice.toUpperCase();
 		for (City tempCities : cities) {
 			if (tempCities.getName().equals(cityChoice)) {
-				tempCities.buildEmporium(player);
-				find = true;
+				if(tempCities.buildEmporium(player))
+					found = true;
+				else
+					throw new AlreadyOwnedEmporiumException();
 			}
 		}
-		return find;
+		return found;
 	}
 
 	/**
@@ -751,7 +741,14 @@ public class MatchHandler {
 	 */
 
 	public void evaluateAction(Action action, int playerId) {
-
+		if (gameStatus != 3) {
+			sendErrorToClient("You can't perform an action at the moment!", playerId);
+			return;
+		}
+		if (this.turn != playerId) {
+			sendErrorToClient("It's not your turn!", playerId);
+			return;
+		}
 		if (action instanceof AdditionalMainAction) {
 			AdditionalMainAction mainAction = (AdditionalMainAction) action;
 			// this.performAdditionalMainAction(mainAction, playerId);
@@ -763,36 +760,19 @@ public class MatchHandler {
 			this.electCouncillor(electConcillorAction, playerId);
 		} else if (action instanceof EngageAssistantAction) {
 			EngageAssistantAction engageAssistanAction = (EngageAssistantAction) action;
-			try {
-				this.engageAssistant(engageAssistanAction, playerId);
-			} catch (UnsufficientCoinsException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}
+			this.engageAssistant(engageAssistanAction, playerId);
 		} else if (action instanceof KingBuildEmporiumAction) {
 			KingBuildEmporiumAction kingBuildEmporiumAction = (KingBuildEmporiumAction) action;
 			this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
-
 		} else if (action instanceof SendAssistantAction) {
 			SendAssistantAction sendAssistantAction = (SendAssistantAction) action;
-			try {
-				this.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
-			} catch (UnsufficientAssistantNumberException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}
+			this.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
 		} else if (action instanceof SimpleBuildEmporiumAction) {
 			SimpleBuildEmporiumAction simpleBuildEmporium = (SimpleBuildEmporiumAction) action;
-			try {
-				this.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
-			} catch (NotFindCityFromPermitTileException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}
+			this.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
 		} else if (action instanceof SwitchPermitTilesAction) {
 			SwitchPermitTilesAction switchPermitTilesAction = (SwitchPermitTilesAction) action;
-			try {
-				this.switchPermitTile(switchPermitTilesAction, playerId);
-			} catch (UnsufficientAssistantNumberException e) {
-				sendErrorToClient(e.showError(), playerId);
-			}
+			this.switchPermitTile(switchPermitTilesAction, playerId);
 		}
 
 	}

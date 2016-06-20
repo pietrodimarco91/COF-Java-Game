@@ -47,9 +47,9 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 				this.matchHandler.setPlayerOffline(playerId);
 				break;
 			} catch (IOException e) {
-				e.printStackTrace();
+				ServerOutputPrinter.printLine(e.getMessage());
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				ServerOutputPrinter.printLine(e.getMessage());
 			}
 		}
 	}
@@ -120,7 +120,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 			outputObjectToClient.writeObject(packet);
 			outputObjectToClient.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
 	

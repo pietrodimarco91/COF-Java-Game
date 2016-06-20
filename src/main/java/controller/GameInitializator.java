@@ -116,7 +116,7 @@ public class GameInitializator extends Thread {
         try {
             players.get(playerId).getConnector().sendToClient(new Packet(message));
         } catch (RemoteException e) {
-            e.printStackTrace();
+        	ServerOutputPrinter.printLine(e.getMessage());
         }
     }
 }

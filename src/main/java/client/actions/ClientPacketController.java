@@ -5,7 +5,6 @@ import controller.Client.ClientSideConnector;
 import controller.Client.SocketInputOutputThread;
 import controller.*;
 import exceptions.InvalidInputException;
-import model.Board;
 import model.ConfigObject;
 
 import java.io.IOException;
@@ -226,11 +225,11 @@ public class ClientPacketController {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				ClientOutputPrinter.printLine(e.getMessage());
 			}
 			packetSenderInt.sendToServer(new Packet(nickName));
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 

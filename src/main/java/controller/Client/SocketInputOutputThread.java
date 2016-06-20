@@ -25,7 +25,7 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			outputObjectToServer=new ObjectOutputStream(socket.getOutputStream());
 			inputObjectFromServer=new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 
@@ -41,9 +41,9 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 					ClientOutputPrinter.printLine("Critical error: Server went down and the connection has been closed.");
 					break;
 				} catch (IOException e) {
-					e.printStackTrace();
+					ClientOutputPrinter.printLine(e.getMessage());
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					ClientOutputPrinter.printLine(e.getMessage());
 				}
 			}
 	}
@@ -55,7 +55,7 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			outputObjectToServer.writeObject(packet);
 			outputObjectToServer.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 	

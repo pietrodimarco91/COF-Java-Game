@@ -945,7 +945,6 @@ public class MatchHandler {
 
 	public void sendMarketStatus() {
 		PubSub.notifyAllClients(players, market.toString());
-
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -956,7 +955,7 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-			e.printStackTrace();
+			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
 
@@ -968,7 +967,7 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-			e.printStackTrace();
+			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
 

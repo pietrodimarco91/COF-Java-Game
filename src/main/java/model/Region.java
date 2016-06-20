@@ -118,14 +118,15 @@ public class Region implements Cloneable {
 
 	/**
 	 * @param owner
-	 * @return region bonus tile if player is eligible for region bonus, else
-	 *         return null
+	 * @return region bonus tile if player is eligible for region bonus
 	 * 
 	 */
-	public Tile winRegionBonus(Player owner) {
-		if (isEligibleForRegionBonus(owner))
-			return this.regionBonus;
-		return null;
+	public Tile winRegionBonus(Player owner) throws NoMoreBonusException {
+		if(this.regionBonus==null)
+			throw new NoMoreBonusException("REGION BONUS");
+		Tile wonTile = regionBonus;
+		regionBonus=null;
+		return wonTile;
 	}
 
 	/**

@@ -106,7 +106,7 @@ public class GameInitializator extends Thread {
     	String string="";
     	string+="Players in game:\n";
     	for(Player player : players) {
-    		string+=player.getNickName()+" : ID "+player.getId()+"\n";
+    		string+=player.getNickName()+" : ID "+player.getId()+"\n, Color: "+player.getColor();
     	}
     	PubSub.notifyAllClients(players, string);
     }

@@ -16,7 +16,7 @@ public abstract class Tile {
 		String string = "Bonuses: ";
 		Iterator<String> iterator = bonus.iterator();
 		while (iterator.hasNext()) {
-			string += iterator.next() + "-";
+			string += iterator.next() + " ";
 		}
 		return string;
 	}

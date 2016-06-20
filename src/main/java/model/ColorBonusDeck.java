@@ -35,8 +35,17 @@ public class ColorBonusDeck {
 					return tile;
 				}
 			}
-			throw new NoMoreBonusException("ColorBonus");
+			throw new NoMoreBonusException("COLOR BONUS");
 		} else
-			throw new NoMoreBonusException("ColorBonus");
+			throw new NoMoreBonusException("COLOR BONUS");
+	}
+	
+	@Override
+	public String toString() {
+		String string="COLOR BONUS DECK\n";
+		for(Tile tile : tiles) {
+			string+=tile.toString()+"\n";
+		}
+		return string;
 	}
 }

@@ -4,7 +4,7 @@ import server.view.cli.ServerOutputPrinter;
 
 public class TurnTimerThread implements Runnable {
 	
-	private static final int waitingTime=30000;
+	private static final int waitingTime=60000;
 	private MatchHandler match;
 	private int playerId;
 	

@@ -8,7 +8,7 @@ import exceptions.CouncillorNotFoundException;
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public class Region implements Cloneable {
+public class Region {
 	/**
 	 * Name of the region
 	 */

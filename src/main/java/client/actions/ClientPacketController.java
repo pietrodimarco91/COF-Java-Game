@@ -226,6 +226,7 @@ public class ClientPacketController {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				ClientOutputPrinter.printLine(e.getMessage());
+				Thread.currentThread().interrupt();
 			}
 			packetSenderInt.sendToServer(new Packet(nickName));
 		} catch (IOException e) {
@@ -272,6 +273,7 @@ public class ClientPacketController {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					ClientOutputPrinter.printLine(e.getMessage());
+					Thread.currentThread().interrupt();
 				}
 				ClientOutputPrinter.printLine("Choose the configuration ID:");
 				choice = Integer.parseInt(input.nextLine());
@@ -285,6 +287,7 @@ public class ClientPacketController {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					ClientOutputPrinter.printLine(e.getMessage());
+					Thread.currentThread().interrupt();
 				}
 				ClientOutputPrinter.printLine("Press any key to continue or press 1 to repeat the confguration");
 				try {

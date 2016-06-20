@@ -20,6 +20,7 @@ public class TurnTimerThread implements Runnable {
 			match.notifyEndOfTurn(playerId);
 		} catch (InterruptedException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
+			Thread.currentThread().interrupt();
 		}
 	}
 }

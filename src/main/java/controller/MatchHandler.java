@@ -1158,11 +1158,6 @@ public class MatchHandler {
 		PubSub.notifyAllClients(players, message);
 	}
 
-	public void rewindTurns() {
-		// check if game is not finished
-		turn = 0;
-	}
-
 	public void chat(int playerId, String messageString) {
 		PubSub.chatMessage(playerId, players, messageString);
 	}

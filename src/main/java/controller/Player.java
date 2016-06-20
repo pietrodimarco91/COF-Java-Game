@@ -111,6 +111,11 @@ public class Player {
 	 *
 	 */
 	private boolean hasPerformedMainAction, hasPerformedQuickAction;
+	
+	/**
+	 *
+	 */
+	private boolean disconnected;
 
 	/**
 	 * Default constructor
@@ -132,6 +137,7 @@ public class Player {
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = INITIAL_POSITION;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+		this.disconnected=false;
 	}
 
 	/**
@@ -427,13 +433,6 @@ public class Player {
 			this.coins += coins;
 	}
 
-	/**
-	 * This method removes the specified quantity of coins from the owned coins
-	 * of the player
-	 */
-	public void removeCoins(int coins) {
-		this.coins -= coins;
-	}
 
 	/**
 	 * @return set the initial coins of one player
@@ -648,6 +647,12 @@ public class Player {
 	public void resetTurn() {
 		hasPerformedMainAction = false;
 		hasPerformedQuickAction = false;
+	}
+	public void setPlayerOffline(){
+		this.disconnected=true;
+	}
+	public boolean playerIsOffline(){
+		return this.disconnected;
 	}
 
 }

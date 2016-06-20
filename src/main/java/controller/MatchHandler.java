@@ -252,12 +252,16 @@ public class MatchHandler {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
 			startTurns();
-		} else
+		} else{
+			Player player=players.get(playerId);
 			try {
-				players.get(playerId).getConnector()
+				if(!player.playerIsOffline())
+				player.getConnector()
 						.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
 			} catch (RemoteException e) {
+				player.setPlayerOffline();
 				ServerOutputPrinter.printLine(e.getMessage());
+			}
 			}
 	}
 
@@ -444,7 +448,7 @@ public class MatchHandler {
 		ArrayList<String> chosenPoliticCards;
 		int slot;
 		int numberOfCouncillorSatisfied;
-		int playerPayment;
+		int playerPayment=0;
 		Region region;
 		PermitTileDeck regionDeck;
 
@@ -470,11 +474,16 @@ public class MatchHandler {
 				notifyEndOfTurn(playerId);
 				player.resetTurn();
 			}
-		} catch (InvalidSlotException e) {
-			sendErrorToClient(e.showError(), playerId);
-		} catch (UnsufficientCoinsException e1) {
-			sendErrorToClient(e1.showError(), playerId);
 		} catch (UnsufficientCouncillorsSatisfiedException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (UnsufficientCoinsException e) {
+			for(int i=0;i<chosenPoliticCards.size();i++)
+				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
+			sendErrorToClient(e.showError(), playerId);
+		} catch (InvalidSlotException e) {
+			player.addCoins(playerPayment);
+			for(int i=0;i<chosenPoliticCards.size();i++)
+				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			sendErrorToClient(e.showError(), playerId);
 		}
 	}
@@ -501,28 +510,26 @@ public class MatchHandler {
 			return;
 		}
 		String cityName;
-		ArrayList<String> politicCardColors;
+		ArrayList<String> chosenPoliticCards;
 		int numberOfCouncillorSatisfied;
-		int playerPayment;
+		int playerPayment=0;
+		int coinsToPay=0;
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
-		politicCardColors = kingBuildEmporiumAction.getPoliticCardColors();
-		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(politicCardColors);
+		chosenPoliticCards = kingBuildEmporiumAction.getPoliticCardColors();
+		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		try {
 			if (numberOfCouncillorSatisfied == 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
-			int coinsToPay;
+			
 			City cityTo = board.getCityFromName(cityName);
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.performPayment(playerPayment);
-			player.removeCardsFromHand(politicCardColors);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			if (player.getCoins() < coinsToPay)
-				throw new UnsufficientCoinsException();
+			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			player.performPayment(playerPayment+coinsToPay);
+			player.removeCardsFromHand(chosenPoliticCards);
 			if (coinsToPay > 0) {
 				board.moveKing(cityTo);
-				player.removeCoins(coinsToPay);
 			}
 			if (!cityTo.buildEmporium(player))
 				throw new AlreadyOwnedEmporiumException();
@@ -541,6 +548,9 @@ public class MatchHandler {
 		} catch (UnsufficientCoinsException e) {
 			sendErrorToClient(e.showError(), playerId);
 		} catch (AlreadyOwnedEmporiumException e) {
+			player.addCoins(playerPayment+coinsToPay);
+			for(int i=0;i<chosenPoliticCards.size();i++)
+				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			sendErrorToClient(e.showError(), playerId);
 		}
 	}
@@ -614,7 +624,7 @@ public class MatchHandler {
 		try {
 			if (coins < 3)
 				throw new UnsufficientCoinsException();
-			player.removeCoins(3);
+			player.performPayment(3);
 			player.addAssistant();
 			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!");
 			player.quickActionDone();
@@ -724,9 +734,9 @@ public class MatchHandler {
 				notifyEndOfTurn(playerId);
 				player.resetTurn();
 			}
-		} catch (CouncillorNotFoundException e) {
-			sendErrorToClient(e.showError(), playerId);
 		} catch (UnsufficientAssistantNumberException e) {
+			sendErrorToClient(e.showError(), playerId);
+		} catch (CouncillorNotFoundException e) {
 			sendErrorToClient(e.showError(), playerId);
 		}
 	}
@@ -917,18 +927,24 @@ public class MatchHandler {
 
 	public void sendErrorToClient(String error, int playerId) {
 		String message = "[SERVER] Error: " + error;
+		Player player=players.get(playerId);
 		try {
-			players.get(playerId).getConnector().sendToClient(new Packet(message));
+			if(!player.playerIsOffline())
+			player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
+			player.setPlayerOffline();
 			e.printStackTrace();
 		}
 	}
 
 	public void sendMessageToClient(String s, int playerId) {
 		String message = "[MATCH " + this.id + "] " + s;
+		Player player=players.get(playerId);
 		try {
-			players.get(playerId).getConnector().sendToClient(new Packet(message));
+			if(!player.playerIsOffline())
+			player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
+			player.setPlayerOffline();
 			e.printStackTrace();
 		}
 	}
@@ -1040,5 +1056,10 @@ public class MatchHandler {
 
 	public void chat(int playerId, String messageString) {
 		PubSub.chatMessage(playerId, players, messageString);
+	}
+	
+	public void setPlayerOffline(int playerId) {
+		Player player=this.players.get(playerId);
+		player.setPlayerOffline();
 	}
 }

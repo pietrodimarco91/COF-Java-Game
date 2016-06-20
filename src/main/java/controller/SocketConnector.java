@@ -44,6 +44,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 				PubSub.notifyAllClientsExceptOne(playerId,matchHandler.getPlayers(),
 						"Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName() + "' and ID "
 								+ playerId + " disconnected!");
+				this.matchHandler.setPlayerOffline(playerId);
 				break;
 			} catch (IOException e) {
 				e.printStackTrace();

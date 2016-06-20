@@ -10,8 +10,10 @@ public abstract class PubSub {
 	public static void notifyAllClients(List<Player> players, String message) {
 		for (Player player : players) {
 			try {
+				if(!player.playerIsOffline())
 				player.getConnector().sendToClient(new Packet("[GAME NOTIFY] " + message));
 			} catch (RemoteException e) {
+				player.setPlayerOffline();
 				ServerOutputPrinter.printLine("Error: couldn't write to Client");
 			}
 		}
@@ -21,8 +23,10 @@ public abstract class PubSub {
 		for (Player player : players) {
 			if (player.getId() != playerId) {
 				try {
+					if(!player.playerIsOffline())
 					player.getConnector().sendToClient(new Packet("[GAME NOTIFY] " + message));
 				} catch (RemoteException e) {
+					player.setPlayerOffline();
 					ServerOutputPrinter.printLine("Error: couldn't write to Client");
 				}
 			}
@@ -33,8 +37,10 @@ public abstract class PubSub {
 		for (Player player : players) {
 			if (player.getId() != playerId) {
 				try {
+					if(!player.playerIsOffline())
 					player.getConnector().sendToClient(new Packet("[CHAT] "+players.get(playerId).getNickName()+": " + message));
 				} catch (RemoteException e) {
+					player.setPlayerOffline();
 					ServerOutputPrinter.printLine("Error: couldn't write to Client");
 				}
 			}

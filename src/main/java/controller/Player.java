@@ -42,7 +42,6 @@ public class Player {
 	 */
 	private final static int INITIAL_POSITION = 0;
 
-
 	/**
 	 *
 	 */
@@ -69,12 +68,12 @@ public class Player {
 	 *
 	 */
 	private int id;
-	
+
 	/**
 	 *
 	 */
 	private int positionInNobilityTrack;
-	
+
 	/**
 	 *
 	 */
@@ -111,22 +110,22 @@ public class Player {
 	/**
 	 *
 	 */
-	private boolean hasPerformedMainAction,hasPerformedQuickAction;
+	private boolean hasPerformedMainAction, hasPerformedQuickAction;
 
 	/**
 	 * Default constructor
 	 */
-	public Player(ClientSideConnectorInt connector, int id,String nickName) {
-		hasPerformedMainAction=false;
-		hasPerformedQuickAction=false;
+	public Player(ClientSideConnectorInt connector, int id, String nickName) {
+		hasPerformedMainAction = false;
+		hasPerformedQuickAction = false;
 		Random random = new Random();
 		this.id = id;
-		this.nickName=nickName;
-		this.connector=connector;
+		this.nickName = nickName;
+		this.connector = connector;
 		this.coins = INITIAL_COINS + id;
 		this.assistants = INITIAL_ASSISTANT;
 		this.usedPermitTiles = new ArrayList<Tile>();
-		this.positionInNobilityTrack=INITIAL_POSITION;
+		this.positionInNobilityTrack = INITIAL_POSITION;
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
 		this.connector = connector;
@@ -150,11 +149,11 @@ public class Player {
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 	}
-	
+
 	public String getNickName() {
 		return this.nickName;
 	}
-	
+
 	public int getId() {
 		return this.id;
 	}
@@ -174,7 +173,6 @@ public class Player {
 		// TODO implement here
 		return "";
 	}
-
 
 	/**
 	 * @return
@@ -204,24 +202,23 @@ public class Player {
 	 * @return
 	 */
 	public Tile getUnusedPermitTileFromId(int permitTileId) {
-		boolean find=false;
-		Tile returnTile=null;
-		PermitTile tempTile=null;
-		for(int i=0;i<this.unusedPermitTiles.size() && !find;i++){
-			tempTile=(PermitTile)this.unusedPermitTiles.get(i);
-			if(tempTile.getId()==permitTileId){
-			returnTile=this.unusedPermitTiles.get(i);
-			find=true;
+		boolean find = false;
+		Tile returnTile = null;
+		PermitTile tempTile = null;
+		for (int i = 0; i < this.unusedPermitTiles.size() && !find; i++) {
+			tempTile = (PermitTile) this.unusedPermitTiles.get(i);
+			if (tempTile.getId() == permitTileId) {
+				returnTile = this.unusedPermitTiles.get(i);
+				find = true;
 			}
+		}
+		return returnTile;
 	}
-			return returnTile;
-	}
-	
-	
+
 	/**
 	 * 
 	 */
-	public Tile getUsedPermitTile(int choiche){
+	public Tile getUsedPermitTile(int choiche) {
 		return this.getUsedPermitTile(choiche);
 	}
 
@@ -245,83 +242,52 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	/*public ArrayList<PoliticCard> cardsToCouncilSatisfaction() {
-		int numberOfCardsUsed = 0;
-		String colorCard = "";
-		boolean flagStopChoose = false;
-		ArrayList<PoliticCard> cardsChose = new ArrayList<PoliticCard>();
-		ArrayList<PoliticCard> tempHandCards = new ArrayList<PoliticCard>(this.politicCards);
-		while (numberOfCardsUsed < 4 && !flagStopChoose) {
-			try {
-				connector.writeToClient(
-						"Write the color card that you would to use one by one and write 'stop' when you finished:");
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			try {
-				colorCard = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-			}
-			colorCard = colorCard.trim();
-			colorCard = colorCard.toUpperCase();
-			if (!colorCard.equals("STOP")) {
-				while (!checkExistingColor(colorCard)) {
-					try {
-						connector.writeToClient(
-								"You have entered an incorret color Card!1\nWrite the color card that yoy would to use:");
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-					}
-					try {
-						colorCard = connector.receiveStringFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-					colorCard = colorCard.trim();
-					colorCard = colorCard.toUpperCase();
-				}
-				while (!checkIfYouOwnThisCard(colorCard, tempHandCards)) {
-					try {
-						connector.writeToClient(
-								"You have entered an incorret color Card!1\nWrite the color card that yoy would to use:");
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-					}
-					try {
-						colorCard = connector.receiveStringFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-					colorCard = colorCard.trim();
-					colorCard = colorCard.toUpperCase();
-				}
-				PoliticCard politicCard = new PoliticCard(colorCard);
-				cardsChose.add(politicCard);
-				numberOfCardsUsed++;
-				try {
-					connector.writeToClient("PERFECT!");
-
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-			} else if (colorCard.equals("STOP") && cardsChose.size() == 0)
-				try {
-					connector.writeToClient("ERROR: You have to enter at least one card!!");
-
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-			else
-				flagStopChoose = true;
-		}
-		return cardsChose;
-
-	}
-
-	/**
-	 * This method checks whether the specified color is a valid Politic Card
-	 * color or not.
+	/*
+	 * public ArrayList<PoliticCard> cardsToCouncilSatisfaction() { int
+	 * numberOfCardsUsed = 0; String colorCard = ""; boolean flagStopChoose =
+	 * false; ArrayList<PoliticCard> cardsChose = new ArrayList<PoliticCard>();
+	 * ArrayList<PoliticCard> tempHandCards = new
+	 * ArrayList<PoliticCard>(this.politicCards); while (numberOfCardsUsed < 4
+	 * && !flagStopChoose) { try { connector.writeToClient(
+	 * "Write the color card that you would to use one by one and write 'stop' when you finished:"
+	 * ); } catch (RemoteException e) { logger.log(Level.FINEST,
+	 * "Error: couldn't write to client\n", e); } try { colorCard =
+	 * connector.receiveStringFromClient(); } catch (RemoteException e) {
+	 * logger.log(Level.FINEST, "Error: couldn't receive from client\n", e); }
+	 * colorCard = colorCard.trim(); colorCard = colorCard.toUpperCase(); if
+	 * (!colorCard.equals("STOP")) { while (!checkExistingColor(colorCard)) {
+	 * try { connector.writeToClient(
+	 * "You have entered an incorret color Card!1\nWrite the color card that yoy would to use:"
+	 * ); } catch (RemoteException e) { logger.log(Level.FINEST,
+	 * "Error: couldn't write to client\n", e); } try { colorCard =
+	 * connector.receiveStringFromClient(); } catch (RemoteException e) {
+	 * logger.log(Level.FINEST, "Error: couldn't receive from client\n", e); }
+	 * colorCard = colorCard.trim(); colorCard = colorCard.toUpperCase(); }
+	 * while (!checkIfYouOwnThisCard(colorCard, tempHandCards)) { try {
+	 * connector.writeToClient(
+	 * "You have entered an incorret color Card!1\nWrite the color card that yoy would to use:"
+	 * ); } catch (RemoteException e) { logger.log(Level.FINEST,
+	 * "Error: couldn't write to client\n", e); } try { colorCard =
+	 * connector.receiveStringFromClient(); } catch (RemoteException e) {
+	 * logger.log(Level.FINEST, "Error: couldn't receive from client\n", e); }
+	 * colorCard = colorCard.trim(); colorCard = colorCard.toUpperCase(); }
+	 * PoliticCard politicCard = new PoliticCard(colorCard);
+	 * cardsChose.add(politicCard); numberOfCardsUsed++; try {
+	 * connector.writeToClient("PERFECT!");
+	 * 
+	 * } catch (RemoteException e) { logger.log(Level.FINEST,
+	 * "Error: couldn't write to client\n", e); } } else if
+	 * (colorCard.equals("STOP") && cardsChose.size() == 0) try {
+	 * connector.writeToClient("ERROR: You have to enter at least one card!!");
+	 * 
+	 * } catch (RemoteException e) { logger.log(Level.FINEST,
+	 * "Error: couldn't write to client\n", e); } else flagStopChoose = true; }
+	 * return cardsChose;
+	 * 
+	 * }
+	 * 
+	 * /** This method checks whether the specified color is a valid Politic
+	 * Card color or not.
 	 * 
 	 * @return true if the color is correct, false otherwise
 	 */
@@ -363,40 +329,46 @@ public class Player {
 		for (int i = 0; i < cardsChose.size(); i++) {
 			cardFound = false;
 			for (j = 0; j < this.politicCards.size() && !cardFound; j++) {
-				if (this.politicCards.get(j).getColorCard().equals(cardsChose.get(i))){
+				if (this.politicCards.get(j).getColorCard().equals(cardsChose.get(i))) {
 					this.politicCards.remove(j);
-				    cardFound = true;
+					cardFound = true;
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * This method is invoked when a player decides to sell a Politic Card in the Market.
-	 * It removes the chosen card from the arraylist of owned politic cards.
-	 * @param color the color of the chosen Politic Card to sell
+	 * This method is invoked when a player decides to sell a Politic Card in
+	 * the Market. It removes the chosen card from the arraylist of owned
+	 * politic cards.
+	 * 
+	 * @param color
+	 *            the color of the chosen Politic Card to sell
 	 * @return The politic card to sell
 	 */
 	public PoliticCard sellPoliticCard(String color) {
-		for(int i=0;i<this.politicCards.size();i++) {
-			if(politicCards.get(i).getColorCard().equals(color)) {
+		for (int i = 0; i < this.politicCards.size(); i++) {
+			if (politicCards.get(i).getColorCard().equals(color)) {
 				return politicCards.remove(i);
 			}
 		}
 		return null;
 	}
-	
+
 	/**
-	 * This method is invoked when a player decides to sell a Permit Tile in the Market.
-	 * It removes the chosen tile from the arraylist of unused permit tiles.
-	 * @param id the id of the permit tile to sell
+	 * This method is invoked when a player decides to sell a Permit Tile in the
+	 * Market. It removes the chosen tile from the arraylist of unused permit
+	 * tiles.
+	 * 
+	 * @param id
+	 *            the id of the permit tile to sell
 	 * @return The permit tile to sell
 	 */
 	public Tile sellPermitTile(int id) {
 		PermitTile tile;
-		for(int i=0;i<unusedPermitTiles.size();i++) {
-			tile=(PermitTile)unusedPermitTiles.get(i);
-			if(tile.getId()==id) {
+		for (int i = 0; i < unusedPermitTiles.size(); i++) {
+			tile = (PermitTile) unusedPermitTiles.get(i);
+			if (tile.getId() == id) {
 				return unusedPermitTiles.remove(i);
 			}
 		}
@@ -416,7 +388,7 @@ public class Player {
 	 * 
 	 * @return
 	 */
-	public void performPayment(int payment) throws UnsufficientCoinsException{
+	public void performPayment(int payment) throws UnsufficientCoinsException {
 		if ((this.coins - payment) >= 0) {
 			this.coins -= payment;
 		} else
@@ -437,23 +409,22 @@ public class Player {
 	public int getNumberOfPermitTile() {
 		return this.unusedPermitTiles.size();
 	}
-	
+
 	/**
 	 * 
 	 */
-	public int getNumberOfUsedPermitTile(){
+	public int getNumberOfUsedPermitTile() {
 		return this.usedPermitTiles.size();
 	}
-	
-	
+
 	/**
 	 * This method adds the specified coins to the coins owned by the player
 	 */
 	public void addCoins(int coins) {
-		if(this.coins+coins>MAXIMUN_COINS)
-			this.coins=MAXIMUN_COINS;
+		if (this.coins + coins > MAXIMUN_COINS)
+			this.coins = MAXIMUN_COINS;
 		else
-			this.coins+=coins;
+			this.coins += coins;
 	}
 
 	/**
@@ -470,17 +441,17 @@ public class Player {
 	public int setInitialCoins(int turnNumber) {
 		return INITIAL_COINS + turnNumber;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void changePositionInNobilityTrack(int position){
-		if(this.positionInNobilityTrack+position>MAXIMUN_POSITION)
-		this.positionInNobilityTrack=MAXIMUN_POSITION;
+	public void changePositionInNobilityTrack(int position) {
+		if (this.positionInNobilityTrack + position > MAXIMUN_POSITION)
+			this.positionInNobilityTrack = MAXIMUN_POSITION;
 		else
-			this.positionInNobilityTrack+=position;
-		}
-	
+			this.positionInNobilityTrack += position;
+	}
+
 	/**
 	 * @return the coins of the player
 	 */
@@ -494,21 +465,21 @@ public class Player {
 	public int getNumberOfEmporium() {
 		return this.emporiums;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public int getNumberoOfControlledCities(){
+	public int getNumberoOfControlledCities() {
 		return this.controlledCities.size();
 	}
-	
+
 	/**
 	 * 
 	 */
-	public City getSingleControlledCity(int choice){
+	public City getSingleControlledCity(int choice) {
 		return this.controlledCities.get(choice);
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -522,12 +493,12 @@ public class Player {
 	public void addAssistant() {
 		this.assistants++;
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void addMoreAssistant(int number) {
-		this.assistants+=number;
+		this.assistants += number;
 	}
 
 	/**
@@ -543,11 +514,12 @@ public class Player {
 	public void removeMoreAssistants(int numberOfAssistants) {
 		this.assistants -= numberOfAssistants;
 	}
+
 	/**
 	 * 
 	 */
-	public void setVoctoryPoints(int points){
-		this.victoryPoints+=points;
+	public void setVoctoryPoints(int points) {
+		this.victoryPoints += points;
 	}
 
 	/**
@@ -624,57 +596,58 @@ public class Player {
 	 * @return
 	 */
 	public boolean hasBuiltLastEmporium() {
-		return this.emporiums==0;
+		return this.emporiums == 0;
 	}
-	
+
 	/**
 	 * to string method
+	 * 
 	 * @return String of player attriute
 	 */
-	public String toString(){
-		String allPlayerInformation="";
-		allPlayerInformation+="Your ID: "+id+" Your color: "+color+" Your Coins: "+coins+"\n Your Assistance: "+assistants+" Your position in Victory Points: "+victoryPoints+
-				"Your position in Nobility Track:   "+positionInNobilityTrack+" Your position in Victory Points: "+victoryPoints;
-		allPlayerInformation+=" Your cities: ";
-		for(City tempCity: controlledCities)
-			allPlayerInformation+=tempCity.getName()+" ";
-			allPlayerInformation+="\n Your POLITIC card: ";
-			for(PoliticCard tempPoliticCard: politicCards)
-				allPlayerInformation+=tempPoliticCard.getColorCard()+" ";
-			allPlayerInformation+="\n Your UNUSED permit tile: ";
-			for(Tile tempPermitTile: unusedPermitTiles)
-				allPlayerInformation+=tempPermitTile.toString()+" ";
-			allPlayerInformation+="\n Your USED permit tile: ";
-			for(Tile tempPermitTile: usedPermitTiles)
-				allPlayerInformation+=tempPermitTile.toString()+" ";
-			return allPlayerInformation;
-		
-				
+	public String toString() {
+		String allPlayerInformation = "";
+		allPlayerInformation += "Your ID: " + id + "\nYour color: " + color + "\nYour Coins: " + coins
+				+ "\nYour Assistance: " + assistants + "\nYour position in Victory Track: " + victoryPoints
+				+ "\nYour position in Nobility Track:   " + positionInNobilityTrack + "\n";
+		allPlayerInformation += "\nYour cities:\n";
+		for (City tempCity : controlledCities)
+			allPlayerInformation += tempCity.getName() + " ";
+		allPlayerInformation += "\nYour POLITIC cards:\n";
+		for (PoliticCard tempPoliticCard : politicCards)
+			allPlayerInformation += tempPoliticCard.getColorCard() + " ";
+		allPlayerInformation += "\nYour UNUSED Permit Tiles:\n";
+		for (Tile tempPermitTile : unusedPermitTiles)
+			allPlayerInformation += tempPermitTile.toString() + "\n";
+		allPlayerInformation += "\nYour USED Permit Tiles:\n";
+		for (Tile tempPermitTile : usedPermitTiles)
+			allPlayerInformation += tempPermitTile.toString() + "\n";
+		return allPlayerInformation;
+
 	}
 
 	public void setPlayerNickName(String nickName) {
-		this.nickName=nickName;
+		this.nickName = nickName;
 	}
 
-	public void mainActionDone(boolean value){
-		hasPerformedMainAction=value;
+	public void mainActionDone(boolean value) {
+		hasPerformedMainAction = value;
 	}
-	
+
 	public boolean hasPerformedMainAction() {
 		return this.hasPerformedMainAction;
 	}
-	
+
 	public boolean hasPerformedQuickAction() {
 		return this.hasPerformedQuickAction;
 	}
-	
-	public void quickActionDone(){
-		hasPerformedQuickAction=true;
+
+	public void quickActionDone() {
+		hasPerformedQuickAction = true;
 	}
 
-	public void resetTurn(){
-		hasPerformedMainAction=false;
-		hasPerformedQuickAction=false;
+	public void resetTurn() {
+		hasPerformedMainAction = false;
+		hasPerformedQuickAction = false;
 	}
-	
+
 }

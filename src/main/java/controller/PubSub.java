@@ -33,7 +33,7 @@ public abstract class PubSub {
 		for (Player player : players) {
 			if (player.getId() != playerId) {
 				try {
-					player.getConnector().sendToClient(new Packet("[CHAT] " + message));
+					player.getConnector().sendToClient(new Packet("[CHAT] "+players.get(playerId).getNickName()+": " + message));
 				} catch (RemoteException e) {
 					ServerOutputPrinter.printLine("Error: couldn't write to Client");
 				}

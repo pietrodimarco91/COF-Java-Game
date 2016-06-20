@@ -54,7 +54,7 @@ public abstract class ItemOnSale {
 	public String toString() {
 		String string="";
 		string+="ITEM ON SALE\n";
-		string+="ID: "+this.id;
+		string+="ID: "+this.id+", ";
 		string+="Seller: "+this.seller.getNickName()+"\n";
 		string+="Price: "+this.getPrice()+"\n";
 		return string;

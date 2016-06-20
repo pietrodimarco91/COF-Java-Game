@@ -381,6 +381,10 @@ public class MatchHandler {
 	}
 
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
+		if (gameStatus != 3) {
+			sendErrorToClient("You can't perform an action at the moment!", playerId);
+			return;
+		}
 		if (this.turn != playerId) {
 			sendErrorToClient("It's not your turn!", playerId);
 			return;
@@ -444,7 +448,10 @@ public class MatchHandler {
 	 * @throws UnsufficientCoinsException
 	 */
 	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId) {
-
+		if (gameStatus != 3) {
+			sendErrorToClient("You can't perform an action at the moment!", playerId);
+			return;
+		}
 		if (this.turn != playerId) {
 			sendErrorToClient("It's not your turn!", playerId);
 			return;
@@ -495,6 +502,10 @@ public class MatchHandler {
 	 */
 
 	public void performAdditionalMainAction(AdditionalMainAction action, int playerId) {
+		if (gameStatus != 3) {
+			sendErrorToClient("You can't perform an action at the moment!", playerId);
+			return;
+		}
 		Player player = players.get(playerId);
 		try {
 			if (player.getNumberOfAssistants() < 3)
@@ -514,6 +525,10 @@ public class MatchHandler {
 	 */
 
 	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
+		if (gameStatus != 3) {
+			sendErrorToClient("You can't perform an action at the moment!", playerId);
+			return;
+		}
 		if (this.turn != playerId) {
 			sendErrorToClient("It's not your turn!", playerId);
 			return;
@@ -785,7 +800,7 @@ public class MatchHandler {
 	}
 
 	public void buyEvent(MarketEvent marketEvent, int playerId) {
-		if (gameStatus != 4) {
+		if (gameStatus != 5) {
 			sendErrorToClient("Game status isn't 'Market'", playerId);
 			return;
 		} else if (playerId == marketBuyTurn.get(0)) {

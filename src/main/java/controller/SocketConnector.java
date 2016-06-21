@@ -120,7 +120,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 			outputObjectToClient.writeObject(packet);
 			outputObjectToClient.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
 	

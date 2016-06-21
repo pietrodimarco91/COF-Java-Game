@@ -262,7 +262,10 @@ public class MatchHandler {
 							.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
-				ServerOutputPrinter.printLine(e.getMessage());
+				ServerOutputPrinter
+				.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+						+ "' and ID " + playerId + " disconnected!");
+				logger.log(Level.INFO, "Remote Exception", e);
 			}
 		}
 	}
@@ -956,7 +959,10 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-			e.printStackTrace();
+			ServerOutputPrinter
+			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+					+ "' and ID " + playerId + " disconnected!");
+			logger.log(Level.INFO, "Remote Exception", e);
 		}
 	}
 
@@ -968,6 +974,9 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
+			ServerOutputPrinter
+			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+					+ "' and ID " + playerId + " disconnected!");
 			e.printStackTrace();
 		}
 	}

@@ -17,10 +17,10 @@ public class MarketTimerThread implements Runnable {
 			Thread.sleep(waitingTime);
 			match.startMarketBuyTime();
 			Thread.sleep(waitingTime);
-			//match.rewindTurns();
 			match.startTurns();
 		} catch (InterruptedException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
+			Thread.currentThread().interrupt();
 		}
 	}
 

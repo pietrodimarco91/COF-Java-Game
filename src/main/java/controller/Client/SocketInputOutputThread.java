@@ -17,14 +17,15 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 
 	private ObjectInputStream inputObjectFromServer;
 	private ObjectOutputStream outputObjectToServer;
-
+	private boolean stop;
 
 	public SocketInputOutputThread(Socket socket) {
+		this.stop=false;
 		try {
 			outputObjectToServer=new ObjectOutputStream(socket.getOutputStream());
 			inputObjectFromServer=new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 
@@ -33,16 +34,16 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 
 	@Override
 	public void run() {
-			while (true) {
+			while (!stop) {
 				try {
 					sendToClient((Packet) inputObjectFromServer.readObject());
 				} catch(SocketException e) {
 					ClientOutputPrinter.printLine("Critical error: Server went down and the connection has been closed.");
 					break;
 				} catch (IOException e) {
-					e.printStackTrace();
+					ClientOutputPrinter.printLine(e.getMessage());
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					ClientOutputPrinter.printLine(e.getMessage());
 				}
 			}
 	}
@@ -54,7 +55,7 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			outputObjectToServer.writeObject(packet);
 			outputObjectToServer.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 	
@@ -78,5 +79,16 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 	@Override
 	public void setMatchHandler(MatchHandler matchHandler) {
 
+	}
+
+
+	public void disconnect() {
+		stop=true;
+		try {
+			outputObjectToServer.close();
+			inputObjectFromServer.close();
+		} catch (IOException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
 	}
 }

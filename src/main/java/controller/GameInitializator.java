@@ -52,12 +52,14 @@ public class GameInitializator extends Thread {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+                Thread.currentThread().interrupt();
             }
         }
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -70,6 +72,7 @@ public class GameInitializator extends Thread {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
+                Thread.currentThread().interrupt();
             }
             for (Player player : players) {
                 try {
@@ -116,7 +119,7 @@ public class GameInitializator extends Thread {
         try {
             players.get(playerId).getConnector().sendToClient(new Packet(message));
         } catch (RemoteException e) {
-            e.printStackTrace();
+        	ServerOutputPrinter.printLine(e.getMessage());
         }
     }
 }

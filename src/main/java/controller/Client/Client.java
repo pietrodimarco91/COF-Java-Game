@@ -12,12 +12,10 @@ import java.util.Scanner;
  */
 public class Client {
 
-	private int currentPlayerID;
-
 	private Scanner input = new Scanner(System.in);
 
 	private ClientPacketController controller;
-	
+
 	private String nickName;
 
 	/**
@@ -25,10 +23,6 @@ public class Client {
 	 */
 	public Client() {
 		controller = new ClientPacketController();
-		currentPlayerID = -1; // this is an important parameter that each client
-								// should be given after correctly connected. It
-								// may be used to state whether he is a creator
-								// or not
 		welcome();
 		ClientOutputPrinter.printLine("Please, first of all you need to connect to the game server...");
 		try {
@@ -36,31 +30,32 @@ public class Client {
 			initialConfiguration();
 			play();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 
 	public void initialConfiguration() {
-		boolean correct=false;
-		do{
-		ClientOutputPrinter.printLine(
-				"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any number but 1 to continue..");
-		try{
-		int choice = input.nextInt();
-		if (choice == 1) {
-			controller.boardConfiguration();
-			controller.mapConfiguration();
-			correct=true;
-		}
-		}catch(InputMismatchException e){
-		ClientOutputPrinter.printLine("Please insert a correct input!");
-		}
-		}while(!correct);
+		boolean correct = false;
+		do {
+			ClientOutputPrinter.printLine(
+					"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any number but 1 to continue..");
+			try {
+				int choice = input.nextInt();
+				if (choice == 1) {
+					controller.boardConfiguration();
+					controller.mapConfiguration();
+					correct = true;
+				}
+			} catch (InputMismatchException e) {
+				ClientOutputPrinter.printLine("Please insert a correct input!");
+			}
+		} while (!correct);
 	}
 
 	public void play() {
 		int choice;
-		while (true) {
+		boolean quit = false;
+		while (!quit) {
 			ClientOutputPrinter.printLine(
 					"||*** MAIN MENU ***||\n1) Perform action\n2) Request board status\n3) Quit\n4) Sell Item on Market\n5) Buy Item on Market\n6) Request Player status\n7) Map configuration\n8) Chat");
 			try {
@@ -74,6 +69,7 @@ public class Client {
 					break;
 				case 3:
 					controller.disconnect();
+					quit = true;
 					break;
 				case 4:
 					controller.sellItemOnMarket();
@@ -101,17 +97,17 @@ public class Client {
 
 	public void welcome() {
 		ClientOutputPrinter.printLine("Welcome to a new session of 'Council Of Four' Game!");
-		do{
-		ClientOutputPrinter.printLine("Please, choose a nickname with at least 4 char and without space:");
-		nickName=input.nextLine();
-		checkCorrectNickName(nickName);
-		}while(checkCorrectNickName(nickName));
+		do {
+			ClientOutputPrinter.printLine("Please, choose a nickname with at least 4 char and without space:");
+			nickName = input.nextLine();
+			checkCorrectNickName(nickName);
+		} while (checkCorrectNickName(nickName));
 	}
-	
-	public boolean checkCorrectNickName(String nickName){
-		boolean correct=false;
-		if(nickName.contains(" ") || nickName.length()<4)
-		 correct=true;
+
+	public boolean checkCorrectNickName(String nickName) {
+		boolean correct = false;
+		if (nickName.contains(" ") || nickName.length() < 4)
+			correct = true;
 		return correct;
 	}
 }

@@ -5,7 +5,6 @@ import controller.Client.ClientSideConnector;
 import controller.Client.SocketInputOutputThread;
 import controller.*;
 import exceptions.InvalidInputException;
-import model.Board;
 import model.ConfigObject;
 
 import java.io.IOException;
@@ -209,10 +208,13 @@ public class ClientPacketController {
 	public void disconnect() {
 		try {
 			UnicastRemoteObject.unexportObject(clientSideConnector, true);
-			System.exit(0);
 		} catch (NoSuchObjectException e) {
 		ClientOutputPrinter.printLine(e.getMessage());
-	}
+		} finally {
+			if(socketInputOutputThread!=null)
+				socketInputOutputThread.disconnect();
+			System.exit(0);
+		}
 	}
 
 	public void startSocketConnection(String nickName) {
@@ -223,11 +225,12 @@ public class ClientPacketController {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				ClientOutputPrinter.printLine(e.getMessage());
+				Thread.currentThread().interrupt();
 			}
 			packetSenderInt.sendToServer(new Packet(nickName));
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 
@@ -270,6 +273,7 @@ public class ClientPacketController {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					ClientOutputPrinter.printLine(e.getMessage());
+					Thread.currentThread().interrupt();
 				}
 				ClientOutputPrinter.printLine("Choose the configuration ID:");
 				choice = Integer.parseInt(input.nextLine());
@@ -283,6 +287,7 @@ public class ClientPacketController {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					ClientOutputPrinter.printLine(e.getMessage());
+					Thread.currentThread().interrupt();
 				}
 				ClientOutputPrinter.printLine("Press any key to continue or press 1 to repeat the confguration");
 				try {

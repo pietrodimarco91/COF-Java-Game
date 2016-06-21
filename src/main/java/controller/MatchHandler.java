@@ -948,7 +948,6 @@ public class MatchHandler {
 
 	public void sendMarketStatus() {
 		PubSub.notifyAllClients(players, market.toString());
-
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -959,10 +958,12 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
+
 			ServerOutputPrinter
 			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 			logger.log(Level.INFO, "Remote Exception", e);
+
 		}
 	}
 
@@ -974,10 +975,12 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
+
 			ServerOutputPrinter
 			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 			e.printStackTrace();
+
 		}
 	}
 
@@ -1089,7 +1092,7 @@ public class MatchHandler {
 				playersInDraw.add(player);
 			}
 		}
-		if(playersInDraw.isEmpty())
+		if(playersInDraw.isEmpty()&&winner!=null)
 			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
 		else {
 			for(Player player : playersInDraw) {
@@ -1099,7 +1102,8 @@ public class MatchHandler {
 					maxAssistants=player.getNumberOfAssistants();
 				}
 			}
-			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+			if(winner!=null)
+				PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
 		}
 	}
 	
@@ -1141,7 +1145,8 @@ public class MatchHandler {
 				tempWinner=player;
 			}
 		}
-		tempWinner.addVictoryPoints(3);
+		if(tempWinner!=null)
+			tempWinner.addVictoryPoints(3);
 	}
 
 	private void startMarketSellTime() {
@@ -1164,11 +1169,6 @@ public class MatchHandler {
 			message += "Player '" + players.get(id.intValue()).getNickName() + " ID: " + id + "\n";
 		}
 		PubSub.notifyAllClients(players, message);
-	}
-
-	public void rewindTurns() {
-		// check if game is not finished
-		turn = 0;
 	}
 
 	public void chat(int playerId, String messageString) {

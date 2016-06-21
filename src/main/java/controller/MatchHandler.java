@@ -265,7 +265,6 @@ public class MatchHandler {
 				ServerOutputPrinter
 				.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 						+ "' and ID " + playerId + " disconnected!");
-				logger.log(Level.INFO, "Remote Exception", e);
 			}
 		}
 	}
@@ -962,7 +961,7 @@ public class MatchHandler {
 			ServerOutputPrinter
 			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
-			logger.log(Level.INFO, "Remote Exception", e);
+			
 
 		}
 	}
@@ -979,7 +978,6 @@ public class MatchHandler {
 			ServerOutputPrinter
 			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
-			e.printStackTrace();
 
 		}
 	}

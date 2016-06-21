@@ -162,7 +162,11 @@ public class ActionCreator {
 	public void createSimpleBuildEmporium(String type) {
 		int id;
 		String cityName = null;
+		boolean proceed=false;
+		
 		ClientOutputPrinter.printLine("BUILD AN EMPORIUM USING A PERMIT TILE");
+		while(!proceed){
+			try{
 		ClientOutputPrinter
 				.printLine("Type the ID of the Permit Tile you would like to choose to build your emporium:");
 		id = Integer.parseInt(input.nextLine());
@@ -170,6 +174,11 @@ public class ActionCreator {
 				.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
 		cityName = input.nextLine();
 		this.sendAction(new SimpleBuildEmporiumAction(type, id, cityName));
+		proceed=true;
+			}catch(NumberFormatException e){
+				ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
+			}
+	}
 	}
 
 	public void createBuyPermitTile(String type) {

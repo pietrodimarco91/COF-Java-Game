@@ -73,6 +73,8 @@ public class ClientPacketController {
 				new ActionCreator(type, num, packetSenderInt);
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
+			} catch (NumberFormatException e) {
+				ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
 			}
 		}
 		proceed = false;
@@ -95,7 +97,7 @@ public class ClientPacketController {
 		return s;
 	}
 
-	public int verifyActionID(String id) throws InvalidInputException {
+	public int verifyActionID(String id) throws InvalidInputException, NumberFormatException {
 		int num = Integer.parseInt(id);
 		if (num < 1 || num > 4)
 			throw new InvalidInputException();
@@ -106,13 +108,14 @@ public class ClientPacketController {
 		int choice,price;
 		boolean proceed = false;
 		while (!proceed) {
+			try {
 			ClientOutputPrinter.printLine(
 					"What item would you like to sell?\n1) Assistant\n2)Politic Card\n3) Permit Tile\n4) Return back...");
 			choice = Integer.parseInt(input.nextLine());
 			ClientOutputPrinter.printLine(
 					"Choose the price (in coins) for your item:");
 			price = Integer.parseInt(input.nextLine());
-			try {
+			
 				switch (choice) {
 
 				case 1:
@@ -140,6 +143,8 @@ public class ClientPacketController {
 				}
 			} catch (RemoteException e) {
 				ClientOutputPrinter.printLine(e.getMessage());
+			}catch (NumberFormatException e) {
+				ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
 			}
 		}
 	}
@@ -147,11 +152,13 @@ public class ClientPacketController {
 	public void buyItemOnMarket() {
 		int id;
 		ClientOutputPrinter.printLine("Type the Item ID you would like to buy:");
-		id = Integer.parseInt(input.nextLine());
 		try {
+			id = Integer.parseInt(input.nextLine());
 			packetSenderInt.sendToServer(new Packet(new MarketEventBuy(id)));
 		} catch (RemoteException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
+		}catch (NumberFormatException e) {
+			ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
 		}
 	}
 
@@ -185,6 +192,7 @@ public class ClientPacketController {
 		ClientOutputPrinter.printLine("Choose your connection type:\n1)RMI\n2)Socket");
 		boolean proceed = false;
 		while (!proceed) {
+			try{
 			int choice = Integer.parseInt(input.nextLine());
 			switch (choice) {
 			case 1:
@@ -198,7 +206,10 @@ public class ClientPacketController {
 			default:
 				ClientOutputPrinter.printLine("Error: invalid input... please retry!");
 			}
-		}
+			}catch(NumberFormatException e){
+				ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
+			}
+	}
 
 	}
 
@@ -276,12 +287,13 @@ public class ClientPacketController {
 					Thread.currentThread().interrupt();
 				}
 				ClientOutputPrinter.printLine("Choose the configuration ID:");
-				choice = Integer.parseInt(input.nextLine());
-
 				try {
+					choice = Integer.parseInt(input.nextLine());
 					packetSenderInt.sendToServer(new Packet(new Integer(choice)));
 				} catch (RemoteException e) {
 					ClientOutputPrinter.printLine(e.getMessage());
+				}catch (NumberFormatException e) {
+					ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
 				}
 				try {
 					Thread.sleep(1000);
@@ -295,7 +307,7 @@ public class ClientPacketController {
 				if (choice != 1)
 					finish = true;
 				}
-				catch(InputMismatchException e) {
+				catch(NumberFormatException e) {
 					ClientOutputPrinter.printLine("Error! Expected integer but it was a string...");
 				}
 

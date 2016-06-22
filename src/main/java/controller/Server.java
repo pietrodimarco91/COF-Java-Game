@@ -61,8 +61,8 @@ public class Server {
 			Naming.bind("rmi://" + ip + "/registry", b);
 			ServerOutputPrinter.printLine("[SERVER] Ready to receive RMI invocations.");
 			ServerOutputPrinter.printLine("[SERVER] Ready to receive Socket Connections.");
-			this.waitSocketConnection();
 			this.welcomeSocket = new ServerSocket(port);
+			this.waitSocketConnection();
 		} catch (AlreadyBoundException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 		} catch (MalformedURLException e) {

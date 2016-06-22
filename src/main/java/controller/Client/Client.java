@@ -5,6 +5,7 @@ import client.view.cli.ClientOutputPrinter;
 
 import java.rmi.RemoteException;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -38,15 +39,17 @@ public class Client {
 		boolean correct = false;
 		do {
 			ClientOutputPrinter.printLine(
-					"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any number but 1 to continue..");
+					"If you are the match creator press 1 otherwise wait for the board and the map to be configured...Then press any key but 1 to continue..");
 			try {
-				int choice = input.nextInt();
-				if (choice == 1) {
+				String choice = input.nextLine();
+				if (choice.equals("1")) {
 					controller.boardConfiguration();
 					controller.mapConfiguration();
-					correct = true;
 				}
+				correct=true;
 			} catch (InputMismatchException e) {
+				ClientOutputPrinter.printLine("Please insert a correct input!");
+			} catch(NoSuchElementException e) {
 				ClientOutputPrinter.printLine("Please insert a correct input!");
 			}
 		} while (!correct);
@@ -89,7 +92,7 @@ public class Client {
 				default:
 					ClientOutputPrinter.printLine("Invalid choice... please retry!");
 				}
-			} catch (NumberFormatException e) {
+			} catch (InputMismatchException e) {
 				ClientOutputPrinter.printLine("Invalid choice... please retry!");
 			}
 		}

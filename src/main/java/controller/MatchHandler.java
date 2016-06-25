@@ -83,13 +83,6 @@ public class MatchHandler {
 	 */
 	private int[] configParameters;
 
-	/**
-	 * A boolean value used to know if the first player has decided the total
-	 * number of players. It's true when he has finished to set the number false
-	 * otherwise
-	 */
-	private boolean pending; // To add UML scheme
-
 	private List<Integer> marketBuyTurn;
 
 	/**
@@ -116,7 +109,7 @@ public class MatchHandler {
 
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector,
 			String creatorNickName) {
-		marketBuyTurn = new ArrayList<>();
+		marketBuyTurn = Collections.synchronizedList(new ArrayList<>());
 		turn = 0;
 		timers = Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
@@ -134,7 +127,6 @@ public class MatchHandler {
 		this.id = id;
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
-		this.pending = false;
 		this.market = new Market();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
@@ -877,7 +869,9 @@ public class MatchHandler {
 			MarketEventBuy event = (MarketEventBuy) marketEvent;
 			try {
 				market.buyItemOnSale(players.get(playerId), event.getItemId());
-				marketBuyTurn.remove(0);
+				synchronized (marketBuyTurn) {
+					marketBuyTurn.remove(0);
+				}
 				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
 						+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
 			} catch (UnsufficientCoinsException e) {
@@ -1157,16 +1151,19 @@ public class MatchHandler {
 	public void startMarketBuyTime() {
 		this.gameStatus = GameStatusConstants.MARKET_BUY;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
-		marketBuyTurn.clear();
-		for (Player player : players) {
-			marketBuyTurn.add(new Integer(player.getId()));
+		synchronized (marketBuyTurn) {
+			marketBuyTurn.clear();
+			for (Player player : players) {
+				marketBuyTurn.add(new Integer(player.getId()));
+			}
+			Collections.shuffle(marketBuyTurn);
+			String message = "In order to buy items from the Market, players must respect this random order:" + "\n";
+			for (Integer id : marketBuyTurn) {
+				message += "Player '" + players.get(id.intValue()).getNickName() + " ID: " + id + "\n";
+			}
+			message+="Be fast, your time is limited!\n";
+			PubSub.notifyAllClients(players, message);
 		}
-		Collections.shuffle(marketBuyTurn);
-		String message = "In order to buy items from the Market, players must respect this random order:" + "\n";
-		for (Integer id : marketBuyTurn) {
-			message += "Player '" + players.get(id.intValue()).getNickName() + " ID: " + id + "\n";
-		}
-		PubSub.notifyAllClients(players, message);
 	}
 
 	public void chat(int playerId, String messageString) {

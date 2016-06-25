@@ -4,11 +4,11 @@ import server.view.cli.ServerOutputPrinter;
 
 public class MarketTimerThread implements Runnable {
 
-	private static final int waitingTime=30000;
+	private static final int waitingTime = 30000;
 	private MatchHandler match;
 
 	public MarketTimerThread(MatchHandler match) {
-		this.match=match;
+		this.match = match;
 	}
 
 	@Override
@@ -23,6 +23,4 @@ public class MarketTimerThread implements Runnable {
 			Thread.currentThread().interrupt();
 		}
 	}
-
-	
 }

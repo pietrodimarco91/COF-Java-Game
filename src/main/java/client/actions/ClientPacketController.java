@@ -329,7 +329,7 @@ public class ClientPacketController {
 		while (!stop) {
 
 			ClientOutputPrinter
-					.printLine("||*** BOARD CONFIGURATION MENU ***||\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status\n5) Count distance");
+					.printLine("||*** MAP CONFIGURATION MENU ***||\n1) New connection\n2)Remove connection\n3) Go on\n4) View board status\n5) Count distance");
 			choice = Integer.parseInt(input.nextLine());
 
 			switch (choice) {

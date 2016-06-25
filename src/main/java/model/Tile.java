@@ -10,7 +10,16 @@ public abstract class Tile {
 	/**
 	 * 
 	 */
-	public ArrayList<String> bonus;
+	private ArrayList<String> bonus;
+	
+	public Tile(ArrayList<String> bonus) {
+		this.bonus=bonus;
+	}
+	
+	/**
+	 * Implicit constructor needed for subclasses
+	 */
+	public Tile() {}
 
 	public String toString() {
 		String string = "Bonuses: ";

@@ -621,7 +621,7 @@ public class MatchHandler {
 				player.resetTurn();
 			}
 		} catch (CouncillorNotFoundException e) {
-			sendErrorToClient(e.getMessage(), playerId);
+			sendErrorToClient(e.showError(), playerId);
 		}
 
 	}

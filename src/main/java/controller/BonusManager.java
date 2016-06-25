@@ -31,7 +31,7 @@ public class BonusManager {
 	 * @return
 	 */
 	public void takeBonusFromNobilityTrack(NobilityCell nobilityCell, Player player) {
-		useBonus(nobilityCell.getBonus(), player);
+		useBonus(nobilityCell.winBonus(), player);
 
 	}
 
@@ -50,25 +50,25 @@ public class BonusManager {
 				supLimit = 5 - infLimit;
 				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
 				player.addMoreAssistant(numberOfBonus);
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won "+numberOfBonus+" Assistants bonus!");
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won "+numberOfBonus+" Assistants!");
 				break;
 			case "VICTORYTRACK":
 				infLimit = 1;
 				supLimit = 15 - infLimit;
 				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
-				player.setVoctoryPoints(numberOfBonus);
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won "+numberOfBonus+" bonus steps in Victory Track!");
+				player.setVictoryPoints(numberOfBonus);
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won "+numberOfBonus+" bonus steps in Victory Track!");
 				break;
 			case "POLITIC":
 				player.addCardOnHand(new PoliticCard());
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won a bonus and draw a Politic card!!");
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won a bonus and draw a new Politic Card!");
 				break;
 			case "COINS":
 				infLimit = 1;
 				supLimit = 7 - infLimit;
 				numberOfBonus=randomBonus.nextInt(supLimit) + infLimit;
 				player.addCoins(numberOfBonus);
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won "+numberOfBonus+" Coins bonus!");
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won "+numberOfBonus+" Coins!");
 				break;
 			case "NOBILITYTRACK":
 				infLimit = 1;
@@ -77,52 +77,52 @@ public class BonusManager {
 				player.changePositionInNobilityTrack(numberOfBonus);
 				int position = player.getPositionInNobilityTrack();
 				NobilityCell cell = this.track.getNobilityTrackCell(position);
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won "+numberOfBonus+" bonus steps in Nobility Track!");
 				takeBonusFromNobilityTrack(cell, player);
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won "+numberOfBonus+" bonus steps in Nobility Track!");
 				break;
-			case "DRAWPERMITTILE":
+			case "DRAWPERMITTILE": //WRONG IMPLEMENTATION!!!
 				player.addCardOnHand(new PoliticCard());
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won a bonus and draw a Permit tile!");
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won a bonus and draw a Permit tile!");
 				break;
 			case "BONUSPERMITTILE":
 				int randomPermitTile;
 				infLimit = 1;
 				supLimit = 2 - infLimit;
+				Tile tempTile;
 				int deckPermitTileChoice = randomBonus.nextInt(supLimit) + infLimit;
 				if (deckPermitTileChoice == 1) {
 					infLimit=0;
 					supLimit=player.getNumberOfUsedPermitTile()-1;
 					randomPermitTile=randomBonus.nextInt(supLimit) + infLimit;
-					Tile tempTile = player.getUsedPermitTile(randomPermitTile);
-					useBonus(tempTile.bonus, player);
+					tempTile = player.getUsedPermitTile(randomPermitTile);
 				} else {
 					infLimit=0;
 					supLimit=player.getNumberOfPermitTile()-1;
 					randomPermitTile=randomBonus.nextInt(supLimit) + infLimit;
-					Tile tempTile = player.getUnusedPermitTileFromId(randomPermitTile);
-					useBonus(tempTile.bonus, player);
+					tempTile = player.getUnusedPermitTileFromId(randomPermitTile);
 				}
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won a bonus and now can re-use bonus on a permit tile");
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won a bonus and now can re-use bonus on a permit tile");
+				useBonus(tempTile.getBonus(), player);
 				break;
 			case "TWOEMPORIUMCITY":
+				City tempCity;
 				if (player.getNumberoOfControlledCities() >= 2) {
 					supLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
-					City tempCity = player.getSingleControlledCity(supLimit);
-					useBonus(tempCity.winBonus().bonus, player);
+					tempCity = player.getSingleControlledCity(supLimit);
 					int secondSupLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
 					while (supLimit == secondSupLimit)
 						secondSupLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
 					tempCity = player.getSingleControlledCity(supLimit);
-					useBonus(tempCity.winBonus().bonus, player);
 				} else {
 					supLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
-					City tempCity = player.getSingleControlledCity(supLimit);
-					useBonus(tempCity.winBonus().bonus, player);
+					tempCity = player.getSingleControlledCity(supLimit);
 				}
-				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won a bonus and now can obtain bonus about two reward tokens");
+				PubSub.notifyAllClients(this.players, "Player with nickname '"+player.getNickName()+"' won a bonus and now can obtain bonus from two Reward Tokens");
+				useBonus(tempCity.winBonus().getBonus(), player);
 				break;
 			case "NEWMAINACTION":
-				// da completare
+				player.mainActionDone(false);
+				PubSub.notifyAllClients(this.players, "The player with nickname: "+player.getNickName()+" won the 'NEW MAIN ACTION' bonus!");
 				break;
 
 			}

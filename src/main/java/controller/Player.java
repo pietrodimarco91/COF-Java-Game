@@ -3,12 +3,8 @@ package controller;
 import model.*;
 
 import java.awt.*;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import exceptions.UnsufficientCoinsException;
 
@@ -16,10 +12,6 @@ import exceptions.UnsufficientCoinsException;
  * 
  */
 public class Player {
-	/**
-	 * 
-	 */
-	private static final Logger logger = Logger.getLogger(Player.class.getName());
 
 	/**
 	 *
@@ -98,6 +90,7 @@ public class Player {
 	 *
 	 */
 	private ArrayList<City> controlledCities;
+
 	/**
 	 * The color of the player in the current match
 	 */
@@ -110,8 +103,13 @@ public class Player {
 	/**
 	 *
 	 */
-	private boolean hasPerformedMainAction, hasPerformedQuickAction;
-	
+	private int mainActionsLeft;
+
+	/**
+	 * 
+	 */
+	private boolean hasPerformedQuickAction;
+
 	/**
 	 *
 	 */
@@ -121,7 +119,7 @@ public class Player {
 	 * Default constructor
 	 */
 	public Player(ClientSideConnectorInt connector, int id, String nickName) {
-		hasPerformedMainAction = false;
+		mainActionsLeft = 1;
 		hasPerformedQuickAction = false;
 		Random random = new Random();
 		this.id = id;
@@ -137,7 +135,7 @@ public class Player {
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = INITIAL_POSITION;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
-		this.disconnected=false;
+		this.disconnected = false;
 	}
 
 	/**
@@ -241,7 +239,7 @@ public class Player {
 	public void initializeFirstHand() {
 		this.politicCards = PoliticCardDeck.distributePoliticCards();
 	}
-	
+
 	public int getPositionInNobilityTrack() {
 		return this.positionInNobilityTrack;
 	}
@@ -437,7 +435,6 @@ public class Player {
 			this.coins += coins;
 	}
 
-
 	/**
 	 * @return set the initial coins of one player
 	 */
@@ -521,7 +518,7 @@ public class Player {
 	/**
 	 * 
 	 */
-	public void setVoctoryPoints(int points) {
+	public void setVictoryPoints(int points) {
 		this.victoryPoints += points;
 	}
 
@@ -633,11 +630,14 @@ public class Player {
 	}
 
 	public void mainActionDone(boolean value) {
-		hasPerformedMainAction = value;
+		if (value)
+			mainActionsLeft--;
+		else 
+			mainActionsLeft++;
 	}
 
 	public boolean hasPerformedMainAction() {
-		return this.hasPerformedMainAction;
+		return mainActionsLeft==0;
 	}
 
 	public boolean hasPerformedQuickAction() {
@@ -649,17 +649,19 @@ public class Player {
 	}
 
 	public void resetTurn() {
-		hasPerformedMainAction = false;
+		mainActionsLeft = 1;
 		hasPerformedQuickAction = false;
 	}
-	public void setPlayerOffline(){
-		this.disconnected=true;
+
+	public void setPlayerOffline() {
+		this.disconnected = true;
 	}
-	public boolean playerIsOffline(){
+
+	public boolean playerIsOffline() {
 		return this.disconnected;
 	}
 
 	public void addVictoryPoints(int i) {
-		this.victoryPoints+=i;
+		this.victoryPoints += i;
 	}
 }

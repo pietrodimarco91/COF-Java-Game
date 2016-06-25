@@ -25,12 +25,12 @@ public class PermitTile extends Tile {
 	 * with bonuses.
 	 */
 	public PermitTile(int id,List<City> cities, int bonusNumber) {
+		super(PermitTileBonusType.random(bonusNumber));
 		this.id=id;
 		this.cities = new ArrayList<>();
 		for (int i = new Random().nextInt(3); i > 0; i--) {
 			this.cities.add(cities.get(new Random().nextInt(cities.size())));
 		}
-		bonus = PermitTileBonusType.random(bonusNumber);
 	}
 	
 	public List<City> getCities(){

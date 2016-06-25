@@ -516,13 +516,6 @@ public class Player {
 	}
 
 	/**
-	 * 
-	 */
-	public void setVictoryPoints(int points) {
-		this.victoryPoints += points;
-	}
-
-	/**
 	 * @return
 	 */
 	public int getNumberOfAssistants() {
@@ -661,7 +654,7 @@ public class Player {
 		return this.disconnected;
 	}
 
-	public void addVictoryPoints(int i) {
-		this.victoryPoints += i;
+	public void addVictoryPoints(int points) {
+		this.victoryPoints += points;
 	}
 }

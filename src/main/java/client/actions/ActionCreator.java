@@ -77,6 +77,7 @@ public class ActionCreator {
 				"Type the Region name which you would like to switch the uncovered Permit Tiles from: choose from 'HILLS', 'COAST' or 'MOUNTAINS'");
 		while (!proceed) {
 			regionName = input.nextLine();
+			regionName = regionName.toUpperCase();
 			try {
 				verifyRegionName(regionName);
 				proceed = true;
@@ -100,6 +101,7 @@ public class ActionCreator {
 				.printLine("Type the color of the Politic Cards you would like to use to satisfy the King's Council ");
 		ClientOutputPrinter.printLine("Type the colors one per line, type 'stop' to stop");
 		color = input.nextLine();
+		color = color.toUpperCase();
 		while (numberOfCards == 0 || !color.equals("stop")) {
 			try {
 				verifyColor(color);
@@ -124,6 +126,7 @@ public class ActionCreator {
 		ClientOutputPrinter.printLine("Type the color of the Councillor to elect:");
 		while (!proceed) {
 			color = input.nextLine();
+			color = color.toUpperCase();
 			try {
 				verifyColor(color);
 				proceed = true;
@@ -141,6 +144,7 @@ public class ActionCreator {
 				"Type the Region name of the Council where you wish to elect the councillor: choose from 'HILLS', 'COAST' or 'MOUNTAINS'");
 		while (!proceed) {
 			regionName = input.nextLine();
+			regionName = regionName.toUpperCase();
 			try {
 				verifyRegionName(regionName);
 				proceed = true;
@@ -162,23 +166,23 @@ public class ActionCreator {
 	public void createSimpleBuildEmporium(String type) {
 		int id;
 		String cityName = null;
-		boolean proceed=false;
-		
+		boolean proceed = false;
+
 		ClientOutputPrinter.printLine("BUILD AN EMPORIUM USING A PERMIT TILE");
-		while(!proceed){
-			try{
-		ClientOutputPrinter
-				.printLine("Type the ID of the Permit Tile you would like to choose to build your emporium:");
-		id = Integer.parseInt(input.nextLine());
-		ClientOutputPrinter
-				.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
-		cityName = input.nextLine();
-		this.sendAction(new SimpleBuildEmporiumAction(type, id, cityName));
-		proceed=true;
-			}catch(NumberFormatException e){
+		while (!proceed) {
+			try {
+				ClientOutputPrinter
+						.printLine("Type the ID of the Permit Tile you would like to choose to build your emporium:");
+				id = Integer.parseInt(input.nextLine());
+				ClientOutputPrinter
+						.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
+				cityName = input.nextLine();
+				this.sendAction(new SimpleBuildEmporiumAction(type, id, cityName));
+				proceed = true;
+			} catch (NumberFormatException e) {
 				ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
 			}
-	}
+		}
 	}
 
 	public void createBuyPermitTile(String type) {

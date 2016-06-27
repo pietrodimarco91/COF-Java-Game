@@ -6,6 +6,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+import exceptions.CardNotFoundException;
+import exceptions.TileNotFoundException;
 import exceptions.UnsufficientCoinsException;
 
 /**
@@ -314,17 +316,14 @@ public class Player {
 	/**
 	 * Checks whether the player owns a PoliticCard of the specified color or
 	 * not.
-	 * 
-	 * @return true if the player owns it, false otherwise
 	 */
-	public boolean checkIfYouOwnThisCard(String colorCard, ArrayList<PoliticCard> tempHandCards) {
+	public void checkIfYouOwnThisCard(String colorCard, ArrayList<PoliticCard> tempHandCards) throws CardNotFoundException {
 		for (int i = 0; i < tempHandCards.size(); i++) {
 			if (tempHandCards.get(i).getColorCard().equals(colorCard)) {
-				tempHandCards.remove(i);
-				return true;
+				return;
 			}
 		}
-		return false;
+		throw new CardNotFoundException();
 	}
 
 	/**
@@ -372,7 +371,7 @@ public class Player {
 	 *            the id of the permit tile to sell
 	 * @return The permit tile to sell
 	 */
-	public Tile sellPermitTile(int id) {
+	public Tile sellPermitTile(int id) throws TileNotFoundException {
 		PermitTile tile;
 		for (int i = 0; i < unusedPermitTiles.size(); i++) {
 			tile = (PermitTile) unusedPermitTiles.get(i);
@@ -380,7 +379,7 @@ public class Player {
 				return unusedPermitTiles.remove(i);
 			}
 		}
-		return null;
+		throw new TileNotFoundException();
 	}
 
 	/**

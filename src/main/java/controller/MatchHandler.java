@@ -56,7 +56,7 @@ public class MatchHandler {
 	 * A reference to the local Board for this match.
 	 */
 	private Board board;
-	
+
 	/**
 	 * The bonus manager that assigns the bonuses to the players
 	 */
@@ -244,7 +244,7 @@ public class MatchHandler {
 		if (this.board.graphIsConnected()) {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
-			bonusManager=new BonusManager(players, board.getNobilityTrack());
+			bonusManager = new BonusManager(players, board.getNobilityTrack());
 			startTurns();
 		} else {
 			Player player = players.get(playerId);
@@ -254,9 +254,8 @@ public class MatchHandler {
 							.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
-				ServerOutputPrinter
-				.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
-						+ "' and ID " + playerId + " disconnected!");
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '"
+						+ this.players.get(playerId).getNickName() + "' and ID " + playerId + " disconnected!");
 			}
 		}
 	}
@@ -863,21 +862,21 @@ public class MatchHandler {
 
 	public void buyEvent(MarketEvent marketEvent, int playerId) {
 		if (gameStatus != GameStatusConstants.MARKET_BUY) {
-			sendErrorToClient("Game status isn't 'Market'", playerId);
+			sendErrorToClient("Game status isn't 'Market Buy Time'", playerId);
 			return;
 		} else if (playerId == marketBuyTurn.get(0)) {
-			MarketEventBuy event = (MarketEventBuy) marketEvent;
-			try {
-				market.buyItemOnSale(players.get(playerId), event.getItemId());
-				synchronized (marketBuyTurn) {
-					marketBuyTurn.remove(0);
+			synchronized (marketBuyTurn) {
+				MarketEventBuy event = (MarketEventBuy) marketEvent;
+				try {
+					market.buyItemOnSale(players.get(playerId), event.getItemId());
+					PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
+							+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
+					nextMarketBuyTurn(playerId);
+				} catch (UnsufficientCoinsException e) {
+					sendErrorToClient(e.showError(), playerId);
+				} catch (ItemNotFoundException e) {
+					sendErrorToClient(e.showError(), playerId);
 				}
-				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
-						+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
-			} catch (UnsufficientCoinsException e) {
-				sendErrorToClient(e.showError(), playerId);
-			} catch (ItemNotFoundException e) {
-				sendErrorToClient(e.showError(), playerId);
 			}
 		} else {
 			sendErrorToClient("You're not allowed to buy now, please wait for your turn!", playerId);
@@ -886,7 +885,7 @@ public class MatchHandler {
 
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
 		if (gameStatus != GameStatusConstants.MARKET_SELL) {
-			sendErrorToClient("Game status isn't 'Market'", playerId);
+			sendErrorToClient("Game status isn't 'Market Sell Time'", playerId);
 			return;
 		}
 
@@ -898,42 +897,40 @@ public class MatchHandler {
 		switch (header) {
 		case "PERMITTILE":
 			int permitTileId = event.getPermitTileId();
-			Tile permitTile = player.sellPermitTile(permitTileId); // exception
-																	// handling
-																	// should be
-																	// done!
-			if (permitTile == null) {
+			Tile permitTile;
+			try {
+				permitTile = player.sellPermitTile(permitTileId);
+				item = factory.createPermitTileOnSale(permitTile, player, event.getPrice());
+				market.putItemOnSale(item);
+				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
+			} catch (TileNotFoundException e) {
 				sendErrorToClient("Ops! A PermitTile with the specified ID was not found!", playerId);
 				return;
 			}
-			item = factory.createPermitTileOnSale(permitTile, player, event.getPrice());
-			market.putItemOnSale(item);
-			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-					+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
 			break;
 		case "POLITICCARD":
-			boolean cardFound = false;
 			String politicCardColor = event.getPoliticCardColor();
-			cardFound = player.checkIfYouOwnThisCard(politicCardColor, player.getPoliticCards());
-			if (cardFound) {
+			try {
+				player.checkIfYouOwnThisCard(politicCardColor, player.getPoliticCards());
 				item = factory.createPoliticCardOnSale(player.sellPoliticCard(politicCardColor), player,
 						event.getPrice());
 				market.putItemOnSale(item);
 				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
 						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
-			} else {
-				sendErrorToClient("You don't own a PoliticCard of the color you specified!", playerId);
+			} catch (CardNotFoundException e) {
+				sendErrorToClient(e.showError(), playerId);
 			}
 			break;
 		case "ASSISTANT":
-			if (player.getNumberOfAssistants() > 0) {
-				item = factory.createAssistantOnSale(player, event.getPrice());
-				market.putItemOnSale(item);
-				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
-			} else {
+			if (player.getNumberOfAssistants() == 0) {
 				sendErrorToClient("You haven't got Assistants in your pool!", playerId);
+				return;
 			}
+			item = factory.createAssistantOnSale(player, event.getPrice());
+			market.putItemOnSale(item);
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+					+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
 			break;
 		default:
 		}
@@ -952,10 +949,8 @@ public class MatchHandler {
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
 
-			ServerOutputPrinter
-			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
-			
 
 		}
 	}
@@ -969,8 +964,7 @@ public class MatchHandler {
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
 
-			ServerOutputPrinter
-			.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
 		}
@@ -1066,78 +1060,80 @@ public class MatchHandler {
 	}
 
 	private void notifyMatchWinner() {
-		List<Player> playersInDraw=new ArrayList<>();
+		List<Player> playersInDraw = new ArrayList<>();
 		Player winner = null;
-		int maxVictoryPoints = 0, maxAssistants=0, maxPoliticCardsInHand=0;		
-		
+		int maxVictoryPoints = 0, maxAssistants = 0, maxPoliticCardsInHand = 0;
+
 		assignFinalPermitTilePoints();
 		assignFinalNobilityTrackPoints();
-		
-		for(Player player : players) {
+
+		for (Player player : players) {
 			if (player.getVictoryPoints() > maxVictoryPoints) {
 				maxVictoryPoints = player.getVictoryPoints();
 				winner = player;
 				playersInDraw.clear();
-			} else if(player.getVictoryPoints() == maxVictoryPoints) {
-				if(!playersInDraw.contains(winner))
+			} else if (player.getVictoryPoints() == maxVictoryPoints) {
+				if (!playersInDraw.contains(winner))
 					playersInDraw.add(winner);
 				playersInDraw.add(player);
 			}
 		}
-		if(playersInDraw.isEmpty()&&winner!=null)
-			PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+		if (playersInDraw.isEmpty() && winner != null)
+			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!");
 		else {
-			for(Player player : playersInDraw) {
-				if(player.getPoliticCards().size()+player.getNumberOfAssistants()>maxAssistants+maxPoliticCardsInHand) {
-					winner=player;
-					maxPoliticCardsInHand=player.getPoliticCards().size();
-					maxAssistants=player.getNumberOfAssistants();
+			for (Player player : playersInDraw) {
+				if (player.getPoliticCards().size() + player.getNumberOfAssistants() > maxAssistants
+						+ maxPoliticCardsInHand) {
+					winner = player;
+					maxPoliticCardsInHand = player.getPoliticCards().size();
+					maxAssistants = player.getNumberOfAssistants();
 				}
 			}
-			if(winner!=null)
-				PubSub.notifyAllClients(this.players, "Player " +winner.getNickName() + " is the winner of the Match!");
+			if (winner != null)
+				PubSub.notifyAllClients(this.players,
+						"Player " + winner.getNickName() + " is the winner of the Match!");
 		}
 	}
-	
+
 	public void assignFinalNobilityTrackPoints() {
-		NobilityTrack nobilityTrack=board.getNobilityTrack();
+		NobilityTrack nobilityTrack = board.getNobilityTrack();
 		List<Player> playersInFirstPosition = new ArrayList<>();
 		List<Player> playersInSecondPosition = new ArrayList<>();
-		for(Player player : players ) {
-			if(player.getPositionInNobilityTrack()==nobilityTrack.getLength()) {
+		for (Player player : players) {
+			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength()) {
 				playersInFirstPosition.add(player);
 			}
-			if(player.getPositionInNobilityTrack()==nobilityTrack.getLength()-1) {
+			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength() - 1) {
 				playersInSecondPosition.add(player);
 			}
 		}
-		if(playersInFirstPosition.size()==1) {
+		if (playersInFirstPosition.size() == 1) {
 			playersInFirstPosition.get(0).addVictoryPoints(5);
-			if(playersInSecondPosition.size()==1)
+			if (playersInSecondPosition.size() == 1)
 				playersInSecondPosition.get(0).addVictoryPoints(2);
 			else {
-				for(Player player : playersInSecondPosition) {
+				for (Player player : playersInSecondPosition) {
 					player.addVictoryPoints(2);
 				}
 			}
 		} else {
-			for(Player player : playersInFirstPosition)
+			for (Player player : playersInFirstPosition)
 				player.addVictoryPoints(5);
 		}
 	}
-	
+
 	public void assignFinalPermitTilePoints() {
 		Iterator<Player> iterator = players.iterator();
-		Player player, tempWinner=null;
-		int maxNumberOfPermitTile=0;
-		while(iterator.hasNext()){
-			player=iterator.next();
-			if(player.getNumberOfPermitTile()+player.getNumberOfUsedPermitTile()>maxNumberOfPermitTile){
-				maxNumberOfPermitTile=player.getNumberOfPermitTile()+player.getNumberOfUsedPermitTile();
-				tempWinner=player;
+		Player player, tempWinner = null;
+		int maxNumberOfPermitTile = 0;
+		while (iterator.hasNext()) {
+			player = iterator.next();
+			if (player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile() > maxNumberOfPermitTile) {
+				maxNumberOfPermitTile = player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile();
+				tempWinner = player;
 			}
 		}
-		if(tempWinner!=null)
+		if (tempWinner != null)
 			tempWinner.addVictoryPoints(3);
 	}
 
@@ -1145,7 +1141,32 @@ public class MatchHandler {
 		gameStatus = GameStatusConstants.MARKET_SELL;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
 		sendMarketStatus();
-		timers.submit(new MarketTimerThread(this));
+		timers.submit(new MarketTimerThread(this,numberOfPlayers));
+	}
+
+	/**
+	 * This method is invoked only and exclusively when the timer for buying in
+	 * the market for a specified player is over. A new timer for the next
+	 * player will be initialized
+	 * 
+	 * @param playerId
+	 *            the current player in the marketBuyTurn array list
+	 */
+	public void nextMarketBuyTurn(int playerId) {
+		synchronized (marketBuyTurn) {
+			if (marketBuyTurn.isEmpty())
+				return;
+			if (marketBuyTurn.get(0) == playerId) {
+				marketBuyTurn.remove(0);
+				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
+						+ "' your turn for buying in the Market is over!");
+				if (!marketBuyTurn.isEmpty()) {
+					PubSub.notifyAllClients(players, "Player '" + players.get(marketBuyTurn.get(0)).getNickName()
+							+ "' now it's your turn for buying in the Market!");
+					timers.submit(new MarketBuyTurnTimer(marketBuyTurn.get(0), this));
+				}
+			}
+		}
 	}
 
 	public void startMarketBuyTime() {
@@ -1161,8 +1182,11 @@ public class MatchHandler {
 			for (Integer id : marketBuyTurn) {
 				message += "Player '" + players.get(id.intValue()).getNickName() + " ID: " + id + "\n";
 			}
-			message+="Be fast, your time is limited!\n";
+			message += "Be fast, your time is limited!\n";
 			PubSub.notifyAllClients(players, message);
+			PubSub.notifyAllClients(players, "Player '" + players.get(marketBuyTurn.get(0)).getNickName()
+					+ "' now it's your turn for buying in the Market!");
+			timers.submit(new MarketBuyTurnTimer(marketBuyTurn.get(0), this));
 		}
 	}
 

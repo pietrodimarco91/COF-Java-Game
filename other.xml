@@ -48,8 +48,8 @@
     <option name="SHOW_PATH" value="true" />
   </component>
   <component name="JavaFxSettings">
-    <option name="pathToSceneBuilder" value="/Applications/JavaFX Scene Builder 2.0.app" />
-    <option name="myPathToSceneBuilder" value="/Applications/JavaFX Scene Builder 2.0.app" />
+    <option name="pathToSceneBuilder" value="/Applications/SceneBuilder.app" />
+    <option name="myPathToSceneBuilder" value="/Applications/SceneBuilder.app" />
   </component>
   <component name="RefactoringSettings">
     <option name="MOVE_PREVIEW_USAGES" value="false" />

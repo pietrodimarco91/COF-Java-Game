@@ -10,6 +10,8 @@ import client.actions.SendAssistantAction;
 import client.actions.SimpleBuildEmporiumAction;
 import client.actions.SwitchPermitTilesAction;
 import exceptions.*;
+import filehandler.ConfigFileManager;
+import filehandler.ConfigObject;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
@@ -29,7 +31,7 @@ import java.util.logging.StreamHandler;
  * running while a match is on-going. It stores the core of the game engine.
  */
 public class MatchHandler {
-
+	
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 
 	/**
@@ -84,7 +86,7 @@ public class MatchHandler {
 	private int[] configParameters;
 
 	/**
-	 * Mapstatus: 0 wait board configuration 1 wait for players 2 wait map
+	 * Game Status: 0 wait board configuration 1 wait for players 2 wait map
 	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
 	 */
 	private int gameStatus;

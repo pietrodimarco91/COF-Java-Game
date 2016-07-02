@@ -4,7 +4,8 @@ import client.actions.ActionCreator;
 import client.view.cli.ClientOutputPrinter;
 import controller.*;
 import exceptions.InvalidInputException;
-import model.ConfigObject;
+import filehandler.ConfigObject;
+
 import java.rmi.RemoteException;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;

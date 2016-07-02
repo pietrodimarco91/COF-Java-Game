@@ -2,6 +2,8 @@ package client.controller;
 
 import java.rmi.RemoteException;
 
+import client.view.gui.Login;
+
 public class ClientGUIController extends ClientController {
 
 	@Override

@@ -1,4 +1,4 @@
-package model;
+package filehandler;
 
 import java.io.EOFException;
 import java.io.File;
@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import exceptions.ConfigAlreadyExistingException;
 import exceptions.UnexistingConfigurationException;
+import model.AppendableObjectOutputStream;
 
 /**
  * This class is responsible for managing the configuration file, from which the

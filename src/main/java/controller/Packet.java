@@ -1,7 +1,7 @@
 package controller;
 
 import client.actions.Action;
-import model.ConfigObject;
+import filehandler.ConfigObject;
 
 import java.io.Serializable;
 
@@ -10,7 +10,12 @@ import java.io.Serializable;
  */
 public class Packet implements Serializable {
 
-    private String header;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String header;
 
     private Action action;
 

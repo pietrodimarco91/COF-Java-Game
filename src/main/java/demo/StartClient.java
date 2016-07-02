@@ -1,6 +1,6 @@
 package demo;
 
-import controller.Client.Client;
+import client.controller.Client;
 
 /**
  * Created by pietro on 29/05/16.

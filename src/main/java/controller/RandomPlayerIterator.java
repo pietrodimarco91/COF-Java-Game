@@ -25,6 +25,9 @@ public class RandomPlayerIterator implements Iterator<Player> {
 
     @Override
     public Player next() {
-        return randomIterator.next();
+    	Player nextPlayer = randomIterator.next();
+    	while(nextPlayer.playerIsOffline())
+    		nextPlayer = randomIterator.next();
+        return nextPlayer;
     }
 }

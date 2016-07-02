@@ -1,4 +1,4 @@
-package controller.Client;
+package client.controller;
 
 import client.view.cli.ClientOutputPrinter;
 import controller.ClientSideConnectorInt;

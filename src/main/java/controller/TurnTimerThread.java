@@ -6,18 +6,18 @@ public class TurnTimerThread implements Runnable {
 	
 	private static final int waitingTime=60000;
 	private MatchHandler match;
-	private int playerId;
+	private Player player;
 	
-	public TurnTimerThread(MatchHandler match,int playerId) {
+	public TurnTimerThread(MatchHandler match,Player player) {
 		this.match=match;
-		this.playerId=playerId;
+		this.player=player;
 	}
 
 	@Override
 	public void run() {
 		try {
 			Thread.sleep(waitingTime);
-			match.notifyEndOfTurn(playerId);
+			match.notifyEndOfTurn(player);
 		} catch (InterruptedException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 			Thread.currentThread().interrupt();

@@ -83,8 +83,6 @@ public class MatchHandler {
 	 */
 	private int[] configParameters;
 
-	private List<Integer> marketBuyTurn;
-
 	/**
 	 * Mapstatus: 0 wait board configuration 1 wait for players 2 wait map
 	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
@@ -94,27 +92,54 @@ public class MatchHandler {
 	private ExecutorService timers;
 
 	/**
-	 * 
+	 * A reference to the market of the match.
 	 */
 	private Market market;
 
 	/**
-	 * id player
+	 * The Player whose turn is currently active
 	 */
-	private int turn;
+	private Player currentPlayer;
 
 	/**
-	 * Default constructor
+	 * The Player whose turn in the market is currently active
 	 */
+	private Player playerMarketTurn;
 
+	/**
+	 * The iterator for the player turns
+	 */
+	private PlayerTurnIterator playerTurnIterator;
+
+	/**
+	 * This random iterator is used to iterate over the players during the
+	 * market buy time
+	 */
+	private RandomPlayerIterator randomPlayerIterator;
+
+	/**
+	 * Default constructor: this constructor is used during the game, and allows
+	 * to initialize the match. The MatchHandler handles the core of the server
+	 * game controller, which directly communicates with the model.
+	 * 
+	 * @param id
+	 *            the match ID, in chronological order of creation
+	 * @param date
+	 *            the Date of when the match has been created
+	 * @param connector
+	 *            the connector of the first player (creator)
+	 * @param serverSideConnector
+	 *            it's used only to set the player ID to the creator's server
+	 *            side connector
+	 * @param creatorNickName
+	 *            the nickname of the creator of the match
+	 */
 	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector,
 			String creatorNickName) {
-		marketBuyTurn = Collections.synchronizedList(new ArrayList<>());
-		turn = 0;
 		timers = Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		this.players = new ArrayList<Player>();
-		gameStatus = 0;
+		gameStatus = GameStatusConstants.BOARD_CONFIG;
 		configFileManager = new ConfigFileManager();
 		try {
 			serverSideConnector.setPlayerId(0);
@@ -122,14 +147,37 @@ public class MatchHandler {
 			logger.log(Level.INFO, "Remote Exception", e);
 		}
 		this.creator = new Player(connector, 0, creatorNickName);
+		this.currentPlayer = creator;
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
 		this.market = new Market();
-		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
+	}
+
+	/**
+	 * IMPORTANT! This constructor is used only for testing purposes, as it
+	 * doesn't initialize those components related to the connection.
+	 * 
+	 * @param id
+	 *            the match id
+	 * @param date
+	 *            date of the match
+	 */
+	public MatchHandler(int id, Date date) {
+		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+		this.players = new ArrayList<Player>();
+		gameStatus = GameStatusConstants.BOARD_CONFIG;
+		configFileManager = new ConfigFileManager();
+		this.creator = new Player(0);
+		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
+		this.players.add(creator);
+		this.id = id;
+		this.date = date;
+		this.configParameters = new int[NUMBER_OF_PARAMETERS];
+		this.market = new Market();
 	}
 
 	@Override
@@ -245,6 +293,7 @@ public class MatchHandler {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
 			bonusManager = new BonusManager(players, board.getNobilityTrack());
+			playerTurnIterator = new PlayerTurnIterator(players);
 			startTurns();
 		} else {
 			Player player = players.get(playerId);
@@ -474,7 +523,7 @@ public class MatchHandler {
 			bonusManager.takeBonusFromTile(permitTile, player);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(playerId);
+				notifyEndOfTurn(player);
 				player.resetTurn();
 			}
 		} catch (UnsufficientCouncillorsSatisfiedException e) {
@@ -546,9 +595,11 @@ public class MatchHandler {
 							+ " has built his last Emporium!!\n This is your last turn!");
 					gameStatus = GameStatusConstants.FINISH;
 					player.addVictoryPoints(3);
+					PubSub.notifyAllClients(this.players,
+							"Player " + player.getNickName() + " has won 3 bonus Victory Points!");
 				}
 				if (player.hasPerformedQuickAction()) {
-					notifyEndOfTurn(playerId);
+					notifyEndOfTurn(player);
 					player.resetTurn();
 				}
 			}
@@ -608,7 +659,7 @@ public class MatchHandler {
 					+ " Councillor in " + regionName);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(playerId);
+				notifyEndOfTurn(player);
 				player.resetTurn();
 			}
 		} catch (CouncillorNotFoundException e) {
@@ -638,7 +689,7 @@ public class MatchHandler {
 			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!");
 			player.quickActionDone();
 			if (player.hasPerformedMainAction()) {
-				notifyEndOfTurn(playerId);
+				notifyEndOfTurn(player);
 				player.resetTurn();
 			}
 		} catch (UnsufficientCoinsException e) {
@@ -672,7 +723,7 @@ public class MatchHandler {
 					"Player " + player.getNickName() + " swhitched Permit Tile in " + regionName + "!");
 			player.quickActionDone();
 			if (player.hasPerformedMainAction()) {
-				notifyEndOfTurn(playerId);
+				notifyEndOfTurn(player);
 				player.resetTurn();
 			}
 		} catch (UnsufficientAssistantNumberException e) {
@@ -714,7 +765,7 @@ public class MatchHandler {
 				player.addVictoryPoints(3);
 			}
 			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(playerId);
+				notifyEndOfTurn(player);
 				player.resetTurn();
 			}
 		} catch (CityNotFoundFromPermitTileException e) {
@@ -746,7 +797,7 @@ public class MatchHandler {
 					+ councillorColor + "Councillor in " + regionName + "!");
 			player.quickActionDone();
 			if (player.hasPerformedMainAction()) {
-				notifyEndOfTurn(playerId);
+				notifyEndOfTurn(currentPlayer);
 				player.resetTurn();
 			}
 		} catch (UnsufficientAssistantNumberException e) {
@@ -825,7 +876,7 @@ public class MatchHandler {
 			sendErrorToClient("You can't perform an action at the moment!", playerId);
 			return;
 		}
-		if (this.turn != playerId) {
+		if (currentPlayer != players.get(playerId)) {
 			sendErrorToClient("It's not your turn!", playerId);
 			return;
 		}
@@ -864,19 +915,17 @@ public class MatchHandler {
 		if (gameStatus != GameStatusConstants.MARKET_BUY) {
 			sendErrorToClient("Game status isn't 'Market Buy Time'", playerId);
 			return;
-		} else if (playerId == marketBuyTurn.get(0)) {
-			synchronized (marketBuyTurn) {
-				MarketEventBuy event = (MarketEventBuy) marketEvent;
-				try {
-					market.buyItemOnSale(players.get(playerId), event.getItemId());
-					PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
-							+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
-					nextMarketBuyTurn(playerId);
-				} catch (UnsufficientCoinsException e) {
-					sendErrorToClient(e.showError(), playerId);
-				} catch (ItemNotFoundException e) {
-					sendErrorToClient(e.showError(), playerId);
-				}
+		} else if (players.get(playerId) == playerMarketTurn) {
+			MarketEventBuy event = (MarketEventBuy) marketEvent;
+			try {
+				market.buyItemOnSale(playerMarketTurn, event.getItemId());
+				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
+						+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
+				nextMarketBuyTurn(playerMarketTurn);
+			} catch (UnsufficientCoinsException e) {
+				sendErrorToClient(e.showError(), playerId);
+			} catch (ItemNotFoundException e) {
+				sendErrorToClient(e.showError(), playerId);
 			}
 		} else {
 			sendErrorToClient("You're not allowed to buy now, please wait for your turn!", playerId);
@@ -1017,43 +1066,40 @@ public class MatchHandler {
 		this.players.get(playerId).setPlayerNickName(nickName);
 	}
 
-	public void notifyEndOfTurn(int playerId) {
-		if (playerId == turn) {
-			PubSub.notifyAllClients(players,
-					"Player '" + players.get(playerId).getNickName() + "', your turn is over.");
+	public void notifyEndOfTurn(Player player) {
+		if (player == currentPlayer) {
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.");
 			nextTurn();
 		}
 	}
 
 	public void startTurns() {
 		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
-		if (!players.get(turn).playerIsOffline()) {
+		if (!currentPlayer.playerIsOffline()) {
 			PubSub.notifyAllClients(players,
-					"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
-			drawPoliticCard(players.get(turn));
-			timers.submit(new TurnTimerThread(this, turn));
+					"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
+			drawPoliticCard(currentPlayer);
+			timers.submit(new TurnTimerThread(this, currentPlayer));
 		} else
 			nextTurn();
 	}
 
 	public void nextTurn() {
-
-		if (turn == (players.size() - 1)) {
+		if (playerTurnIterator.isLastPlayer(currentPlayer)) {
 			if (GameStatusConstants.FINISH == gameStatus) {
 				PubSub.notifyAllClients(this.players, "Turns are over!");
 				notifyMatchWinner();
 				return;
 			}
-
-			turn = 0;
+			currentPlayer = playerTurnIterator.next();
 			startMarketSellTime();
 		} else {
-			turn++;
-			if (!players.get(turn).playerIsOffline()) {
+			currentPlayer = playerTurnIterator.next();
+			if (!currentPlayer.playerIsOffline()) {
 				PubSub.notifyAllClients(players,
-						"Player '" + players.get(turn).getNickName() + "', it's your turn. Perform your actions!");
-				drawPoliticCard(players.get(turn));
-				timers.submit(new TurnTimerThread(this, turn));
+						"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
+				drawPoliticCard(currentPlayer);
+				timers.submit(new TurnTimerThread(this, currentPlayer));
 			} else
 				nextTurn();
 		}
@@ -1141,7 +1187,7 @@ public class MatchHandler {
 		gameStatus = GameStatusConstants.MARKET_SELL;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
 		sendMarketStatus();
-		timers.submit(new MarketTimerThread(this,numberOfPlayers));
+		timers.submit(new MarketTimerThread(this, numberOfPlayers));
 	}
 
 	/**
@@ -1152,42 +1198,30 @@ public class MatchHandler {
 	 * @param playerId
 	 *            the current player in the marketBuyTurn array list
 	 */
-	public void nextMarketBuyTurn(int playerId) {
-		synchronized (marketBuyTurn) {
-			if (marketBuyTurn.isEmpty())
-				return;
-			if (marketBuyTurn.get(0) == playerId) {
-				marketBuyTurn.remove(0);
-				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
-						+ "' your turn for buying in the Market is over!");
-				if (!marketBuyTurn.isEmpty()) {
-					PubSub.notifyAllClients(players, "Player '" + players.get(marketBuyTurn.get(0)).getNickName()
-							+ "' now it's your turn for buying in the Market!");
-					timers.submit(new MarketBuyTurnTimer(marketBuyTurn.get(0), this));
-				}
-			}
+	public void nextMarketBuyTurn(Player player) {
+		if (!randomPlayerIterator.hasNext()) {
+			playerMarketTurn=null;
+			return;
+		}
+		if (playerMarketTurn == player) {
+			playerMarketTurn = randomPlayerIterator.next();
+			PubSub.notifyAllClients(players,
+					"Player '" + player.getNickName() + "' your turn for buying in the Market is over!");
+			PubSub.notifyAllClients(players,
+					"Player '" + playerMarketTurn.getNickName() + "' now it's your turn for buying in the Market!");
+			timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
 		}
 	}
 
 	public void startMarketBuyTime() {
 		this.gameStatus = GameStatusConstants.MARKET_BUY;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
-		synchronized (marketBuyTurn) {
-			marketBuyTurn.clear();
-			for (Player player : players) {
-				marketBuyTurn.add(new Integer(player.getId()));
-			}
-			Collections.shuffle(marketBuyTurn);
-			String message = "In order to buy items from the Market, players must respect this random order:" + "\n";
-			for (Integer id : marketBuyTurn) {
-				message += "Player '" + players.get(id.intValue()).getNickName() + " ID: " + id + "\n";
-			}
-			message += "Be fast, your time is limited!\n";
-			PubSub.notifyAllClients(players, message);
-			PubSub.notifyAllClients(players, "Player '" + players.get(marketBuyTurn.get(0)).getNickName()
-					+ "' now it's your turn for buying in the Market!");
-			timers.submit(new MarketBuyTurnTimer(marketBuyTurn.get(0), this));
-		}
+		randomPlayerIterator = new RandomPlayerIterator(players);
+		String message = "In order to buy items from the Market, players must respect a random order\n";
+		playerMarketTurn = randomPlayerIterator.next();
+		message += "Player '" + playerMarketTurn.getNickName() + "' it's your turn! Be fast, your time is limited!\n";
+		PubSub.notifyAllClients(players, message);
+		timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
 	}
 
 	public void chat(int playerId, String messageString) {

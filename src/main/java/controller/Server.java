@@ -11,9 +11,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
 /**
  * This class initializes the game engine and the connection among the Clients.
@@ -50,9 +47,18 @@ public class Server {
 	 * MatchHandlers
 	 */
 	private ArrayList<MatchHandler> matches;
+	
+	/**
+	 * The ServerSocket used to accept socket connections from clients
+	 */
 	private ServerSocket welcomeSocket;
 
-	public Server() {
+	/**
+	 * A reference to the instance of the server (Singleton pattern)
+	 */
+	private static Server instance;
+
+	private Server() {
 		thread = Executors.newCachedThreadPool();
 		this.matches = new ArrayList<MatchHandler>();
 		try {
@@ -68,10 +74,25 @@ public class Server {
 		} catch (MalformedURLException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 		} catch (RemoteException e) {
-			ServerOutputPrinter.printLine(e.getMessage());			
+			ServerOutputPrinter.printLine(e.getMessage());
 		} catch (IOException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
 		}
+	}
+
+	/**
+	 * Server implements Singleton pattern, that's why of this static method
+	 * that ALWAYS returns the same instance of the Server. That's made to
+	 * assure that this instance will be unique during the execution of the
+	 * program.
+	 * 
+	 * @return the instance of the server
+	 */
+	public static Server getInstance() {
+		if (instance == null) {
+			instance = new Server();
+		}
+		return instance;
 	}
 
 	public static int getId() {
@@ -86,7 +107,7 @@ public class Server {
 	}
 
 	/**
-	 * This method wait the connection of the Clients and then the different
+	 * This method waits the connection of the Clients and then the different
 	 * Threads handle the different clients.
 	 */
 	private void waitSocketConnection() {

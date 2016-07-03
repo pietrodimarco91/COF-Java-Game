@@ -63,6 +63,11 @@ public class MatchHandler {
 	 * The bonus manager that assigns the bonuses to the players
 	 */
 	private BonusManager bonusManager;
+	
+	/**
+	 * This class handles all the main and quick actions received from players
+	 */
+	private MatchActionsHandler actionsHandler;
 
 	/**
 	 * An ArrayList of players in this MatchHandler.
@@ -198,6 +203,15 @@ public class MatchHandler {
 	public boolean isFull() {
 		return this.players.size() >= this.numberOfPlayers;
 	}
+	
+	/**
+	 * This method allows to know whether the current match is pending or not
+	 * 
+	 * @return true is it currently pending, false otherwise
+	 */
+	public boolean isPending() {
+		return this.gameStatus == GameStatusConstants.WAIT_FOR_PLAYERS;
+	}
 
 	/**
 	 * 
@@ -211,6 +225,10 @@ public class MatchHandler {
 	 */
 	public int getId() {
 		return this.id;
+	}
+	
+	public BonusManager getBonusManager() {
+		return this.bonusManager;
 	}
 
 	/**
@@ -294,8 +312,7 @@ public class MatchHandler {
 		if (this.board.graphIsConnected()) {
 			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
-			bonusManager = new BonusManager(players, board.getNobilityTrack());
-			playerTurnIterator = new PlayerTurnIterator(players);
+			initializeMatchComponents();
 			startTurns();
 		} else {
 			Player player = players.get(playerId);
@@ -309,6 +326,12 @@ public class MatchHandler {
 						+ this.players.get(playerId).getNickName() + "' and ID " + playerId + " disconnected!");
 			}
 		}
+	}
+	
+	public void initializeMatchComponents() {
+		bonusManager = new BonusManager(players, board.getNobilityTrack());
+		playerTurnIterator = new PlayerTurnIterator(players);
+		actionsHandler = new MatchActionsHandler(this, board, players);
 	}
 
 	/**
@@ -422,15 +445,6 @@ public class MatchHandler {
 	}
 
 	/**
-	 * This method allows to know whether the current match is pending or not
-	 * 
-	 * @return true is it currently pending, false otherwise
-	 */
-	public boolean isPending() {
-		return this.gameStatus == GameStatusConstants.WAIT_FOR_PLAYERS;
-	}
-
-	/**
 	 * This method allows to make a player win all the possible bonuses after
 	 * the construction of an emporium
 	 * 
@@ -491,57 +505,6 @@ public class MatchHandler {
 		}
 	}
 
-	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
-		if (players.get(playerId).hasPerformedMainAction()) {
-			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
-			return;
-		}
-		String regionName;
-		ArrayList<String> chosenPoliticCards;
-		int slot;
-		int numberOfCouncillorSatisfied;
-		int playerPayment = 0;
-		Region region;
-		PermitTileDeck regionDeck;
-
-		regionName = buyPermitTileAction.getRegion();
-		chosenPoliticCards = buyPermitTileAction.getPoliticCardColors();
-		slot = buyPermitTileAction.getSlot();
-		region = getRegion(regionName);
-
-		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(chosenPoliticCards);
-		Player player = this.players.get(playerId);
-		try {
-			if (numberOfCouncillorSatisfied > 0)
-				throw new UnsufficientCouncillorsSatisfiedException();
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.removeCardsFromHand(chosenPoliticCards);
-			regionDeck = region.getDeck();
-			player.performPayment(playerPayment);
-			Tile permitTile = regionDeck.drawPermitTile(slot);
-			player.addUnusedPermitTiles(permitTile);
-			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-					+ "' satisfied the Council of the region '" + regionName + "' and bought a Permit Tile");
-			bonusManager.takeBonusFromTile(permitTile, player);
-			player.mainActionDone(true);
-			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(player);
-				player.resetTurn();
-			}
-		} catch (UnsufficientCouncillorsSatisfiedException e) {
-			sendErrorToClient(e.showError(), playerId);
-		} catch (UnsufficientCoinsException e) {
-			for (int i = 0; i < chosenPoliticCards.size(); i++)
-				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
-			sendErrorToClient(e.showError(), playerId);
-		} catch (InvalidSlotException e) {
-			player.addCoins(playerPayment);
-			for (int i = 0; i < chosenPoliticCards.size(); i++)
-				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
-			sendErrorToClient(e.showError(), playerId);
-		}
-	}
-
 	/**
 	 * This method allows a player to draw a Politic Card at the beginning of
 	 * his turn.
@@ -550,284 +513,6 @@ public class MatchHandler {
 		PoliticCard card = PoliticCardDeck.generateRandomPoliticCard();
 		player.addCardOnHand(card);
 		sendMessageToClient("You've drawn a " + card.getColorCard() + " Politic Card", player.getId());
-	}
-
-	/**
-	 * NEEDS IMPLEMENTATION
-	 * 
-	 * @return
-	 * @throws UnsufficientCoinsException
-	 */
-	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId) {
-		if (players.get(playerId).hasPerformedMainAction()) {
-			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
-			return;
-		}
-		String cityName;
-		ArrayList<String> chosenPoliticCards;
-		int numberOfCouncillorSatisfied;
-		int playerPayment = 0;
-		int coinsToPay = 0;
-		Player player = this.players.get(playerId);
-		cityName = kingBuildEmporiumAction.getCityName();
-		chosenPoliticCards = kingBuildEmporiumAction.getPoliticCardColors();
-		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(chosenPoliticCards);
-		try {
-			if (numberOfCouncillorSatisfied == 0)
-				throw new UnsufficientCouncillorsSatisfiedException();
-
-			City cityTo = board.getCityFromName(cityName);
-			City cityFrom = board.findKingCity();
-			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.performPayment(playerPayment + coinsToPay);
-			player.removeCardsFromHand(chosenPoliticCards);
-			if (coinsToPay > 0) {
-				board.moveKing(cityTo);
-			}
-			if (!cityTo.buildEmporium(player))
-				throw new AlreadyOwnedEmporiumException();
-			else {
-				PubSub.notifyAllClients(players, "Player " + player.getNickName() + " has built an Emporium in "
-						+ cityTo.getName() + " with king's help");
-				winBuildingBonuses(cityTo, player);
-				player.mainActionDone(true);
-				if (hasBuiltLastEmporium(player)) {
-					PubSub.notifyAllClients(this.players, "Player " + player.getNickName()
-							+ " has built his last Emporium!!\n This is your last turn!");
-					gameStatus = GameStatusConstants.FINISH;
-					player.addVictoryPoints(3);
-					PubSub.notifyAllClients(this.players,
-							"Player " + player.getNickName() + " has won 3 bonus Victory Points!");
-				}
-				if (player.hasPerformedQuickAction()) {
-					notifyEndOfTurn(player);
-					player.resetTurn();
-				}
-			}
-		} catch (UnsufficientCouncillorsSatisfiedException e) {
-			sendErrorToClient(e.showError(), playerId);
-		} catch (UnsufficientCoinsException e) {
-			sendErrorToClient(e.showError(), playerId);
-		} catch (AlreadyOwnedEmporiumException e) {
-			player.addCoins(playerPayment + coinsToPay);
-			for (int i = 0; i < chosenPoliticCards.size(); i++)
-				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
-			sendErrorToClient(e.showError(), playerId);
-		}
-	}
-
-	/**
-	 * @return
-	 */
-
-	public void performAdditionalMainAction(AdditionalMainAction action, int playerId) {
-		if (players.get(playerId).hasPerformedQuickAction()) {
-			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
-			return;
-		}
-		Player player = players.get(playerId);
-		try {
-			if (player.getNumberOfAssistants() < 3)
-				throw new UnsufficientCoinsException();
-			player.removeMoreAssistants(3);
-			player.mainActionDone(false);
-		} catch (UnsufficientCoinsException e) {
-			sendErrorToClient(e.showError(), playerId);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop untile the move is correctly performed.
-	 * 
-	 * @return
-	 */
-	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
-		if (players.get(playerId).hasPerformedMainAction()) {
-			sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
-			return;
-		}
-		String regionName;
-		String councillorColor;
-		regionName = electCouncillorAction.getRegion();
-		councillorColor = electCouncillorAction.getColor();
-		Player player = this.players.get(playerId);
-		Region region = this.getRegion(regionName);
-		try {
-			region.electCouncillor(councillorColor);
-			player.addCoins(4);
-			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' elected a " + councillorColor
-					+ " Councillor in " + regionName);
-			player.mainActionDone(true);
-			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(player);
-				player.resetTurn();
-			}
-		} catch (CouncillorNotFoundException e) {
-			sendErrorToClient(e.showError(), playerId);
-		}
-
-	}
-
-	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop until the move is correctly performed.
-	 * 
-	 * @return
-	 */
-	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId) {
-		if (players.get(playerId).hasPerformedQuickAction()) {
-			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
-			return;
-		}
-		Player player = this.players.get(playerId);
-		int coins = player.getCoins();
-		try {
-			if (coins < 3)
-				throw new UnsufficientCoinsException();
-			player.performPayment(3);
-			player.addAssistant();
-			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!");
-			player.quickActionDone();
-			if (player.hasPerformedMainAction()) {
-				notifyEndOfTurn(player);
-				player.resetTurn();
-			}
-		} catch (UnsufficientCoinsException e) {
-			sendErrorToClient(e.showError(), playerId);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION: the parameters communication must be implemented inside
-	 * the method.
-	 * 
-	 * @return
-	 */
-
-	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId) {
-		if (players.get(playerId).hasPerformedQuickAction()) {
-			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
-			return;
-		}
-		String regionName;
-		Player player = this.players.get(playerId);
-		regionName = switchPermitTilesAction.getRegionName();
-
-		Region region = this.getRegion(regionName);
-		try {
-			if (player.getNumberOfAssistants() < 1)
-				throw new UnsufficientAssistantNumberException();
-			region.getDeck().switchPermitTiles();
-			player.removeAssistant();
-			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " swhitched Permit Tile in " + regionName + "!");
-			player.quickActionDone();
-			if (player.hasPerformedMainAction()) {
-				notifyEndOfTurn(player);
-				player.resetTurn();
-			}
-		} catch (UnsufficientAssistantNumberException e) {
-			sendErrorToClient(e.showError(), playerId);
-		}
-
-	}
-
-	/**
-	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
-	 * 
-	 * @return
-	 */
-
-	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId) {
-		if (players.get(playerId).hasPerformedMainAction()) {
-			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
-			return;
-		}
-		int permitTileId;
-		String cityName;
-		PermitTile tempPermitTile;
-		Player player = this.players.get(playerId);
-
-		permitTileId = simpleBuildEmporium.getPermitTileID();
-		cityName = simpleBuildEmporium.getCityName();
-		tempPermitTile = (PermitTile) player.getUnusedPermitTileFromId(permitTileId);
-		try {
-			if (!buildEmporium(tempPermitTile, player, cityName))
-				throw new CityNotFoundFromPermitTileException();
-			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " build an Emporium in " + cityName + "!");
-			winBuildingBonuses(board.getCityFromName(cityName), player);
-			player.mainActionDone(true);
-			if (hasBuiltLastEmporium(player)) {
-				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!");
-				gameStatus = GameStatusConstants.FINISH;
-				player.addVictoryPoints(3);
-			}
-			if (player.hasPerformedQuickAction()) {
-				notifyEndOfTurn(player);
-				player.resetTurn();
-			}
-		} catch (CityNotFoundFromPermitTileException e) {
-			sendErrorToClient(e.showError(), playerId);
-		} catch (AlreadyOwnedEmporiumException e) {
-			sendErrorToClient(e.showError(), playerId);
-		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId) {
-		if (players.get(playerId).hasPerformedQuickAction()) {
-			sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
-			return;
-		}
-		String councillorColor = sendAssistantAction.getColor();
-		String regionName = sendAssistantAction.getRegion();
-		Player player = this.players.get(playerId);
-		try {
-			if (player.getNumberOfAssistants() == 0)
-				throw new UnsufficientAssistantNumberException();
-			Region region = this.getRegion(regionName);
-			region.electCouncillor(councillorColor);
-			player.removeAssistant();
-			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " sent an Assistant to elect a "
-					+ councillorColor + "Councillor in " + regionName + "!");
-			player.quickActionDone();
-			if (player.hasPerformedMainAction()) {
-				notifyEndOfTurn(currentPlayer);
-				player.resetTurn();
-			}
-		} catch (UnsufficientAssistantNumberException e) {
-			sendErrorToClient(e.showError(), playerId);
-		} catch (CouncillorNotFoundException e) {
-			sendErrorToClient(e.showError(), playerId);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION: the specified name may be incorrect or invalid.
-	 * Exception?
-	 * 
-	 * @return
-	 */
-	public Region getRegion(String regionName) {
-		boolean regionFound = false;
-		Region region = null;
-		Region regions[] = this.board.getRegions();
-		regionName = regionName.toUpperCase();
-		regionName = regionName.trim();
-		for (int i = 0; i < regions.length && !regionFound; i++) {
-			if (regions[i].getName().equals(regionName)) {
-				regionFound = true;
-				region = regions[i];
-			}
-		}
-		return region;
 	}
 
 	/**
@@ -844,27 +529,6 @@ public class MatchHandler {
 		return allCity.contains(cityChoice);
 	}
 
-	public boolean hasBuiltLastEmporium(Player player) {
-		return player.getNumberOfEmporium() == 0;
-	}
-
-	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice)
-			throws AlreadyOwnedEmporiumException {
-		boolean found = false;
-		List<City> cities = permitTile.getCities();
-		cityChoice = cityChoice.trim();
-		cityChoice = cityChoice.toUpperCase();
-		for (City tempCities : cities) {
-			if (tempCities.getName().equals(cityChoice)) {
-				if (tempCities.buildEmporium(player))
-					found = true;
-				else
-					throw new AlreadyOwnedEmporiumException();
-			}
-		}
-		return found;
-	}
-
 	/**
 	 * This method must understand which action to perform for the specified
 	 * player, depending on the dynamic dispatching of the Action
@@ -872,7 +536,6 @@ public class MatchHandler {
 	 * @param action
 	 * @param playerId
 	 */
-
 	public void evaluateAction(Action action, int playerId) {
 		if (gameStatus != GameStatusConstants.PLAY) {
 			sendErrorToClient("You can't perform an action at the moment!", playerId);
@@ -884,33 +547,187 @@ public class MatchHandler {
 		}
 		if (action instanceof AdditionalMainAction) {
 			AdditionalMainAction mainAction = (AdditionalMainAction) action;
-			this.performAdditionalMainAction(mainAction, playerId);
+			actionsHandler.performAdditionalMainAction(mainAction, playerId);
 		} else if (action instanceof BuyPermitTileAction) {
 			BuyPermitTileAction buyPermitTileAction = (BuyPermitTileAction) action;
-			this.buyPermitTile(buyPermitTileAction, playerId);
+			actionsHandler.buyPermitTile(buyPermitTileAction, playerId);
 		} else if (action instanceof ElectCouncillorAction) {
 			ElectCouncillorAction electConcillorAction = (ElectCouncillorAction) action;
-			this.electCouncillor(electConcillorAction, playerId);
+			actionsHandler.electCouncillor(electConcillorAction, playerId);
 		} else if (action instanceof EngageAssistantAction) {
 			EngageAssistantAction engageAssistanAction = (EngageAssistantAction) action;
-			this.engageAssistant(engageAssistanAction, playerId);
+			actionsHandler.engageAssistant(engageAssistanAction, playerId);
 		} else if (action instanceof KingBuildEmporiumAction) {
 			KingBuildEmporiumAction kingBuildEmporiumAction = (KingBuildEmporiumAction) action;
-			this.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
+			actionsHandler.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
 		} else if (action instanceof SendAssistantAction) {
 			SendAssistantAction sendAssistantAction = (SendAssistantAction) action;
-			this.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
+			actionsHandler.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
 		} else if (action instanceof SimpleBuildEmporiumAction) {
 			SimpleBuildEmporiumAction simpleBuildEmporium = (SimpleBuildEmporiumAction) action;
-			this.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
+			actionsHandler.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
 		} else if (action instanceof SwitchPermitTilesAction) {
 			SwitchPermitTilesAction switchPermitTilesAction = (SwitchPermitTilesAction) action;
-			this.switchPermitTile(switchPermitTilesAction, playerId);
+			actionsHandler.switchPermitTile(switchPermitTilesAction, playerId);
 		}
+	}
+	
+	private void notifyMatchWinner() {
+		List<Player> playersInDraw = new ArrayList<>();
+		Player winner = null;
+		int maxVictoryPoints = 0, maxAssistants = 0, maxPoliticCardsInHand = 0;
 
+		assignFinalPermitTilePoints();
+		assignFinalNobilityTrackPoints();
+
+		for (Player player : players) {
+			if (player.getVictoryPoints() > maxVictoryPoints) {
+				maxVictoryPoints = player.getVictoryPoints();
+				winner = player;
+				playersInDraw.clear();
+			} else if (player.getVictoryPoints() == maxVictoryPoints) {
+				if (!playersInDraw.contains(winner))
+					playersInDraw.add(winner);
+				playersInDraw.add(player);
+			}
+		}
+		if (playersInDraw.isEmpty() && winner != null)
+			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!");
+		else {
+			for (Player player : playersInDraw) {
+				if (player.getPoliticCards().size() + player.getNumberOfAssistants() > maxAssistants
+						+ maxPoliticCardsInHand) {
+					winner = player;
+					maxPoliticCardsInHand = player.getPoliticCards().size();
+					maxAssistants = player.getNumberOfAssistants();
+				}
+			}
+			if (winner != null)
+				PubSub.notifyAllClients(this.players,
+						"Player " + winner.getNickName() + " is the winner of the Match!");
+		}
 	}
 
-	public void messageFromClient(String messageString, int playerId) {
+	public void assignFinalNobilityTrackPoints() {
+		NobilityTrack nobilityTrack = board.getNobilityTrack();
+		List<Player> playersInFirstPosition = new ArrayList<>();
+		List<Player> playersInSecondPosition = new ArrayList<>();
+		for (Player player : players) {
+			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength()) {
+				playersInFirstPosition.add(player);
+			}
+			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength() - 1) {
+				playersInSecondPosition.add(player);
+			}
+		}
+		if (playersInFirstPosition.size() == 1) {
+			playersInFirstPosition.get(0).addVictoryPoints(5);
+			if (playersInSecondPosition.size() == 1)
+				playersInSecondPosition.get(0).addVictoryPoints(2);
+			else {
+				for (Player player : playersInSecondPosition) {
+					player.addVictoryPoints(2);
+				}
+			}
+		} else {
+			for (Player player : playersInFirstPosition)
+				player.addVictoryPoints(5);
+		}
+	}
+
+	public void assignFinalPermitTilePoints() {
+		Iterator<Player> iterator = players.iterator();
+		Player player, tempWinner = null;
+		int maxNumberOfPermitTile = 0;
+		while (iterator.hasNext()) {
+			player = iterator.next();
+			if (player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile() > maxNumberOfPermitTile) {
+				maxNumberOfPermitTile = player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile();
+				tempWinner = player;
+			}
+		}
+		if (tempWinner != null)
+			tempWinner.addVictoryPoints(3);
+	}
+	
+	public void notifyEndOfTurn(Player player) {
+		if (player == currentPlayer) {
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.");
+			nextTurn();
+		}
+	}
+
+	public void startTurns() {
+		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
+		if (!currentPlayer.playerIsOffline()) {
+			PubSub.notifyAllClients(players,
+					"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
+			drawPoliticCard(currentPlayer);
+			timers.submit(new TurnTimerThread(this, currentPlayer));
+		} else
+			nextTurn();
+	}
+
+	public void nextTurn() {
+		if (playerTurnIterator.isLastPlayer(currentPlayer)) {
+			if (GameStatusConstants.FINISH == gameStatus) {
+				PubSub.notifyAllClients(this.players, "Turns are over!");
+				notifyMatchWinner();
+				return;
+			}
+			currentPlayer = playerTurnIterator.next();
+			startMarketSellTime();
+		} else {
+			currentPlayer = playerTurnIterator.next();
+			if (!currentPlayer.playerIsOffline()) {
+				PubSub.notifyAllClients(players,
+						"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
+				drawPoliticCard(currentPlayer);
+				timers.submit(new TurnTimerThread(this, currentPlayer));
+			} else
+				nextTurn();
+		}
+	}
+	
+	private void startMarketSellTime() {
+		gameStatus = GameStatusConstants.MARKET_SELL;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
+		sendMarketStatus();
+		timers.submit(new MarketTimerThread(this, numberOfPlayers));
+	}
+
+	/**
+	 * This method is invoked only and exclusively when the timer for buying in
+	 * the market for a specified player is over. A new timer for the next
+	 * player will be initialized
+	 * 
+	 * @param playerId
+	 *            the current player in the marketBuyTurn array list
+	 */
+	public void nextMarketBuyTurn(Player player) {
+		if (playerMarketTurn == player) {
+			if (!randomPlayerIterator.hasNext()) {
+				playerMarketTurn=null;
+				return;
+			}
+			playerMarketTurn = randomPlayerIterator.next();
+			PubSub.notifyAllClients(players,
+					"Player '" + player.getNickName() + "' your turn for buying in the Market is over!");
+			PubSub.notifyAllClients(players,
+					"Player '" + playerMarketTurn.getNickName() + "' now it's your turn for buying in the Market!");
+			timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
+		}
+	}
+
+	public void startMarketBuyTime() {
+		this.gameStatus = GameStatusConstants.MARKET_BUY;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
+		randomPlayerIterator = new RandomPlayerIterator(players);
+		String message = "In order to buy items from the Market, players must respect a random order\n";
+		playerMarketTurn = randomPlayerIterator.next();
+		message += "Player '" + playerMarketTurn.getNickName() + "' it's your turn! Be fast, your time is limited!\n";
+		PubSub.notifyAllClients(players, message);
+		timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
 	}
 
 	public void buyEvent(MarketEvent marketEvent, int playerId) {
@@ -1068,164 +885,6 @@ public class MatchHandler {
 		this.players.get(playerId).setPlayerNickName(nickName);
 	}
 
-	public void notifyEndOfTurn(Player player) {
-		if (player == currentPlayer) {
-			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.");
-			nextTurn();
-		}
-	}
-
-	public void startTurns() {
-		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
-		if (!currentPlayer.playerIsOffline()) {
-			PubSub.notifyAllClients(players,
-					"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
-			drawPoliticCard(currentPlayer);
-			timers.submit(new TurnTimerThread(this, currentPlayer));
-		} else
-			nextTurn();
-	}
-
-	public void nextTurn() {
-		if (playerTurnIterator.isLastPlayer(currentPlayer)) {
-			if (GameStatusConstants.FINISH == gameStatus) {
-				PubSub.notifyAllClients(this.players, "Turns are over!");
-				notifyMatchWinner();
-				return;
-			}
-			currentPlayer = playerTurnIterator.next();
-			startMarketSellTime();
-		} else {
-			currentPlayer = playerTurnIterator.next();
-			if (!currentPlayer.playerIsOffline()) {
-				PubSub.notifyAllClients(players,
-						"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
-				drawPoliticCard(currentPlayer);
-				timers.submit(new TurnTimerThread(this, currentPlayer));
-			} else
-				nextTurn();
-		}
-	}
-
-	private void notifyMatchWinner() {
-		List<Player> playersInDraw = new ArrayList<>();
-		Player winner = null;
-		int maxVictoryPoints = 0, maxAssistants = 0, maxPoliticCardsInHand = 0;
-
-		assignFinalPermitTilePoints();
-		assignFinalNobilityTrackPoints();
-
-		for (Player player : players) {
-			if (player.getVictoryPoints() > maxVictoryPoints) {
-				maxVictoryPoints = player.getVictoryPoints();
-				winner = player;
-				playersInDraw.clear();
-			} else if (player.getVictoryPoints() == maxVictoryPoints) {
-				if (!playersInDraw.contains(winner))
-					playersInDraw.add(winner);
-				playersInDraw.add(player);
-			}
-		}
-		if (playersInDraw.isEmpty() && winner != null)
-			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!");
-		else {
-			for (Player player : playersInDraw) {
-				if (player.getPoliticCards().size() + player.getNumberOfAssistants() > maxAssistants
-						+ maxPoliticCardsInHand) {
-					winner = player;
-					maxPoliticCardsInHand = player.getPoliticCards().size();
-					maxAssistants = player.getNumberOfAssistants();
-				}
-			}
-			if (winner != null)
-				PubSub.notifyAllClients(this.players,
-						"Player " + winner.getNickName() + " is the winner of the Match!");
-		}
-	}
-
-	public void assignFinalNobilityTrackPoints() {
-		NobilityTrack nobilityTrack = board.getNobilityTrack();
-		List<Player> playersInFirstPosition = new ArrayList<>();
-		List<Player> playersInSecondPosition = new ArrayList<>();
-		for (Player player : players) {
-			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength()) {
-				playersInFirstPosition.add(player);
-			}
-			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength() - 1) {
-				playersInSecondPosition.add(player);
-			}
-		}
-		if (playersInFirstPosition.size() == 1) {
-			playersInFirstPosition.get(0).addVictoryPoints(5);
-			if (playersInSecondPosition.size() == 1)
-				playersInSecondPosition.get(0).addVictoryPoints(2);
-			else {
-				for (Player player : playersInSecondPosition) {
-					player.addVictoryPoints(2);
-				}
-			}
-		} else {
-			for (Player player : playersInFirstPosition)
-				player.addVictoryPoints(5);
-		}
-	}
-
-	public void assignFinalPermitTilePoints() {
-		Iterator<Player> iterator = players.iterator();
-		Player player, tempWinner = null;
-		int maxNumberOfPermitTile = 0;
-		while (iterator.hasNext()) {
-			player = iterator.next();
-			if (player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile() > maxNumberOfPermitTile) {
-				maxNumberOfPermitTile = player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile();
-				tempWinner = player;
-			}
-		}
-		if (tempWinner != null)
-			tempWinner.addVictoryPoints(3);
-	}
-
-	private void startMarketSellTime() {
-		gameStatus = GameStatusConstants.MARKET_SELL;
-		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
-		sendMarketStatus();
-		timers.submit(new MarketTimerThread(this, numberOfPlayers));
-	}
-
-	/**
-	 * This method is invoked only and exclusively when the timer for buying in
-	 * the market for a specified player is over. A new timer for the next
-	 * player will be initialized
-	 * 
-	 * @param playerId
-	 *            the current player in the marketBuyTurn array list
-	 */
-	public void nextMarketBuyTurn(Player player) {
-		if (!randomPlayerIterator.hasNext()) {
-			playerMarketTurn=null;
-			return;
-		}
-		if (playerMarketTurn == player) {
-			playerMarketTurn = randomPlayerIterator.next();
-			PubSub.notifyAllClients(players,
-					"Player '" + player.getNickName() + "' your turn for buying in the Market is over!");
-			PubSub.notifyAllClients(players,
-					"Player '" + playerMarketTurn.getNickName() + "' now it's your turn for buying in the Market!");
-			timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
-		}
-	}
-
-	public void startMarketBuyTime() {
-		this.gameStatus = GameStatusConstants.MARKET_BUY;
-		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
-		randomPlayerIterator = new RandomPlayerIterator(players);
-		String message = "In order to buy items from the Market, players must respect a random order\n";
-		playerMarketTurn = randomPlayerIterator.next();
-		message += "Player '" + playerMarketTurn.getNickName() + "' it's your turn! Be fast, your time is limited!\n";
-		PubSub.notifyAllClients(players, message);
-		timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
-	}
-
 	public void chat(int playerId, String messageString) {
 		PubSub.chatMessage(playerId, players, messageString);
 	}
@@ -1233,5 +892,8 @@ public class MatchHandler {
 	public void setPlayerOffline(int playerId) {
 		Player player = this.players.get(playerId);
 		player.setPlayerOffline();
+	}
+	
+	public void messageFromClient(String messageString, int playerId) {
 	}
 }

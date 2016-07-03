@@ -141,7 +141,7 @@ public class Player {
 	}
 
 	/**
-	 * This constructor is realized only for test purposes.
+	 * 	IMPORTANT! This constructor is realized only for test purposes.
 	 */
 	public Player(int id) {
 		Random random = new Random();
@@ -154,6 +154,7 @@ public class Player {
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+		this.disconnected=true;
 	}
 
 	public String getNickName() {

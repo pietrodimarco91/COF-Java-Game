@@ -32,5 +32,10 @@ public class PoliticCard {
 		return this.color;
 	}
 	
+	@Override
+	public String toString() {
+		return this.color;
+	}
+	
 	
 }

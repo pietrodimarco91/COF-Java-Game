@@ -133,6 +133,7 @@ public class Player {
 		this.positionInNobilityTrack = INITIAL_POSITION;
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
+		this.emporiums=10;
 		this.connector = connector;
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = INITIAL_POSITION;
@@ -153,6 +154,7 @@ public class Player {
 		this.usedPermitTiles = new ArrayList<Tile>();
 		this.unusedPermitTiles = new ArrayList<Tile>();
 		this.controlledCities = new ArrayList<City>();
+		this.emporiums=10;
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
@@ -296,10 +298,9 @@ public class Player {
 	 */
 	public void removeCardsFromHand(ArrayList<String> cardsChose) {
 		boolean cardFound;
-		int j;
 		for (int i = 0; i < cardsChose.size(); i++) {
 			cardFound = false;
-			for (j = 0; j < this.politicCards.size() && !cardFound; j++) {
+			for (int j = 0; j < this.politicCards.size() && !cardFound; j++) {
 				if (this.politicCards.get(j).getColorCard().equals(cardsChose.get(i))) {
 					this.politicCards.remove(j);
 					cardFound = true;
@@ -491,6 +492,10 @@ public class Player {
 	public void fromUnusedToUsedPermitTile(PermitTile permitTile) {
 		this.unusedPermitTiles.remove(permitTile);
 		this.usedPermitTiles.add(permitTile);
+	}
+	
+	public void hasBuiltAnEmporium() {
+		this.emporiums--;
 	}
 
 	/**

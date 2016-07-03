@@ -244,6 +244,14 @@ public class MatchHandler {
 		Player player = new Player(connector, id, nickName);
 		this.players.add(player);
 	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes, as the original one requires connection components.
+	 * @param id the player id
+	 */
+	public void addPlayer(int id) {
+		this.players.add(new Player(id));
+	}
 
 	public void setConfigObject(ConfigObject config, int playerId) {
 		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {

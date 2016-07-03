@@ -171,6 +171,7 @@ public class City {
 		} else {
 			Emporium emporium = new Emporium(owner, cityName);
 			emporiums.add(emporium);
+			owner.hasBuiltAnEmporium();
 			return true;
 		}
 	}

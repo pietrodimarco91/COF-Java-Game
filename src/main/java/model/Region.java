@@ -170,6 +170,10 @@ public class Region {
 	public String getName() {
 		return this.name;
 	}
+	
+	public Council getCountil() {
+		return this.council;
+	}
 
 	/**
 	 * ToString method

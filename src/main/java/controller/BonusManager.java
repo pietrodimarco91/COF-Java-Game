@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import exceptions.TileNotFoundException;
 import model.City;
 import model.NobilityCell;
 import model.NobilityTrack;
@@ -114,37 +115,38 @@ public class BonusManager {
 						"Player with nickname '" + player.getNickName() + "' won a bonus and draw a Permit tile!");
 				break;
 			case "BONUSPERMITTILE":
-				int randomPermitTile;
 				infLimit = 1;
 				supLimit = 2 - infLimit;
 				Tile tempTile;
+				String deck = "";
 				int deckPermitTileChoice = randomBonus.nextInt(supLimit) + infLimit;
-				if (deckPermitTileChoice == 1) {
-					infLimit = 0;
-					supLimit = player.getNumberOfUsedPermitTile() - 1;
-					randomPermitTile = randomBonus.nextInt(supLimit) + infLimit;
-					tempTile = player.getUsedPermitTile(randomPermitTile);
-				} else {
-					infLimit = 0;
-					supLimit = player.getNumberOfPermitTile() - 1;
-					randomPermitTile = randomBonus.nextInt(supLimit) + infLimit;
-					tempTile = player.getUnusedPermitTileFromId(randomPermitTile);
+				try {
+					if (deckPermitTileChoice == 1) {
+						deck = "USED PERMIT TILES DECK";
+						tempTile = player.getRandomUsedPermitTile();
+					} else {
+						deck = "UNUSED PERMIT TILES DECK";
+						tempTile = player.getRandomUnusedPermitTile();
+					}
+					PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
+							+ "' won a bonus and now can re-use bonus on a permit tile");
+					useBonus(tempTile.getBonus(), player);
+				} catch (TileNotFoundException e) {
+					PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
+							+ "' won the BONUSPERMITTILE but he hasn't got Permit Tiles in his " + deck);
 				}
-				PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
-						+ "' won a bonus and now can re-use bonus on a permit tile");
-				useBonus(tempTile.getBonus(), player);
 				break;
 			case "TWOEMPORIUMCITY":
 				City tempCity;
-				if (player.getNumberoOfControlledCities() >= 2) {
-					supLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
+				if (player.getNumberOfControlledCities() >= 2) {
+					supLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 					tempCity = player.getSingleControlledCity(supLimit);
-					int secondSupLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
+					int secondSupLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 					while (supLimit == secondSupLimit)
-						secondSupLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
+						secondSupLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 					tempCity = player.getSingleControlledCity(supLimit);
 				} else {
-					supLimit = randomBonus.nextInt(player.getNumberoOfControlledCities() - 1);
+					supLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 					tempCity = player.getSingleControlledCity(supLimit);
 				}
 				PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()

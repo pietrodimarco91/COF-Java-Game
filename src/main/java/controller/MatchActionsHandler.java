@@ -15,6 +15,7 @@ import exceptions.AlreadyOwnedEmporiumException;
 import exceptions.CityNotFoundFromPermitTileException;
 import exceptions.CouncillorNotFoundException;
 import exceptions.InvalidSlotException;
+import exceptions.TileNotFoundException;
 import exceptions.UnsufficientAssistantNumberException;
 import exceptions.UnsufficientCoinsException;
 import exceptions.UnsufficientCouncillorsSatisfiedException;
@@ -286,12 +287,13 @@ public class MatchActionsHandler {
 
 		permitTileId = simpleBuildEmporium.getPermitTileID();
 		cityName = simpleBuildEmporium.getCityName();
-		tempPermitTile = (PermitTile) player.getUnusedPermitTileFromId(permitTileId);
 		try {
+			tempPermitTile = (PermitTile) player.getUnusedPermitTileFromId(permitTileId);
 			if (!buildEmporium(tempPermitTile, player, cityName))
 				throw new CityNotFoundFromPermitTileException();
 			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " build an Emporium in " + cityName + "!");
+					"Player " + player.getNickName() + " has built an Emporium in " + cityName + "!");
+			player.fromUnusedToUsedPermitTile(tempPermitTile);
 			match.winBuildingBonuses(board.getCityFromName(cityName), player);
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
@@ -307,6 +309,8 @@ public class MatchActionsHandler {
 		} catch (CityNotFoundFromPermitTileException e) {
 			match.sendErrorToClient(e.showError(), playerId);
 		} catch (AlreadyOwnedEmporiumException e) {
+			match.sendErrorToClient(e.showError(), playerId);
+		} catch (TileNotFoundException e) {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}

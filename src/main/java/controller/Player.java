@@ -144,6 +144,8 @@ public class Player {
 	 * 	IMPORTANT! This constructor is realized only for test purposes.
 	 */
 	public Player(int id) {
+		mainActionsLeft = 1;
+		hasPerformedQuickAction = false;
 		Random random = new Random();
 		this.id = id;
 		this.coins = INITIAL_COINS + id;
@@ -172,61 +174,33 @@ public class Player {
 	public String getColor() {
 		return this.color;
 	}
-
-	/**
-	 * @return
-	 */
-	public String getUserName() {
-		// TODO implement here
-		return "";
+	
+	public Tile getRandomUsedPermitTile() throws TileNotFoundException {
+		if(usedPermitTiles.size()==0)
+			throw new TileNotFoundException();
+		Random random = new Random();
+		return usedPermitTiles.get(random.nextInt(usedPermitTiles.size()));
+	}
+	
+	public Tile getRandomUnusedPermitTile() throws TileNotFoundException {
+		if(unusedPermitTiles.size()==0)
+			throw new TileNotFoundException();
+		Random random = new Random();
+		return unusedPermitTiles.get(random.nextInt(unusedPermitTiles.size()));
 	}
 
 	/**
 	 * @return
 	 */
-	public String getPassword() {
-		// TODO implement here
-		return "";
-	}
-
-	/**
-	 * @return
-	 */
-	public int getMatchesWon() {
-		// TODO implement here
-		return 0;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getRageQuits() {
-
-		return 0;
-	}
-
-	/**
-	 * @return
-	 */
-	public Tile getUnusedPermitTileFromId(int permitTileId) {
-		boolean find = false;
-		Tile returnTile = null;
-		PermitTile tempTile = null;
-		for (int i = 0; i < this.unusedPermitTiles.size() && !find; i++) {
+	public Tile getUnusedPermitTileFromId(int permitTileId) throws TileNotFoundException {
+		PermitTile tempTile;
+		for (int i = 0; i < this.unusedPermitTiles.size(); i++) {
 			tempTile = (PermitTile) this.unusedPermitTiles.get(i);
 			if (tempTile.getId() == permitTileId) {
-				returnTile = this.unusedPermitTiles.get(i);
-				find = true;
+				return this.unusedPermitTiles.get(i);
 			}
 		}
-		return returnTile;
-	}
-
-	/**
-	 * 
-	 */
-	public Tile getUsedPermitTile(int choiche) {
-		return this.getUsedPermitTile(choiche);
+		throw new TileNotFoundException();
 	}
 
 	/**
@@ -302,17 +276,6 @@ public class Player {
 	 * 
 	 * @return true if the color is correct, false otherwise
 	 */
-	public boolean checkExistingColor(String colorCard) {
-		colorCard = colorCard.toUpperCase();
-		colorCard = colorCard.trim();
-		ArrayList<String> allColorsCards;
-		allColorsCards = CouncillorColors.getPoliticCardsColors();
-		for (String color : allColorsCards) {
-			if (color.equals(colorCard))
-				return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Checks whether the player owns a PoliticCard of the specified color or
@@ -436,13 +399,6 @@ public class Player {
 	}
 
 	/**
-	 * @return set the initial coins of one player
-	 */
-	public int setInitialCoins(int turnNumber) {
-		return INITIAL_COINS + turnNumber;
-	}
-
-	/**
 	 * 
 	 */
 	public void changePositionInNobilityTrack(int position) {
@@ -469,7 +425,7 @@ public class Player {
 	/**
 	 * 
 	 */
-	public int getNumberoOfControlledCities() {
+	public int getNumberOfControlledCities() {
 		return this.controlledCities.size();
 	}
 
@@ -532,55 +488,7 @@ public class Player {
 	/**
 	 * @return
 	 */
-	public String showPermitTileCards() {
-		String permitTile = "";
-		if (this.unusedPermitTiles.size() == 0)
-			permitTile += "You don't have got any Permit Tile unused";
-		else {
-			int i = 0;
-			for (Tile tile : this.unusedPermitTiles) {
-				permitTile += i + ")" + " " + tile.toString() + "\n";
-				i++;
-			}
-		}
-		return permitTile;
-	}
-
-	/**
-	 * @return
-	 */
-	public String showUsedPermitTileCards() {
-		String permitTile = "";
-		if (this.usedPermitTiles.size() == 0)
-			permitTile += "You don't have got any Permit Tile used";
-		else {
-			int i = 0;
-			for (Tile tile : this.usedPermitTiles) {
-				permitTile += i + ")" + " " + tile.toString() + "\n";
-				i++;
-			}
-		}
-		return permitTile;
-	}
-
-	/**
-	 * @return
-	 */
-	public String showPoliticCards() {
-		String politicCards = "";
-		if (this.politicCards.size() == 0)
-			politicCards += "You don't have got any Politic Card";
-		else {
-			for (PoliticCard tempPoliticCard : this.politicCards)
-				politicCards += tempPoliticCard.getColorCard() + " ";
-		}
-		return politicCards;
-	}
-
-	/**
-	 * @return
-	 */
-	public void fromUnusedToUsedPermitTile(Player player, PermitTile permitTile) {
+	public void fromUnusedToUsedPermitTile(PermitTile permitTile) {
 		this.unusedPermitTiles.remove(permitTile);
 		this.usedPermitTiles.add(permitTile);
 	}

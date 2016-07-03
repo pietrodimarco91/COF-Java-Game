@@ -27,6 +27,11 @@ import model.PoliticCard;
 import model.Region;
 import model.Tile;
 
+/**
+ * This class has all the method used to perform the actions of the game.
+ * @author Riccardo
+ *
+ */
 public class MatchActionsHandler {
 
 	private Board board;
@@ -62,7 +67,7 @@ public class MatchActionsHandler {
 		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		Player player = this.players.get(playerId);
 		try {
-			if (numberOfCouncillorSatisfied > 0)
+			if (numberOfCouncillorSatisfied == 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
 			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
 			player.removeCardsFromHand(chosenPoliticCards);

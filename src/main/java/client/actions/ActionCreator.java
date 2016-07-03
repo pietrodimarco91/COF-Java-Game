@@ -38,6 +38,7 @@ public class ActionCreator {
 			case 4:
 				createKingBuildEmporium(type);
 				break;
+			default:
 			}
 		} else {
 			switch (id) {
@@ -53,6 +54,7 @@ public class ActionCreator {
 			case 4:
 				createAdditionalMainAction(type);
 				break;
+			default:
 			}
 		}
 	}

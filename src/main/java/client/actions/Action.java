@@ -33,6 +33,7 @@ public abstract class Action implements Serializable {
 		return this.typeOfAction;
 	}
 	
+	@Override
 	public String toString() {
 		String string="";
 		string+="Type of action: "+typeOfAction+"\n";

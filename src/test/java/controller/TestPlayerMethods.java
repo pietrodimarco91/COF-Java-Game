@@ -44,7 +44,7 @@ public class TestPlayerMethods {
 		assertEquals(3,player.getPoliticCards().size());
 		player.changePositionInNobilityTrack(5);
 		assertEquals(5,player.getPositionInNobilityTrack());
-		assertEquals(0,player.getNumberOfEmporium());
+		assertEquals(10,player.getNumberOfEmporium());
 		assertEquals(0,player.getNumberOfControlledCities());
 		player.mainActionDone(true);
 		assertTrue(player.hasPerformedMainAction());

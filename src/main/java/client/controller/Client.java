@@ -20,9 +20,8 @@ public class Client {
 	 */
 	public Client() {
 		controller = chooseController();
-		start();
 	}
-	
+
 	public void start() {
 		controller.welcome();
 		try {
@@ -41,11 +40,13 @@ public class Client {
 		while (!proceed) {
 			try {
 				String choice = input.nextLine();
-				if (choice.equals("cli"))
+				if (choice.equals("cli")) {
+					proceed = true;
 					return new ClientCLIController();
-				else if (choice.equals("gui"))
+				} else if (choice.equals("gui")) {
+					proceed = true;
 					return new ClientGUIController();
-				else
+				} else
 					throw new InvalidInputException();
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());

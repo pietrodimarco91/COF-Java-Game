@@ -15,15 +15,15 @@ import java.util.Scanner;
 public class ActionCreator {
 
 	private Scanner input;
+	
 	private ServerSideConnectorInt actionSenderInt;
 
-	public ActionCreator(String type, int num, ServerSideConnectorInt actionSenderInt) {
+	public ActionCreator() {
 		input = new Scanner(System.in);
-		this.actionSenderInt = actionSenderInt;
-		createAction(type, num);
 	}
 
-	public void createAction(String type, int id) {
+	public void createAction(String type, int id, ServerSideConnectorInt actionSenderInt) {
+		this.actionSenderInt=actionSenderInt;
 		if ("MAIN".equals(type)) {
 			switch (id) {
 			case 1:

@@ -8,7 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ServerSideConnector extends UnicastRemoteObject implements ServerSideConnectorInt {
 
-	private MatchHandler matchHandler;
+	private transient MatchHandler matchHandler;
 	private int playerId;
 
 	public ServerSideConnector() throws RemoteException {

@@ -21,7 +21,7 @@ public class RMIConnection extends UnicastRemoteObject implements RMIConnectionI
 	 * These threads are used by Server to handle the different connections
 	 * coming from the Clients
 	 */
-	private ExecutorService thread;
+	private transient ExecutorService thread;
 
 	public RMIConnection(ArrayList<MatchHandler> matches, ExecutorService thread) throws RemoteException {
 		this.matches = matches;

@@ -156,7 +156,7 @@ public class Player {
 		initializeFirstHand();// Distributes the first hand of politic cards
 		this.victoryPoints = 0;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
-		this.disconnected=true;
+		this.disconnected=false;
 	}
 
 	public String getNickName() {

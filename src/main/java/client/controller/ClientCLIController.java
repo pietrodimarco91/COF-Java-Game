@@ -27,10 +27,12 @@ public class ClientCLIController extends ClientController {
 	private static final Logger logger = Logger.getLogger(ClientCLIController.class.getName());
 	private Scanner input;
 	private String nickName;
+	private ActionCreator actionCreator;
 
 	public ClientCLIController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		input = new Scanner(System.in);
+		actionCreator = new ActionCreator();
 	}
 	
 	public void welcome() {
@@ -157,7 +159,7 @@ public class ClientCLIController extends ClientController {
 			try {
 				num = verifyActionID(id);
 				proceed = true;
-				new ActionCreator(type, num, super.getServerConnector());
+				actionCreator.createAction(type, num, super.getServerConnector());
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			} catch (NumberFormatException e) {

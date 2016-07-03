@@ -94,12 +94,12 @@ public class ConfigFileManager {
 	 * @return the current number of existing configurations
 	 */
 	public int getCurrentNumberOfConfigurations() {
-		if(!file.exists())
+		if (!file.exists())
 			return 0;
 		ArrayList<ConfigObject> configurations = getConfigurations();
-		if(configurations.isEmpty())
+		if (configurations.isEmpty())
 			return 0;
-		ConfigObject lastConfig = configurations.get(configurations.size()-1);
+		ConfigObject lastConfig = configurations.get(configurations.size() - 1);
 		return lastConfig.getId();
 	}
 

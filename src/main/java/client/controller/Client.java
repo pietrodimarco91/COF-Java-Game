@@ -35,6 +35,7 @@ public class Client {
 
 	private ClientController chooseController() {
 		boolean proceed = false;
+		ClientController controller=null;
 		ClientOutputPrinter.printLine(
 				"Please, type 'gui' if you want to play with Graphical User Interface or 'cli' if you want to play from Command Line...");
 		while (!proceed) {
@@ -42,16 +43,16 @@ public class Client {
 				String choice = input.nextLine();
 				if (choice.equals("cli")) {
 					proceed = true;
-					return new ClientCLIController();
+					controller = new ClientCLIController();
 				} else if (choice.equals("gui")) {
 					proceed = true;
-					return new ClientGUIController();
+					controller = new ClientGUIController();
 				} else
 					throw new InvalidInputException();
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}
 		}
-		return null;
+		return controller;
 	}
 }

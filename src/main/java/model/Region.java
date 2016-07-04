@@ -80,11 +80,11 @@ public class Region {
 	 *            of the player
 	 * @return number of councillors satisfied
 	 */
-	public int numberOfCouncillorsSatisfied(ArrayList<String> politicCards) {
+	public ArrayList<String> numberOfCouncillorsSatisfied(ArrayList<String> politicCards) {
 		Iterator<Councillor> iterationCouncillors = this.council.getCouncillors().iterator();
 		Councillor councillor;
-		int numberOfCouncillorsSatisfied = 0;
 		ArrayList<String> tempArrayList = new ArrayList<String>(politicCards);
+		ArrayList<String> cardSatisfied = new ArrayList<String>();
 		while (iterationCouncillors.hasNext()) {
 			boolean councillorsSatisfied = false;
 			councillor = iterationCouncillors.next();
@@ -92,28 +92,22 @@ public class Region {
 			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
 				if (councillor.getColor().equals(tempArrayList.get(i))) {
 					councillorsSatisfied = true;
+					cardSatisfied.add(tempArrayList.get(i));
 					tempArrayList.remove(i);
-					numberOfCouncillorsSatisfied++;
 				}
 
 			}
 
 		}
 
-		if (numberOfCouncillorsSatisfied < 4) {
-			int numberOfMulticolorCard = 0;
+		if (cardSatisfied.size() < 4) {
 			for (int i = 0; i < tempArrayList.size(); i++) {
 				if (tempArrayList.get(i).equals("MULTICOLOR"))
-					numberOfMulticolorCard++;
+					cardSatisfied.add("MULTICOLOR");
 			}
-			if ((numberOfCouncillorsSatisfied + numberOfMulticolorCard) < 4)
-				return numberOfCouncillorsSatisfied + numberOfMulticolorCard;
-			else
-				return 4;
 		}
 
-		else
-			return numberOfCouncillorsSatisfied;
+		return cardSatisfied;
 	}
 
 	/**
@@ -122,10 +116,10 @@ public class Region {
 	 * 
 	 */
 	public Tile winRegionBonus(Player owner) throws NoMoreBonusException {
-		if(this.regionBonus==null)
+		if (this.regionBonus == null)
 			throw new NoMoreBonusException("REGION BONUS");
 		Tile wonTile = regionBonus;
-		regionBonus=null;
+		regionBonus = null;
 		return wonTile;
 	}
 
@@ -170,7 +164,7 @@ public class Region {
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public Council getCouncil() {
 		return this.council;
 	}

@@ -337,7 +337,7 @@ public class MatchHandler {
 	}
 	
 	public void initializeMatchComponents() {
-		bonusManager = new BonusManager(players, board.getNobilityTrack());
+		bonusManager = new BonusManager(players, board);
 		playerTurnIterator = new PlayerTurnIterator(players);
 		actionsHandler = new MatchActionsHandler(this, board, players);
 	}

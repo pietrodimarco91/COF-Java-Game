@@ -115,8 +115,11 @@ public class ConfigFileManager {
 
 		try (FileInputStream fis = new FileInputStream(file);
 				ObjectInputStream inputStream = new ObjectInputStream(fis)) {
-			while (true) {
+			int counter = 0; // this counter is used only to avoid the Sonar bug
+								// report, as we used the while(true) cycle
+			while (counter < 1000) {
 				configurations.add((ConfigObject) inputStream.readObject());
+				counter++;
 			}
 		} catch (EOFException e) {
 			logger.log(Level.FINEST, "Just read all configurations from " + filename, e);

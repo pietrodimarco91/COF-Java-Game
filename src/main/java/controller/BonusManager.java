@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import exceptions.InvalidSlotException;
 import exceptions.TileNotFoundException;
 import model.Board;
 import model.City;
 import model.NobilityCell;
 import model.NobilityTrack;
 import model.PoliticCard;
+import model.Region;
 import model.Tile;
+import server.view.cli.ServerOutputPrinter;
 
 /**
  * Created by Gabriele Bressan on 31/05/16.
@@ -86,21 +89,13 @@ public class BonusManager {
 			case "NOBILITYTRACK":
 				nobilityTrackBonus(bonus, player);
 				break;
-			case "DRAWPERMITTILE": // WRONG IMPLEMENTATION!!!
-				/*
-				 * player.addCardOnHand(new PoliticCard());
-				 * PubSub.notifyAllClients(this.players,
-				 * "Player with nickname '" + player.getNickName() +
-				 * "' won a bonus and draw a Permit tile!");
-				 */
+			case "DRAWPERMITTILE":
+				drawPermitTile(player);
 				break;
 			case "BONUSPERMITTILE":
 				bonusPermitTile(bonus, player);
 				break;
-			case "TWOEMPORIUMCITY": // Must be checked: Riccardo added the first
-									// two lines of code to avoid errors if the
-									// number of controlled cities is == 0
-									// I don't like the else branch
+			case "TWOEMPORIUMCITY": 
 				twoEmporiumCityBonus(bonus, player);
 				break;
 			case "NEWMAINACTION":
@@ -112,22 +107,31 @@ public class BonusManager {
 	}
 
 	private void assistantBonus(ArrayList<String> bonus, Player player) {
-		Random randomBonus = new Random();
-		int supLimit, infLimit, numberOfBonus;
-		infLimit = 1;
-		supLimit = 5 - infLimit;
-		numberOfBonus = randomBonus.nextInt(supLimit) + infLimit;
+		int numberOfBonus;
+		numberOfBonus = randomNumber(1, 5);
 		player.addMoreAssistant(numberOfBonus);
 		PubSub.notifyAllClients(this.players,
 				"Player with nickname '" + player.getNickName() + "' won " + numberOfBonus + " Assistants!");
 	}
+	
+	private void drawPermitTile(Player player){
+		Region region[]=this.board.getRegions();
+		Tile bonusTile;
+		int slotChoice,regionChoice;
+		regionChoice = randomNumber(1, 3);
+		slotChoice = randomNumber(1, 2);
+		try {
+			bonusTile=region[regionChoice-1].getDeck().drawPermitTile(slotChoice);
+			player.addUnusedPermitTiles(bonusTile);
+			PubSub.notifyAllClients(this.players,"Player with nickname '" + player.getNickName() +"' won a bonus and draw a Permit tile!");
+		} catch (InvalidSlotException e) {
+			ServerOutputPrinter.printLine(e.getMessage());;
+		}	
+	}
 
 	private void victoryTrackBonus(ArrayList<String> bonus, Player player) {
-		Random randomBonus = new Random();
-		int supLimit, infLimit, numberOfBonus;
-		infLimit = 1;
-		supLimit = 15 - infLimit;
-		numberOfBonus = randomBonus.nextInt(supLimit) + infLimit;
+		int numberOfBonus;
+		numberOfBonus = randomNumber(1, 15);
 		player.addVictoryPoints(numberOfBonus);
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName() + "' won " + numberOfBonus
 				+ " points for the Victory Track!");
@@ -140,22 +144,16 @@ public class BonusManager {
 	}
 
 	private void coinsBonus(ArrayList<String> bonus, Player player) {
-		Random randomBonus = new Random();
-		int supLimit, infLimit, numberOfBonus;
-		infLimit = 1;
-		supLimit = 7 - infLimit;
-		numberOfBonus = randomBonus.nextInt(supLimit) + infLimit;
+		int numberOfBonus;
+		numberOfBonus = randomNumber(1,7);
 		player.addCoins(numberOfBonus);
 		PubSub.notifyAllClients(this.players,
 				"Player with nickname '" + player.getNickName() + "' won " + numberOfBonus + " Coins!");
 	}
 
 	private void nobilityTrackBonus(ArrayList<String> bonus, Player player) {
-		Random randomBonus = new Random();
-		int supLimit, infLimit, numberOfBonus;
-		infLimit = 1;
-		supLimit = 3 - infLimit;
-		numberOfBonus = randomBonus.nextInt(supLimit) + infLimit;
+		int numberOfBonus;
+		numberOfBonus = randomNumber(1, 3);
 		player.changePositionInNobilityTrack(numberOfBonus);
 		int position = player.getPositionInNobilityTrack();
 		NobilityCell cell = this.nobilityTrack.getNobilityTrackCell(position);
@@ -165,13 +163,9 @@ public class BonusManager {
 	}
 
 	private void bonusPermitTile(ArrayList<String> bonus, Player player) {
-		Random randomBonus = new Random();
-		int supLimit, infLimit;
-		infLimit = 1;
-		supLimit = 2 - infLimit;
 		Tile tempTile;
 		String deck = "";
-		int deckPermitTileChoice = randomBonus.nextInt(supLimit) + infLimit;
+		int deckPermitTileChoice = randomNumber(1, 2);
 		try {
 			if (deckPermitTileChoice == 1) {
 				deck = "USED PERMIT TILES DECK";
@@ -191,19 +185,20 @@ public class BonusManager {
 
 	private void twoEmporiumCityBonus(ArrayList<String> bonus, Player player) {
 		Random randomBonus = new Random();
+		City tempCity=null;
 		int supLimit;
 		if (player.getNumberOfControlledCities() == 0)
 			return;
-		City tempCity;
+		if (player.getNumberOfControlledCities() == 1){
+			int cityControlled=player.getNumberOfControlledCities();
+			tempCity = player.getSingleControlledCity(cityControlled-1);
+		}
 		if (player.getNumberOfControlledCities() >= 2) {
 			supLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 			tempCity = player.getSingleControlledCity(supLimit);
 			int secondSupLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 			while (supLimit == secondSupLimit)
 				secondSupLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
-			tempCity = player.getSingleControlledCity(supLimit);
-		} else {
-			supLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 			tempCity = player.getSingleControlledCity(supLimit);
 		}
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
@@ -215,5 +210,14 @@ public class BonusManager {
 		player.mainActionDone(false);
 		PubSub.notifyAllClients(this.players,
 				"The player with nickname: " + player.getNickName() + " won the 'NEW MAIN ACTION' bonus!");
+	}
+	
+	private int randomNumber(int infLimit,int supLimit){
+		int randomNumber;
+		supLimit=supLimit-infLimit;
+		Random randomBonus = new Random();
+		randomNumber= randomBonus.nextInt(supLimit) + infLimit;
+		return randomNumber;
+		
 	}
 }

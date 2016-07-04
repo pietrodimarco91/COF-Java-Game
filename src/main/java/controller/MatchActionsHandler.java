@@ -54,6 +54,7 @@ public class MatchActionsHandler {
 		}
 		String regionName;
 		ArrayList<String> chosenPoliticCards;
+		ArrayList<String> cardToRemove;
 		int slot;
 		int numberOfCouncillorSatisfied;
 		int playerPayment = 0;
@@ -65,13 +66,13 @@ public class MatchActionsHandler {
 		slot = buyPermitTileAction.getSlot();
 		region = getRegion(regionName);
 
-		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(chosenPoliticCards);
+		cardToRemove = region.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		Player player = this.players.get(playerId);
 		try {
-			if (numberOfCouncillorSatisfied == 0)
+			if (cardToRemove.size() == 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.removeCardsFromHand(chosenPoliticCards);
+			playerPayment = CoinsManager.paymentForPermitTile(cardToRemove.size());
+			player.removeCardsFromHand(cardToRemove);
 			regionDeck = region.getDeck();
 			player.performPayment(playerPayment);
 			Tile permitTile = regionDeck.drawPermitTile(slot);

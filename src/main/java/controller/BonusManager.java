@@ -187,19 +187,20 @@ public class BonusManager {
 
 	private void twoEmporiumCityBonus(ArrayList<String> bonus, Player player) {
 		Random randomBonus = new Random();
+		City tempCity=null;
 		int supLimit;
 		if (player.getNumberOfControlledCities() == 0)
 			return;
-		City tempCity;
+		if (player.getNumberOfControlledCities() == 1){
+			int cityControlled=player.getNumberOfControlledCities();
+			tempCity = player.getSingleControlledCity(cityControlled-1);
+		}
 		if (player.getNumberOfControlledCities() >= 2) {
 			supLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 			tempCity = player.getSingleControlledCity(supLimit);
 			int secondSupLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 			while (supLimit == secondSupLimit)
 				secondSupLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
-			tempCity = player.getSingleControlledCity(supLimit);
-		} else {
-			supLimit = randomBonus.nextInt(player.getNumberOfControlledCities() - 1);
 			tempCity = player.getSingleControlledCity(supLimit);
 		}
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()

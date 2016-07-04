@@ -8,10 +8,10 @@ import java.util.List;
 import org.junit.Test;
 
 import controller.Player;
+import exceptions.NoMoreBonusException;
 import model.Board;
 import model.City;
 import model.CityColors;
-import model.NoMoreBonusException;
 import model.Tile;
 
 /**

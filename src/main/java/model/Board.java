@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,12 +11,18 @@ import java.util.Queue;
 import java.util.Random;
 
 import controller.Player;
+import exceptions.NoMoreBonusException;
 
 /**
  * The constructor of the Board initializes the board with the specified
  * parameters. It also allows to make the connections between the cities.
  */
-public class Board {
+public class Board implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * This attribute stores all the cities (vertex) of the map.
 	 */

@@ -1,13 +1,20 @@
 package model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import exceptions.NoMoreBonusException;
 
 /**
  * Created by Pietro Di Marco on 14/05/16. Enumeration of bonus.
  */
-public class KingRewardDeck {
+public class KingRewardDeck implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * The KingReward pile.
 	 */

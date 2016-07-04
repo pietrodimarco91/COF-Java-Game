@@ -1,7 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import exceptions.NoMoreBonusException;
 
 /**
  * This class represents the deck of the Color Bonus Tiles.
@@ -9,8 +12,12 @@ import java.util.List;
  * @author Riccardo
  *
  */
-public class ColorBonusDeck {
+public class ColorBonusDeck implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Tile> tiles;
 
 	public ColorBonusDeck() {

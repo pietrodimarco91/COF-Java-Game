@@ -1,4 +1,4 @@
-package model;
+package exceptions;
 
 /**
  * This exception is invoked everytime a player satisfies the conditions to win

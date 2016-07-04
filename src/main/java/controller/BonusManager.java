@@ -25,11 +25,14 @@ public class BonusManager {
 	private List<Player> players;
 	
 	private NobilityTrack nobilityTrack;
+	
+	private MatchHandler match;
 
-	public BonusManager(List<Player> players, Board board) {
+	public BonusManager(List<Player> players, Board board, MatchHandler match) {
 		this.board=board;
 		this.players = players;
 		this.nobilityTrack=board.getNobilityTrack();
+		this.match=match;
 	}
 
 	/**
@@ -61,7 +64,8 @@ public class BonusManager {
 		if (points > 0) {
 			player.addVictoryPoints(points);
 			PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName() + "' won " + points
-					+ " points for the Victory Track!");
+					+ " points for the Victory Track!", board);
+			match.updateClient(player.getId());
 		}
 	}
 
@@ -111,7 +115,8 @@ public class BonusManager {
 		numberOfBonus = randomNumber(1, 5);
 		player.addMoreAssistant(numberOfBonus);
 		PubSub.notifyAllClients(this.players,
-				"Player with nickname '" + player.getNickName() + "' won " + numberOfBonus + " Assistants!");
+				"Player with nickname '" + player.getNickName() + "' won " + numberOfBonus + " Assistants!", board);
+		match.updateClient(player.getId());
 	}
 	
 	private void drawPermitTile(Player player){
@@ -123,7 +128,8 @@ public class BonusManager {
 		try {
 			bonusTile=region[regionChoice-1].getDeck().drawPermitTile(slotChoice);
 			player.addUnusedPermitTiles(bonusTile);
-			PubSub.notifyAllClients(this.players,"Player with nickname '" + player.getNickName() +"' won a bonus and draw a Permit tile!");
+			PubSub.notifyAllClients(this.players,"Player with nickname '" + player.getNickName() +"' won a bonus and draw a Permit tile!", board);
+			match.updateClient(player.getId());
 		} catch (InvalidSlotException e) {
 			ServerOutputPrinter.printLine(e.getMessage());;
 		}	
@@ -134,13 +140,15 @@ public class BonusManager {
 		numberOfBonus = randomNumber(1, 15);
 		player.addVictoryPoints(numberOfBonus);
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName() + "' won " + numberOfBonus
-				+ " points for the Victory Track!");
+				+ " points for the Victory Track!", board);
+		match.updateClient(player.getId());
 	}
 
 	private void politicBonus(ArrayList<String> bonus, Player player) {
 		player.addCardOnHand(new PoliticCard());
 		PubSub.notifyAllClients(this.players,
-				"Player with nickname '" + player.getNickName() + "' won a bonus and draw a new Politic Card!");
+				"Player with nickname '" + player.getNickName() + "' won a bonus and draw a new Politic Card!", board);
+		match.updateClient(player.getId());
 	}
 
 	private void coinsBonus(ArrayList<String> bonus, Player player) {
@@ -148,7 +156,8 @@ public class BonusManager {
 		numberOfBonus = randomNumber(1,7);
 		player.addCoins(numberOfBonus);
 		PubSub.notifyAllClients(this.players,
-				"Player with nickname '" + player.getNickName() + "' won " + numberOfBonus + " Coins!");
+				"Player with nickname '" + player.getNickName() + "' won " + numberOfBonus + " Coins!", board);
+		match.updateClient(player.getId());
 	}
 
 	private void nobilityTrackBonus(ArrayList<String> bonus, Player player) {
@@ -158,7 +167,8 @@ public class BonusManager {
 		int position = player.getPositionInNobilityTrack();
 		NobilityCell cell = this.nobilityTrack.getNobilityTrackCell(position);
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName() + "' won " + numberOfBonus
-				+ " bonus steps in Nobility Track!");
+				+ " bonus steps in Nobility Track!", board);
+		match.updateClient(player.getId());
 		takeBonusFromNobilityTrack(cell, player);
 	}
 
@@ -175,11 +185,13 @@ public class BonusManager {
 				tempTile = player.getRandomUnusedPermitTile();
 			}
 			PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
-					+ "' won a bonus and now can re-use bonus on a permit tile");
+					+ "' won a bonus and now can re-use bonus on a permit tile", board);
+			match.updateClient(player.getId());
 			useBonus(tempTile.getBonus(), player);
 		} catch (TileNotFoundException e) {
 			PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
-					+ "' won the BONUSPERMITTILE but he hasn't got Permit Tiles in his " + deck);
+					+ "' won the BONUSPERMITTILE but he hasn't got Permit Tiles in his " + deck, board);
+			match.updateClient(player.getId());
 		}
 	}
 
@@ -202,14 +214,16 @@ public class BonusManager {
 			tempCity = player.getSingleControlledCity(supLimit);
 		}
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName()
-				+ "' won a bonus and now can obtain bonus from two Reward Tokens");
+				+ "' won a bonus and now can obtain bonus from two Reward Tokens", board);
+		match.updateClient(player.getId());
 		useBonus(tempCity.winBonus().getBonus(), player);
 	}
 
 	private void newMainActionBonus(ArrayList<String> bonus, Player player) {
 		player.mainActionDone(false);
 		PubSub.notifyAllClients(this.players,
-				"The player with nickname: " + player.getNickName() + " won the 'NEW MAIN ACTION' bonus!");
+				"The player with nickname: " + player.getNickName() + " won the 'NEW MAIN ACTION' bonus!", board);
+		match.updateClient(player.getId());
 	}
 	
 	private int randomNumber(int infLimit,int supLimit){

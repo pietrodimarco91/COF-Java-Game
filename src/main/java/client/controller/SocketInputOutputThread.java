@@ -69,6 +69,8 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			case "MESSAGESTRING":
 				ClientOutputPrinter.printLine(packet.getMessageString());
 				break;
+			case "UPDATE":
+				ClientOutputPrinter.printLine("*** GUI UPDATE RECEIVED: "+ packet.getUpdate().getHeader()+" ***");
 			default:
 		}
 

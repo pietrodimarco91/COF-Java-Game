@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import controller.Player;
@@ -9,7 +10,7 @@ import exceptions.NoMoreBonusException;
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public class Region {
+public class Region implements Serializable {
 	/**
 	 * Name of the region
 	 */

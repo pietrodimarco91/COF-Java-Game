@@ -105,7 +105,7 @@ public class Player implements Serializable {
 	/**
 	 *
 	 */
-	private ClientSideConnectorInt connector;// To add UML scheme
+	private transient ClientSideConnectorInt connector;// To add UML scheme
 
 	/**
 	 *

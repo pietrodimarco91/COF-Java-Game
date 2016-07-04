@@ -318,7 +318,7 @@ public class MatchHandler {
 			return;
 		}
 		if (this.board.graphIsConnected()) {
-			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!");
+			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!", board);
 			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
 			initializeMatchComponents();
 			startTurns();
@@ -337,7 +337,7 @@ public class MatchHandler {
 	}
 	
 	public void initializeMatchComponents() {
-		bonusManager = new BonusManager(players, board);
+		bonusManager = new BonusManager(players, board, this);
 		playerTurnIterator = new PlayerTurnIterator(players);
 		actionsHandler = new MatchActionsHandler(this, board, players);
 	}
@@ -376,7 +376,7 @@ public class MatchHandler {
 		} else if (board.checkPossibilityOfNewConnection(city1, city2)) {
 			board.connectCities(city1, city2);
 			PubSub.notifyAllClients(players, "Player with nickname '" + players.get(playerId).getNickName()
-					+ "' connected " + city1.getName() + " with " + city2.getName());
+					+ "' connected " + city1.getName() + " with " + city2.getName(), board);
 		} else {
 			sendErrorToClient("Cities cannot be connected\n", playerId);
 		}
@@ -416,7 +416,7 @@ public class MatchHandler {
 		} else {
 			board.unconnectCities(city1, city2);
 			PubSub.notifyAllClients(players, "Player with nickname '" + players.get(playerId).getNickName()
-					+ "' removed connection between " + city1.getName() + " and " + city2.getName());
+					+ "' removed connection between " + city1.getName() + " and " + city2.getName(), board);
 		}
 	}
 
@@ -470,12 +470,14 @@ public class MatchHandler {
 		Tile rewardToken = city.winBonus();
 		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
 		PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
-				+ rewardToken + " after building an Emporium in " + city.getName());
+				+ rewardToken + " after building an Emporium in " + city.getName(), board);
+		updateClient(player.getId());
 		bonusManager.takeBonusFromTile(rewardToken, player);
 		for (City ownedCity : ownedCities) {
 			rewardToken = ownedCity.winBonus();
 			PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
-					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName());
+					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName(), board);
+			updateClient(player.getId());
 			bonusManager.takeBonusFromTile(rewardToken, player);
 		}
 	}
@@ -488,13 +490,13 @@ public class MatchHandler {
 				colorBonus = board.winColorBonus(city.getColor());
 				bonusManager.takeBonusFromTile(colorBonus, player);
 			} catch (NoMoreBonusException e) {
-				PubSub.notifyAllClients(players, e.showError());
+				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 			try {
 				kingReward = board.winKingReward();
 				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
-				PubSub.notifyAllClients(players, e.showError());
+				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 		}
 		if (region.isEligibleForRegionBonus(player)) {
@@ -502,13 +504,13 @@ public class MatchHandler {
 				regionBonus = region.winRegionBonus(player);
 				bonusManager.takeBonusFromTile(regionBonus, player);
 			} catch (NoMoreBonusException e) {
-				PubSub.notifyAllClients(players, e.showError());
+				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 			try {
 				kingReward = board.winKingReward();
 				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
-				PubSub.notifyAllClients(players, e.showError());
+				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 		}
 	}
@@ -520,6 +522,7 @@ public class MatchHandler {
 	public void drawPoliticCard(Player player) {
 		PoliticCard card = PoliticCardDeck.generateRandomPoliticCard();
 		player.addCardOnHand(card);
+		updateClient(player.getId());
 		sendMessageToClient("You've drawn a " + card.getColorCard() + " Politic Card", player.getId());
 	}
 
@@ -600,7 +603,7 @@ public class MatchHandler {
 			}
 		}
 		if (playersInDraw.isEmpty() && winner != null)
-			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!");
+			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!", board);
 		else {
 			for (Player player : playersInDraw) {
 				if (player.getPoliticCards().size() + player.getNumberOfAssistants() > maxAssistants
@@ -612,7 +615,7 @@ public class MatchHandler {
 			}
 			if (winner != null)
 				PubSub.notifyAllClients(this.players,
-						"Player " + winner.getNickName() + " is the winner of the Match!");
+						"Player " + winner.getNickName() + " is the winner of the Match!", board);
 		}
 	}
 
@@ -660,7 +663,7 @@ public class MatchHandler {
 	
 	public void notifyEndOfTurn(Player player) {
 		if (player == currentPlayer) {
-			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.");
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.", board);
 			nextTurn();
 		}
 	}
@@ -669,7 +672,7 @@ public class MatchHandler {
 		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
 		if (!currentPlayer.playerIsOffline()) {
 			PubSub.notifyAllClients(players,
-					"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
+					"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!", board);
 			drawPoliticCard(currentPlayer);
 			timers.submit(new TurnTimerThread(this, currentPlayer));
 		} else
@@ -679,7 +682,7 @@ public class MatchHandler {
 	public void nextTurn() {
 		if (playerTurnIterator.isLastPlayer(currentPlayer)) {
 			if (GameStatusConstants.FINISH == gameStatus) {
-				PubSub.notifyAllClients(this.players, "Turns are over!");
+				PubSub.notifyAllClients(this.players, "Turns are over!", board);
 				notifyMatchWinner();
 				return;
 			}
@@ -689,7 +692,7 @@ public class MatchHandler {
 			currentPlayer = playerTurnIterator.next();
 			if (!currentPlayer.playerIsOffline()) {
 				PubSub.notifyAllClients(players,
-						"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!");
+						"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!", board);
 				drawPoliticCard(currentPlayer);
 				timers.submit(new TurnTimerThread(this, currentPlayer));
 			} else
@@ -699,7 +702,7 @@ public class MatchHandler {
 	
 	private void startMarketSellTime() {
 		gameStatus = GameStatusConstants.MARKET_SELL;
-		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'", board);
 		sendMarketStatus();
 		timers.submit(new MarketTimerThread(this, numberOfPlayers));
 	}
@@ -720,21 +723,21 @@ public class MatchHandler {
 			}
 			playerMarketTurn = randomPlayerIterator.next();
 			PubSub.notifyAllClients(players,
-					"Player '" + player.getNickName() + "' your turn for buying in the Market is over!");
+					"Player '" + player.getNickName() + "' your turn for buying in the Market is over!", board);
 			PubSub.notifyAllClients(players,
-					"Player '" + playerMarketTurn.getNickName() + "' now it's your turn for buying in the Market!");
+					"Player '" + playerMarketTurn.getNickName() + "' now it's your turn for buying in the Market!", board);
 			timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
 		}
 	}
 
 	public void startMarketBuyTime() {
 		this.gameStatus = GameStatusConstants.MARKET_BUY;
-		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'");
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'", board);
 		randomPlayerIterator = new RandomPlayerIterator(players);
 		String message = "In order to buy items from the Market, players must respect a random order\n";
 		playerMarketTurn = randomPlayerIterator.next();
 		message += "Player '" + playerMarketTurn.getNickName() + "' it's your turn! Be fast, your time is limited!\n";
-		PubSub.notifyAllClients(players, message);
+		PubSub.notifyAllClients(players, message, board);
 		timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
 	}
 
@@ -747,7 +750,8 @@ public class MatchHandler {
 			try {
 				market.buyItemOnSale(playerMarketTurn, event.getItemId());
 				PubSub.notifyAllClients(players, "Player '" + players.get(playerId).getNickName()
-						+ "' has just bought the item with ID " + event.getItemId() + " from the Market!");
+						+ "' has just bought the item with ID " + event.getItemId() + " from the Market!", board);
+				updateClient(playerId);
 				nextMarketBuyTurn(playerMarketTurn);
 			} catch (UnsufficientCoinsException e) {
 				sendErrorToClient(e.showError(), playerId);
@@ -779,7 +783,7 @@ public class MatchHandler {
 				item = factory.createPermitTileOnSale(permitTile, player, event.getPrice());
 				market.putItemOnSale(item);
 				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString(), board);
 			} catch (TileNotFoundException e) {
 				sendErrorToClient("Ops! A PermitTile with the specified ID was not found!", playerId);
 				return;
@@ -793,7 +797,7 @@ public class MatchHandler {
 						event.getPrice());
 				market.putItemOnSale(item);
 				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString(), board);
 			} catch (CardNotFoundException e) {
 				sendErrorToClient(e.showError(), playerId);
 			}
@@ -806,14 +810,14 @@ public class MatchHandler {
 			item = factory.createAssistantOnSale(player, event.getPrice());
 			market.putItemOnSale(item);
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-					+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString());
+					+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString(), board);
 			break;
 		default:
 		}
 	}
 
 	public void sendMarketStatus() {
-		PubSub.notifyAllClients(players, market.toString());
+		PubSub.notifyAllClients(players, market.toString(), board);
 	}
 
 	public void sendErrorToClient(String error, int playerId) {
@@ -822,6 +826,22 @@ public class MatchHandler {
 		try {
 			if (!player.playerIsOffline())
 				player.getConnector().sendToClient(new Packet(message));
+		} catch (RemoteException e) {
+			player.setPlayerOffline();
+
+			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+					+ "' and ID " + playerId + " disconnected!");
+
+		}
+	}
+	
+	public void updateClient(int playerId) {
+		Player player = players.get(playerId);
+		try {
+			if (!player.playerIsOffline()) {
+				player.getConnector().sendToClient(new Packet(new UpdateState(player)));
+				player.getConnector().sendToClient(new Packet(new UpdateState(board)));
+			}
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
 
@@ -882,6 +902,7 @@ public class MatchHandler {
 	}
 
 	public void setBoard(Board board) {
+		
 		this.board = board;
 	}
 

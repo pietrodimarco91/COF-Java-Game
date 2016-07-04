@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class GameInitializator extends Thread {
 
     private static final Logger logger = Logger.getLogger(GameInitializator.class.getName());
+    private static final int SECONDS_TO_START=10;
     private MatchHandler match;
     private ArrayList<Player> players;
     private int minimumNumberOfPlayers;
@@ -67,7 +68,7 @@ public class GameInitializator extends Thread {
      * NEEDS JAVADOC
      */
     public void countdown() {
-        for (int i = 20; i > 0; i--) {
+        for (int i = SECONDS_TO_START; i > 0; i--) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -101,7 +102,7 @@ public class GameInitializator extends Thread {
         board = new Board(configParameters[0], configParameters[1], configParameters[2], configParameters[3],
                 configParameters[4]);
         match.setBoard(board);
-        PubSub.notifyAllClients(players,"Board correctly initialized!");
+        PubSub.notifyAllClients(players,"Board correctly initialized!", board);
         ServerOutputPrinter.printLine("[MATCH " + id + "] Game Status changed to 'Map Configuration'");
     }
     
@@ -111,7 +112,7 @@ public class GameInitializator extends Thread {
     	for(Player player : players) {
     		string+=player.getNickName()+" : ID "+player.getId()+"\n, Color: "+player.getColor()+"\n";
     	}
-    	PubSub.notifyAllClients(players, string);
+    	PubSub.notifyAllClients(players, string, board);
     }
 
     public void sendMessageToClient(String s, int playerId) {

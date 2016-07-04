@@ -58,7 +58,7 @@ public class Packet implements Serializable {
         this.messageString=messageString;
     }
     
-    public Packet(String message, UpdateState update) {
+    public Packet(UpdateState update) {
     	header="UPDATE";
     	this.update=update;
     }
@@ -78,6 +78,10 @@ public class Packet implements Serializable {
     public Packet(MarketEvent marketEvent){
         header="MARKET";
         this.marketEvent=marketEvent;
+    }
+    
+    public UpdateState getUpdate() {
+    	return this.update;
     }
     
     public ConfigObject getConfigObject() {

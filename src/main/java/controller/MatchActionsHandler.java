@@ -80,7 +80,8 @@ public class MatchActionsHandler {
 			Tile permitTile = regionDeck.drawPermitTile(slot);
 			player.addUnusedPermitTiles(permitTile);
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
-					+ "' satisfied the Council of the region '" + regionName + "' and bought a Permit Tile");
+					+ "' satisfied the Council of the region '" + regionName + "' and bought a Permit Tile", board);
+			match.updateClient(playerId);
 			match.getBonusManager().takeBonusFromTile(permitTile, player);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
@@ -139,16 +140,17 @@ public class MatchActionsHandler {
 				board.moveKing(cityTo);
 			}
 			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " has built an Emporium in "
-					+ cityTo.getName() + " with king's help");
+					+ cityTo.getName() + " with king's help", board);
+			match.updateClient(playerId);
 			match.winBuildingBonuses(cityTo, player);
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!");
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!", board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has won 3 bonus Victory Points!");
+						"Player " + player.getNickName() + " has won 3 bonus Victory Points!", board);
 			}
 			if (player.hasPerformedQuickAction()) {
 				match.notifyEndOfTurn(player);
@@ -207,7 +209,8 @@ public class MatchActionsHandler {
 			region.electCouncillor(councillorColor);
 			player.addCoins(4);
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' elected a " + councillorColor
-					+ " Councillor in " + regionName);
+					+ " Councillor in " + regionName, board);
+			match.updateClient(playerId);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
 				match.notifyEndOfTurn(player);
@@ -236,7 +239,8 @@ public class MatchActionsHandler {
 				throw new UnsufficientCoinsException();
 			player.performPayment(3);
 			player.addAssistant();
-			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!");
+			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " bought an Assistant!", board);
+			match.updateClient(playerId);
 			player.quickActionDone();
 			if (player.hasPerformedMainAction()) {
 				match.notifyEndOfTurn(player);
@@ -269,7 +273,8 @@ public class MatchActionsHandler {
 			region.getDeck().switchPermitTiles();
 			player.removeAssistant();
 			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " swhitched Permit Tile in " + regionName + "!");
+					"Player " + player.getNickName() + " swhitched Permit Tile in " + regionName + "!", board);
+			match.updateClient(playerId);
 			player.quickActionDone();
 			if (player.hasPerformedMainAction()) {
 				match.notifyEndOfTurn(player);
@@ -302,13 +307,14 @@ public class MatchActionsHandler {
 			if (!buildEmporium(tempPermitTile, player, cityName))
 				throw new CityNotFoundFromPermitTileException();
 			PubSub.notifyAllClients(players,
-					"Player " + player.getNickName() + " has built an Emporium in " + cityName + "!");
+					"Player " + player.getNickName() + " has built an Emporium in " + cityName + "!", board);
+			match.updateClient(playerId);
 			player.fromUnusedToUsedPermitTile(tempPermitTile);
 			match.winBuildingBonuses(board.getCityFromName(cityName), player);
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!");
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!", board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
 			}
@@ -344,7 +350,8 @@ public class MatchActionsHandler {
 			region.electCouncillor(councillorColor);
 			player.removeAssistant();
 			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " sent an Assistant to elect a "
-					+ councillorColor + "Councillor in " + regionName + "!");
+					+ councillorColor + "Councillor in " + regionName + "!", board);
+			match.updateClient(playerId);
 			player.quickActionDone();
 			if (player.hasPerformedMainAction()) {
 				match.notifyEndOfTurn(player);

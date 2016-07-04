@@ -31,7 +31,7 @@ import java.util.logging.StreamHandler;
  * running while a match is on-going. It stores the core of the game engine.
  */
 public class MatchHandler {
-	
+
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 
 	/**
@@ -63,7 +63,7 @@ public class MatchHandler {
 	 * The bonus manager that assigns the bonuses to the players
 	 */
 	private BonusManager bonusManager;
-	
+
 	/**
 	 * This class handles all the main and quick actions received from players
 	 */
@@ -203,7 +203,7 @@ public class MatchHandler {
 	public boolean isFull() {
 		return this.players.size() >= this.numberOfPlayers;
 	}
-	
+
 	/**
 	 * This method allows to know whether the current match is pending or not
 	 * 
@@ -226,7 +226,7 @@ public class MatchHandler {
 	public int getId() {
 		return this.id;
 	}
-	
+
 	public BonusManager getBonusManager() {
 		return this.bonusManager;
 	}
@@ -244,10 +244,13 @@ public class MatchHandler {
 		Player player = new Player(connector, id, nickName);
 		this.players.add(player);
 	}
-	
+
 	/**
-	 * IMPORTANT: this method is used only for test purposes, as the original one requires connection components.
-	 * @param id the player id
+	 * IMPORTANT: this method is used only for test purposes, as the original
+	 * one requires connection components.
+	 * 
+	 * @param id
+	 *            the player id
 	 */
 	public void addPlayer(int id) {
 		this.players.add(new Player(id));
@@ -335,7 +338,7 @@ public class MatchHandler {
 			}
 		}
 	}
-	
+
 	public void initializeMatchComponents() {
 		bonusManager = new BonusManager(players, board);
 		playerTurnIterator = new PlayerTurnIterator(players);
@@ -579,8 +582,8 @@ public class MatchHandler {
 			actionsHandler.switchPermitTile(switchPermitTilesAction, playerId);
 		}
 	}
-	
-	private void notifyMatchWinner() {
+
+	public void notifyMatchWinner() {//was setted private but now i changed in public for the test
 		List<Player> playersInDraw = new ArrayList<>();
 		Player winner = null;
 		int maxVictoryPoints = 0, maxAssistants = 0, maxPoliticCardsInHand = 0;
@@ -599,8 +602,10 @@ public class MatchHandler {
 				playersInDraw.add(player);
 			}
 		}
-		if (playersInDraw.isEmpty() && winner != null)
+		if (playersInDraw.isEmpty() && winner != null){
+			winner.setPlayerWon();//added only for the test use;
 			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!");
+		}
 		else {
 			for (Player player : playersInDraw) {
 				if (player.getPoliticCards().size() + player.getNumberOfAssistants() > maxAssistants
@@ -610,24 +615,33 @@ public class MatchHandler {
 					maxAssistants = player.getNumberOfAssistants();
 				}
 			}
-			if (winner != null)
+			if (winner != null){
+				winner.setPlayerWon();//added only for the test uses
 				PubSub.notifyAllClients(this.players,
 						"Player " + winner.getNickName() + " is the winner of the Match!");
+			 
+			}
 		}
 	}
 
 	public void assignFinalNobilityTrackPoints() {
-		NobilityTrack nobilityTrack = board.getNobilityTrack();
 		List<Player> playersInFirstPosition = new ArrayList<>();
 		List<Player> playersInSecondPosition = new ArrayList<>();
+		int firstPosition = 0;
+		int secondPosition = 0;
 		for (Player player : players) {
-			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength()) {
+			if (player.getPositionInNobilityTrack() >= firstPosition) {
+				firstPosition = player.getPositionInNobilityTrack();
 				playersInFirstPosition.add(player);
 			}
-			if (player.getPositionInNobilityTrack() == nobilityTrack.getLength() - 1) {
+		}
+		for (Player player : players) {
+			if (player.getPositionInNobilityTrack() >=secondPosition && player.getPositionInNobilityTrack()<firstPosition ) {
+				secondPosition=player.getPositionInNobilityTrack();
 				playersInSecondPosition.add(player);
 			}
 		}
+
 		if (playersInFirstPosition.size() == 1) {
 			playersInFirstPosition.get(0).addVictoryPoints(5);
 			if (playersInSecondPosition.size() == 1)
@@ -657,7 +671,7 @@ public class MatchHandler {
 		if (tempWinner != null)
 			tempWinner.addVictoryPoints(3);
 	}
-	
+
 	public void notifyEndOfTurn(Player player) {
 		if (player == currentPlayer) {
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.");
@@ -696,7 +710,7 @@ public class MatchHandler {
 				nextTurn();
 		}
 	}
-	
+
 	private void startMarketSellTime() {
 		gameStatus = GameStatusConstants.MARKET_SELL;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'");
@@ -715,7 +729,7 @@ public class MatchHandler {
 	public void nextMarketBuyTurn(Player player) {
 		if (playerMarketTurn == player) {
 			if (!randomPlayerIterator.hasNext()) {
-				playerMarketTurn=null;
+				playerMarketTurn = null;
 				return;
 			}
 			playerMarketTurn = randomPlayerIterator.next();
@@ -901,7 +915,7 @@ public class MatchHandler {
 		Player player = this.players.get(playerId);
 		player.setPlayerOffline();
 	}
-	
+
 	public void messageFromClient(String messageString, int playerId) {
 	}
 }

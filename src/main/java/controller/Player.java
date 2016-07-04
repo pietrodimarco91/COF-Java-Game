@@ -49,7 +49,7 @@ public class Player implements Serializable {
 	/**
 	 *
 	 */
-	private int matchesWon;
+	private boolean won;
 	/**
 	 *
 	 */
@@ -161,9 +161,10 @@ public class Player implements Serializable {
 		this.controlledCities = new ArrayList<City>();
 		this.emporiums=10;
 		initializeFirstHand();// Distributes the first hand of politic cards
-		this.victoryPoints = 0;
+		this.victoryPoints = INITIAL_POSITION;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 		this.disconnected=false;
+		this.won=false;
 	}
 
 	public String getNickName() {
@@ -574,5 +575,20 @@ public class Player implements Serializable {
 
 	public void addVictoryPoints(int points) {
 		this.victoryPoints += points;
+	}
+	
+	/*
+	 * Important! I added this method only for the test use
+	 * 
+	 */
+	public void setPlayerWon(){
+		this.won=true;
+	}
+	/*
+	 * Important! I added this method only for the test use
+	 * 
+	 */
+	public boolean getPlayerWon(){
+		return this.won;
 	}
 }

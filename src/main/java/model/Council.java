@@ -1,6 +1,9 @@
 package model;
 
+
+import java.util.ArrayList;
 import java.io.Serializable;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -59,6 +62,41 @@ public abstract class Council implements Serializable {
 	 */
 	public Queue<Councillor> getCouncillors() {// Return the arraylist of councillors of this council
 		return this.councillors;
+	}
+	
+	/**
+	 * @param politicCards
+	 *            of the player
+	 * @return number of councillors satisfied
+	 */
+	public ArrayList<String> numberOfCouncillorsSatisfied(ArrayList<String> politicCards) {
+		Iterator<Councillor> iterationCouncillors = this.councillors.iterator();
+		Councillor councillor;
+		ArrayList<String> tempArrayList = new ArrayList<String>(politicCards);
+		ArrayList<String> cardSatisfied = new ArrayList<String>();
+		while (iterationCouncillors.hasNext()) {
+			boolean councillorsSatisfied = false;
+			councillor = iterationCouncillors.next();
+
+			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
+				if (councillor.getColor().equals(tempArrayList.get(i))) {
+					councillorsSatisfied = true;
+					cardSatisfied.add(tempArrayList.get(i));
+					tempArrayList.remove(i);
+				}
+
+			}
+
+		}
+
+		if (cardSatisfied.size() < 4) {
+			for (int i = 0; i < tempArrayList.size(); i++) {
+				if (tempArrayList.get(i).equals("MULTICOLOR"))
+					cardSatisfied.add("MULTICOLOR");
+			}
+		}
+
+		return cardSatisfied;
 	}
 	
 	public String toString() {

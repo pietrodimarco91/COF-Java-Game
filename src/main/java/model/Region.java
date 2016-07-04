@@ -77,41 +77,6 @@ public class Region {
 	}
 
 	/**
-	 * @param politicCards
-	 *            of the player
-	 * @return number of councillors satisfied
-	 */
-	public ArrayList<String> numberOfCouncillorsSatisfied(ArrayList<String> politicCards) {
-		Iterator<Councillor> iterationCouncillors = this.council.getCouncillors().iterator();
-		Councillor councillor;
-		ArrayList<String> tempArrayList = new ArrayList<String>(politicCards);
-		ArrayList<String> cardSatisfied = new ArrayList<String>();
-		while (iterationCouncillors.hasNext()) {
-			boolean councillorsSatisfied = false;
-			councillor = iterationCouncillors.next();
-
-			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
-				if (councillor.getColor().equals(tempArrayList.get(i))) {
-					councillorsSatisfied = true;
-					cardSatisfied.add(tempArrayList.get(i));
-					tempArrayList.remove(i);
-				}
-
-			}
-
-		}
-
-		if (cardSatisfied.size() < 4) {
-			for (int i = 0; i < tempArrayList.size(); i++) {
-				if (tempArrayList.get(i).equals("MULTICOLOR"))
-					cardSatisfied.add("MULTICOLOR");
-			}
-		}
-
-		return cardSatisfied;
-	}
-
-	/**
 	 * @param owner
 	 * @return region bonus tile if player is eligible for region bonus
 	 * 

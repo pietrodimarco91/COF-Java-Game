@@ -21,6 +21,7 @@ import exceptions.UnsufficientCoinsException;
 import exceptions.UnsufficientCouncillorsSatisfiedException;
 import model.Board;
 import model.City;
+import model.Council;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
@@ -56,17 +57,18 @@ public class MatchActionsHandler {
 		ArrayList<String> chosenPoliticCards;
 		ArrayList<String> cardToRemove;
 		int slot;
-		int numberOfCouncillorSatisfied;
 		int playerPayment = 0;
 		Region region;
 		PermitTileDeck regionDeck;
+		Council council;
 
 		regionName = buyPermitTileAction.getRegion();
 		chosenPoliticCards = buyPermitTileAction.getPoliticCardColors();
 		slot = buyPermitTileAction.getSlot();
 		region = getRegion(regionName);
+		council=region.getCouncil();
 
-		cardToRemove = region.numberOfCouncillorsSatisfied(chosenPoliticCards);
+		cardToRemove = council.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		Player player = this.players.get(playerId);
 		try {
 			if (cardToRemove.size() == 0)
@@ -112,23 +114,25 @@ public class MatchActionsHandler {
 		}
 		String cityName;
 		ArrayList<String> chosenPoliticCards;
-		int numberOfCouncillorSatisfied;
+		ArrayList<String> cardToRemove;
+		Council council;
 		int playerPayment = 0;
 		int coinsToPay = 0;
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
 		chosenPoliticCards = kingBuildEmporiumAction.getPoliticCardColors();
-		numberOfCouncillorSatisfied = this.board.numberOfCouncillorsSatisfied(chosenPoliticCards);
+		council=this.board.getKingCouncil();
+		cardToRemove = council.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		try {
-			if (numberOfCouncillorSatisfied == 0)
+			if (cardToRemove.size()== 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
 
 			City cityTo = board.getCityFromName(cityName);
 			City cityFrom = board.findKingCity();
 			coinsToPay = board.countDistance(cityFrom, cityTo) * 2;
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
+			playerPayment = CoinsManager.paymentForPermitTile(cardToRemove.size());
 			player.performPayment(playerPayment + coinsToPay);
-			player.removeCardsFromHand(chosenPoliticCards);
+			player.removeCardsFromHand(cardToRemove);
 			if (!cityTo.buildEmporium(player))
 				throw new AlreadyOwnedEmporiumException();
 			if (coinsToPay > 0) {

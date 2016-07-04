@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import controller.Player;
@@ -8,7 +9,12 @@ import controller.Player;
  * This class represents a City in the map. It is also stored as a vertex inside
  * the ArrayList of vertexes of the GraphMap.
  */
-public class City {
+public class City implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Name of the city
@@ -34,13 +40,6 @@ public class City {
 	 * 
 	 */
 	private Region region;
-
-	/**
-	 * Each city has a precise coordinate location represented by Point class,
-	 * with (x,y) coordinates.
-	 * 
-	 */
-	private Point coordinates;
 
 	/**
 	 * The RewardToken bonus is the bonus assigned to each city at the beginning
@@ -239,15 +238,6 @@ public class City {
 	}
 
 	/**
-	 * This method returns the coordinates (x,y) of the city
-	 * 
-	 * @return the coordinates (x,y) of the city represented by a Point class
-	 */
-	public Point getCoordinates() {
-		return coordinates;
-	}
-
-	/**
 	 * Sets a connection in the GraphMap between this city and the specified
 	 * city, by adding it to the list of connected cities.
 	 * 
@@ -269,16 +259,6 @@ public class City {
 	public void removeConnectedCity(City city) {
 		if (connectedCities.contains(city))
 			connectedCities.remove(city);
-	}
-
-	/**
-	 * Sets the coordinates of the city to the specified point2D
-	 * 
-	 * @param point
-	 *            the point2D corresponding to the coordinates of the city.
-	 */
-	public void setCoordinates(Point point) {
-		this.coordinates = point;
 	}
 
 	@Override

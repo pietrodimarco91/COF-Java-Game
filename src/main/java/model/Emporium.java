@@ -1,13 +1,20 @@
 package model;
 
+import java.io.Serializable;
+
 import controller.Player;
 
 /**
  * This class represents an Emporium that is built inside a City by a specified
  * Player.
  */
-public class Emporium {
+public class Emporium implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * This color represents the color of the Player that owns this emporium
 	 */

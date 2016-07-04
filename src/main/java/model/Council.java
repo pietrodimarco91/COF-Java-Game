@@ -1,6 +1,9 @@
 package model;
 
+
 import java.util.ArrayList;
+import java.io.Serializable;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,7 +13,12 @@ import exceptions.CouncillorNotFoundException;
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public abstract class Council{
+public abstract class Council implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Queue of councillors,I used LinkedList Queue type

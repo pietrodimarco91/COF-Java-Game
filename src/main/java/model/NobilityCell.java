@@ -1,12 +1,17 @@
 package model;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * This class represents a single slot of the Nobility Track.
  */
-public class NobilityCell {
+public class NobilityCell implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * This attribute represents the bonus stored in this Cell (Cells without
 	 * bonus have an empty ArrayList)

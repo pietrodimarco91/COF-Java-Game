@@ -2,6 +2,7 @@ package model;
 
 import exceptions.InvalidSlotException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,7 +11,12 @@ import java.util.Queue;
  * This class represents the deck of the Business Permit Tiles of a single
  * region.
  */
-public class PermitTileDeck {
+public class PermitTileDeck  implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The deck is represented by a Queue.
 	 */

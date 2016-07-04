@@ -1,8 +1,15 @@
 package model;
 
+import java.io.Serializable;
+
 import controller.Player;
 
-public abstract class ItemOnSale {
+public abstract class ItemOnSale implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * This attribute represents the seller of this item
 	 */

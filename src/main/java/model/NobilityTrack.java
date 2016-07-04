@@ -1,12 +1,17 @@
 package model;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * This class represents the NobilityTrack as a fixed-length array of Nobility
  * Cells.
  */
-public class NobilityTrack {
+public class NobilityTrack implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final int LENGTH = 20;
 	/**
 	 * The track is an array of NobilityCell.

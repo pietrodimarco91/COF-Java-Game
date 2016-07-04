@@ -5,6 +5,7 @@ import controller.PubSub;
 import exceptions.ItemNotFoundException;
 import exceptions.UnsufficientCoinsException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,8 +14,12 @@ import java.util.List;
 /**
  * 
  */
-public class Market {
+public class Market implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<ItemOnSale> itemsOnSale;
 
 	/**

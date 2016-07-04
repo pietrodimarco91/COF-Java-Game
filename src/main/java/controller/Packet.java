@@ -14,6 +14,8 @@ public class Packet implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private UpdateState update;
 
 	private String header;
 
@@ -56,6 +58,11 @@ public class Packet implements Serializable {
         this.messageString=messageString;
     }
     
+    public Packet(String message, UpdateState update) {
+    	header="UPDATE";
+    	this.update=update;
+    }
+    
     public Packet(String messageString, String code) {
     	if(code.equals("***")) {
     		header="CHAT";
@@ -63,19 +70,18 @@ public class Packet implements Serializable {
     	}
     }
 
-    public ConfigObject getConfigObject() {
-        return this.configObject;
-    }
-
     public Packet(Integer configId){
         header="CONFIGID";
         this.configId=configId;
     }
 
-
     public Packet(MarketEvent marketEvent){
         header="MARKET";
         this.marketEvent=marketEvent;
+    }
+    
+    public ConfigObject getConfigObject() {
+        return this.configObject;
     }
 
     public String getHeader() {

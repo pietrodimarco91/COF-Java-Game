@@ -10,7 +10,6 @@ import model.Board;
 import model.City;
 import model.NobilityCell;
 import model.NobilityTrack;
-import model.PermitTile;
 import model.PoliticCard;
 import model.Region;
 import model.Tile;
@@ -90,7 +89,7 @@ public class BonusManager {
 			case "NOBILITYTRACK":
 				nobilityTrackBonus(bonus, player);
 				break;
-			case "DRAWPERMITTILE": // WRONG IMPLEMENTATION!!!
+			case "DRAWPERMITTILE":
 				drawPermitTile(player);
 				break;
 			case "BONUSPERMITTILE":
@@ -164,13 +163,9 @@ public class BonusManager {
 	}
 
 	private void bonusPermitTile(ArrayList<String> bonus, Player player) {
-		Random randomBonus = new Random();
-		int supLimit, infLimit;
-		infLimit = 1;
-		supLimit = 2 - infLimit;
 		Tile tempTile;
 		String deck = "";
-		int deckPermitTileChoice = randomBonus.nextInt(supLimit) + infLimit;
+		int deckPermitTileChoice = randomNumber(1, 2);
 		try {
 			if (deckPermitTileChoice == 1) {
 				deck = "USED PERMIT TILES DECK";
@@ -219,6 +214,7 @@ public class BonusManager {
 	
 	private int randomNumber(int infLimit,int supLimit){
 		int randomNumber;
+		supLimit=supLimit-infLimit;
 		Random randomBonus = new Random();
 		randomNumber= randomBonus.nextInt(supLimit) + infLimit;
 		return randomNumber;

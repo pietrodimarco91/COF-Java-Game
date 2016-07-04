@@ -158,8 +158,8 @@ public class TestCheckCouncillorsSatisfaction {
 				politicCard=tempCardsArrayList.get(i);
 				politicCardsString.add(politicCard.getColorCard());
 			};
-			
-			int testResultMethod=testRegion.numberOfCouncillorsSatisfied(politicCardsString).size();
+			Council council=testRegion.getCouncil();
+			int testResultMethod=council.numberOfCouncillorsSatisfied(politicCardsString).size();
 			assertEquals(corrispondence,testResultMethod);
 		
 		}

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import exceptions.TileNotFoundException;
+import model.Board;
 import model.City;
 import model.NobilityCell;
 import model.NobilityTrack;
@@ -16,13 +17,16 @@ import model.Tile;
  */
 public class BonusManager {
 
-	private NobilityTrack track;
+	private Board board;
 
 	private List<Player> players;
+	
+	private NobilityTrack nobilityTrack;
 
-	public BonusManager(List<Player> players, NobilityTrack track) {
-		this.track = track;
+	public BonusManager(List<Player> players, Board board) {
+		this.board=board;
 		this.players = players;
+		this.nobilityTrack=board.getNobilityTrack();
 	}
 
 	/**
@@ -154,7 +158,7 @@ public class BonusManager {
 		numberOfBonus = randomBonus.nextInt(supLimit) + infLimit;
 		player.changePositionInNobilityTrack(numberOfBonus);
 		int position = player.getPositionInNobilityTrack();
-		NobilityCell cell = this.track.getNobilityTrackCell(position);
+		NobilityCell cell = this.nobilityTrack.getNobilityTrackCell(position);
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName() + "' won " + numberOfBonus
 				+ " bonus steps in Nobility Track!");
 		takeBonusFromNobilityTrack(cell, player);

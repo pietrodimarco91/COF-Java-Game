@@ -171,7 +171,7 @@ public class Region {
 		return this.name;
 	}
 	
-	public Council getCountil() {
+	public Council getCouncil() {
 		return this.council;
 	}
 

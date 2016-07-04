@@ -29,23 +29,24 @@ import model.Tile;
 
 /**
  * This class has all the method used to perform the actions of the game.
+ * 
  * @author Riccardo
  *
  */
 public class MatchActionsHandler {
 
 	private Board board;
-	
+
 	private MatchHandler match;
-	
+
 	private List<Player> players;
-	
+
 	public MatchActionsHandler(MatchHandler match, Board board, List<Player> players) {
-		this.board=board;
-		this.match=match;
-		this.players=players;
+		this.board = board;
+		this.match = match;
+		this.players = players;
 	}
-	
+
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
 			match.sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
@@ -127,28 +128,26 @@ public class MatchActionsHandler {
 			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
 			player.performPayment(playerPayment + coinsToPay);
 			player.removeCardsFromHand(chosenPoliticCards);
+			if (!cityTo.buildEmporium(player))
+				throw new AlreadyOwnedEmporiumException();
 			if (coinsToPay > 0) {
 				board.moveKing(cityTo);
 			}
-			if (!cityTo.buildEmporium(player))
-				throw new AlreadyOwnedEmporiumException();
-			else {
-				PubSub.notifyAllClients(players, "Player " + player.getNickName() + " has built an Emporium in "
-						+ cityTo.getName() + " with king's help");
-				match.winBuildingBonuses(cityTo, player);
-				player.mainActionDone(true);
-				if (hasBuiltLastEmporium(player)) {
-					PubSub.notifyAllClients(this.players, "Player " + player.getNickName()
-							+ " has built his last Emporium!!\n This is your last turn!");
-					match.setGameStatus(GameStatusConstants.FINISH);
-					player.addVictoryPoints(3);
-					PubSub.notifyAllClients(this.players,
-							"Player " + player.getNickName() + " has won 3 bonus Victory Points!");
-				}
-				if (player.hasPerformedQuickAction()) {
-					match.notifyEndOfTurn(player);
-					player.resetTurn();
-				}
+			PubSub.notifyAllClients(players, "Player " + player.getNickName() + " has built an Emporium in "
+					+ cityTo.getName() + " with king's help");
+			match.winBuildingBonuses(cityTo, player);
+			player.mainActionDone(true);
+			if (hasBuiltLastEmporium(player)) {
+				PubSub.notifyAllClients(this.players,
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!");
+				match.setGameStatus(GameStatusConstants.FINISH);
+				player.addVictoryPoints(3);
+				PubSub.notifyAllClients(this.players,
+						"Player " + player.getNickName() + " has won 3 bonus Victory Points!");
+			}
+			if (player.hasPerformedQuickAction()) {
+				match.notifyEndOfTurn(player);
+				player.resetTurn();
 			}
 		} catch (UnsufficientCouncillorsSatisfiedException e) {
 			match.sendErrorToClient(e.showError(), playerId);
@@ -161,7 +160,7 @@ public class MatchActionsHandler {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -176,11 +175,12 @@ public class MatchActionsHandler {
 				throw new UnsufficientCoinsException();
 			player.removeMoreAssistants(3);
 			player.mainActionDone(false);
+			player.quickActionDone();
 		} catch (UnsufficientCoinsException e) {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}
-	
+
 	/**
 	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
 	 * be handled inside a while loop untile the move is correctly performed.
@@ -212,7 +212,7 @@ public class MatchActionsHandler {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}
-	
+
 	/**
 	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
 	 * be handled inside a while loop until the move is correctly performed.
@@ -241,7 +241,7 @@ public class MatchActionsHandler {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}
-	
+
 	/**
 	 * NEEDS REVISION: the parameters communication must be implemented inside
 	 * the method.
@@ -274,7 +274,7 @@ public class MatchActionsHandler {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}
-	
+
 	/**
 	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
 	 * 
@@ -319,7 +319,7 @@ public class MatchActionsHandler {
 			match.sendErrorToClient(e.showError(), playerId);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -372,11 +372,11 @@ public class MatchActionsHandler {
 		}
 		return region;
 	}
-	
+
 	public boolean hasBuiltLastEmporium(Player player) {
 		return player.getNumberOfEmporium() == 0;
 	}
-	
+
 	public boolean buildEmporium(PermitTile permitTile, Player player, String cityChoice)
 			throws AlreadyOwnedEmporiumException {
 		boolean found = false;

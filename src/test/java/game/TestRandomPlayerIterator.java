@@ -1,4 +1,4 @@
-package controller;
+package game;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
+import controller.Player;
+import controller.PlayerTurnIterator;
+import controller.RandomPlayerIterator;
 
 public class TestRandomPlayerIterator {
 

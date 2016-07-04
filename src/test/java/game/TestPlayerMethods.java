@@ -1,4 +1,4 @@
-package controller;
+package game;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import controller.Player;
 import exceptions.CardNotFoundException;
 import model.PoliticCard;
 

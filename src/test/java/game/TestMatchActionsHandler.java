@@ -1,4 +1,4 @@
-package controller;
+package game;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,9 @@ import client.actions.AdditionalMainAction;
 import client.actions.BuyPermitTileAction;
 import client.actions.EngageAssistantAction;
 import client.actions.SimpleBuildEmporiumAction;
+import controller.MatchActionsHandler;
+import controller.MatchHandler;
+import controller.Player;
 import exceptions.TileNotFoundException;
 import model.Board;
 import model.City;

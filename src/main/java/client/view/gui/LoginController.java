@@ -24,12 +24,12 @@ public class LoginController extends ClientGUIController {
 	@FXML
 	void play(ActionEvent event) {
 		final URL resource = getClass().getResource("audio/buttonPressed.mp3");
-        final Media media = new Media(resource.toString());
-        final MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.play();
+		final Media media = new Media(resource.toString());
+		final MediaPlayer mediaPlayer = new MediaPlayer(media);
+		mediaPlayer.play();
 		String playerName = nickName.getText();
 		if (checkCorrectNickName(playerName)) {
-			//Stage connectionStage = 
+			//Stage connectionStage =
 		} else {
 			// Show the error message.
 			Alert alert = new Alert(AlertType.ERROR);

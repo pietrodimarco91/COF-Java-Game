@@ -78,10 +78,10 @@ public abstract class ClientController {
 	}
 
 	public boolean checkCorrectNickName(String nickName) {
-		boolean correct = false;
 		if (nickName.contains(" ") || nickName.length() < 4)
-			correct = true;
-		return correct;
+			return false;
+		else
+			return true;
 	}
 
 	/**

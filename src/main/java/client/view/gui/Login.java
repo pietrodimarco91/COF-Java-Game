@@ -1,25 +1,24 @@
 package client.view.gui;
 
-
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
-public class Login extends Application{
+public class Login extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-	Parent root = FXMLLoader.load( getClass().getResource("Login.fxml"));
-	
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(Login.class.getResource("Login.fxml"));
+		Parent root = loader.load();
+		// Parent root = FXMLLoader.load( getClass().getResource("Login.fxml"));
+		stage.setTitle("Login Area");
+		stage.setScene(new Scene(root, 600, 500));
+		stage.show();
 
-	       stage.setTitle("Login Area");
-	       stage.setScene(new Scene(root, 600, 500));
-	       stage.show();
+		LoginController controller = loader.getController();
+		controller.setStage(stage);
 	}
-
-
 }

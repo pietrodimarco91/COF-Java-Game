@@ -94,5 +94,4 @@ public class ClientGUIController extends ClientController {
 	public void welcome(String[] args) {
 		Application.launch(Login.class, args);
 	}
-
 }

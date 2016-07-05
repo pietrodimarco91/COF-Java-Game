@@ -43,7 +43,7 @@ public class ClientCLIController extends ClientController {
 			ClientOutputPrinter.printLine("Please, choose a nickname with at least 4 char and without space:");
 			nickName = input.nextLine();
 			checkCorrectNickName(nickName);
-		} while (checkCorrectNickName(nickName));
+		} while (!checkCorrectNickName(nickName));
 	}
 	
 	/**

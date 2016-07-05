@@ -5,7 +5,6 @@ import controller.ClientSideConnectorInt;
 import controller.MatchHandler;
 import controller.Packet;
 import controller.ServerSideConnectorInt;
-import javafx.scene.control.TextArea;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,38 +18,35 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 	private ObjectInputStream inputObjectFromServer;
 	private ObjectOutputStream outputObjectToServer;
 	private boolean stop;
-	
-	private TextArea guiConsole;
+	private ClientGUIController guiController;
 
 	public SocketInputOutputThread(Socket socket) {
-		this.stop=false;
+		this.stop = false;
 		try {
-			outputObjectToServer=new ObjectOutputStream(socket.getOutputStream());
-			inputObjectFromServer=new ObjectInputStream(socket.getInputStream());
+			outputObjectToServer = new ObjectOutputStream(socket.getOutputStream());
+			inputObjectFromServer = new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 
-
-	//*****CLIENT SIDE METHOD******//
+	// *****CLIENT SIDE METHOD******//
 
 	@Override
 	public void run() {
-			while (!stop) {
-				try {
-					sendToClient((Packet) inputObjectFromServer.readObject());
-				} catch(SocketException e) {
-					ClientOutputPrinter.printLine("Critical error: Server went down and the connection has been closed.");
-					break;
-				} catch (IOException e) {
-					ClientOutputPrinter.printLine(e.getMessage());
-				} catch (ClassNotFoundException e) {
-					ClientOutputPrinter.printLine(e.getMessage());
-				}
+		while (!stop) {
+			try {
+				sendToClient((Packet) inputObjectFromServer.readObject());
+			} catch (SocketException e) {
+				ClientOutputPrinter.printLine("Critical error: Server went down and the connection has been closed.");
+				break;
+			} catch (IOException e) {
+				ClientOutputPrinter.printLine(e.getMessage());
+			} catch (ClassNotFoundException e) {
+				ClientOutputPrinter.printLine(e.getMessage());
 			}
+		}
 	}
-
 
 	@Override
 	public void sendToServer(Packet packet) throws RemoteException {
@@ -61,7 +57,7 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public void setPlayerId(int id) {
 
@@ -69,42 +65,41 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 
 	public void sendToClient(Packet packet) throws RemoteException {
 		switch (packet.getHeader()) {
-			case "MESSAGESTRING":
-				ClientOutputPrinter.printLine(packet.getMessageString());
-				if (guiConsole != null) {
-					this.guiConsole.appendText(packet.getMessageString());
-				}
-				break;
-			case "UPDATE":
-				ClientOutputPrinter.printLine("*** GUI UPDATE RECEIVED: "+ packet.getUpdate().getHeader()+" ***");
-				if (guiConsole != null) {
-					this.guiConsole.appendText(packet.getMessageString());
-				}
-				break;
-			default:
+		case "MESSAGESTRING":
+			ClientOutputPrinter.printLine(packet.getMessageString());
+			if (guiController != null) {
+				guiController.sendPacketToGUIController(packet);
+			}
+			break;
+		case "UPDATE":
+			ClientOutputPrinter.printLine("*** GUI UPDATE RECEIVED: " + packet.getUpdate().getHeader() + " ***");
+			if (guiController != null) {
+				guiController.sendPacketToGUIController(packet);
+			}
+			break;
+		default:
 		}
 
 	}
 
-	//*****SERVER SIDE METHOD******//
+	public void setGUIController(ClientGUIController controller) {
+		this.guiController = controller;
+	}
+
+	// *****SERVER SIDE METHOD******//
 
 	@Override
 	public void setMatchHandler(MatchHandler matchHandler) {
 
 	}
 
-
 	public void disconnect() {
-		stop=true;
+		stop = true;
 		try {
 			outputObjectToServer.close();
 			inputObjectFromServer.close();
 		} catch (IOException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
-	}
-	
-	public void setGUIConsole(TextArea console) {
-		this.guiConsole=console;
 	}
 }

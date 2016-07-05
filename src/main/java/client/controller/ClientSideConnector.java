@@ -3,7 +3,6 @@ package client.controller;
 import client.view.cli.ClientOutputPrinter;
 import controller.ClientSideConnectorInt;
 import controller.Packet;
-import javafx.scene.control.TextArea;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -13,7 +12,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ClientSideConnector extends UnicastRemoteObject implements ClientSideConnectorInt {
 
-	private TextArea guiConsole;
+	private ClientGUIController guiController;
 
 	public ClientSideConnector() throws RemoteException {
 
@@ -24,21 +23,21 @@ public class ClientSideConnector extends UnicastRemoteObject implements ClientSi
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
 			ClientOutputPrinter.printLine(packet.getMessageString());
-			if (guiConsole != null) {
-				this.guiConsole.appendText(packet.getMessageString());
+			if (guiController != null) {
+				guiController.sendPacketToGUIController(packet);
 			}
 			break;
 		case "UPDATE":
 			ClientOutputPrinter.printLine("*** GUI UPDATE RECEIVED: " + packet.getUpdate().getHeader() + " ***");
-			if (guiConsole != null) {
-				this.guiConsole.appendText(packet.getMessageString());
+			if (guiController != null) {
+				guiController.sendPacketToGUIController(packet);
 			}
 			break;
 		default:
 		}
 	}
 
-	public void setGUIConsole(TextArea console) {
-		this.guiConsole = console;
+	public void setGUIController(ClientGUIController controller) {
+		this.guiController = controller;
 	}
 }

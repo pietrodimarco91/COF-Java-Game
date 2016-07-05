@@ -3,6 +3,7 @@ package client.view.gui;
 import client.controller.ClientGUIController;
 
 import java.io.File;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javafx.event.ActionEvent;
@@ -25,13 +26,15 @@ public class LoginController extends ClientGUIController {
 	@FXML
 	private Button play;
 	@FXML
-	private TextField nickName;
+	private TextField inputNickName;
 	@FXML
 	private RadioButton socketCheckBox;
 	@FXML
 	private RadioButton rmiCheckBox;
 
 	private int connectionType = 0; // 1 socket and 2 RMI
+	
+	private String nickname;
 
 	@FXML
 	void play(ActionEvent event) {
@@ -44,15 +47,17 @@ public class LoginController extends ClientGUIController {
 		}
 		playSound(resource.toString());
 
-		String playerName = nickName.getText();
+		nickname = inputNickName.getText();
 		String errorMessage = "";
-		if (checkCorrectNickName(playerName) && connectionType != 0) {
+		if (checkCorrectNickName(nickname) && connectionType != 0) {
+			connect();
 			// Stage connectionStage =
+			
 		} else {
 			if (connectionType == 0) {
 				errorMessage += "Please select a connection type!\n";
 			}
-			if (!checkCorrectNickName(playerName)) {
+			if (!checkCorrectNickName(nickname)) {
 				errorMessage += "Please use a nickname of at least 4 characters and without spaces!";
 			}
 			// Show the error message.
@@ -62,7 +67,7 @@ public class LoginController extends ClientGUIController {
 			alert.setHeaderText("Error!");
 			alert.setContentText(errorMessage);
 			alert.showAndWait();
-			nickName.setText("");
+			inputNickName.setText("");
 		}
 	}
 
@@ -72,10 +77,9 @@ public class LoginController extends ClientGUIController {
 		socketCheckBox.setToggleGroup(group);
 		rmiCheckBox.setToggleGroup(group);
 		if (socketCheckBox.isSelected())
-			connectionType = 1;
-		else if (rmiCheckBox.isSelected())
 			connectionType = 2;
-
+		else if (rmiCheckBox.isSelected())
+			connectionType = 1;
 	}
 
 	public void setStage(Stage stage) {
@@ -83,11 +87,17 @@ public class LoginController extends ClientGUIController {
 	}
 
 	private void playSound(String soundPath) {
-
 		final Media media = new Media(soundPath);
 		final MediaPlayer mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.play();
-
 	}
-
+	
+	@Override
+	public void connect() {
+		if(connectionType==1) {
+			this.startRMIConnection(nickname);
+		} else if(connectionType==2) {
+			this.startSocketConnection(nickname);
+		}
+	}
 }

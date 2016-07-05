@@ -25,7 +25,6 @@ public class GUIMainApp extends Application {
 		loader.setLocation(resource);
 		
 		Parent root = loader.load();
-		// Parent root = FXMLLoader.load( getClass().getResource("Login.fxml"));
 		stage.setTitle("Login Area");
 		stage.setScene(new Scene(root, 600, 500));
 		stage.show();

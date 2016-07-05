@@ -105,6 +105,14 @@ public abstract class ClientController {
 		if (linksBetweenCities < 2 && linksBetweenCities > 4)
 			throw new InvalidInputException();
 	}
+	
+	public ClientSideConnector getClientSideConnector(){
+		return this.clientSideConnector;
+	}
+	
+	public SocketInputOutputThread getSocketThread(){
+		return this.socketInputOutputThread;
+	}
 
 	public abstract void welcome(String[] args);
 

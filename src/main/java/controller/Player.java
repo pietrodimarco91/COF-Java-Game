@@ -31,7 +31,7 @@ public class Player implements Serializable {
 	/**
 	 *
 	 */
-	private final static int MAXIMUN_POSITION = 20;
+	private final static int MAXIMUM_POSITION = 19;
 	/**
 	 *
 	 */
@@ -121,6 +121,30 @@ public class Player implements Serializable {
 	 *
 	 */
 	private boolean disconnected;
+	
+	/**
+	 * IMPORTANT: this field is used only for test purposes
+	 * @return
+	 */
+	private int numberOfWRewardTokensWon;
+	
+	/**
+	 * IMPORTANT: this field is used only for test purposes
+	 * @return
+	 */
+	private int colorBonusWon;
+	
+	/**
+	 * IMPORTANT: this field is used only for test purposes
+	 * @return
+	 */
+	private int regionBonusWon;
+	
+	/**
+	 * IMPORTANT: this field is used only for test purposes
+	 * @return
+	 */
+	private int kingRewardBonusWon;
 
 	/**
 	 * Default constructor
@@ -144,6 +168,10 @@ public class Player implements Serializable {
 		this.victoryPoints = INITIAL_POSITION;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 		this.disconnected = false;
+		this.numberOfWRewardTokensWon=0;
+		this.colorBonusWon=0;
+		this.regionBonusWon=0;
+		this.kingRewardBonusWon=0;
 	}
 
 	/**
@@ -164,7 +192,75 @@ public class Player implements Serializable {
 		this.victoryPoints = INITIAL_POSITION;
 		this.color = String.valueOf(new Color(random.nextFloat(), random.nextFloat(), random.nextFloat()));
 		this.disconnected=false;
+		this.numberOfWRewardTokensWon=0;
+		this.colorBonusWon=0;
+		this.regionBonusWon=0;
+		this.kingRewardBonusWon=0;
 		this.won=false;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public int getNumberOfRewardTokensWon() {
+		return this.numberOfWRewardTokensWon;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public int getNumberOfColorBonusWon() {
+		return this.colorBonusWon;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public int getNumberOfRegionBonusWon() {
+		return this.regionBonusWon;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public int getNumberOfKingRewardBonusWon() {
+		return this.kingRewardBonusWon;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public void rewardTokenWon() {
+		this.numberOfWRewardTokensWon++;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public void regionBonusWon() {
+		this.regionBonusWon++;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public void colorBonusWon() {
+		this.colorBonusWon++;
+	}
+	
+	/**
+	 * IMPORTANT: this method is used only for test purposes
+	 * @return
+	 */
+	public void kingRewardWon() {
+		this.kingRewardBonusWon++;
 	}
 
 	public String getNickName() {
@@ -409,8 +505,8 @@ public class Player implements Serializable {
 	 * 
 	 */
 	public void changePositionInNobilityTrack(int position) {
-		if (this.positionInNobilityTrack + position > MAXIMUN_POSITION)
-			this.positionInNobilityTrack = MAXIMUN_POSITION;
+		if (this.positionInNobilityTrack + position >= MAXIMUM_POSITION)
+			this.positionInNobilityTrack = MAXIMUM_POSITION;
 		else
 			this.positionInNobilityTrack += position;
 	}

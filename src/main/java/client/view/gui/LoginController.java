@@ -30,57 +30,64 @@ public class LoginController extends ClientGUIController {
 	private RadioButton socketCheckBox;
 	@FXML
 	private RadioButton rmiCheckBox;
-	
-	private int connectionType; //1 socket and 2 RMI
-	
+
+	private int connectionType = 0; // 1 socket and 2 RMI
+
 	@FXML
 	void play(ActionEvent event) {
-		URL resource=null;
-		String pathTo="audio/buttonPressed.mp3";
-		  try {
-		   resource = new File("src/main/java/client/view/gui/"+pathTo).toURI().toURL();
-		  } catch (MalformedURLException e) {
-		   e.printStackTrace();
-		  }
+		URL resource = null;
+		String pathTo = "audio/buttonPressed.mp3";
+		try {
+			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		playSound(resource.toString());
-		
+
 		String playerName = nickName.getText();
-		if (checkCorrectNickName(playerName)) {
-			//Stage connectionStage = 
+		String errorMessage = "";
+		if (checkCorrectNickName(playerName) && connectionType != 0) {
+			// Stage connectionStage =
 		} else {
+			if (connectionType == 0) {
+				errorMessage += "Please select a connection type!\n";
+			}
+			if (!checkCorrectNickName(playerName)) {
+				errorMessage += "Please use a nickname of at least 4 characters and without spaces!";
+			}
 			// Show the error message.
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.initOwner(welcomeStage);
 			alert.setTitle("Ops...");
 			alert.setHeaderText("Error!");
-			alert.setContentText("Please use a nickname of at least 4 characters and without spaces!");
+			alert.setContentText(errorMessage);
 			alert.showAndWait();
 			nickName.setText("");
 		}
 	}
-	
+
 	@FXML
-	void selectConnectionType(ActionEvent event){
-		ToggleGroup group=new ToggleGroup();
+	void selectConnectionType(ActionEvent event) {
+		ToggleGroup group = new ToggleGroup();
 		socketCheckBox.setToggleGroup(group);
 		rmiCheckBox.setToggleGroup(group);
-		if(socketCheckBox.isSelected())
-			connectionType=1;
-		else if(rmiCheckBox.isSelected())
-			connectionType=2;
-		
+		if (socketCheckBox.isSelected())
+			connectionType = 1;
+		else if (rmiCheckBox.isSelected())
+			connectionType = 2;
+
 	}
 
 	public void setStage(Stage stage) {
 		this.welcomeStage = stage;
 	}
-	
-	private void playSound(String soundPath){
-		
-        final Media media = new Media(soundPath);
-        final MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.play();
-        
+
+	private void playSound(String soundPath) {
+
+		final Media media = new Media(soundPath);
+		final MediaPlayer mediaPlayer = new MediaPlayer(media);
+		mediaPlayer.play();
+
 	}
 
 }

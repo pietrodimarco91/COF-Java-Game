@@ -107,11 +107,11 @@ public abstract class ClientController {
 	}
 	
 	public ClientSideConnector getClientSideConnector(){
-		return this.clientSideConnector;
+		return clientSideConnector;
 	}
 	
 	public SocketInputOutputThread getSocketThread(){
-		return this.socketInputOutputThread;
+		return socketInputOutputThread;
 	}
 
 	public abstract void welcome(String[] args);

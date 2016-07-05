@@ -1,11 +1,16 @@
 package client.view.gui;
 
 import client.controller.ClientGUIController;
+import client.controller.ClientSideConnector;
+import client.controller.SocketInputOutputThread;
+import controller.ServerSideConnectorInt;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +40,7 @@ public class LoginController extends ClientGUIController {
 	private RadioButton rmiCheckBox;
 
 	private int connectionType = 0; // 1 socket and 2 RMI
-	
+
 	private String nickname;
 
 	@FXML
@@ -50,46 +55,69 @@ public class LoginController extends ClientGUIController {
 		playSound(resource.toString());
 
 		nickname = inputNickName.getText();
-		String errorMessage = "";
 		if (checkCorrectNickName(nickname) && connectionType != 0) {
 			connect();
-			FXMLLoader loader=new FXMLLoader();
-			pathTo="WaitingRoom.fxml";
-			Parent parentConnectionStage;
-			try {
-				resource = new File("src/main/java/client/view/gui/"+pathTo).toURI().toURL();
-				loader.setLocation(resource);
-				parentConnectionStage = loader.load();
-				Stage waitingRoomStage=welcomeStage;
-				waitingRoomStage.setScene(new Scene(parentConnectionStage));
-				waitingRoomStage.show();
-				WaitingRoomController waitingRoomController=loader.getController();
-				waitingRoomController.setStage(waitingRoomStage);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			createWaitingRoomStage();
 		} else {
-			if (connectionType == 0) {
-				errorMessage += "Please select a connection type!\n";
-			}
-			if (!checkCorrectNickName(nickname)) {
-				errorMessage += "Please use a nickname of at least 4 characters and without spaces!";
-			}
-			// Show the error message.
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.initOwner(welcomeStage);
-			alert.setTitle("Ops...");
-			alert.setHeaderText("Error!");
-			alert.setContentText(errorMessage);
-			alert.showAndWait();
-			inputNickName.setText("");
+			showErrorMessage();
 		}
 	}
 
+	public void createWaitingRoomStage() {
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "WaitingRoom.fxml";
+		Parent parentConnectionStage;
+		try {
+			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			parentConnectionStage = loader.load();
+			Stage waitingRoomStage = welcomeStage;
+			waitingRoomStage.setScene(new Scene(parentConnectionStage));
+			waitingRoomStage.setTitle("Waiting Room");
+			waitingRoomStage.show();
+			WaitingRoomController waitingRoomController = loader.getController();
+			Platform.runLater(() -> {
+				ClientSideConnector clientSideConnector = super.getClientSideConnector();
+				SocketInputOutputThread socketThread = super.getSocketThread();
+				ServerSideConnectorInt serverSideConnector = super.getServerConnector();
+				if (clientSideConnector != null) {
+					clientSideConnector.setGUIController(waitingRoomController);
+					waitingRoomController.setConnector(serverSideConnector);
+				}
+				if (socketThread != null) {
+					socketThread.setGUIController(waitingRoomController);
+					waitingRoomController.setConnector(serverSideConnector);
+				}
+			});
+			waitingRoomController.setStage(waitingRoomStage);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void showErrorMessage() {
+		String errorMessage = "";
+		if (connectionType == 0) {
+			errorMessage += "Please select a connection type!\n";
+		}
+		if (!checkCorrectNickName(nickname)) {
+			errorMessage += "Please use a nickname of at least 4 characters and without spaces!";
+		}
+		// Show the error message.
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.initOwner(welcomeStage);
+		alert.setTitle("Ops...");
+		alert.setHeaderText("Error!");
+		alert.setContentText(errorMessage);
+		alert.showAndWait();
+		inputNickName.setText("");
+	}
+
 	@FXML
-	void selectConnectionType(ActionEvent event) {
+	public void selectConnectionType(ActionEvent event) {
 		URL resource = null;
 		String pathTo = "audio/checkBoxClick.mp3";
 		try {
@@ -97,19 +125,17 @@ public class LoginController extends ClientGUIController {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		
+
 		ToggleGroup group = new ToggleGroup();
 		socketCheckBox.setToggleGroup(group);
 		rmiCheckBox.setToggleGroup(group);
 
-		if (socketCheckBox.isSelected()){
+		if (socketCheckBox.isSelected()) {
+			playSound(resource.toString());
+			connectionType = 2;
+		} else if (rmiCheckBox.isSelected()) {
 			playSound(resource.toString());
 			connectionType = 1;
-		}
-		else if (rmiCheckBox.isSelected()){
-			playSound(resource.toString());
-			
-			connectionType = 2;
 		}
 	}
 
@@ -122,12 +148,12 @@ public class LoginController extends ClientGUIController {
 		final MediaPlayer mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.play();
 	}
-	
+
 	@Override
 	public void connect() {
-		if(connectionType==1) {
+		if (connectionType == 1) {
 			this.startRMIConnection(nickname);
-		} else if(connectionType==2) {
+		} else if (connectionType == 2) {
 			this.startSocketConnection(nickname);
 		}
 	}

@@ -32,7 +32,7 @@
          <center>
             <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <center>
-                  <TextField fx:id="nickName" alignment="CENTER" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="213.0" BorderPane.alignment="CENTER">
+                  <TextField fx:id="nickName" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="213.0" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets bottom="40.0" top="40.0" />
                      </BorderPane.margin>

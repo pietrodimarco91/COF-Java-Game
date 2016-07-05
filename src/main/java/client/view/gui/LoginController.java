@@ -1,5 +1,7 @@
 package client.view.gui;
 
+import java.net.URL;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -7,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class LoginController {
 
@@ -19,6 +23,10 @@ public class LoginController {
 
 	@FXML
 	void play(ActionEvent event) {
+		final URL resource = getClass().getResource("buttonPressed.mp3");
+        final Media media = new Media(resource.toString());
+        final MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.play();
 		String playerName = nickName.getText();
 		if (checkCorrectNickName(playerName))
 			;

@@ -68,13 +68,26 @@ public class LoginController extends ClientGUIController {
 
 	@FXML
 	void selectConnectionType(ActionEvent event) {
+		URL resource = null;
+		String pathTo = "audio/checkBoxClick.mp3";
+		try {
+			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
 		ToggleGroup group = new ToggleGroup();
 		socketCheckBox.setToggleGroup(group);
 		rmiCheckBox.setToggleGroup(group);
-		if (socketCheckBox.isSelected())
+		if (socketCheckBox.isSelected()){
+			playSound(resource.toString());
 			connectionType = 1;
-		else if (rmiCheckBox.isSelected())
+		}
+		else if (rmiCheckBox.isSelected()){
+			playSound(resource.toString());
+			
 			connectionType = 2;
+		}
 
 	}
 

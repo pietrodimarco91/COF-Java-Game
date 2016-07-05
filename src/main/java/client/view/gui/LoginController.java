@@ -1,11 +1,13 @@
 package client.view.gui;
 
-import client.controller.ClientGUIController;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import client.controller.ClientGUIController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -62,9 +64,11 @@ public class LoginController extends ClientGUIController {
 				parentConnectionStage = loader.load();
 				Stage waitingRoomStage=welcomeStage;
 				waitingRoomStage.setScene(new Scene(parentConnectionStage));
+				waitingRoomStage.setTitle("Match Room");
 				waitingRoomStage.show();
 				WaitingRoomController waitingRoomController=loader.getController();
 				waitingRoomController.setStage(waitingRoomStage);
+				waitingRoomController.setNickName(nickname);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

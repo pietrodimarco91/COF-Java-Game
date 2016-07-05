@@ -23,7 +23,7 @@ public class LoginController extends ClientGUIController {
 
 	@FXML
 	void play(ActionEvent event) {
-		final URL resource = getClass().getResource("buttonPressed.mp3");
+		final URL resource = getClass().getResource("audio/buttonPressed.mp3");
         final Media media = new Media(resource.toString());
         final MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();

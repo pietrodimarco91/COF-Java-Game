@@ -14,7 +14,7 @@ public class Client {
 	private Scanner input = new Scanner(System.in);
 
 	private ClientController controller;
-	
+
 	private String args[];
 
 	/**
@@ -22,15 +22,17 @@ public class Client {
 	 */
 	public Client(String[] args) {
 		controller = chooseController();
-		this.args=args;
+		this.args = args;
 	}
 
 	public void start() {
 		controller.welcome(args);
 		try {
-			controller.connect();
-			controller.initialConfiguration();
-			controller.play();
+			if (controller instanceof ClientCLIController) {
+				controller.connect();
+				controller.initialConfiguration();
+				controller.play();
+			}
 		} catch (RemoteException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
@@ -38,7 +40,7 @@ public class Client {
 
 	private ClientController chooseController() {
 		boolean proceed = false;
-		ClientController controller=null;
+		ClientController controller = null;
 		ClientOutputPrinter.printLine(
 				"Please, type 'gui' if you want to play with Graphical User Interface or 'cli' if you want to play from Command Line...");
 		while (!proceed) {

@@ -69,7 +69,7 @@ public class ClientGUIController extends ClientController {
 
 	@Override
 	public void connect() throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println("CONNECT INVOCATA");
 	}
 
 	@Override

@@ -17,7 +17,7 @@
             <VBox prefHeight="346.0" prefWidth="627.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Server Output" />
-                  <TextArea fx:id="serverOutput" prefHeight="146.0" prefWidth="627.0" />
+                  <TextArea fx:id="serverOutput" editable="false" prefHeight="146.0" prefWidth="627.0" />
                   <Label text="Chat" />
                   <TextArea fx:id="chat" prefHeight="126.0" prefWidth="627.0" />
                   <Label text="Write message to the other players..." />
@@ -43,8 +43,10 @@
          <left>
             <VBox prefHeight="154.0" prefWidth="175.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="createConfig" mnemonicParsing="false" prefHeight="25.0" prefWidth="141.0" text="Create Configuration" />
-                  <Button fx:id="requestConfig" mnemonicParsing="false" text="Request Configurations" />
+                  <Button fx:id="createConfig" mnemonicParsing="false" onAction="#newConfiguration" prefHeight="25.0" prefWidth="141.0" text="Create Configuration" />
+                  <Button fx:id="requestConfig" mnemonicParsing="false" onAction="#boardConfiguration" text="Request Configurations" />
+                  <TextField fx:id="configChose" onMouseClicked="#resetText" text="Or type a Configuration ID..." />
+                  <Button mnemonicParsing="false" onAction="#handleSelectConfiguration" text="Select Configuration" />
                </children>
             </VBox>
          </left>

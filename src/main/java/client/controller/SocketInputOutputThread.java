@@ -5,6 +5,7 @@ import controller.ClientSideConnectorInt;
 import controller.MatchHandler;
 import controller.Packet;
 import controller.ServerSideConnectorInt;
+import javafx.scene.control.TextArea;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,6 +19,8 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 	private ObjectInputStream inputObjectFromServer;
 	private ObjectOutputStream outputObjectToServer;
 	private boolean stop;
+	
+	private TextArea guiConsole;
 
 	public SocketInputOutputThread(Socket socket) {
 		this.stop=false;
@@ -68,9 +71,16 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 		switch (packet.getHeader()) {
 			case "MESSAGESTRING":
 				ClientOutputPrinter.printLine(packet.getMessageString());
+				if (guiConsole != null) {
+					this.guiConsole.appendText(packet.getMessageString());
+				}
 				break;
 			case "UPDATE":
 				ClientOutputPrinter.printLine("*** GUI UPDATE RECEIVED: "+ packet.getUpdate().getHeader()+" ***");
+				if (guiConsole != null) {
+					this.guiConsole.appendText(packet.getMessageString());
+				}
+				break;
 			default:
 		}
 
@@ -92,5 +102,9 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 		} catch (IOException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
+	}
+	
+	public void setGUIConsole(TextArea console) {
+		this.guiConsole=console;
 	}
 }

@@ -4,10 +4,15 @@ import client.controller.ClientGUIController;
 
 import java.io.File;
 import java.net.ConnectException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -51,8 +56,23 @@ public class LoginController extends ClientGUIController {
 		String errorMessage = "";
 		if (checkCorrectNickName(nickname) && connectionType != 0) {
 			connect();
-			// Stage connectionStage =
-			
+			FXMLLoader loader=new FXMLLoader();
+			pathTo="WaitingRoom.fxml";
+			Parent parentConnectionStage;
+			try {
+				resource = new File("src/main/java/client/view/gui/"+pathTo).toURI().toURL();
+				loader.setLocation(resource);
+				parentConnectionStage = loader.load();
+				Stage waitingRoomStage=welcomeStage;
+				waitingRoomStage.setScene(new Scene(parentConnectionStage));
+				waitingRoomStage.show();
+				WaitingRoomController waitingRoomController=loader.getController();
+				waitingRoomController.setStage(waitingRoomStage);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			if (connectionType == 0) {
 				errorMessage += "Please select a connection type!\n";

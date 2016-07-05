@@ -18,3 +18,7 @@ web-browsers.xml
 colors.scheme.xml
 .sonar_lock
 /bin/
+src/main/resources/Login.fxml
+src/main/resources/loginImage.jpg
+src/main/resources/Style.css
+src/main/resources/audio/buttonPressed.mp3

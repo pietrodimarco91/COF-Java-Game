@@ -37,7 +37,7 @@ public class ClientCLIController extends ClientController {
 		actionCreator = new ActionCreator();
 	}
 	
-	public void welcome() {
+	public void welcome(String[] args) {
 		ClientOutputPrinter.printLine("Welcome to a new session of 'Council Of Four' Game!");
 		do {
 			ClientOutputPrinter.printLine("Please, choose a nickname with at least 4 char and without space:");

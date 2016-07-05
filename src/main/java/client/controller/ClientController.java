@@ -106,7 +106,7 @@ public abstract class ClientController {
 			throw new InvalidInputException();
 	}
 
-	public abstract void welcome();
+	public abstract void welcome(String[] args);
 
 	public abstract void connect() throws RemoteException;
 

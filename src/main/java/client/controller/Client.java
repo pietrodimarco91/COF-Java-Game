@@ -14,16 +14,19 @@ public class Client {
 	private Scanner input = new Scanner(System.in);
 
 	private ClientController controller;
+	
+	private String args[];
 
 	/**
 	 * Default constructor
 	 */
-	public Client() {
+	public Client(String[] args) {
 		controller = chooseController();
+		this.args=args;
 	}
 
 	public void start() {
-		controller.welcome();
+		controller.welcome(args);
 		try {
 			controller.connect();
 			controller.initialConfiguration();

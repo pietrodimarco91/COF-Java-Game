@@ -3,6 +3,7 @@ package client.controller;
 import java.rmi.RemoteException;
 
 import client.view.gui.Login;
+import javafx.application.Application;
 
 public class ClientGUIController extends ClientController {
 
@@ -90,9 +91,8 @@ public class ClientGUIController extends ClientController {
 	}
 
 	@Override
-	public void welcome() {
-		// TODO Auto-generated method stub
-		
+	public void welcome(String[] args) {
+		Application.launch(Login.class, args);
 	}
 
 }

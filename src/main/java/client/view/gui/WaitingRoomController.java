@@ -7,23 +7,23 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 import client.controller.ClientGUIController;
-import client.controller.ClientSideConnector;
-import client.controller.SocketInputOutputThread;
-import controller.ClientSideConnectorInt;
 import controller.Packet;
 import controller.ServerSideConnectorInt;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 /**
@@ -45,12 +45,18 @@ public class WaitingRoomController extends ClientGUIController {
 
 	@FXML
 	private Button sendMessage;
+	
+	@FXML
+	private Button mute;
 
 	@FXML
 	private TextArea serverOutput;
 
 	@FXML
 	private VBox playersInGame;
+	
+	@FXML
+	private Label title ;
 
 	private Stage waitingRoomStage;
 
@@ -58,9 +64,55 @@ public class WaitingRoomController extends ClientGUIController {
 
 	@FXML
 	private TextField configChose;
+	
+	private String nickName;
+	
+	private boolean muteCheck=false;
+	
+	private MediaPlayer mediaPlayer;
+	
+	@FXML
+	public void initialize() {
+		URL resource = null;
+		String pathTo = "audio/surroundMusic.mp3";
+		try {
+			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		playSound(resource.toString());
+	}
+	
+	@FXML
+	public void mute(ActionEvent event){
+		if(!muteCheck){
+		mute.getStyleClass().remove("audioButtonNotMute");
+		mute.getStyleClass().add("audioButtonMute");
+		muteCheck=true;
+		muteSound(muteCheck);
+		}
+		else if (muteCheck){
+		mute.getStyleClass().remove("audioButtonMute");
+		mute.getStyleClass().add("audioButtonNotMute");
+		muteCheck=false;
+		muteSound(muteCheck);
+		}
+		
+	}
 
 	public void setStage(Stage stage) {
 		waitingRoomStage = stage;
+	}
+	
+	public void setNickName(String nickName){
+		this.nickName=nickName;
+		title.setText("Welcolme "+nickName+", you are waiting for other players...");
+	}
+	
+	private void playSound(String soundPath) {
+		final Media media = new Media(soundPath);
+		this.mediaPlayer = new MediaPlayer(media);
+		mediaPlayer.play();
 	}
 
 	public void setConnector(ServerSideConnectorInt connector) {
@@ -141,5 +193,9 @@ public class WaitingRoomController extends ClientGUIController {
 			serverOutput.appendText(packet.getUpdate().getHeader() + "\n");
 			break;
 		}
+	}
+
+	private void muteSound(boolean mute){
+		this.mediaPlayer.setMute(mute);
 	}
 }

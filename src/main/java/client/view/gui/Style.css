@@ -2,3 +2,13 @@
 	-fx-background-image:url("loginImage.jpg");
 	-fx-background-size:140%;
 }
+.waitingRoomPage{
+	-fx-background-image:url("waitingRoom.jpg");
+	-fx-background-size:120%;
+}
+.audioButtonNotMute{
+	-fx-graphic:url("notMute.png");
+}
+.audioButtonMute{
+	-fx-graphic:url("mute.png");
+}

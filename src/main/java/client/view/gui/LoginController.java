@@ -4,12 +4,10 @@ import client.controller.ClientGUIController;
 import client.controller.ClientSideConnector;
 import client.controller.SocketInputOutputThread;
 import controller.ServerSideConnectorInt;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -74,9 +72,11 @@ public class LoginController extends ClientGUIController {
 			parentConnectionStage = loader.load();
 			Stage waitingRoomStage = welcomeStage;
 			waitingRoomStage.setScene(new Scene(parentConnectionStage));
-			waitingRoomStage.setTitle("Waiting Room");
+			waitingRoomStage.setTitle("Match Room");
 			waitingRoomStage.show();
 			WaitingRoomController waitingRoomController = loader.getController();
+			waitingRoomController.setStage(waitingRoomStage);
+			waitingRoomController.setNickName(nickname);
 			Platform.runLater(() -> {
 				ClientSideConnector clientSideConnector = super.getClientSideConnector();
 				SocketInputOutputThread socketThread = super.getSocketThread();
@@ -90,7 +90,6 @@ public class LoginController extends ClientGUIController {
 					waitingRoomController.setConnector(serverSideConnector);
 				}
 			});
-			waitingRoomController.setStage(waitingRoomStage);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

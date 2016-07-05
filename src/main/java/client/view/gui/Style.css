@@ -1,0 +1,4 @@
+.loginPage{
+	-fx-background-image:url("loginImage.jpg");
+	-fx-background-size:140%;
+}

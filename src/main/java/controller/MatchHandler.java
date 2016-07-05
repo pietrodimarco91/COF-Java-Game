@@ -243,6 +243,7 @@ public class MatchHandler {
 		}
 		Player player = new Player(connector, id, nickName);
 		this.players.add(player);
+		sendListOfPlayers();
 	}
 
 	/**
@@ -876,6 +877,22 @@ public class MatchHandler {
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
+		}
+	}
+	
+	public void sendListOfPlayers() {
+		for(Player player : players) {
+			try {
+				if (!player.playerIsOffline()) {
+					player.getConnector().sendToClient(new Packet(new UpdateState(players)));
+				}
+			} catch (RemoteException e) {
+				player.setPlayerOffline();
+
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName()
+						+ "' and ID " + player.getId() + " disconnected!");
+
+			}
 		}
 	}
 

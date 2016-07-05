@@ -1,5 +1,6 @@
 package client.view.gui;
 
+import client.controller.ClientGUIController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -8,24 +9,24 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 
-public class LoginController {
+public class LoginController extends ClientGUIController {
 
-	private Stage stage;
+	private Stage welcomeStage;
 
-	@FXML // fx:id="plat"
+	@FXML
 	private Button play;
-	@FXML // fx:id="testo"
+	@FXML
 	private TextField nickName;
 
 	@FXML
 	void play(ActionEvent event) {
 		String playerName = nickName.getText();
-		if (checkCorrectNickName(playerName))
-			;
-		else {
+		if (checkCorrectNickName(playerName)) {
+			//Stage connectionStage = 
+		} else {
 			// Show the error message.
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.initOwner(stage);
+			alert.initOwner(welcomeStage);
 			alert.setTitle("Ops...");
 			alert.setHeaderText("Error!");
 			alert.setContentText("Please use a nickname of at least 4 characters and without spaces!");
@@ -34,15 +35,8 @@ public class LoginController {
 		}
 	}
 
-	public boolean checkCorrectNickName(String nickName) {
-		if (nickName.contains(" ") || nickName.length() < 4)
-			return false;
-		else
-			return true;
-	}
-
 	public void setStage(Stage stage) {
-		this.stage = stage;
+		this.welcomeStage = stage;
 	}
 
 }

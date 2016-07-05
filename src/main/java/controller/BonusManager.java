@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 import exceptions.InvalidSlotException;
@@ -133,7 +134,8 @@ public class BonusManager {
 			match.updateClient(player.getId());
 		} catch (InvalidSlotException e) {
 			ServerOutputPrinter.printLine(e.getMessage());
-			;
+		} catch(NoSuchElementException e) {
+			match.sendErrorToClient("The queue of PermitTiles for this region is empty!", player.getId());
 		}
 	}
 

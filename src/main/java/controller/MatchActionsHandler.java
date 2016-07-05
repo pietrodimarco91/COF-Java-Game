@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import client.actions.AdditionalMainAction;
 import client.actions.BuyPermitTileAction;
@@ -99,6 +100,11 @@ public class MatchActionsHandler {
 			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			match.sendErrorToClient(e.showError(), playerId);
+		} catch(NoSuchElementException e) {
+			player.addCoins(playerPayment);
+			for (int i = 0; i < chosenPoliticCards.size(); i++)
+				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
+			match.sendErrorToClient("The queue of PermitTiles for this region is empty!", playerId);
 		}
 	}
 

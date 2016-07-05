@@ -475,6 +475,7 @@ public class MatchHandler {
 		bonusManager.takeBonusFromTile(rewardToken, player);
 		for (City ownedCity : ownedCities) {
 			rewardToken = ownedCity.winBonus();
+			player.rewardTokenWon(); //TEST PURPOSES
 			PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
 					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName(), board);
 			updateClient(player.getId());
@@ -488,12 +489,14 @@ public class MatchHandler {
 		if (board.isEligibleForColorBonus(player, city.getColor())) {
 			try {
 				colorBonus = board.winColorBonus(city.getColor());
+				player.colorBonusWon(); //TEST PURPOSES
 				bonusManager.takeBonusFromTile(colorBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 			try {
 				kingReward = board.winKingReward();
+				player.kingRewardWon(); //TEST PURPOSES
 				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
@@ -502,12 +505,14 @@ public class MatchHandler {
 		if (region.isEligibleForRegionBonus(player)) {
 			try {
 				regionBonus = region.winRegionBonus(player);
+				player.regionBonusWon(); //TEST PURPOSES
 				bonusManager.takeBonusFromTile(regionBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 			try {
 				kingReward = board.winKingReward();
+				player.kingRewardWon(); //TEST PURPOSES
 				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);

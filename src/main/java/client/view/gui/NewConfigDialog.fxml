@@ -9,61 +9,81 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="402.0" styleClass="configurationMap" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.NewConfigController">
+<AnchorPane prefHeight="394.0" prefWidth="402.0" styleClass="configurationMap" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.NewConfigController">
    <children>
-      <VBox alignment="CENTER" layoutX="5.0" layoutY="4.0" prefHeight="271.0" prefWidth="335.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="-16.0">
+      <VBox alignment="CENTER" layoutX="5.0" layoutY="4.0" prefHeight="271.0" prefWidth="335.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="-16.0">
          <children>
-            <Label alignment="CENTER" prefHeight="17.0" prefWidth="302.0" text="Choose the configuration parameters:" textFill="#ffa82f">
+            <Label alignment="CENTER" prefHeight="44.0" prefWidth="316.0" text="Choose the configuration:" textFill="#ffa530">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin>
                <font>
-                  <Font name="System Bold" size="13.0" />
+                  <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <VBox prefHeight="47.0" prefWidth="388.0">
+            <VBox alignment="CENTER" prefHeight="47.0" prefWidth="388.0">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
                <children>
-                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="387.0" text="Number Of Players" />
-                  <TextField fx:id="numberOfPlayers" alignment="CENTER" prefHeight="27.0" prefWidth="325.0" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="387.0" text="Number Of Players" textFill="#fffa85">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="numberOfPlayers" alignment="CENTER" maxWidth="-Infinity" prefHeight="27.0" prefWidth="182.0" />
                </children>
             </VBox>
-            <VBox>
+            <VBox alignment="CENTER">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
                <children>
-                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="392.0" text="Reward Token Bonus Number" />
-                  <TextField fx:id="rewardTokenBonusNumber" alignment="CENTER" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="392.0" text="Reward Token Bonus Number" textFill="#fffa85">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="rewardTokenBonusNumber" alignment="CENTER" maxWidth="-Infinity" prefHeight="27.0" prefWidth="183.0" />
                </children>
             </VBox>
-            <VBox>
+            <VBox alignment="CENTER">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
                <children>
-                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="391.0" text="Permit Tile Bonus Number" />
-                  <TextField fx:id="permitTileBonusNumber" alignment="CENTER" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="391.0" text="Permit Tile Bonus Number" textFill="#fffa85">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="permitTileBonusNumber" alignment="CENTER" maxWidth="-Infinity" prefHeight="27.0" prefWidth="182.0" />
                </children>
             </VBox>
-            <VBox>
+            <VBox alignment="CENTER" maxWidth="-Infinity" prefHeight="44.0" prefWidth="257.0">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
                <children>
-                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="392.0" text="Nobility Track Bonus Number" />
-                  <TextField fx:id="nobilityTrackBonusNumber" alignment="CENTER" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="392.0" text="Nobility Track Bonus Number" textFill="#fffa85">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="nobilityTrackBonusNumber" alignment="CENTER" maxWidth="-Infinity" prefHeight="27.0" prefWidth="186.0" />
                </children>
             </VBox>
-            <VBox>
+            <VBox alignment="CENTER">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
                <children>
-                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="393.0" text="Links Between Cities" />
-                  <TextField fx:id="linksBetweenCities" alignment="CENTER" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="393.0" text="Links Between Cities" textFill="#fffa85">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="linksBetweenCities" alignment="CENTER" maxWidth="-Infinity" prefHeight="27.0" prefWidth="184.0" />
                </children>
             </VBox>
          </children>

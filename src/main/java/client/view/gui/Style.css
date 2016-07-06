@@ -17,3 +17,7 @@
 	-fx-background-image:url("map.jpg");
 	-fx-background-size:130%;
 }
+
+.titleConfigurationBoard {
+    -fx-stroke:black;
+}

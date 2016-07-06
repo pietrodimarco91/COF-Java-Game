@@ -113,6 +113,7 @@ public class MapConfigController extends ClientGUIController implements Initiali
     public void handleTest() {
 
             System.out.println(connector);
+
             text.appendText("TEST PREMUTO");
             //connector.sendToServer(new Packet("S","T","ADD"));
 

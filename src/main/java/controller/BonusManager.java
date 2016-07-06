@@ -167,9 +167,12 @@ public class BonusManager {
 	private void nobilityTrackBonus(ArrayList<String> bonus, Player player) {
 		int numberOfBonus;
 		numberOfBonus = randomNumber(1, 3);
+		int previousPosition = player.getPositionInNobilityTrack();
 		player.changePositionInNobilityTrack(numberOfBonus);
-		int position = player.getPositionInNobilityTrack();
-		NobilityCell cell = this.nobilityTrack.getNobilityTrackCell(position);
+		int currentPosition = player.getPositionInNobilityTrack();
+		if(previousPosition==currentPosition)
+			return;
+		NobilityCell cell = this.nobilityTrack.getNobilityTrackCell(currentPosition);
 		PubSub.notifyAllClients(this.players, "Player with nickname '" + player.getNickName() + "' won " + numberOfBonus
 				+ " bonus steps in Nobility Track!", board);
 		match.updateClient(player.getId());

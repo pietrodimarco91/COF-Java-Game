@@ -1,6 +1,6 @@
 
 .city1{
-    -fx-background-image: url("/sample/city.png");
+    -fx-background-image: url("city.png");
 }
 
 .city{

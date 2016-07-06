@@ -45,11 +45,27 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 						"Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName() + "' and ID "
 								+ playerId + " disconnected!");
 				this.matchHandler.setPlayerOffline(playerId);
+
 				break;
+
 			} catch (IOException e) {
-				ServerOutputPrinter.printLine(e.getMessage());
+				ServerOutputPrinter
+						.printLine("[SERVER] Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName()
+								+ "' and ID " + playerId + " disconnected!");
+				PubSub.notifyAllClientsExceptOne(playerId,matchHandler.getPlayers(),
+						"Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName() + "' and ID "
+								+ playerId + " disconnected!");
+				this.matchHandler.setPlayerOffline(playerId);
+				break;
 			} catch (ClassNotFoundException e) {
-				ServerOutputPrinter.printLine(e.getMessage());
+				ServerOutputPrinter
+						.printLine("[SERVER] Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName()
+								+ "' and ID " + playerId + " disconnected!");
+				PubSub.notifyAllClientsExceptOne(playerId,matchHandler.getPlayers(),
+						"Client with nickname '" + matchHandler.getPlayers().get(playerId).getNickName() + "' and ID "
+								+ playerId + " disconnected!");
+				this.matchHandler.setPlayerOffline(playerId);
+				break;
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package client.configurator;
+package client.view.gui.configurator;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;

@@ -1,5 +1,6 @@
-package client.configurator;
+package client.view.gui.configurator;
 
+import client.view.gui.LoaderResources;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -31,7 +32,7 @@ public class Painter {
     public Painter(GridPane region1, GridPane region2, GridPane region3, Pane linesPane, CitiesListener citiesListener) {
         this.citiesListener=citiesListener;
         links=new ArrayList<>();
-        css=this.getClass().getResource("/configurator/style.css").toExternalForm();
+        css= LoaderResources.loadPath("/configurator/style.css");
         this.linesPane=linesPane;
         this.region1=region1;
         this.region2=region2;

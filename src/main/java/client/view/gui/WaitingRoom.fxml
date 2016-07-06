@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane prefHeight="600.0" prefWidth="1000.0" styleClass="waitingRoomPage" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.WaitingRoomController">
+<GridPane prefHeight="600.0" prefWidth="1000.0" styleClass="waitingRoomPage" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.WaitingRoomController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="90.0" prefWidth="100.0" />
@@ -34,7 +34,10 @@
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font></Label>
-                        <TextArea fx:id="serverOutput" editable="false" prefHeight="146.0" prefWidth="627.0" />
+                        <TextArea fx:id="serverOutput" editable="false" prefHeight="146.0" prefWidth="627.0">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></TextArea>
                         <Label text="Chat" textFill="#fffa85">
                            <font>
                               <Font name="System Bold" size="13.0" />
@@ -80,7 +83,7 @@
                      </font></Label>
                </top>
                <left>
-                  <VBox prefHeight="154.0" prefWidth="175.0" BorderPane.alignment="CENTER">
+                  <VBox prefHeight="213.0" prefWidth="175.0" BorderPane.alignment="CENTER">
                      <children>
                         <Button fx:id="createConfig" mnemonicParsing="false" onAction="#newConfiguration" prefHeight="27.0" prefWidth="178.0" text="Create Configuration">
                            <VBox.margin>
@@ -96,8 +99,25 @@
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font></Button>
-                        <TextField fx:id="configChose" onMouseClicked="#resetText" text="Or type here the Confid ID..." />
-                        <Button mnemonicParsing="false" onAction="#handleSelectConfiguration" text="Select Configuration ID" />
+                        <Label text="Insert ID configuration" textFill="#fffa85">
+                           <VBox.margin>
+                              <Insets top="20.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="configChose" onMouseClicked="#resetText" text="Write here...">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin></TextField>
+                        <Button mnemonicParsing="false" onAction="#handleSelectConfiguration" prefHeight="27.0" prefWidth="179.0" text="Select Configuration ID">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></Button>
                      </children>
                   </VBox>
                </left>

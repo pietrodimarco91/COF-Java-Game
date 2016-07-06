@@ -1,5 +1,6 @@
-package client.configurator;
+package client.view.gui.configurator;
 
+import client.view.gui.LoaderResources;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,7 @@ public class Controller {
 
     @FXML
     public void checkLabel(ActionEvent actionEvent) throws IOException {
-        Parent scene2Parent= FXMLLoader.load(getClass().getResource("mapConfig.fxml"));
+        Parent scene2Parent= LoaderResources.load("configurator/mapConfig.fxml");
         Scene scene2 =new Scene(scene2Parent);
         Stage app_stage=(Stage)((Node) actionEvent.getSource()).getScene().getWindow();
 

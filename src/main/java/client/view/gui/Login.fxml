@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="loginPage" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.LoginController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="loginPage" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.LoginController">
    <top>
       <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="79.0" prefWidth="604.0" text="Council Of Four" textAlignment="CENTER" textFill="#ffa82f" BorderPane.alignment="CENTER">
          <font>
-            <Font name="YuGothic Medium" size="39.0" />
+            <Font name="PT Mono" size="39.0" />
          </font>
       </Label>
    </top>
@@ -22,7 +22,7 @@
          <top>
             <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="459.0" text="Insert your medieval name:" textFill="#fffa85" BorderPane.alignment="CENTER">
                <font>
-                  <Font size="29.0" />
+                  <Font name="PT Mono" size="29.0" />
                </font>
                <BorderPane.margin>
                   <Insets top="70.0" />
@@ -36,6 +36,9 @@
                      <BorderPane.margin>
                         <Insets bottom="40.0" top="40.0" />
                      </BorderPane.margin>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                   </TextField>
                </center>
                <bottom>
@@ -43,7 +46,7 @@
                      <children>
                         <RadioButton fx:id="socketCheckBox" mnemonicParsing="false" onAction="#selectConnectionType" text="Socket Connection" textFill="#fffa85">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font>
                            <VBox.margin>
                               <Insets bottom="10.0" left="20.0" />
@@ -51,13 +54,16 @@
                         </RadioButton>
                         <RadioButton fx:id="rmiCheckBox" mnemonicParsing="false" onAction="#selectConnectionType" text="RMI Connection" textFill="#fffa85">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font>
                            <VBox.margin>
                               <Insets bottom="50.0" />
                            </VBox.margin>
                         </RadioButton>
-                        <Button fx:id="play" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#play" prefHeight="36.0" prefWidth="123.0" text="Play" />
+                        <Button fx:id="play" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#play" prefHeight="36.0" prefWidth="123.0" text="Play">
+                           <font>
+                              <Font name="PT Mono Bold" size="13.0" />
+                           </font></Button>
                      </children>
                      <padding>
                         <Insets top="-70.0" />

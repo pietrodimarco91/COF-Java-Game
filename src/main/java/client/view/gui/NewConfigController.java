@@ -2,6 +2,7 @@ package client.view.gui;
 
 import java.rmi.RemoteException;
 
+import client.controller.ClientGUIController;
 import controller.Packet;
 import controller.ServerSideConnectorInt;
 import filehandler.ConfigObject;
@@ -9,9 +10,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
-public class NewConfigController {
+public class NewConfigController extends ClientGUIController{
 
 	private Stage stage;
 
@@ -31,6 +34,9 @@ public class NewConfigController {
 	private TextField permitTileBonusNumber;
 
 	private ServerSideConnectorInt connector;
+	
+	private Media media;
+	private MediaPlayer mediaPlayer;
 
 	public void setStage(Stage dialogStage) {
 		this.stage = dialogStage;
@@ -43,6 +49,7 @@ public class NewConfigController {
 	@FXML
 	public void handleOk() {
 		try {
+			super.playSound("audio/buttonPressed.mp3");
 			connector.sendToServer(new Packet(new ConfigObject(Integer.parseInt(numberOfPlayers.getText()),
 					Integer.parseInt(rewardTokenBonusNumber.getText()),
 					Integer.parseInt(permitTileBonusNumber.getText()),
@@ -58,6 +65,7 @@ public class NewConfigController {
 	
 	@FXML
 	public void handleCancel() {
+		super.playSound("audio/buttonPressed.mp3");
 		stage.close();
 	}
 
@@ -74,5 +82,6 @@ public class NewConfigController {
 		nobilityTrackBonusNumber.setText("");
 		linksBetweenCities.setText("");
 	}
-
+	
+	
 }

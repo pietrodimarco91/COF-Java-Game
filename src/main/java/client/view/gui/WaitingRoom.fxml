@@ -32,30 +32,30 @@
                      <children>
                         <Label text="Server Output" textFill="#fffa85">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></Label>
-                        <TextArea fx:id="serverOutput" editable="false" prefHeight="146.0" prefWidth="627.0">
+                        <TextArea fx:id="serverOutput" editable="false" opacity="0.86" prefHeight="146.0" prefWidth="627.0">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></TextArea>
                         <Label text="Chat" textFill="#fffa85">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></Label>
-                        <TextArea fx:id="chat" editable="false" prefHeight="126.0" prefWidth="627.0" />
+                        <TextArea fx:id="chat" editable="false" opacity="0.82" prefHeight="126.0" prefWidth="627.0" />
                         <Label text="Write message to the other players..." textFill="#fffa85">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></Label>
                         <FlowPane prefHeight="89.0" prefWidth="668.0">
                            <children>
-                              <TextField fx:id="chatMessage" onKeyPressed="#handleEnterPressed" prefHeight="34.0" prefWidth="491.0" />
+                              <TextField fx:id="chatMessage" onKeyPressed="#handleEnterPressed" opacity="0.8" prefHeight="34.0" prefWidth="491.0" />
                               <Button fx:id="sendMessage" mnemonicParsing="false" onAction="#handleChatMessage" prefHeight="30.0" prefWidth="100.0" text="Send">
                                  <FlowPane.margin>
                                     <Insets left="30.0" />
                                  </FlowPane.margin>
                                  <font>
-                                    <Font name="System Bold" size="13.0" />
+                                    <Font name="PT Mono Bold" size="13.0" />
                                  </font></Button>
                               <Button fx:id="mute" mnemonicParsing="false" onAction="#mute" prefHeight="60.0" prefWidth="89.0" styleClass="audioButtonNotMute" stylesheets="@Style.css">
                                  <FlowPane.margin>
@@ -71,7 +71,7 @@
                      <children>
                         <Label text="Players in Game" textFill="#fffa85">
                            <font>
-                              <Font name="System Bold" size="15.0" />
+                              <Font name="PT Mono Bold" size="15.0" />
                            </font></Label>
                      </children>
                   </VBox>
@@ -79,44 +79,47 @@
                <top>
                   <Label fx:id="title" text="MAIN TITLE" textFill="#ffa82f" BorderPane.alignment="CENTER">
                      <font>
-                        <Font name="System Bold" size="20.0" />
+                        <Font name="PT Mono Bold" size="20.0" />
                      </font></Label>
                </top>
                <left>
-                  <VBox prefHeight="213.0" prefWidth="175.0" BorderPane.alignment="CENTER">
+                  <VBox prefHeight="230.0" prefWidth="204.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Button fx:id="createConfig" mnemonicParsing="false" onAction="#newConfiguration" prefHeight="27.0" prefWidth="178.0" text="Create Configuration">
+                        <Button fx:id="createConfig" mnemonicParsing="false" onAction="#newConfiguration" prefHeight="27.0" prefWidth="204.0" text="Create Configuration">
                            <VBox.margin>
                               <Insets top="20.0" />
                            </VBox.margin>
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></Button>
-                        <Button fx:id="requestConfig" mnemonicParsing="false" onAction="#boardConfiguration" prefHeight="27.0" prefWidth="180.0" text="Request Configurations">
+                        <Button fx:id="requestConfig" mnemonicParsing="false" onAction="#boardConfiguration" prefHeight="27.0" prefWidth="204.0" text="Request Configurations">
                            <VBox.margin>
                               <Insets top="20.0" />
                            </VBox.margin>
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></Button>
                         <Label text="Insert ID configuration" textFill="#fffa85">
                            <VBox.margin>
                               <Insets top="20.0" />
                            </VBox.margin>
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font>
                         </Label>
                         <TextField fx:id="configChose" onMouseClicked="#resetText" text="Write here...">
                            <VBox.margin>
                               <Insets top="5.0" />
-                           </VBox.margin></TextField>
-                        <Button mnemonicParsing="false" onAction="#handleSelectConfiguration" prefHeight="27.0" prefWidth="179.0" text="Select Configuration ID">
+                           </VBox.margin>
+                           <font>
+                              <Font name="PT Mono" size="13.0" />
+                           </font></TextField>
+                        <Button mnemonicParsing="false" onAction="#handleSelectConfiguration" prefHeight="27.0" prefWidth="204.0" text="Select Configuration ID">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="PT Mono Bold" size="13.0" />
                            </font></Button>
                      </children>
                   </VBox>

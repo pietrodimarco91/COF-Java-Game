@@ -85,6 +85,9 @@ public class MapConfigController extends ClientGUIController implements Initiali
         css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
         painter =new Painter(stackPane,grid1,grid2,grid3,linesPane,citiesListener);
+        button.setOnMouseClicked(event -> {
+            handleTest();
+        });
     }
 
 
@@ -111,7 +114,8 @@ public class MapConfigController extends ClientGUIController implements Initiali
 
     @FXML
     public void handleTest() {
-            System.out.println(connector);
+            System.out.println(this);
+            System.out.println(this.connector);
             text.appendText("TEST PREMUTO");
             //connector.sendToServer(new Packet("S","T","ADD"));
 
@@ -146,7 +150,10 @@ public class MapConfigController extends ClientGUIController implements Initiali
     }
 
     public void setConnector(ServerSideConnectorInt connector) {
+
         this.connector = connector;
+        System.out.println(this.connector);
+
     }
 
 

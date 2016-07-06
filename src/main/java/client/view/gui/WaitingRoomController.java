@@ -11,6 +11,7 @@ import client.controller.ClientGUIController;
 import client.controller.ClientSideConnector;
 import client.controller.SocketInputOutputThread;
 import client.view.gui.configurator.MapConfigController;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader;
 import controller.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -217,21 +218,33 @@ public class WaitingRoomController extends ClientGUIController {
 	public void handleUpdateState(UpdateState update) {
 		switch (update.getHeader()) {
 		case "BOARD":
-			Stage configStage=this.waitingRoomStage;
-			Parent parent= LoaderResources.load("configurator/mapConfig.fxml");
-			Scene scene =new Scene(parent);
+			URL resource = null;
+			FXMLLoader loader = new FXMLLoader();
+			Parent parentConnectionStage;
+			try {
+				resource = new File("src/main/java/client/view/gui/" + "configurator/mapConfig.fxml").toURI().toURL();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			loader.setLocation(resource);
+			parentConnectionStage=null;
+			try {
+				parentConnectionStage = loader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
-			Platform.runLater(() -> {
-				configStage.setScene(scene);
-				configStage.show();
-			});
+			Stage confStage = this.waitingRoomStage;
 
-			MapConfigController mapConfigController=LoaderResources.getLoader("configurator/mapConfig.fxml").getController();
-			mapConfigController.setStage(configStage);
-			mapConfigController.setBoard(update);
-			mapConfigController.setConnector(connector);
-			mapConfigController.repaintCall();
-
+			confStage.setTitle("Match Room");
+			Scene scene=new Scene(parentConnectionStage);
+			MapConfigController mapConfigController = loader.getController();
+			mapConfigController.setStage(confStage);
+			Platform.runLater(()->{
+				confStage.setScene(scene);
+				confStage.show();
+				mapConfigController.setConnector(connector);
+				});
 			try {
 				this.clientConnector.setGUIController(mapConfigController);
 			} catch (RemoteException e) {

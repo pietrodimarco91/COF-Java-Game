@@ -79,7 +79,7 @@
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
             <TextArea fx:id="text" prefHeight="200.0" prefWidth="200.0" />
-            <Button mnemonicParsing="false" onAction="#handleTest" text="TEST" />
+            <Button fx:id="button" mnemonicParsing="false" text="TEST" />
          </children>
       </VBox>
    </bottom>

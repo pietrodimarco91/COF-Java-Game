@@ -108,7 +108,7 @@ public class WaitingRoomController extends ClientGUIController {
 	
 	public void setNickName(String nickName){
 		this.nickName=nickName;
-		title.setText("Welcolme "+nickName+", you are waiting for other players...");
+		title.setText("Welcome "+nickName+", you are waiting for other players...");
 	}
 	
 	private void playSound(String soundPath) {

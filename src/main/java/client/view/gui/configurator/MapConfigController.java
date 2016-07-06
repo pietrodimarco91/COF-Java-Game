@@ -117,7 +117,11 @@ public class MapConfigController extends ClientGUIController implements Initiali
             System.out.println(this);
             System.out.println(this.connector);
             text.appendText("TEST PREMUTO");
-            //connector.sendToServer(new Packet("S","T","ADD"));
+        try {
+            connector.sendToServer(new Packet("S","T","ADD"));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -7,62 +7,65 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="297.0" prefWidth="344.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.60" fx:controller="client.view.gui.NewConfigController">
+<AnchorPane prefHeight="350.0" prefWidth="402.0" styleClass="configurationMap" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.NewConfigController">
    <children>
-      <VBox alignment="CENTER" layoutX="5.0" layoutY="4.0" prefHeight="271.0" prefWidth="335.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="-16.0">
+      <VBox alignment="CENTER" layoutX="5.0" layoutY="4.0" prefHeight="271.0" prefWidth="335.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="-16.0">
          <children>
-            <Label text="Choose the board configuration parameters:">
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="302.0" text="Choose the configuration parameters:" textFill="#ffa82f">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
             </Label>
-            <FlowPane prefHeight="200.0" prefWidth="200.0">
-               <children>
-                  <Label text="Number Of Players" />
-                  <TextField fx:id="numberOfPlayers" />
-               </children>
+            <VBox prefHeight="47.0" prefWidth="388.0">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
-            </FlowPane>
-            <FlowPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label text="Reward Token Bonus Number" />
-                  <TextField fx:id="rewardTokenBonusNumber" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="387.0" text="Number Of Players" />
+                  <TextField fx:id="numberOfPlayers" alignment="CENTER" prefHeight="27.0" prefWidth="325.0" />
                </children>
+            </VBox>
+            <VBox>
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
-            </FlowPane>
-            <FlowPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label text="Permit Tile Bonus Number" />
-                  <TextField fx:id="permitTileBonusNumber" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="392.0" text="Reward Token Bonus Number" />
+                  <TextField fx:id="rewardTokenBonusNumber" alignment="CENTER" />
                </children>
+            </VBox>
+            <VBox>
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
-            </FlowPane>
-            <FlowPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label text="Nobility Track Bonus Number" />
-                  <TextField fx:id="nobilityTrackBonusNumber" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="391.0" text="Permit Tile Bonus Number" />
+                  <TextField fx:id="permitTileBonusNumber" alignment="CENTER" />
                </children>
+            </VBox>
+            <VBox>
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
-            </FlowPane>
-            <FlowPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label text="Links Between Cities" />
-                  <TextField fx:id="linksBetweenCities" />
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="392.0" text="Nobility Track Bonus Number" />
+                  <TextField fx:id="nobilityTrackBonusNumber" alignment="CENTER" />
                </children>
+            </VBox>
+            <VBox>
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
-            </FlowPane>
+               <children>
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="393.0" text="Links Between Cities" />
+                  <TextField fx:id="linksBetweenCities" alignment="CENTER" />
+               </children>
+            </VBox>
          </children>
       </VBox>
       <FlowPane layoutX="62.0" layoutY="255.0" prefHeight="25.0" prefWidth="215.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="69.0">

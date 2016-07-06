@@ -12,3 +12,8 @@
 .audioButtonMute{
 	-fx-graphic:url("mute.png");
 }
+
+.configurationMap{
+	-fx-background-image:url("map.jpg");
+	-fx-background-size:130%;
+}

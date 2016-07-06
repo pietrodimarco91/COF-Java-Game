@@ -3,8 +3,11 @@ package client.controller;
 import java.rmi.RemoteException;
 
 import client.view.gui.GUIMainApp;
+import client.view.gui.LoaderResources;
 import controller.Packet;
 import javafx.application.Application;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class ClientGUIController extends ClientController {
 
@@ -54,6 +57,11 @@ public class ClientGUIController extends ClientController {
 	public void welcome(String[] args) {
 		Application.launch(GUIMainApp.class, args);
 	}
-	
+	public void playSound(String soundPath){
+		soundPath=LoaderResources.loadPath(soundPath);
+		Media media = new Media(soundPath);
+		MediaPlayer mediaPlayer = new MediaPlayer(media);
+		mediaPlayer.play();
+	}
 	public void sendPacketToGUIController(Packet packet) {}
 }

@@ -75,14 +75,8 @@ public class WaitingRoomController extends ClientGUIController {
 	
 	@FXML
 	public void initialize() {
-		URL resource = null;
-		String pathTo = "audio/surroundMusic.mp3";
-		try {
-			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		playSound(resource.toString());
+		
+		super.playSound("audio/surroundMusic.mp3");
 	}
 	
 	@FXML
@@ -111,12 +105,6 @@ public class WaitingRoomController extends ClientGUIController {
 		title.setText("Welcome "+nickName+", you are waiting for other players...");
 	}
 	
-	private void playSound(String soundPath) {
-		final Media media = new Media(soundPath);
-		this.mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.play();
-	}
-
 	public void setConnector(ServerSideConnectorInt connector) {
 		this.connector = connector;
 	}
@@ -129,6 +117,7 @@ public class WaitingRoomController extends ClientGUIController {
 	@FXML
 	public void handleSelectConfiguration() {
 		String string = this.configChose.getText();
+		
 		try {
 			int configId = Integer.parseInt(string);
 			connector.sendToServer(new Packet(new Integer(configId)));
@@ -211,6 +200,7 @@ public class WaitingRoomController extends ClientGUIController {
 			serverOutput.appendText(packet.getUpdate().getHeader() + "\n");
 			break;
 		case "CHAT":
+			super.playSound("audio/messageIn.mp3");
 			chat.appendText(packet.getMessageString()+"\n");
 			break;
 		}

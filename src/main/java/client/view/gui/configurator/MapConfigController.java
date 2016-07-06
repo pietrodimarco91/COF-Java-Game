@@ -1,6 +1,7 @@
-package client.configurator;
+package client.view.gui.configurator;
 
 
+import client.view.gui.LoaderResources;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -44,7 +45,7 @@ public class MapConfigController{
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        css=this.getClass().getResource("style.css").toExternalForm();
+        css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
         painter =new Painter(grid1,grid2,grid3,linesPane,citiesListener);
         grid.setOnMouseClicked(event -> {

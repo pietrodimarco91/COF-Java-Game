@@ -220,14 +220,13 @@ public class WaitingRoomController extends ClientGUIController {
 		case "BOARD":
 			URL resource = null;
 			FXMLLoader loader = new FXMLLoader();
-			Parent parentConnectionStage;
+			Parent parentConnectionStage = null;
 			try {
-				resource = new File("src/main/java/client/view/gui/" + "configurator/mapConfig.fxml").toURI().toURL();
+				resource = new File("src/main/java/client/view/gui/configurator/mapConfig.fxml").toURI().toURL();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 			loader.setLocation(resource);
-			parentConnectionStage=null;
 			try {
 				parentConnectionStage = loader.load();
 			} catch (IOException e) {

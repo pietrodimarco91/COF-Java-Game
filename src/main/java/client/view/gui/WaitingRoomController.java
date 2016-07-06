@@ -241,6 +241,8 @@ public class WaitingRoomController extends ClientGUIController {
 			mapConfigController.setStage(confStage);
 			Platform.runLater(()->{
 				confStage.setScene(scene);
+				mapConfigController.setBoard(update);
+				mapConfigController.repaintCall();
 				confStage.show();
 				mapConfigController.setConnector(connector);
 				});

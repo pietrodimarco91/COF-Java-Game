@@ -121,6 +121,8 @@ public class Painter {
             y1=20;
         }
 
+
+
         if (parentSecondLink.equals(region1)){
             x2=50;
             y2=30;

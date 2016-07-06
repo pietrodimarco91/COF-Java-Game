@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MapConfigController">
+   <center>
+      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
+         <children>
+            <Pane fx:id="linesPane" prefHeight="200.0" prefWidth="200.0" />
+            <GridPane fx:id="grid">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="NEVER" maxWidth="367.0" minWidth="10.0" percentWidth="3.0" prefWidth="367.0" />
+                <ColumnConstraints hgrow="NEVER" maxWidth="367.0" minWidth="10.0" percentWidth="30.0" prefWidth="367.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="300.3127136230469" minWidth="0.0" percentWidth="2.0" prefWidth="100.104248046875" />
+                <ColumnConstraints hgrow="NEVER" maxWidth="900.0" minWidth="10.0" percentWidth="30.0" prefWidth="436.895751953125" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="600.0" minWidth="10.0" percentWidth="2.0" prefWidth="81.42633056640625" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="403.57366943359375" minWidth="10.0" percentWidth="30.0" prefWidth="403.57366943359375" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="403.57366943359375" minWidth="10.0" percentWidth="3.0" prefWidth="403.57366943359375" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <GridPane fx:id="grid1" GridPane.columnIndex="1">
+                  </GridPane>
+                  <GridPane fx:id="grid2" GridPane.columnIndex="3">
+                  </GridPane>
+                  <GridPane fx:id="grid3" prefHeight="637.0" prefWidth="187.0" GridPane.columnIndex="5">
+                  </GridPane>
+               </children>
+            </GridPane>
+         </children>
+      </StackPane>
+   </center>
+   <top>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="3.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="2.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="2.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="3.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label prefHeight="17.0" prefWidth="370.0" text="REGION ONE" textAlignment="CENTER" GridPane.columnIndex="1">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label prefHeight="17.0" prefWidth="370.0" text="REGION TWO" GridPane.columnIndex="3">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label prefHeight="17.0" prefWidth="370.0" text="REGION THREE" GridPane.columnIndex="5">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </GridPane>
+   </top>
+</BorderPane>

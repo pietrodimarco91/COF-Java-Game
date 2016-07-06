@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class TestMatchWinner {
 
 	@Test
 	public void test() {
-		ArrayList<Player> players=new ArrayList<Player>();
+		List<Player> players=new ArrayList<Player>();
 		Board board = new Board(4,2,2,2,2);
 		MatchHandler matchHandler=new MatchHandler(0, new Date());
 		players=matchHandler.getPlayers();

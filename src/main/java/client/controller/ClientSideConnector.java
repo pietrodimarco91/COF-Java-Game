@@ -28,7 +28,6 @@ public class ClientSideConnector extends UnicastRemoteObject implements ClientSi
 			}
 			break;
 		case "UPDATE":
-			ClientOutputPrinter.printLine("*** GUI UPDATE RECEIVED: " + packet.getUpdate().getHeader() + " ***");
 			if (guiController != null) {
 				guiController.sendPacketToGUIController(packet);
 			}

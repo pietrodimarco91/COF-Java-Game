@@ -33,6 +33,11 @@ public class ClientSideConnector extends UnicastRemoteObject implements ClientSi
 				guiController.sendPacketToGUIController(packet);
 			}
 			break;
+		case "CHAT":
+			if (guiController != null) {
+				guiController.sendPacketToGUIController(packet);
+			}
+			break;
 		default:
 		}
 	}

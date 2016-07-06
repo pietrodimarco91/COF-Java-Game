@@ -77,6 +77,11 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 				guiController.sendPacketToGUIController(packet);
 			}
 			break;
+		case "CHAT":
+			if (guiController != null) {
+				guiController.sendPacketToGUIController(packet);
+			}
+			break;
 		default:
 		}
 

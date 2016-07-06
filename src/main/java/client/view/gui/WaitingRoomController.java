@@ -18,6 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -162,6 +164,22 @@ public class WaitingRoomController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
+	
+	@FXML
+	public void handleChatMessage() {
+		try {
+			connector.sendToServer(new Packet(chatMessage.getText(), "***"));
+		} catch (RemoteException e) {
+			serverOutput.appendText(e.getMessage());
+		}
+		chatMessage.setText("");
+	}
+	
+	@FXML
+	public void handleEnterPressed(KeyEvent keyEvent) {
+		if (keyEvent.getCode() == KeyCode.ENTER)
+			handleChatMessage();
+	}
 
 	public void showAlert(String message) {
 		Alert alert = new Alert(AlertType.ERROR);
@@ -191,6 +209,9 @@ public class WaitingRoomController extends ClientGUIController {
 			break;
 		case "UPDATE":
 			serverOutput.appendText(packet.getUpdate().getHeader() + "\n");
+			break;
+		case "CHAT":
+			chat.appendText(packet.getMessageString()+"\n");
 			break;
 		}
 	}

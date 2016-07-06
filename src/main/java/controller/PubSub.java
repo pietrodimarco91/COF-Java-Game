@@ -18,12 +18,10 @@ public abstract class PubSub {
 				}
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
-				ServerOutputPrinter.printLine(
-						"[SERVER] Client with nickname '" + player.getNickName()
-								+ "' and ID " + player.getId() + " disconnected!");
-				notifyAllClientsExceptOne(player.getId(), players,
-						"Client with nickname '" + player.getNickName() + "' and ID "
-								+ player.getId() + " disconnected!");
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName() + "' and ID "
+						+ player.getId() + " disconnected!");
+				notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+						+ "' and ID " + player.getId() + " disconnected!");
 			}
 		}
 	}
@@ -36,12 +34,10 @@ public abstract class PubSub {
 						player.getConnector().sendToClient(new Packet("[GAME NOTIFY] " + message));
 				} catch (RemoteException e) {
 					player.setPlayerOffline();
-					ServerOutputPrinter.printLine(
-							"[SERVER] Client with nickname '" + player.getNickName()
-									+ "' and ID " + player.getId() + " disconnected!");
-					notifyAllClientsExceptOne(player.getId(), players,
-							"Client with nickname '" + player.getNickName() + "' and ID "
-									+ player.getId() + " disconnected!");
+					ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName() + "' and ID "
+							+ player.getId() + " disconnected!");
+					notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+							+ "' and ID " + player.getId() + " disconnected!");
 				}
 			}
 		}
@@ -49,15 +45,13 @@ public abstract class PubSub {
 
 	public static void chatMessage(int playerId, List<Player> players, String message) {
 		for (Player player : players) {
-			if (player.getId() != playerId) {
-				try {
-					if (!player.playerIsOffline())
-						player.getConnector().sendToClient(
-								new Packet("[CHAT] " + players.get(playerId).getNickName() + ": " + message));
-				} catch (RemoteException e) {
-					player.setPlayerOffline();
-					ServerOutputPrinter.printLine("Error: couldn't write to Client");
-				}
+			try {
+				if (!player.playerIsOffline())
+					player.getConnector()
+							.sendToClient(new Packet("[CHAT] " + players.get(playerId).getNickName() + ": " + message, "***"));
+			} catch (RemoteException e) {
+				player.setPlayerOffline();
+				ServerOutputPrinter.printLine("Error: couldn't write to Client");
 			}
 		}
 	}

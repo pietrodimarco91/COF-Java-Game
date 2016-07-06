@@ -244,6 +244,7 @@ public class WaitingRoomController extends ClientGUIController {
 				mapConfigController.setBoard(update);
 				mapConfigController.repaintCall();
 				confStage.show();
+
 				mapConfigController.setConnector(connector);
 				});
 			try {

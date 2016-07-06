@@ -884,7 +884,9 @@ public class MatchHandler {
 		for(Player player : players) {
 			try {
 				if (!player.playerIsOffline()) {
-					player.getConnector().sendToClient(new Packet(new UpdateState(this.players)));
+					List<Player> list = new ArrayList<>();
+					list.addAll(players);
+					player.getConnector().sendToClient(new Packet(new UpdateState(list)));
 				}
 			} catch (RemoteException e) {
 				player.setPlayerOffline();

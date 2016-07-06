@@ -76,8 +76,6 @@ public class WaitingRoomController extends ClientGUIController {
 	private boolean muteCheck = false;
 
 	private MediaPlayer mediaPlayer;
-	
-	int count=0;
 
 	@FXML
 	public void initialize() {
@@ -229,8 +227,7 @@ public class WaitingRoomController extends ClientGUIController {
 			List<Player> players = update.getPlayers();
 			Label playerNickname;
 			for (Player player : players) {
-				count++;
-				playerNickname = new Label(player.getNickName()+" "+count);
+				playerNickname = new Label(player.getNickName());
 				playersInGame.getChildren().add(playerNickname);
 			}
 		});

@@ -114,9 +114,6 @@ public class MapConfigController extends ClientGUIController implements Initiali
 
     @FXML
     public void handleTest() {
-            System.out.println(this);
-            System.out.println(this.connector);
-            text.appendText("TEST PREMUTO");
         try {
             connector.sendToServer(new Packet("S","T","ADD"));
         } catch (RemoteException e) {

@@ -11,9 +11,9 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.MapConfigController">
    <center>
-      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
+      <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
          <children>
-            <Pane fx:id="linesPane" prefHeight="200.0" prefWidth="200.0" />
+            <Pane fx:id="linesPane" prefHeight="200.0" prefWidth="200.0" stylesheets="@style.css" />
             <GridPane fx:id="grid">
               <columnConstraints>
                   <ColumnConstraints hgrow="NEVER" maxWidth="367.0" minWidth="10.0" percentWidth="3.0" prefWidth="367.0" />

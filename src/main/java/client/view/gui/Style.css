@@ -1,14 +1,19 @@
 .loginPage{
-	-fx-background-image:url("loginImage.jpg");
+	-fx-background-image:url("images/loginImage.jpg");
 	-fx-background-size:140%;
 }
 .waitingRoomPage{
-	-fx-background-image:url("waitingRoom.jpg");
+	-fx-background-image:url("images/waitingRoom.jpg");
 	-fx-background-size:120%;
 }
 .audioButtonNotMute{
-	-fx-graphic:url("notMute.png");
+	-fx-graphic:url("images/notMute.png");
 }
 .audioButtonMute{
-	-fx-graphic:url("mute.png");
+	-fx-graphic:url("images/mute.png");
+}
+
+.configurationMap{
+	-fx-background-image:url("images/map.jpg");
+	-fx-background-size:130%;
 }

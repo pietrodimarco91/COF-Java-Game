@@ -43,14 +43,7 @@ public class LoginController extends ClientGUIController {
 
 	@FXML
 	void play(ActionEvent event) {
-		URL resource = null;
-		String pathTo = "audio/buttonPressed.mp3";
-		try {
-			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		playSound(resource.toString());
+		super.playSound("audio/buttonPressed.mp3");
 
 		nickname = inputNickName.getText();
 		if (checkCorrectNickName(nickname) && connectionType != 0) {
@@ -117,23 +110,16 @@ public class LoginController extends ClientGUIController {
 
 	@FXML
 	public void selectConnectionType(ActionEvent event) {
-		URL resource = null;
-		String pathTo = "audio/checkBoxClick.mp3";
-		try {
-			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 
 		ToggleGroup group = new ToggleGroup();
 		socketCheckBox.setToggleGroup(group);
 		rmiCheckBox.setToggleGroup(group);
 
 		if (socketCheckBox.isSelected()) {
-			playSound(resource.toString());
+			super.playSound("audio/checkBoxClick.mp3");
 			connectionType = 2;
 		} else if (rmiCheckBox.isSelected()) {
-			playSound(resource.toString());
+			super.playSound("audio/checkBoxClick.mp3");
 			connectionType = 1;
 		}
 	}
@@ -142,11 +128,6 @@ public class LoginController extends ClientGUIController {
 		this.welcomeStage = stage;
 	}
 
-	private void playSound(String soundPath) {
-		final Media media = new Media(soundPath);
-		final MediaPlayer mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.play();
-	}
 
 	@Override
 	public void connect() {

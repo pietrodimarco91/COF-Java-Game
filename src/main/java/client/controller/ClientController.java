@@ -36,7 +36,7 @@ public abstract class ClientController {
 			socketInputOutputThread.start();
 			packetSenderInt = socketInputOutputThread;
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				ClientOutputPrinter.printLine(e.getMessage());
 				Thread.currentThread().interrupt();

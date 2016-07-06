@@ -26,10 +26,13 @@ public class Painter {
 
     private CitiesListener citiesListener;
 
+    private StackPane stackPane;
 
 
 
-    public Painter(GridPane region1, GridPane region2, GridPane region3, Pane linesPane, CitiesListener citiesListener) {
+
+    public Painter(StackPane stackPane,GridPane region1, GridPane region2, GridPane region3, Pane linesPane, CitiesListener citiesListener) {
+        this.stackPane=stackPane;
         this.citiesListener=citiesListener;
         links=new ArrayList<>();
         css= LoaderResources.loadPath("/configurator/style.css");
@@ -73,6 +76,12 @@ public class Painter {
                 choice=!choice;
             }
         }
+
+        region1.setPickOnBounds(false);
+        region2.setPickOnBounds(false);
+        region3.setPickOnBounds(false);
+
+
         addLinks();
     }
 
@@ -125,9 +134,15 @@ public class Painter {
         }
 
         Line line=new Line(firstLink.getLayoutX()+x1,firstLink.getLayoutY()+y1,secondLink.getLayoutX()+x2,secondLink.getLayoutY()+y2);
-        line.setStroke(Color.RED);
-        line.setStrokeWidth(5);
+
+        line.setStrokeWidth(10);
         links.add(line);
+        line.setOnMouseClicked(event -> {
+            citiesListener.removeLink(linesPane,line);
+        });
+
+        line.getStyleClass().add("line");
+
         linesPane.getChildren().add(line);
     }
 

@@ -2,6 +2,7 @@ package client.view.gui.configurator;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 
 /**
  * Created by pietro on 05/07/16.
@@ -21,6 +22,7 @@ public class CitiesListener {
     MapConfigController mapConfigController;
 
     public CitiesListener(MapConfigController mapConfigController) {
+
         this.mapConfigController=mapConfigController;
         linkStateFirstSelect=new LinkStateFirstSelect();
         linkStateSecondSelect=new LinkStateSecondSelect();
@@ -51,8 +53,8 @@ public class CitiesListener {
         mapConfigController.checkLink(firstLink,secondLink);
     }
 
-    public void linkClicked(MouseEvent event, Pane linesPane) {
-        //linesPane.getChildren().remove(linesPane.getChildren().indexOf(line));
-    }
 
+    public void removeLink(Pane linePanes, Line line) {
+       linePanes.getChildren().remove(linePanes.getChildren().indexOf(line));
+    }
 }

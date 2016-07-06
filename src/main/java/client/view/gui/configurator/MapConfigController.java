@@ -6,8 +6,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MapConfigController{
@@ -36,6 +38,12 @@ public class MapConfigController{
     @FXML
     private GridPane grid;
 
+    @FXML
+    private StackPane stackPane;
+
+
+
+
     String css;
 
     private Painter painter;
@@ -45,12 +53,10 @@ public class MapConfigController{
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
+        grid.setPickOnBounds(false);
         css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
-        painter =new Painter(grid1,grid2,grid3,linesPane,citiesListener);
-        grid.setOnMouseClicked(event -> {
-            citiesListener.linkClicked(event,linesPane);
-        });
+        painter =new Painter(stackPane,grid1,grid2,grid3,linesPane,citiesListener);
         //aggiungere cities e collegamenti
         painter.repaint();
     }

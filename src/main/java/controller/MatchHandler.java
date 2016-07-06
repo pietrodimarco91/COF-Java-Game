@@ -72,7 +72,7 @@ public class MatchHandler {
 	/**
 	 * An ArrayList of players in this MatchHandler.
 	 */
-	private ArrayList<Player> players; // To add UML scheme
+	private List<Player> players; // To add UML scheme
 
 	/**
 	 * This attribute represents the creator of the match
@@ -145,7 +145,7 @@ public class MatchHandler {
 			String creatorNickName) {
 		timers = Executors.newCachedThreadPool();
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-		this.players = new ArrayList<Player>();
+		this.players = Collections.synchronizedList(new ArrayList<Player>());
 		gameStatus = GameStatusConstants.BOARD_CONFIG;
 		configFileManager = new ConfigFileManager();
 		try {
@@ -216,7 +216,7 @@ public class MatchHandler {
 	/**
 	 * 
 	 */
-	public ArrayList<Player> getPlayers() {
+	public synchronized List<Player> getPlayers() {
 		return this.players;
 	}
 
@@ -274,7 +274,7 @@ public class MatchHandler {
 			configParameters = new int[] { config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
 					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
 					config.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this, this.players,
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
 					MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (ConfigAlreadyExistingException e) {
@@ -297,7 +297,7 @@ public class MatchHandler {
 			configParameters = new int[] { chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(),
 					chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(),
 					chosenConfig.getLinksBetweenCities() };
-			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this, this.players,
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
 					MINUMUM_NUMBER_OF_PLAYERS);
 			initializator.start();
 		} catch (UnexistingConfigurationException e) {
@@ -880,15 +880,16 @@ public class MatchHandler {
 		}
 	}
 	
-	public void sendListOfPlayers() {
+	public synchronized void sendListOfPlayers() {
 		for(Player player : players) {
 			try {
 				if (!player.playerIsOffline()) {
-					player.getConnector().sendToClient(new Packet(new UpdateState(players)));
+					List<Player> list = new ArrayList<>();
+					list.addAll(players);
+					player.getConnector().sendToClient(new Packet(new UpdateState(list)));
 				}
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
-
 				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName()
 						+ "' and ID " + player.getId() + " disconnected!");
 
@@ -955,8 +956,9 @@ public class MatchHandler {
 		this.numberOfPlayers = i;
 	}
 
-	public void setPlayerNickName(int playerId, String nickName) {
+	public synchronized void setPlayerNickName(int playerId, String nickName) {
 		this.players.get(playerId).setPlayerNickName(nickName);
+		
 	}
 
 	public void chat(int playerId, String messageString) {

@@ -3,6 +3,16 @@
     -fx-background-image: url("city.png");
 }
 
+.line{
+    -fx-stroke: red;
+
+}
+
+.line:hover{
+    -fx-stroke-width: 14;
+    -fx-stroke: orange;
+}
+
 .city{
     -fx-background-size: 60;
     -fx-background-position: center center;

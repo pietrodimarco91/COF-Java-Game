@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import client.controller.ClientGUIController;
 import controller.Packet;
+import controller.Player;
 import controller.ServerSideConnectorInt;
+import controller.UpdateState;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -47,7 +51,7 @@ public class WaitingRoomController extends ClientGUIController {
 
 	@FXML
 	private Button sendMessage;
-	
+
 	@FXML
 	private Button mute;
 
@@ -56,9 +60,9 @@ public class WaitingRoomController extends ClientGUIController {
 
 	@FXML
 	private VBox playersInGame;
-	
+
 	@FXML
-	private Label title ;
+	private Label title;
 
 	private Stage waitingRoomStage;
 
@@ -66,45 +70,44 @@ public class WaitingRoomController extends ClientGUIController {
 
 	@FXML
 	private TextField configChose;
-	
+
 	private String nickName;
-	
-	private boolean muteCheck=false;
-	
+
+	private boolean muteCheck = false;
+
 	private MediaPlayer mediaPlayer;
-	
+
 	@FXML
 	public void initialize() {
 		
 		super.playSound("audio/surroundMusic.mp3");
 	}
-	
+
 	@FXML
-	public void mute(ActionEvent event){
-		if(!muteCheck){
-		mute.getStyleClass().remove("audioButtonNotMute");
-		mute.getStyleClass().add("audioButtonMute");
-		muteCheck=true;
-		muteSound(muteCheck);
+	public void mute(ActionEvent event) {
+		if (!muteCheck) {
+			mute.getStyleClass().remove("audioButtonNotMute");
+			mute.getStyleClass().add("audioButtonMute");
+			muteCheck = true;
+			muteSound(muteCheck);
+		} else if (muteCheck) {
+			mute.getStyleClass().remove("audioButtonMute");
+			mute.getStyleClass().add("audioButtonNotMute");
+			muteCheck = false;
+			muteSound(muteCheck);
 		}
-		else if (muteCheck){
-		mute.getStyleClass().remove("audioButtonMute");
-		mute.getStyleClass().add("audioButtonNotMute");
-		muteCheck=false;
-		muteSound(muteCheck);
-		}
-		
+
 	}
 
 	public void setStage(Stage stage) {
 		waitingRoomStage = stage;
 	}
-	
-	public void setNickName(String nickName){
-		this.nickName=nickName;
-		title.setText("Welcome "+nickName+", you are waiting for other players...");
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+		title.setText("Welcome " + nickName + ", you are waiting for other players...");
 	}
-	
+
 	public void setConnector(ServerSideConnectorInt connector) {
 		this.connector = connector;
 	}
@@ -153,7 +156,7 @@ public class WaitingRoomController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
-	
+
 	@FXML
 	public void handleChatMessage() {
 		try {
@@ -163,7 +166,7 @@ public class WaitingRoomController extends ClientGUIController {
 		}
 		chatMessage.setText("");
 	}
-	
+
 	@FXML
 	public void handleEnterPressed(KeyEvent keyEvent) {
 		if (keyEvent.getCode() == KeyCode.ENTER)
@@ -197,16 +200,40 @@ public class WaitingRoomController extends ClientGUIController {
 			serverOutput.appendText(packet.getMessageString() + "\n");
 			break;
 		case "UPDATE":
-			serverOutput.appendText(packet.getUpdate().getHeader() + "\n");
+			handleUpdateState(packet.getUpdate());
 			break;
 		case "CHAT":
+			chat.appendText(packet.getMessageString() + "\n");
 			super.playSound("audio/messageIn.mp3");
 			chat.appendText(packet.getMessageString()+"\n");
 			break;
 		}
 	}
 
-	private void muteSound(boolean mute){
+	public void handleUpdateState(UpdateState update) {
+		switch (update.getHeader()) {
+		case "BOARD": // inizializzazione nuova finestra (game iniziato)
+			break;
+		case "PLAYERS":
+			refreshPlayersList(update);
+			break;
+		default:
+		}
+	}
+
+	public void refreshPlayersList(UpdateState update) {
+		Platform.runLater(() -> {
+			playersInGame.getChildren().clear();
+			List<Player> players = update.getPlayers();
+			Label playerNickname;
+			for (Player player : players) {
+				playerNickname = new Label(player.getNickName());
+				playersInGame.getChildren().add(playerNickname);
+			}
+		});
+	}
+
+	private void muteSound(boolean mute) {
 		this.mediaPlayer.setMute(mute);
 	}
 }

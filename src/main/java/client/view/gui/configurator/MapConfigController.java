@@ -1,18 +1,27 @@
 package client.view.gui.configurator;
 
 
+import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
+import controller.Packet;
+import controller.ServerSideConnectorInt;
+import controller.UpdateState;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import model.Board;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class MapConfigController{
+public class MapConfigController extends ClientGUIController implements Initializable{
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -41,6 +50,13 @@ public class MapConfigController{
     @FXML
     private StackPane stackPane;
 
+    @FXML
+    private TextArea text;
+
+    @FXML
+    private Button button;
+
+
 
 
 
@@ -49,23 +65,100 @@ public class MapConfigController{
     private Painter painter;
 
     private CitiesListener citiesListener;
+    private Stage stage;
+    private Board board;
+    private char city1,city2;
+    private ServerSideConnectorInt connector;
 
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
-    void initialize() {
+    /**
+     * Called to initialize a controller after its root element has been
+     * completely processed.
+     *
+     * @param location  The location used to resolve relative paths for the root object, or
+     *                  <tt>null</tt> if the location is not known.
+     * @param resources The resources used to localize the root object, or <tt>null</tt> if
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         grid.setPickOnBounds(false);
         css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
         painter =new Painter(stackPane,grid1,grid2,grid3,linesPane,citiesListener);
-        //aggiungere cities e collegamenti
-        painter.repaint();
+        button.setOnMouseClicked(event -> {
+            handleTest();
+        });
     }
 
 
 
     //Controllo se i collegamenti vanno benese si manda al server e ridisegno
     public void checkLink(Pane firstLink, Pane secondLink) {
-
         painter.createLine(firstLink,secondLink);
     }
+
+
+    @Override
+    public void sendPacketToGUIController(Packet packet) {
+        switch (packet.getHeader()) {
+            case "MESSAGESTRING":
+                text.appendText(packet.getMessageString());
+                break;
+            case "UPDATE":
+                text.appendText(packet.getUpdate().getBoard().getMap().toString());
+                break;
+            case "CHAT":
+                break;
+        }
     }
+
+    @FXML
+    public void handleTest() {
+            System.out.println(this);
+            System.out.println(this.connector);
+            text.appendText("TEST PREMUTO");
+        try {
+            connector.sendToServer(new Packet("S","T","ADD"));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void editConnection(String choice){
+        try {
+            connector.sendToServer(new Packet(String.valueOf(city1),String.valueOf(city2),choice));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void setBoard(UpdateState update) {
+        this.board = update.getBoard();
+
+    }
+
+    public void repaintCall(){
+        painter.repaint(board.getRegions());
+    }
+
+    public void setCities(char c, char c1,String choice) {
+        this.city1=c;
+        this.city2=c1;
+        editConnection(choice);
+    }
+
+    public void setConnector(ServerSideConnectorInt connector) {
+
+        this.connector = connector;
+        System.out.println(this.connector);
+
+    }
+
+
+}

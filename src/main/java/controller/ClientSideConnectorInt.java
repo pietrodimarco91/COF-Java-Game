@@ -1,5 +1,7 @@
 package controller;
 
+import client.controller.ClientGUIController;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -9,4 +11,6 @@ import java.rmi.RemoteException;
 public interface ClientSideConnectorInt extends Remote {
 
 	public void sendToClient(Packet packet) throws RemoteException;
+
+	public void setGUIController(ClientGUIController controller) throws RemoteException;
 }

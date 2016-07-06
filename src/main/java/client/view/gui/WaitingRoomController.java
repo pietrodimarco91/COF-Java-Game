@@ -8,14 +8,17 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import client.controller.ClientGUIController;
-import controller.Packet;
-import controller.Player;
-import controller.ServerSideConnectorInt;
-import controller.UpdateState;
+import client.controller.ClientSideConnector;
+import client.controller.SocketInputOutputThread;
+import client.view.gui.configurator.MapConfigController;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader;
+import controller.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -67,6 +70,8 @@ public class WaitingRoomController extends ClientGUIController {
 	private Stage waitingRoomStage;
 
 	private ServerSideConnectorInt connector;
+
+	private ClientSideConnectorInt clientConnector;
 
 	@FXML
 	private TextField configChose;
@@ -212,7 +217,40 @@ public class WaitingRoomController extends ClientGUIController {
 
 	public void handleUpdateState(UpdateState update) {
 		switch (update.getHeader()) {
-		case "BOARD": // inizializzazione nuova finestra (game iniziato)
+		case "BOARD":
+			URL resource = null;
+			FXMLLoader loader = new FXMLLoader();
+			Parent parentConnectionStage;
+			try {
+				resource = new File("src/main/java/client/view/gui/" + "configurator/mapConfig.fxml").toURI().toURL();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			loader.setLocation(resource);
+			parentConnectionStage=null;
+			try {
+				parentConnectionStage = loader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			Stage confStage = this.waitingRoomStage;
+
+			confStage.setTitle("Match Room");
+			Scene scene=new Scene(parentConnectionStage);
+			MapConfigController mapConfigController = loader.getController();
+			mapConfigController.setStage(confStage);
+			Platform.runLater(()->{
+				confStage.setScene(scene);
+				confStage.show();
+				mapConfigController.setConnector(connector);
+				});
+			try {
+				this.clientConnector.setGUIController(mapConfigController);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+
 			break;
 		case "PLAYERS":
 			refreshPlayersList(update);
@@ -235,5 +273,9 @@ public class WaitingRoomController extends ClientGUIController {
 
 	private void muteSound(boolean mute) {
 		this.mediaPlayer.setMute(mute);
+	}
+
+	public void setClientConnector(ClientSideConnectorInt connector) {
+		this.clientConnector=connector;
 	}
 }

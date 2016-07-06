@@ -1,6 +1,19 @@
 
-.city1{
-    -fx-background-image: url("city.png");
+.STEELCastle{
+    -fx-background-image: url("../castleImg/BlueCastle.png");
+}
+
+.SILVERCastle{
+    -fx-background-image: url("../castleImg/GreyCastle.png");
+}
+.BRONZECastle{
+    -fx-background-image: url("../castleImg/OrangeCastle.png");
+}
+.PurpleCastle{
+    -fx-background-image: url("../castleImg/PurpleCastle.png");
+}
+.GOLDCastle{
+    -fx-background-image: url("../castleImg/YellowCastle.png");
 }
 
 .line{
@@ -14,7 +27,8 @@
 }
 
 .city{
-    -fx-background-size: 60;
+    -fx-border-radius: 5px;
+    -fx-background-size: 150;
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color:

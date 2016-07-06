@@ -77,10 +77,12 @@ public class LoginController extends ClientGUIController {
 				if (clientSideConnector != null) {
 					clientSideConnector.setGUIController(waitingRoomController);
 					waitingRoomController.setConnector(serverSideConnector);
+					waitingRoomController.setClientConnector(clientSideConnector);
 				}
 				if (socketThread != null) {
 					socketThread.setGUIController(waitingRoomController);
 					waitingRoomController.setConnector(serverSideConnector);
+					waitingRoomController.setClientConnector(socketThread);
 				}
 			});
 		} catch (MalformedURLException e) {

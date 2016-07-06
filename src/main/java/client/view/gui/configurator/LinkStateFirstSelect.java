@@ -1,6 +1,7 @@
 package client.view.gui.configurator;
 
 import javafx.scene.layout.Pane;
+import model.City;
 
 /**
  * Created by pietro on 04/07/16.
@@ -8,9 +9,9 @@ import javafx.scene.layout.Pane;
 public class LinkStateFirstSelect implements LinkState {
 
     @Override
-    public void select(CitiesListener citiesListener, Pane pane) {
+    public void select(CitiesListener citiesListener, Pane pane, City city) {
         pane.getStyleClass().add("citySelected");
-        citiesListener.setFirstLink(pane);
+        citiesListener.setFirstLink(pane,city);
         citiesListener.setSecondLinkState();
     }
 }

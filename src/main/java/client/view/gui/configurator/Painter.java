@@ -5,8 +5,11 @@ import javafx.scene.Parent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import model.*;
+import model.Region;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pietro on 05/07/16.
@@ -64,43 +67,51 @@ public class Painter {
 
     }
 
-    public void repaint() {
-        boolean choice=true;
-        for (int i = 0 ; i < numCols ; i++) {
-            for (int j = 0; j < numRows; j++) {
-                if(choice){
-                    addCity(region1,i, j);
-                    addCity(region2,i, j);
-                    addCity(region3,i, j);
-                }
-                choice=!choice;
-            }
-        }
+    public void repaint(Region[] regions) {
+        List<City> regionOne=regions[0].getCities();
+        List<City> regionTwo=regions[1].getCities();
+        List<City> regionThree=regions[2].getCities();
+        fillGrid(regionOne,region1);
+        fillGrid(regionTwo,region2);
+        fillGrid(regionThree,region3);
+
 
         region1.setPickOnBounds(false);
         region2.setPickOnBounds(false);
         region3.setPickOnBounds(false);
-
-
         addLinks();
     }
 
-    private void addCity(GridPane region, int colIndex, int rowIndex) {
+    private void fillGrid(List<City> region, GridPane regionGrid) {
+        boolean choice=true;
+        int k = 0;
+        for (int i = 0 ; i < numCols ; i++) {
+            for (int j = 0; j < numRows; j++) {
+                if(choice && k<region.size()){
+                    addCity(regionGrid,region.get(k),i, j);
+                    k++;
+                }
+                choice=!choice;
+            }
+        }
+    }
+
+    private void addCity(GridPane region, City city, int colIndex, int rowIndex) {
         Pane pane=new Pane();
         pane.getStylesheets().add(css);
-        pane.getStyleClass().add("city1");
+        if(!city.getKingIsHere())
+            pane.getStyleClass().add(city.getColor()+"Castle");
+        else
+            pane.getStyleClass().add("PurpleCastle");
         pane.getStyleClass().add("city");
         pane.setOnMouseClicked(event -> {
-            citiesListener.cityClicked(pane);
+            citiesListener.cityClicked(pane,city);
         });
         region.add(pane,colIndex,rowIndex);
     }
 
 
     private void addLinks() {
-
-
-
 
     }
 

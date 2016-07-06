@@ -1,5 +1,6 @@
 package controller;
 
+import client.controller.ClientGUIController;
 import server.view.cli.ServerOutputPrinter;
 
 import java.io.IOException;
@@ -139,5 +140,11 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 			ServerOutputPrinter.printLine(e.getMessage());
 		}
 	}
-	
+
+	//This method is used only client side to set the GUI Controller
+	@Override
+	public void setGUIController(ClientGUIController controller) {
+
+	}
+
 }

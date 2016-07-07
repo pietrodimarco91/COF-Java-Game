@@ -1,6 +1,8 @@
 package client.view.gui.configurator;
 
 import client.view.gui.LoaderResources;
+import client.view.gui.MatchCityPane;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -17,7 +19,7 @@ import java.util.List;
 public class Painter {
 
     private static final int  numCols=5;
-    private static final int  numRows=9;
+    private static final int  numRows=11;
 
     private GridPane region1,region2,region3;
 
@@ -32,12 +34,16 @@ public class Painter {
     private StackPane stackPane;
 
 
+    private List<MatchCityPane> matchCitiesPanes;
+
+
 
 
     public Painter(StackPane stackPane,GridPane region1, GridPane region2, GridPane region3, Pane linesPane, CitiesListener citiesListener) {
         this.stackPane=stackPane;
         this.citiesListener=citiesListener;
         links=new ArrayList<>();
+        matchCitiesPanes=new ArrayList<>();
         css= LoaderResources.loadPath("/configurator/style.css");
         this.linesPane=linesPane;
         this.region1=region1;
@@ -68,6 +74,7 @@ public class Painter {
     }
 
     public void repaint(Region[] regions) {
+        matchCitiesPanes.clear();
         List<City> regionOne=regions[0].getCities();
         List<City> regionTwo=regions[1].getCities();
         List<City> regionThree=regions[2].getCities();
@@ -75,47 +82,74 @@ public class Painter {
         fillGrid(regionTwo,region2);
         fillGrid(regionThree,region3);
 
-
         region1.setPickOnBounds(false);
         region2.setPickOnBounds(false);
         region3.setPickOnBounds(false);
-        addLinks();
+
+        addLinks(regionOne);
+        addLinks(regionTwo);
+        addLinks(regionThree);
     }
 
-    private void fillGrid(List<City> region, GridPane regionGrid) {
-        boolean choice=true;
-        int k = 0;
-        for (int i = 1 ; i < numRows ; i++) {
-            for (int j = 1; j < numCols; j++) {
-                if(i%2==0)
-                    j++;
-                if(k<region.size() && choice){
-                    addCity(regionGrid,region.get(k),i, j);
-                    k++;
+    private void addLinks(List<City> region) {
+        List<City> connectedCities;
+        MatchCityPane matchSecondCityPane=null;
+        MatchCityPane matchFirstCityPane=null;
+
+        for(City city:region){
+            for (MatchCityPane cityPane:matchCitiesPanes){
+                if(city.equals(cityPane.getCity())){
+                    matchFirstCityPane=cityPane;
                 }
-                choice=!choice;
             }
+            connectedCities=city.getConnectedCities();
+            if(matchFirstCityPane!=null)
+                for(City connectedCity:connectedCities){
+                    for (MatchCityPane cityPane:matchCitiesPanes){
+                        if(connectedCity.equals(cityPane.getCity())){
+                            matchSecondCityPane=cityPane;
+                        }
+                    }
+                    citiesListener.setFirstLink(matchFirstCityPane.getPane(),city);
+                    citiesListener.setSecondLink(matchSecondCityPane.getPane(),connectedCity);
+                }
+
+
         }
     }
 
+    private void fillGrid(List<City> region, GridPane regionGrid) {
+        int k = 0;
+        int j;
+        for (int i = 1 ; i < numRows ; i++) {
+                if(i%2!=0)
+                    j=1;
+                else j=3;
+                if(k<region.size()){
+                    addCity(regionGrid,region.get(k),i, j);
+                    k++;
+                }
+            }
+        }
+
     private void addCity(GridPane region, City city, int rowIndex, int colIndex) {
         Pane pane=new Pane();
+
         pane.getStylesheets().add(css);
         if(!city.getKingIsHere())
             pane.getStyleClass().add(city.getColor()+"Castle");
         else
             pane.getStyleClass().add("PurpleCastle");
         pane.getStyleClass().add("city");
+
         pane.setOnMouseClicked(event -> {
             citiesListener.cityClicked(pane,city);
         });
         region.add(pane,colIndex,rowIndex);
+        matchCitiesPanes.add(new MatchCityPane(city,pane));
     }
 
 
-    private void addLinks() {
-
-    }
 
     public void createLine(Pane firstLink, Pane secondLink) {
         double x1,y1,x2,y2;
@@ -133,8 +167,6 @@ public class Painter {
             x1=850;
             y1=20;
         }
-
-
 
         if (parentSecondLink.equals(region1)){
             x2=50;

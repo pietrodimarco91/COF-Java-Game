@@ -47,20 +47,19 @@ public class CitiesListener {
     }
 
     public void setFirstLink(Pane firstLink, City city) {
-        System.out.println(city.getName());
         firstCity=city;
         this.firstLink = firstLink;
     }
 
     public void setSecondLink(Pane secondLink, City city) {
-        System.out.println(city.getName());
         this.secondCity=city;
         this.secondLink = secondLink;
         firstLink.getStyleClass().remove("citySelected");
         this.secondLink.getStyleClass().remove("citySelected");
         mapConfigController.checkLink(firstLink,secondLink);
-        mapConfigController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
+        //mapConfigController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
     }
+
 
 
     public void removeLink(Pane linePanes, Line line) {

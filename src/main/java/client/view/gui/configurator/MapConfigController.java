@@ -6,6 +6,7 @@ import client.view.gui.LoaderResources;
 import controller.Packet;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -94,7 +95,10 @@ public class MapConfigController extends ClientGUIController implements Initiali
 
     //Controllo se i collegamenti vanno benese si manda al server e ridisegno
     public void checkLink(Pane firstLink, Pane secondLink) {
-        painter.createLine(firstLink,secondLink);
+        Platform.runLater(()->{
+            painter.createLine(firstLink,secondLink);
+        });
+
     }
 
 
@@ -154,7 +158,6 @@ public class MapConfigController extends ClientGUIController implements Initiali
     public void setConnector(ServerSideConnectorInt connector) {
 
         this.connector = connector;
-        System.out.println(this.connector);
 
     }
 

@@ -124,7 +124,6 @@ public class MapConfigController extends ClientGUIController implements Initiali
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override

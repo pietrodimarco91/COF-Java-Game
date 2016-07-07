@@ -233,14 +233,14 @@ public class WaitingRoomController extends ClientGUIController {
 			Scene scene=new Scene(parentConnectionStage);
 			MapConfigController mapConfigController = loader.getController();
 			mapConfigController.setStage(confStage);
+			mapConfigController.setBoard(update);
+
 			Platform.runLater(()->{
 				confStage.setScene(scene);
-				mapConfigController.setBoard(update);
-				mapConfigController.repaintCall();
 				confStage.show();
-
 				mapConfigController.setConnector(connector);
 				});
+
 			try {
 				this.clientConnector.setGUIController(mapConfigController);
 			} catch (RemoteException e) {

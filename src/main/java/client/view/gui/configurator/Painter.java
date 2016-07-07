@@ -2,6 +2,7 @@ package client.view.gui.configurator;
 
 import client.view.gui.LoaderResources;
 import client.view.gui.MatchCityPane;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
@@ -36,7 +37,7 @@ public class Painter {
 
     private List<MatchCityPane> matchCitiesPanes;
 
-
+    private ArrayList<RegionRunLater> regionRunLaters;
 
 
     public Painter(StackPane stackPane,GridPane region1, GridPane region2, GridPane region3, Pane linesPane, CitiesListener citiesListener) {
@@ -75,12 +76,25 @@ public class Painter {
 
     public void repaint(Region[] regions) {
         matchCitiesPanes.clear();
+        regionRunLaters=new ArrayList<RegionRunLater>();
         List<City> regionOne=regions[0].getCities();
         List<City> regionTwo=regions[1].getCities();
         List<City> regionThree=regions[2].getCities();
         fillGrid(regionOne,region1);
         fillGrid(regionTwo,region2);
         fillGrid(regionThree,region3);
+
+        Platform.runLater(()-> {
+            for(RegionRunLater regionRunLater : regionRunLaters) {
+                if(regionRunLater.getRegion().equals(region1))
+                    region1.add(regionRunLater.getPane(),regionRunLater.getColIndex(),regionRunLater.getRowIndex());
+                else if(regionRunLater.getRegion().equals(region2))
+                    region2.add(regionRunLater.getPane(),regionRunLater.getColIndex(),regionRunLater.getRowIndex());
+                else if(regionRunLater.getRegion().equals(region3))
+                    region3.add(regionRunLater.getPane(),regionRunLater.getColIndex(),regionRunLater.getRowIndex());
+            }
+        });
+
 
         region1.setPickOnBounds(false);
         region2.setPickOnBounds(false);
@@ -145,8 +159,9 @@ public class Painter {
         pane.setOnMouseClicked(event -> {
             citiesListener.cityClicked(pane,city);
         });
-        region.add(pane,colIndex,rowIndex);
+        regionRunLaters.add(new RegionRunLater(pane,colIndex,rowIndex,region));
         matchCitiesPanes.add(new MatchCityPane(city,pane));
+
     }
 
 
@@ -180,17 +195,17 @@ public class Painter {
             y2=20;
         }
 
-        Line line=new Line(firstLink.getLayoutX()+x1,firstLink.getLayoutY()+y1,secondLink.getLayoutX()+x2,secondLink.getLayoutY()+y2);
+        Platform.runLater(()->{
+            Line line=new Line(firstLink.getLayoutX()+x1,firstLink.getLayoutY()+y1,secondLink.getLayoutX()+x2,secondLink.getLayoutY()+y2);
 
-        line.setStrokeWidth(10);
-        links.add(line);
-        line.setOnMouseClicked(event -> {
+            line.setStrokeWidth(10);
+            links.add(line);
+            line.setOnMouseClicked(event -> {
             citiesListener.removeLink(linesPane,line);
+            });
+            line.getStyleClass().add("line");
+            linesPane.getChildren().add(line);
         });
-
-        line.getStyleClass().add("line");
-
-        linesPane.getChildren().add(line);
     }
 
 }

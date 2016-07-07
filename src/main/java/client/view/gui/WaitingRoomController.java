@@ -1,5 +1,4 @@
 package client.view.gui;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,16 +7,12 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import client.controller.ClientGUIController;
-import client.controller.ClientSideConnector;
-import client.controller.SocketInputOutputThread;
 import client.view.gui.configurator.MapConfigController;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader;
 import controller.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -31,7 +26,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 

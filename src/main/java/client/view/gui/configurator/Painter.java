@@ -87,10 +87,13 @@ public class Painter {
         int k = 0;
         for (int i = 1 ; i < numRows ; i++) {
             for (int j = 1; j < numCols; j++) {
-                if(k<region.size()){
+                if(i%2==0)
+                    j++;
+                if(k<region.size() && choice){
                     addCity(regionGrid,region.get(k),i, j);
                     k++;
                 }
+                choice=!choice;
             }
         }
     }

@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import client.controller.ClientGUIController;
-import client.view.gui.configurator.MapConfigController;
+import client.view.gui.configurator.BoardController;
 import controller.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -231,18 +231,18 @@ public class WaitingRoomController extends ClientGUIController {
 
 			confStage.setTitle("Match Room");
 			Scene scene=new Scene(parentConnectionStage);
-			MapConfigController mapConfigController = loader.getController();
-			mapConfigController.setStage(confStage);
-			mapConfigController.setBoard(update);
+			BoardController boardController = loader.getController();
+			boardController.setStage(confStage);
+			boardController.setBoard(update);
 
 			Platform.runLater(()->{
 				confStage.setScene(scene);
 				confStage.show();
-				mapConfigController.setConnector(connector);
+				boardController.setConnector(connector);
 				});
 
 			try {
-				this.clientConnector.setGUIController(mapConfigController);
+				this.clientConnector.setGUIController(boardController);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}

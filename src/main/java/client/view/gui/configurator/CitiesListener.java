@@ -1,6 +1,5 @@
 package client.view.gui.configurator;
 
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import model.City;
@@ -20,13 +19,13 @@ public class CitiesListener {
 
     Pane secondLink;
 
-    MapConfigController mapConfigController;
+    BoardController boardController;
 
     City firstCity,secondCity;
 
-    public CitiesListener(MapConfigController mapConfigController) {
+    public CitiesListener(BoardController boardController) {
 
-        this.mapConfigController=mapConfigController;
+        this.boardController = boardController;
         linkStateFirstSelect=new LinkStateFirstSelect();
         linkStateSecondSelect=new LinkStateSecondSelect();
         linkState=linkStateFirstSelect;
@@ -56,8 +55,8 @@ public class CitiesListener {
         this.secondLink = secondLink;
         firstLink.getStyleClass().remove("citySelected");
         this.secondLink.getStyleClass().remove("citySelected");
-        mapConfigController.checkLink(firstLink,secondLink);
-        //mapConfigController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
+        boardController.checkLink(firstLink,secondLink);
+        //boardController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
     }
 
 

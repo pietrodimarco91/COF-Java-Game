@@ -22,7 +22,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class MapConfigController extends ClientGUIController implements Initializable{
+public class BoardController extends ClientGUIController implements Initializable{
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;

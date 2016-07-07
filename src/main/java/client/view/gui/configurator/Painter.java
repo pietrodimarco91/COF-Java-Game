@@ -85,18 +85,17 @@ public class Painter {
     private void fillGrid(List<City> region, GridPane regionGrid) {
         boolean choice=true;
         int k = 0;
-        for (int i = 0 ; i < numCols ; i++) {
-            for (int j = 0; j < numRows; j++) {
-                if(choice && k<region.size()){
+        for (int i = 1 ; i < numRows ; i++) {
+            for (int j = 1; j < numCols; j++) {
+                if(k<region.size()){
                     addCity(regionGrid,region.get(k),i, j);
                     k++;
                 }
-                choice=!choice;
             }
         }
     }
 
-    private void addCity(GridPane region, City city, int colIndex, int rowIndex) {
+    private void addCity(GridPane region, City city, int rowIndex, int colIndex) {
         Pane pane=new Pane();
         pane.getStylesheets().add(css);
         if(!city.getKingIsHere())

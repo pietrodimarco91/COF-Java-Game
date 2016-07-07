@@ -58,6 +58,7 @@ public class CitiesListener {
         this.secondLink = secondLink;
         firstLink.getStyleClass().remove("citySelected");
         this.secondLink.getStyleClass().remove("citySelected");
+        mapConfigController.checkLink(firstLink,secondLink);
         mapConfigController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
     }
 

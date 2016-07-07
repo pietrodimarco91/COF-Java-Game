@@ -105,7 +105,8 @@ public class MapConfigController extends ClientGUIController implements Initiali
                 text.appendText(packet.getMessageString());
                 break;
             case "UPDATE":
-                text.appendText(packet.getUpdate().getBoard().getMap().toString());
+                setBoard(packet.getUpdate());
+                repaintCall();
                 break;
             case "CHAT":
                 break;
@@ -147,7 +148,7 @@ public class MapConfigController extends ClientGUIController implements Initiali
     public void setCities(char c, char c1,String choice) {
         this.city1=c;
         this.city2=c1;
-        editConnection(choice);
+        //editConnection(choice);
     }
 
     public void setConnector(ServerSideConnectorInt connector) {

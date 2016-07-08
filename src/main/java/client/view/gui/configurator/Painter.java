@@ -326,6 +326,7 @@ public class Painter {
 	}
 
 	private void setCouncillors(GridPane councillors, Queue<Councillor> councillors1, int startCol) {
+
 		int i=startCol;
 		for(Councillor councillor:councillors1){
 			Pane pane = new Pane();

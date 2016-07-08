@@ -63,7 +63,7 @@ public class CitiesListener {
         this.secondLink = secondLink;
         firstLink.getStyleClass().remove("citySelected");
         this.secondLink.getStyleClass().remove("citySelected");
-        boardController.checkLink(firstLink,secondLink, firstCity, secondCity);
+        boardController.createLink(firstLink,secondLink, firstCity, secondCity);
     }
 
 

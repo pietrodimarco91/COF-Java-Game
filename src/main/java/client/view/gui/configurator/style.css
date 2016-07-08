@@ -3,6 +3,100 @@
     -fx-background-image: url("../castleImg/BlueCastle.png");
 }
 
+.kingPing{
+    -fx-background-image: url("Councillors/kingPing.png");
+    -fx-background-size: 800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingPurple{
+    -fx-background-image: url("Councillors/kingPurple.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingBlack{
+    -fx-background-image: url("Councillors/kingBlack.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingBlue{
+    -fx-background-image: url("Councillors/kingBlue.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingWhite{
+    -fx-background-image: url("Councillors/kingWhite.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.kingWhite{
+    -fx-background-image: url("Councillors/kingWhite.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+.kingOrange{
+    -fx-background-image: url("Councillors/kingOrange.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+.PinkCouncillor{
+    -fx-background-image: url("Councillors/PinkCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.PurpleCouncillor{
+    -fx-background-image: url("Councillors/PurpleCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.BlackCouncillor{
+    -fx-background-image: url("Councillors/BlackCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.BlueCouncillor{
+    -fx-background-image: url("Councillors/BlueCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+.WhiteCouncillor{
+    -fx-background-image: url("Councillors/WhiteCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+
+.OrangeCouncillor{
+    -fx-background-image: url("Councillors/OrangeCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+
 .SILVERCastle{
     -fx-background-image: url("../castleImg/GreyCastle.png");
 }

@@ -266,7 +266,7 @@ public class Painter {
 
 	}
 
-	public void repaintCouncils(Region[] regions, Council kingCouncil, GridPane kingCouncilPane, GridPane councillors) {
+	public void repaintCouncils(Region[] regions, Council kingCouncil,  GridPane councillors,GridPane kingCouncilPane) {
 
 		Council council1=regions[0].getCouncil();
 		Council council2=regions[1].getCouncil();
@@ -279,7 +279,6 @@ public class Painter {
 		Queue<Councillor> councillors2=council2.getCouncillors();
 		Queue<Councillor> councillors3=council3.getCouncillors();
 		Queue<Councillor> kingCouncillors=king.getCouncillors();
-
 
 		Platform.runLater(()->{
 			councillors.getChildren().clear();
@@ -294,31 +293,32 @@ public class Painter {
 	private void setKingCouncillors(GridPane kingCouncilPane, Queue<Councillor> kingCouncillors, int startCol) {
 		int i=startCol;
 		for(Councillor kingCouncillor:kingCouncillors){
-			Label label = new Label();
+			Pane pane = new Pane();
+			pane.getStylesheets().add(css);
 			switch (kingCouncillor.getColor()){
 				case "PINK":
-					label.setStyle("-fx-background-image: url('Councillors/kingPing.png')");
-					kingCouncilPane.add(label,i,1);
+					pane.getStyleClass().add("kingPing");
+					kingCouncilPane.add(pane,i,1);
 					break;
 				case "PURPLE":
-					label.setStyle("-fx-background-image: url('Councillors/kingPurple.png')");
-					kingCouncilPane.add(label,i,1);
+					pane.getStyleClass().add("kingPurple");
+					kingCouncilPane.add(pane,i,1);
 					break;
 				case "BLACK":
-					label.setStyle("-fx-background-image: url('Councillors/kingBlack.png')");
-					kingCouncilPane.add(label,i,1);
+					pane.getStyleClass().add("kingBlack");
+					kingCouncilPane.add(pane,i,1);
 					break;
 				case "BLUE":
-					label.setStyle("-fx-background-image: url('Councillors/kingBlue.png')");
-					kingCouncilPane.add(label,i,1);
+					pane.getStyleClass().add("kingBlue");
+					kingCouncilPane.add(pane,i,1);
 					break;
 				case "WHITE":
-					label.setStyle("-fx-background-image: url('Councillors/kingWhite.png')");
-					kingCouncilPane.add(label,i,1);
+					pane.getStyleClass().add("kingWhite");
+					kingCouncilPane.add(pane,i,1);
 					break;
 				case "ORANGE":
-					label.setStyle("-fx-background-image: url('Councillors/kingOrange.png')");
-					kingCouncilPane.add(label,i,1);
+					pane.getStyleClass().add("kingOrange");
+					kingCouncilPane.add(pane,i,1);
 					break;
 			}
 			i++;
@@ -328,31 +328,31 @@ public class Painter {
 	private void setCouncillors(GridPane councillors, Queue<Councillor> councillors1, int startCol) {
 		int i=startCol;
 		for(Councillor councillor:councillors1){
-			Label label = new Label();
+			Pane pane = new Pane();
 			switch (councillor.getColor()){
 				case "PINK":
-					label.setStyle("-fx-background-image: url('Councillors/PinkCouncillor.png')");
-					councillors.add(label,i,1);
+					pane.getStyleClass().add("PinkCouncillor");
+					councillors.add(pane,i,0);
 					break;
 				case "PURPLE":
-					label.setStyle("-fx-background-image: url('Councillors/PurpleCouncillor.png')");
-					councillors.add(label,i,1);
+					pane.getStyleClass().add("PurpleCouncillor");
+					councillors.add(pane,i,0);
 					break;
 				case "BLACK":
-					label.setStyle("-fx-background-image: url('Councillors/BlackCouncillor.png')");
-					councillors.add(label,i,1);
+					pane.getStyleClass().add("BlackCouncillor");
+					councillors.add(pane,i,0);
 					break;
 				case "BLUE":
-					label.setStyle("-fx-background-image: url('Councillors/BlueCouncillor.png')");
-					councillors.add(label,i,1);
+					pane.getStyleClass().add("BlueCouncillor");
+					councillors.add(pane,i,0);
 					break;
 				case "WHITE":
-					label.setStyle("-fx-background-image: url('Councillors/WhiteCouncillor.png')");
-					councillors.add(label,i,0);
+					pane.getStyleClass().add("WhiteCouncillor");
+					councillors.add(pane,i,0);
 					break;
 				case "ORANGE":
-					label.setStyle("-fx-background-image: url('Councillors/OrangeCouncillor.png')");
-					councillors.add(label,i,0);
+					pane.getStyleClass().add("OrangeCouncillor");
+					councillors.add(pane,i,0);
 					break;
 			}
 			i++;

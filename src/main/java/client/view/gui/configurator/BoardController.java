@@ -78,7 +78,6 @@ public class BoardController extends ClientGUIController {
 	@FXML
 	private GridPane kingCouncil;
 
-	private String css;
 
 	private Painter painter;
 
@@ -92,9 +91,7 @@ public class BoardController extends ClientGUIController {
 	public void initialize() {
 		grid.setPickOnBounds(false);
 		balcony.setPickOnBounds(false);
-		councillors.setPickOnBounds(false);
-		css = LoaderResources.loadPath("configurator/style.css");
-		citiesListener = new CitiesListener(this);
+		councillors.setPickOnBounds(false);citiesListener = new CitiesListener(this);
 		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
 	}
 

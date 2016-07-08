@@ -4,6 +4,7 @@ package client.view.gui.configurator;
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
 import controller.Packet;
+import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
@@ -50,10 +51,10 @@ public class BoardController extends ClientGUIController {
     private StackPane stackPane;
 
     @FXML
-    private TextArea text;
-
+    private TextArea serverOutput;
+    
     @FXML
-    private Button button;
+    private TextArea chat;
 
     String css;
 
@@ -62,6 +63,7 @@ public class BoardController extends ClientGUIController {
     private CitiesListener citiesListener;
     private Stage stage;
     private Board board;
+	private Player playerStatus;
     private char city1,city2;
     private ServerSideConnectorInt connector;
 
@@ -70,9 +72,6 @@ public class BoardController extends ClientGUIController {
         css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
         painter =new Painter(stackPane,grid1,grid2,grid3,linesPane,citiesListener);
-        button.setOnMouseClicked(event -> {
-            handleTest();
-        });
     }
 
     //Controllo se i collegamenti vanno benese si manda al server e ridisegno
@@ -87,12 +86,13 @@ public class BoardController extends ClientGUIController {
     public void sendPacketToGUIController(Packet packet) {
         switch (packet.getHeader()) {
             case "MESSAGESTRING":
-                text.appendText(packet.getMessageString());
+                serverOutput.appendText(packet.getMessageString()+"\n");
                 break;
             case "UPDATE":
                 handleUpdate(packet.getUpdate());
                 break;
             case "CHAT":
+            	chat.appendText(packet.getMessageString()+"\n");
                 break;
         }
     }
@@ -104,18 +104,13 @@ public class BoardController extends ClientGUIController {
             repaintCall();
     		break;
     	case "PLAYER_UPDATE":
+    		setPlayerStatus(update);
     		//repaintPlayerStatus();
     		break;
+    	case "MESSAGE":
+    		serverOutput.appendText(update.getMessage());
+    		break;
     	}
-    }
-
-    @FXML
-    public void handleTest() {
-        try {
-            connector.sendToServer(new Packet("S","T","ADD"));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -134,6 +129,10 @@ public class BoardController extends ClientGUIController {
     public void setBoard(UpdateState update) {
         this.board = update.getBoard();
 
+    }
+    
+    public void setPlayerStatus(UpdateState update) {
+    	this.playerStatus = update.getPlayer();
     }
 
     public void repaintCall(){

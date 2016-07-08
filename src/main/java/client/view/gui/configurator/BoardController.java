@@ -8,8 +8,10 @@ import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -65,6 +67,9 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private TextArea chat;
+	
+	@FXML
+	private Button playerCards;
 
 	@FXML
 	private GridPane councillors;
@@ -250,5 +255,26 @@ public class BoardController extends ClientGUIController {
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
 		}
+	}
+	
+	@FXML
+	public void showPlayerCards(ActionEvent event){
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "playerCards.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Your Cards");
+			dialogStage.initModality(Modality.WINDOW_MODAL);;
+			dialogStage.show();
+			
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+		}
+		
 	}
 }

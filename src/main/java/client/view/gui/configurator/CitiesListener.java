@@ -55,8 +55,15 @@ public class CitiesListener {
         this.secondLink = secondLink;
         firstLink.getStyleClass().remove("citySelected");
         this.secondLink.getStyleClass().remove("citySelected");
+        boardController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
+    }
+    
+    public void setAutomaticSecondLink(Pane secondLink, City city) {
+    	this.secondCity=city;
+        this.secondLink = secondLink;
+        firstLink.getStyleClass().remove("citySelected");
+        this.secondLink.getStyleClass().remove("citySelected");
         boardController.checkLink(firstLink,secondLink, firstCity, secondCity);
-        //boardController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
     }
 
 

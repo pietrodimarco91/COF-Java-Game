@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,12 +11,18 @@ import java.util.Queue;
 import java.util.Random;
 
 import controller.Player;
+import exceptions.NoMoreBonusException;
 
 /**
  * The constructor of the Board initializes the board with the specified
  * parameters. It also allows to make the connections between the cities.
  */
-public class Board {
+public class Board implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * This attribute stores all the cities (vertex) of the map.
 	 */
@@ -657,31 +664,35 @@ public class Board {
 		}
 		return string;
 	}
+	
 
 	@Override
 	public String toString() {
 		String string = "";
-		string += "Map status:\n";
-		string += "Cities:\n";
+		string += "MAP STATUS:\n";
+		string+=printMatrix()+"\n\n";
+		string += "CITIES:\n";
 		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
 			string += iterator.next().toString() + "\n";
 		}
-		string += "Number of Permit Tiles: " + numberOfPermitTiles + "\n";
-		string += "Number of Cities: " + numberOfCities + "\n";
-		string += "Regions:\n";
+		string += "\nNUMBER OF PERMIT TILES: " + numberOfPermitTiles + "\n";
+		string += "\nNUMBER OF CITIES: " + numberOfCities + "\n";
+		string += "\nREGIONS:\n";
 		for (int i = 0; i < regions.length; i++) {
 			string += regions[i].toString() + "\n";
 		}
-		string += "King's Council:\n";
+		string += "\nKING'S COUNCIL:\n";
 		string += kingCouncil.toString() + "\n";
-		string += "Councillors Pool: current content of the pool is:\n";
+		string += "\nCOUNCILLOR POOL: current content of the pool is:\n";
 		string += CouncillorsPool.poolStatus() + "\n";
-		string += "Nobility Track:\n";
+		string += "\nNOBILITY TRACK:\n";
 		string += nobilityTrack.toString() + "\n";
+		string+=colorBonusDeck.toString()+"\n";
+		string+=kingRewardDeck.toString()+"\n";
 		return string;
 	}
-
+	
 	public int getNumberOfCities() {
 		return this.numberOfCities;
 	}
@@ -705,5 +716,16 @@ public class Board {
 
 	public NobilityTrack getNobilityTrack() {
 		return this.nobilityTrack;
+	}
+	
+	public City getCityFromName(String cityName) {
+		boolean found=false;
+		City tempCity=null;
+		for(int i=0;i<this.cities.size() && !found;i++){
+			tempCity=this.cities.get(i);
+			if(String.valueOf(tempCity.getName().charAt(0)).equals(String.valueOf(cityName.charAt(0))))
+				found=true;
+		}
+		return tempCity;	
 	}
 }

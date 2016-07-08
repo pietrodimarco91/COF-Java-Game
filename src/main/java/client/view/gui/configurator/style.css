@@ -1,0 +1,82 @@
+
+.STEELCastle{
+    -fx-background-image: url("../castleImg/BlueCastle.png");
+}
+
+.SILVERCastle{
+    -fx-background-image: url("../castleImg/GreyCastle.png");
+}
+.BRONZECastle{
+    -fx-background-image: url("../castleImg/OrangeCastle.png");
+}
+.PurpleCastle{
+    -fx-background-image: url("../castleImg/PurpleCastle.png");
+}
+.GOLDCastle{
+    -fx-background-image: url("../castleImg/YellowCastle.png");
+}
+
+.line{
+    -fx-stroke: red;
+
+}
+
+.line:hover{
+    -fx-stroke-width: 14;
+    -fx-stroke: orange;
+}
+
+.city{
+    -fx-border-radius: 5px;
+    -fx-background-size: 150;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color:
+            -fx-shadow-highlight-color,
+            -fx-outer-border,
+            -fx-inner-border,
+            -fx-body-color;
+    -fx-background-insets: 0 0 -1 0, 0, 3, 2;
+    -fx-background-radius: 1px, 3px, 2px, 1px;
+}
+
+
+.citySelected{
+    -fx-outer-border: #0066ff;
+}
+
+.city:hover{
+    -fx-outer-border: yellow;
+}
+
+.coastRegion{
+    -fx-background-image: url("boardImages/coastRegion.png");
+    -fx-background-size:110%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.hillsRegion{
+    -fx-background-image: url("boardImages/hillsRegion.png");
+    -fx-background-size:110%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.mountainsRegion{
+    -fx-background-image: url("boardImages/mountainsRegion.png");
+    -fx-background-size:110%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.backGroundColorConfiguration{
+	 -fx-background-color:#FFF8DC;
+}
+
+.balcony{
+	 -fx-background-image: url("boardImages/balcony.png");
+    -fx-background-size:50%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: left center;
+	
+}
+

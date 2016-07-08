@@ -32,8 +32,7 @@ public class TestElectCouncillor {
 			} catch (CouncillorNotFoundException e) {
 				string = e.showError();
 			}
-			assertEquals(
-					"Error: the councillor you are looking for isn't available in the Councillors Pool... try with a different color",
+			assertEquals("The councillor you are looking for isn't available in the Councillors Pool... try with a different color",
 					string);
 		}
 	}

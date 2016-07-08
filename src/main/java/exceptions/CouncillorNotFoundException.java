@@ -15,6 +15,6 @@ public class CouncillorNotFoundException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	public String showError() {
-		return "Error: the councillor you are looking for isn't available in the Councillors Pool... try with a different color";
+		return "The councillor you are looking for isn't available in the Councillors Pool... try with a different color";
 	}
 }

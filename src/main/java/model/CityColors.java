@@ -23,6 +23,5 @@ public enum CityColors {
 			return String.valueOf(SILVER);
 		else
 			return String.valueOf(GOLD);
-		//return String.valueOf(values()[new Random().nextInt(values().length)]);
 	}
 }

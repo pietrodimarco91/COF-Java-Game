@@ -1,14 +1,16 @@
 package model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import controller.Player;
 import exceptions.CouncillorNotFoundException;
+import exceptions.NoMoreBonusException;
 
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public class Region implements Cloneable {
+public class Region implements Serializable {
 	/**
 	 * Name of the region
 	 */
@@ -76,59 +78,16 @@ public class Region implements Cloneable {
 	}
 
 	/**
-	 * @param politicCards
-	 *            of the player
-	 * @return number of councillors satisfied
-	 */
-	public int numberOfCouncillorsSatisfied(ArrayList<PoliticCard> politicCards) {
-		Iterator<Councillor> iterationCouncillors = this.council.getCouncillors().iterator();
-		Councillor councillor;
-		PoliticCard tempPoliticCard;
-		int numberOfCouncillorsSatisfied = 0;
-		ArrayList<PoliticCard> tempArrayList = new ArrayList<PoliticCard>(politicCards);
-		while (iterationCouncillors.hasNext()) {
-			boolean councillorsSatisfied = false;
-			councillor = iterationCouncillors.next();
-
-			for (int i = 0; i < tempArrayList.size() && !councillorsSatisfied; i++) {
-				tempPoliticCard = tempArrayList.get(i);
-				if (councillor.getColor().equals(tempPoliticCard.getColorCard())) {
-					councillorsSatisfied = true;
-					tempArrayList.remove(i);
-					numberOfCouncillorsSatisfied++;
-				}
-
-			}
-
-		}
-
-		if (numberOfCouncillorsSatisfied < 4) {
-			int numberOfMulticolorCard = 0;
-			for (int i = 0; i < tempArrayList.size(); i++) {
-				tempPoliticCard = tempArrayList.get(i);
-				if (tempPoliticCard.getColorCard().equals("MULTICOLOR"))
-					numberOfMulticolorCard++;
-			}
-			if ((numberOfCouncillorsSatisfied + numberOfMulticolorCard) < 4)
-				return numberOfCouncillorsSatisfied + numberOfMulticolorCard;
-			else
-				return 4;
-		}
-
-		else
-			return numberOfCouncillorsSatisfied;
-	}
-
-	/**
 	 * @param owner
-	 * @return region bonus tile if player is eligible for region bonus, else
-	 *         return null
+	 * @return region bonus tile if player is eligible for region bonus
 	 * 
 	 */
-	public Tile winRegionBonus(Player owner) {
-		if (isEligibleForRegionBonus(owner))
-			return this.regionBonus;
-		return null;
+	public Tile winRegionBonus(Player owner) throws NoMoreBonusException {
+		if (this.regionBonus == null)
+			throw new NoMoreBonusException("REGION BONUS");
+		Tile wonTile = regionBonus;
+		regionBonus = null;
+		return wonTile;
 	}
 
 	/**
@@ -171,6 +130,10 @@ public class Region implements Cloneable {
 	 */
 	public String getName() {
 		return this.name;
+	}
+
+	public Council getCouncil() {
+		return this.council;
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import controller.Player;
+import exceptions.NoMoreBonusException;
 import model.Board;
 import model.City;
 import model.Region;
@@ -32,7 +33,14 @@ public class TestRegionBonus {
 			city.buildEmporium(player);
 		}
 		assertEquals(true,region.isEligibleForRegionBonus(player));
-		Tile regionBonus=region.winRegionBonus(player);
+		Tile regionBonus = null;
+		String string = null;
+		try {
+			regionBonus = region.winRegionBonus(player);
+		} catch (NoMoreBonusException e) {
+			string=e.showError();
+		}
+		assertNotEquals("There isn't any REGION BONUS available for this match!",string);
 		assertNotEquals(null,regionBonus);
 		Region region1=board.getRegions()[1];
 		List<City> region1Cities = region1.getCities();
@@ -41,8 +49,12 @@ public class TestRegionBonus {
 		city1.buildEmporium(player);
 		city2.buildEmporium(player);
 		assertEquals(false,region1.isEligibleForRegionBonus(player));
-		regionBonus=region1.winRegionBonus(player);
-		assertEquals(null,regionBonus);
+		try {
+			regionBonus=region1.winRegionBonus(player);
+		} catch (NoMoreBonusException e) {
+			string=e.showError();
+		}
+		assertNotEquals("There isn't any REGION BONUS available for this match!",string);
 	}
 
 }

@@ -5,22 +5,22 @@ package model;
  */
 public class ColorBonusTile extends Tile {
 
-    private int points;
     private String color;
 
     public ColorBonusTile(int points,String color) {
+    	super(points);
         this.color=color;
-        this.points=points;
     }
     
     public String getColor() {
     	return this.color;
     }
     
-    public int getPoints() {
-    	return this.points;
+    @Override
+    public String toString() {
+    	String string="ColorBonusTile:\n";
+    	string+="Color: "+color+"\n";
+    	string+="Points: "+super.getPoints()+"\n";
+    	return string;
     }
-
-
-
 }

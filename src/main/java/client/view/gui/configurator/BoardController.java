@@ -2,24 +2,30 @@ package client.view.gui.configurator;
 
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
-import client.view.gui.configurator.jfxtras.SimpleMetroArcGaugeSample1;
+import client.view.gui.NewConfigController;
 import controller.Packet;
 import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import model.Board;
 import model.City;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -27,147 +33,205 @@ import java.util.ResourceBundle;
 
 public class BoardController extends ClientGUIController {
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
+	@FXML // ResourceBundle that was given to the FXMLLoader
+	private ResourceBundle resources;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
+	@FXML // URL location of the FXML file that was given to the FXMLLoader
+	private URL location;
 
-    @FXML // fx:id="reset"
-    private Button reset; // Value injected by FXMLLoader
+	@FXML // fx:id="reset"
+	private Button reset; // Value injected by FXMLLoader
 
-    @FXML // fx:id="grid"
-    private GridPane grid1; // Value injected by FXMLLoader
+	@FXML // fx:id="grid"
+	private GridPane grid1; // Value injected by FXMLLoader
 
-    @FXML // fx:id="grid"
-    private GridPane grid2;
+	@FXML // fx:id="grid"
+	private GridPane grid2;
 
-    @FXML // fx:id="grid"
-    private GridPane grid3;
+	@FXML // fx:id="grid"
+	private GridPane grid3;
 
-    @FXML
-    private Pane linesPane;
+	@FXML
+	private Pane linesPane;
 
-    @FXML
-    private GridPane grid;
+	@FXML
+	private GridPane grid;
 
-    @FXML
-    private StackPane stackPane;
+	@FXML
+	private StackPane stackPane;
 
-    @FXML
-    private TextArea serverOutput;
-    
-    @FXML
-    private Pane indicatorPane;
-    
-    @FXML
-    private TextArea chat;
+	@FXML
+	private TextArea serverOutput;
 
-    String css;
+	@FXML
+	private TextArea chat;
 
-    private Painter painter;
+	String css;
 
-    private CitiesListener citiesListener;
-    private Stage stage;
-    private Board board;
+	private Painter painter;
+
+	private CitiesListener citiesListener;
+	private Stage stage;
+	private Board board;
 	private Player playerStatus;
-    private char city1,city2;
-    private ServerSideConnectorInt connector;
+	private char city1, city2;
+	private ServerSideConnectorInt connector;
 
-    public void initialize() {
-        grid.setPickOnBounds(false);
-        css= LoaderResources.loadPath("configurator/style.css");
-        citiesListener=new CitiesListener(this);
-        painter =new Painter(stackPane,grid1,grid2,grid3,linesPane,citiesListener);
-        SimpleMetroArcGauge prova= new SimpleMetroArcGauge();
-        prova.setValue(50);
-        prova.setMaxValue(100);
-        prova.setMinValue(0);
-        indicatorPane.getChildren().add(prova);
-        
-    }
+	public void initialize() {
+		grid.setPickOnBounds(false);
+		css = LoaderResources.loadPath("configurator/style.css");
+		citiesListener = new CitiesListener(this);
+		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
+	}
 
-    //Controllo se i collegamenti vanno benese si manda al server e ridisegno
-    public void checkLink(Pane firstLink, Pane secondLink, City city1, City city2) {
-        Platform.runLater(()->{
-            painter.createLine(firstLink,secondLink, city1, city2);
-        });
-    }
+	@Override
+	public void sendPacketToGUIController(Packet packet) {
+		switch (packet.getHeader()) {
+		case "MESSAGESTRING":
+			serverOutput.appendText(packet.getMessageString() + "\n");
+			break;
+		case "UPDATE":
+			handleUpdate(packet.getUpdate());
+			break;
+		case "CHAT":
+			chat.appendText(packet.getMessageString() + "\n");
+			break;
+		}
+	}
 
+	@Override
+	public void editConnection(String choice) {
+		try {
+			connector.sendToServer(new Packet(String.valueOf(city1), String.valueOf(city2), choice));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void sendPacketToGUIController(Packet packet) {
-        switch (packet.getHeader()) {
-            case "MESSAGESTRING":
-                serverOutput.appendText(packet.getMessageString()+"\n");
-                break;
-            case "UPDATE":
-                handleUpdate(packet.getUpdate());
-                break;
-            case "CHAT":
-            	chat.appendText(packet.getMessageString()+"\n");
-                break;
-        }
-    }
-    
-    public void handleUpdate(UpdateState update) {
-    	switch(update.getHeader()) {
-    	case "BOARD":
-    		setBoard(update);
-            repaintCall();
-    		break;
-    	case "PLAYER_UPDATE":
-    		setPlayerStatus(update);
-    		//repaintPlayerStatus();
-    		break;
-    	case "MESSAGE":
-    		serverOutput.appendText(update.getMessage());
-    		break;
-    	}
-    }
+	/**
+	 * This method allows to invoke the necessary methods when receiving a
+	 * packet from the client controllers
+	 * 
+	 * @param update
+	 */
+	public void handleUpdate(UpdateState update) {
+		switch (update.getHeader()) {
+		case "BOARD":
+			setBoard(update);
+			repaintCall();
+			break;
+		case "PLAYER_UPDATE":
+			setPlayerStatus(update);
+			// repaintPlayerStatus();
+			break;
+		case "MESSAGE":
+			serverOutput.appendText(update.getMessage());
+			break;
+		}
+	}
 
-    @Override
-    public void editConnection(String choice){
-        try {
-            connector.sendToServer(new Packet(String.valueOf(city1),String.valueOf(city2),choice));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
+	public void setBoard(UpdateState update) {
+		this.board = update.getBoard();
 
-    public void setBoard(UpdateState update) {
-        this.board = update.getBoard();
+	}
 
-    }
-    
-    public void setPlayerStatus(UpdateState update) {
-    	this.playerStatus = update.getPlayer();
-    }
+	public void setPlayerStatus(UpdateState update) {
+		this.playerStatus = update.getPlayer();
+	}
 
-    public void repaintCall(){
-        painter.repaint(board.getRegions());
-    }
+	/**
+	 * This method is invoked in order to repaint the GUI when receiving a
+	 * packet containing the board
+	 */
+	public void repaintCall() {
+		painter.repaint(board.getRegions());
+	}
 
-    public void setCities(char c1, char c2,String choice) {
-        this.city1=c1;
-        this.city2=c2;
-        editConnection(choice);
-    }
+	/**
+	 * This method is invoked to request a connection edit to the server
+	 * 
+	 * @param c1
+	 *            the initial letter of the first city
+	 * @param c2
+	 *            the initial letter of the second city
+	 * @param choice
+	 *            this should be "ADD" or "REMOVE", depending on the choice of
+	 *            the creator
+	 */
+	public void setCities(char c1, char c2, String choice) {
+		this.city1 = c1;
+		this.city2 = c2;
+		editConnection(choice);
+	}
 
-    public void setConnector(ServerSideConnectorInt connector) {
-        this.connector = connector;
-    }
+	public void setConnector(ServerSideConnectorInt connector) {
+		this.connector = connector;
+	}
 
+	/**
+	 * This method requests the call of the setCities in order to remove a link,
+	 * retrieving the city names from the corresponding SingleLink object, that
+	 * associates a line to the source and destination city
+	 * 
+	 * @param line
+	 *            the line that connects the two cities
+	 */
 	public void removeLink(Line line) {
 		List<SingleLink> links = painter.getLinksBetweenCities();
-		for(SingleLink link : links) {
-			if(link.getLine()==line) {
-				setCities(link.getCity1().getName().charAt(0),link.getCity2().getName().charAt(0),"REMOVE");
+		for (SingleLink link : links) {
+			if (link.getLine() == line) {
+				setCities(link.getCity1().getName().charAt(0), link.getCity2().getName().charAt(0), "REMOVE");
 			}
+		}
+	}
+
+	/**
+	 * This method is invoked by the repaint() in order to add the existing
+	 * connections between the cities
+	 * 
+	 * @param firstLink
+	 *            the pane corresponding to the first city
+	 * @param secondLink
+	 *            the pane corresponding to the second city
+	 * @param city1
+	 *            the first City object
+	 * @param city2
+	 *            the second City object
+	 */
+	public void createLink(Pane firstLink, Pane secondLink, City city1, City city2) {
+		Platform.runLater(() -> {
+			painter.createLine(firstLink, secondLink, city1, city2);
+		});
+	}
+	
+	@Override
+	@FXML
+	public void performNewAction() {
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "PerformActionDialog.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Perform Action");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			ActionController actionController = loader.getController();
+			actionController.setStage(dialogStage);
+			actionController.setConnector(connector);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
 		}
 	}
 }

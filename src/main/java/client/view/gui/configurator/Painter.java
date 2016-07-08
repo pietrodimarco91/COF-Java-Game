@@ -134,7 +134,7 @@ public class Painter {
 					}
 
 					citiesListener.setFirstLink(matchFirstCityPane.getPane(), city);
-					citiesListener.setSecondLink(matchSecondCityPane.getPane(), connectedCity);
+					citiesListener.setAutomaticSecondLink(matchSecondCityPane.getPane(), connectedCity);
 				}
 		}
 	}

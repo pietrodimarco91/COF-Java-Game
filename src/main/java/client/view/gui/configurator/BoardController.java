@@ -71,17 +71,7 @@ public class BoardController extends ClientGUIController {
     private char city1,city2;
     private ServerSideConnectorInt connector;
 
-
-    /**
-     * Called to initialize a controller after its root element has been
-     * completely processed.
-     *
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  <tt>null</tt> if the location is not known.
-     * @param resources The resources used to localize the root object, or <tt>null</tt> if
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize() {
         grid.setPickOnBounds(false);
         css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
@@ -90,8 +80,6 @@ public class BoardController extends ClientGUIController {
             handleTest();
         });
     }
-
-
 
     //Controllo se i collegamenti vanno benese si manda al server e ridisegno
     public void checkLink(Pane firstLink, Pane secondLink) {

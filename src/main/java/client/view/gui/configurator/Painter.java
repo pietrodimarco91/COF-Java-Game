@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import javax.swing.text.Segment;
+
 /**
  * Created by pietro on 05/07/16.
  */
@@ -62,9 +64,12 @@ public class Painter {
 
 		nobilityPointsIndicators.setMaxValue(20);
 		nobilityPointsIndicators.setMinValue(0);
-
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
+		
+		
+		
+		
 
 
 
@@ -325,6 +330,7 @@ public class Painter {
 	}
 
 	private void setCouncillors(GridPane councillors, Queue<Councillor> councillors1, int startCol) {
+
 		int i=startCol;
 		for(Councillor councillor:councillors1){
 			Pane pane = new Pane();

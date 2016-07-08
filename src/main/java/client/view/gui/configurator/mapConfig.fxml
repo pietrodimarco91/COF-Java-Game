@@ -38,15 +38,15 @@
                <bottom>
                   <GridPane fx:id="councillors" prefHeight="95.0" prefWidth="1170.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="149.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="39.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="146.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="42.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="41.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="38.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="219.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="44.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="38.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="39.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="218.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="44.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="40.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="40.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="42.0" />
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="221.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="38.0" />
@@ -206,7 +206,6 @@
             </GridPane>
             <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2">
                <children>
-                  <Pane prefHeight="200.0" prefWidth="200.0" styleClass="balcony" stylesheets="@style.css" />
                   <GridPane fx:id="kingCouncil">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="129.1553955078125" minWidth="10.0" prefWidth="120.92303466796875" />
@@ -218,10 +217,11 @@
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints maxHeight="39.23065185546875" minHeight="10.0" prefHeight="18.461669921875" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="72.15484619140625" minHeight="10.0" prefHeight="64.538330078125" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="40.92333984375" minHeight="10.0" prefHeight="40.92333984375" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="72.15484619140625" minHeight="10.0" prefHeight="56.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="58.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                   </GridPane>
+                  <Pane prefHeight="200.0" prefWidth="200.0" styleClass="balcony" stylesheets="@style.css" />
                </children>
             </StackPane>
             <GridPane focusTraversable="true" styleClass="hillsSymbol" stylesheets="@style.css" GridPane.columnIndex="1">

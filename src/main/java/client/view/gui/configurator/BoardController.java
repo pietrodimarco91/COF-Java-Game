@@ -66,6 +66,12 @@ public class BoardController extends ClientGUIController {
 	@FXML
 	private TextArea chat;
 
+	@FXML
+	private GridPane councillors;
+
+	@FXML
+	private GridPane balcony;
+
 	String css;
 
 	private Painter painter;
@@ -79,6 +85,8 @@ public class BoardController extends ClientGUIController {
 
 	public void initialize() {
 		grid.setPickOnBounds(false);
+		balcony.setPickOnBounds(false);
+		councillors.setPickOnBounds(false);
 		css = LoaderResources.loadPath("configurator/style.css");
 		citiesListener = new CitiesListener(this);
 		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
@@ -118,16 +126,20 @@ public class BoardController extends ClientGUIController {
 		switch (update.getHeader()) {
 		case "BOARD":
 			setBoard(update);
-			repaintCall();
+			repaintBoard();
 			break;
 		case "PLAYER_UPDATE":
 			setPlayerStatus(update);
-			// repaintPlayerStatus();
+			repaintPlayerStatus(update.getPlayer());
 			break;
 		case "MESSAGE":
 			serverOutput.appendText(update.getMessage());
 			break;
 		}
+	}
+
+	private void repaintPlayerStatus(Player player) {
+		
 	}
 
 	public void setStage(Stage stage) {
@@ -147,7 +159,7 @@ public class BoardController extends ClientGUIController {
 	 * This method is invoked in order to repaint the GUI when receiving a
 	 * packet containing the board
 	 */
-	public void repaintCall() {
+	public void repaintBoard() {
 		painter.repaint(board.getRegions());
 	}
 
@@ -207,7 +219,7 @@ public class BoardController extends ClientGUIController {
 			painter.createLine(firstLink, secondLink, city1, city2);
 		});
 	}
-	
+
 	@Override
 	@FXML
 	public void performNewAction() {

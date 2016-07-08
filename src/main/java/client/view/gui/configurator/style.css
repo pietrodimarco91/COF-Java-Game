@@ -76,7 +76,7 @@
 	 -fx-background-image: url("boardImages/balcony.png");
     -fx-background-size:50%;
     -fx-background-repeat: no-repeat;
-    -fx-background-position: left center;
+    -fx-background-position: center center;
 	
 }
 

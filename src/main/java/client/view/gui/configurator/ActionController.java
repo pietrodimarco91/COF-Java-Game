@@ -41,13 +41,24 @@ public class ActionController extends ClientGUIController {
 	@FXML
 	private RadioButton sendAssistantToElectCouncillor;
 
-	public void setStage(Stage dialogStage) {
-		// TODO Auto-generated method stub
-		
+	private ServerSideConnectorInt connector;
+
+	public void setStage(Stage stage) {
+		this.stage=stage;
 	}
 
 	public void setConnector(ServerSideConnectorInt connector) {
-		// TODO Auto-generated method stub
+		this.connector=connector;
+	}
+	
+	@Override
+	@FXML
+	public void performNewAction() {
+		
+	}
+	
+	@FXML
+	public void handleCancel() {
 		
 	}
 	

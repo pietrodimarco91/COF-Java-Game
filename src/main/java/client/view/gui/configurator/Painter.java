@@ -6,7 +6,6 @@ import controller.Player;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
-import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import model.*;

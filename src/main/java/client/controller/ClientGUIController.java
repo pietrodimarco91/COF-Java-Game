@@ -14,12 +14,20 @@ public class ClientGUIController extends ClientController {
 	@Override
 	public void boardConfiguration() {}
 
+	/**
+	 * This will be used only by the CLI Controller, as the GUI needs to
+	 * implement only the boardConfiguration() and newConfiguration()
+	 */
 	@Override
 	public void mapConfiguration() {}
 
 	@Override
 	public void performNewAction() {}
 
+	/**
+	 * This will be used only by the CLI Controller, as the GUI always receives
+	 * the board updates
+	 */
 	@Override
 	public void requestBoardStatus() {}
 
@@ -29,21 +37,36 @@ public class ClientGUIController extends ClientController {
 	@Override
 	public void buyItemOnMarket() {}
 
+	/**
+	 * This will be used only by the CLI Controller, as the GUI always receives
+	 * the player updates when needed
+	 */
 	@Override
 	public void requestPlayerStatus() {}
 
 	@Override
 	public void chat() {}
 
+	/**
+	 * This will be used only by the CLI Controller, as the GUI implements
+	 * different methods and this one isn't needed
+	 */
 	@Override
 	public void initialConfiguration() {}
 
+	/**
+	 * This will be used only by the CLI Controller, as the GUI implements
+	 * different methods and this one isn't needed
+	 */
 	@Override
 	public void play() {}
 
 	@Override
 	public void connect() throws RemoteException {}
 
+	/**
+	 * This will be used only by the CLI Controller, as the GUI doesn't need it
+	 */
 	@Override
 	public void countDistance() {}
 
@@ -57,11 +80,13 @@ public class ClientGUIController extends ClientController {
 	public void welcome(String[] args) {
 		Application.launch(GUIMainApp.class, args);
 	}
-	public void playSound(String soundPath){
-		soundPath=LoaderResources.loadPath(soundPath);
+
+	public void playSound(String soundPath) {
+		soundPath = LoaderResources.loadPath(soundPath);
 		Media media = new Media(soundPath);
 		MediaPlayer mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.play();
 	}
+
 	public void sendPacketToGUIController(Packet packet) {}
 }

@@ -244,6 +244,7 @@ public class BoardController extends ClientGUIController {
 			ActionController actionController = loader.getController();
 			actionController.setStage(dialogStage);
 			actionController.setConnector(connector);
+			actionController.setPlayer(playerStatus);
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());

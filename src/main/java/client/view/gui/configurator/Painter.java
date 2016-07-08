@@ -4,8 +4,11 @@ import client.view.gui.LoaderResources;
 import client.view.gui.MatchCityPane;
 import controller.Player;
 import javafx.application.Platform;
+import javafx.scene.AccessibleRole;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
@@ -15,6 +18,8 @@ import model.Region;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+
+import javax.swing.text.Segment;
 
 /**
  * Created by pietro on 05/07/16.
@@ -63,9 +68,12 @@ public class Painter {
 
 		nobilityPointsIndicators.setMaxValue(20);
 		nobilityPointsIndicators.setMinValue(0);
-
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
+		
+		
+		
+		
 
 
 

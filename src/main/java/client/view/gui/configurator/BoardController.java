@@ -2,22 +2,30 @@ package client.view.gui.configurator;
 
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
+import client.view.gui.NewConfigController;
 import controller.Packet;
 import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Board;
 import model.City;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -198,5 +206,32 @@ public class BoardController extends ClientGUIController {
 		Platform.runLater(() -> {
 			painter.createLine(firstLink, secondLink, city1, city2);
 		});
+	}
+	
+	@Override
+	@FXML
+	public void performNewAction() {
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "PerformActionDialog.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Perform Action");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			ActionController actionController = loader.getController();
+			actionController.setStage(dialogStage);
+			actionController.setConnector(connector);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+		}
 	}
 }

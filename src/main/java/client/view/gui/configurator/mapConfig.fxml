@@ -38,16 +38,26 @@
                <bottom>
                   <GridPane fx:id="councillors" prefHeight="95.0" prefWidth="1170.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="389.33331298828125" minWidth="0.0" prefWidth="1.3333358764648438" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="46.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="380.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="382.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="443.0" minWidth="10.0" prefWidth="397.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="149.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="39.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="41.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="38.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="219.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="44.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="38.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="42.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="221.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="38.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="42.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="121.0" />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="85.0" minHeight="10.0" prefHeight="74.1239013671875" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="28.1268310546875" minHeight="1.0" prefHeight="20.8760986328125" vgrow="SOMETIMES" />
                     </rowConstraints>
                   </GridPane>
                </bottom>
@@ -202,7 +212,26 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Pane prefHeight="200.0" prefWidth="200.0" styleClass="balcony" stylesheets="@style.css" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="balcony" stylesheets="@style.css" />
+                        <GridPane fx:id="kingCouncil">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="129.1553955078125" minWidth="10.0" prefWidth="120.92303466796875" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="75.8460693359375" minWidth="10.0" prefWidth="50.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="85.230712890625" minWidth="10.0" prefWidth="50.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.30828857421875" minWidth="10.0" prefWidth="50.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.30828857421875" minWidth="10.0" prefWidth="50.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="174.9256591796875" minWidth="10.0" prefWidth="126.076171875" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="39.23065185546875" minHeight="10.0" prefHeight="18.461669921875" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="72.15484619140625" minHeight="10.0" prefHeight="64.538330078125" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="40.92333984375" minHeight="10.0" prefHeight="40.92333984375" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                        </GridPane>
+                     </children>
+                  </StackPane>
                </children>
             </GridPane>
             <GridPane focusTraversable="true" styleClass="hillsSymbol" stylesheets="@style.css" GridPane.columnIndex="1">

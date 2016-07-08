@@ -75,7 +75,10 @@ public class BoardController extends ClientGUIController {
 	@FXML
 	private GridPane indicatorPane;
 
-	String css;
+	@FXML
+	private GridPane kingCouncil;
+
+	private String css;
 
 	private Painter painter;
 
@@ -165,6 +168,7 @@ public class BoardController extends ClientGUIController {
 	 */
 	public void repaintBoard() {
 		painter.repaint(board.getRegions());
+		painter.repaintCouncils(board.getRegions(),board.getKingCouncil(),councillors,kingCouncil);
 	}
 
 	/**

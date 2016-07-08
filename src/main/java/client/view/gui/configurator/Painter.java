@@ -4,18 +4,17 @@ import client.view.gui.LoaderResources;
 import client.view.gui.MatchCityPane;
 import controller.Player;
 import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
-import jfxtras.scene.control.gauge.linear.elements.Segment;
 import model.*;
 import model.Region;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by pietro on 05/07/16.
@@ -139,6 +138,7 @@ public class Painter {
 		addLinks(regionOne);
 		addLinks(regionTwo);
 		addLinks(regionThree);
+
 	}
 
 	private void addLinks(List<City> region) {
@@ -257,7 +257,6 @@ public class Painter {
 		victoryPointsIndicators.setValue(victoryPoints);
 
 		Platform.runLater(()->{
-
 			indicatorPane.add(coinsIndicators,0,1);
 			indicatorPane.add(nobilityPointsIndicators,1,1);
 			indicatorPane.add(victoryPointsIndicators,2,1);
@@ -265,5 +264,98 @@ public class Painter {
 
 
 
+	}
+
+	public void repaintCouncils(Region[] regions, Council kingCouncil, GridPane kingCouncilPane, GridPane councillors) {
+
+		Council council1=regions[0].getCouncil();
+		Council council2=regions[1].getCouncil();
+		Council council3=regions[2].getCouncil();
+		Council king=kingCouncil;
+
+
+
+		Queue<Councillor> councillors1=council1.getCouncillors();
+		Queue<Councillor> councillors2=council2.getCouncillors();
+		Queue<Councillor> councillors3=council3.getCouncillors();
+		Queue<Councillor> kingCouncillors=king.getCouncillors();
+
+
+		Platform.runLater(()->{
+			councillors.getChildren().clear();
+			setCouncillors(councillors,councillors1,1);
+			setCouncillors(councillors,councillors2,6);
+			setCouncillors(councillors,councillors3,11);
+			setKingCouncillors(kingCouncilPane,kingCouncillors,1);
+
+		});
+	}
+
+	private void setKingCouncillors(GridPane kingCouncilPane, Queue<Councillor> kingCouncillors, int startCol) {
+		int i=startCol;
+		for(Councillor kingCouncillor:kingCouncillors){
+			Label label = new Label();
+			switch (kingCouncillor.getColor()){
+				case "PINK":
+					label.setStyle("-fx-background-image: url('Councillors/kingPing.png')");
+					kingCouncilPane.add(label,i,1);
+					break;
+				case "PURPLE":
+					label.setStyle("-fx-background-image: url('Councillors/kingPurple.png')");
+					kingCouncilPane.add(label,i,1);
+					break;
+				case "BLACK":
+					label.setStyle("-fx-background-image: url('Councillors/kingBlack.png')");
+					kingCouncilPane.add(label,i,1);
+					break;
+				case "BLUE":
+					label.setStyle("-fx-background-image: url('Councillors/kingBlue.png')");
+					kingCouncilPane.add(label,i,1);
+					break;
+				case "WHITE":
+					label.setStyle("-fx-background-image: url('Councillors/kingWhite.png')");
+					kingCouncilPane.add(label,i,1);
+					break;
+				case "ORANGE":
+					label.setStyle("-fx-background-image: url('Councillors/kingOrange.png')");
+					kingCouncilPane.add(label,i,1);
+					break;
+			}
+			i++;
+		}
+	}
+
+	private void setCouncillors(GridPane councillors, Queue<Councillor> councillors1, int startCol) {
+		int i=startCol;
+		for(Councillor councillor:councillors1){
+			Label label = new Label();
+			switch (councillor.getColor()){
+				case "PINK":
+					label.setStyle("-fx-background-image: url('Councillors/PinkCouncillor.png')");
+					councillors.add(label,i,1);
+					break;
+				case "PURPLE":
+					label.setStyle("-fx-background-image: url('Councillors/PurpleCouncillor.png')");
+					councillors.add(label,i,1);
+					break;
+				case "BLACK":
+					label.setStyle("-fx-background-image: url('Councillors/BlackCouncillor.png')");
+					councillors.add(label,i,1);
+					break;
+				case "BLUE":
+					label.setStyle("-fx-background-image: url('Councillors/BlueCouncillor.png')");
+					councillors.add(label,i,1);
+					break;
+				case "WHITE":
+					label.setStyle("-fx-background-image: url('Councillors/WhiteCouncillor.png')");
+					councillors.add(label,i,0);
+					break;
+				case "ORANGE":
+					label.setStyle("-fx-background-image: url('Councillors/OrangeCouncillor.png')");
+					councillors.add(label,i,0);
+					break;
+			}
+			i++;
+		}
 	}
 }

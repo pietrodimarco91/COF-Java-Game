@@ -203,6 +203,9 @@ public class Painter {
 		Parent parentFirstLink = firstLink.getParent();
 		Parent parentSecondLink = secondLink.getParent();
 
+
+
+
 		if (parentFirstLink.equals(region1)) {
 			x1 = 50;
 			y1 = 30;

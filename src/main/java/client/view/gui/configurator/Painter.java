@@ -2,12 +2,15 @@ package client.view.gui.configurator;
 
 import client.view.gui.LoaderResources;
 import client.view.gui.MatchCityPane;
+import controller.Player;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
+import jfxtras.scene.control.gauge.linear.elements.Segment;
 import model.*;
 import model.Region;
 
@@ -40,8 +43,33 @@ public class Painter {
 
 	private ArrayList<RegionRunLater> regionRunLaters;
 
+	private SimpleMetroArcGauge victoryPointsIndicators;
+
+	private SimpleMetroArcGauge nobilityPointsIndicators;
+
+	private SimpleMetroArcGauge coinsIndicators;
+
+
+
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
 			CitiesListener citiesListener) {
+
+
+		victoryPointsIndicators=new SimpleMetroArcGauge();
+		nobilityPointsIndicators=new SimpleMetroArcGauge();
+		coinsIndicators=new SimpleMetroArcGauge();
+
+		victoryPointsIndicators.setMaxValue(100);
+		victoryPointsIndicators.setMinValue(0);
+
+		nobilityPointsIndicators.setMaxValue(20);
+		nobilityPointsIndicators.setMinValue(0);
+
+		coinsIndicators.setMaxValue(20);
+		coinsIndicators.setMinValue(0);
+
+
+
 		this.stackPane = stackPane;
 		this.citiesListener = citiesListener;
 		links = new ArrayList<>();
@@ -213,5 +241,26 @@ public class Painter {
 
 	public List<SingleLink> getLinksBetweenCities() {
 		return this.linksBetweenCities;
+	}
+
+	public void repaintPlayerStatus(Player player, GridPane indicatorPane) {
+		int coins=player.getCoins();
+		int nobilityTrack=player.getPositionInNobilityTrack();
+		int victoryPoints=player.getVictoryPoints();
+
+
+		coinsIndicators.setValue(coins);
+		nobilityPointsIndicators.setValue(nobilityTrack);
+		victoryPointsIndicators.setValue(victoryPoints);
+
+		Platform.runLater(()->{
+
+			indicatorPane.add(coinsIndicators,0,1);
+			indicatorPane.add(nobilityPointsIndicators,1,1);
+			indicatorPane.add(victoryPointsIndicators,2,1);
+		});
+
+
+
 	}
 }

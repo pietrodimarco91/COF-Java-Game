@@ -72,6 +72,9 @@ public class BoardController extends ClientGUIController {
 	@FXML
 	private GridPane balcony;
 
+	@FXML
+	private GridPane indicatorPane;
+
 	String css;
 
 	private Painter painter;
@@ -139,6 +142,7 @@ public class BoardController extends ClientGUIController {
 	}
 
 	private void repaintPlayerStatus(Player player) {
+		painter.repaintPlayerStatus(player,indicatorPane);
 		
 	}
 

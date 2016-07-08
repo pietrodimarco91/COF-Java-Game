@@ -857,7 +857,8 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-
+			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+			+ "' and ID " + player.getId() + " disconnected!");
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
@@ -869,11 +870,11 @@ public class MatchHandler {
 		try {
 			if (!player.playerIsOffline()) {
 				player.getConnector().sendToClient(new Packet(new UpdateState(player)));
-				player.getConnector().sendToClient(new Packet(new UpdateState(board)));
 			}
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-
+			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+			+ "' and ID " + player.getId() + " disconnected!");
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
@@ -890,6 +891,8 @@ public class MatchHandler {
 				}
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
+				PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+				+ "' and ID " + player.getId() + " disconnected!");
 				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName()
 						+ "' and ID " + player.getId() + " disconnected!");
 
@@ -905,7 +908,8 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-
+			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+			+ "' and ID " + player.getId() + " disconnected!");
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 

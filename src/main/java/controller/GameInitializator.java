@@ -114,6 +114,11 @@ public class GameInitializator extends Thread {
 			string += player.getNickName() + " : ID " + player.getId() + "\n";
 		}
 		PubSub.notifyAllClients(match.getPlayers(), string, board);
+		for(Player player:match.getPlayers()){
+			match.updateClient(player.getId());
+		}
+			
+		
 	}
 
 	public void sendMessageToClient(String s, int playerId) {

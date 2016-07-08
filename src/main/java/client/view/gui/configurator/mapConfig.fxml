@@ -8,8 +8,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="backGroundColorConfiguration" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="backGroundColorConfiguration" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
    <center>
       <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -53,6 +54,11 @@
                   </GridPane>
                   <GridPane fx:id="grid3" prefHeight="637.0" prefWidth="187.0" GridPane.columnIndex="5">
                   </GridPane>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Pane fx:id="indicatorPane" prefHeight="200.0" prefWidth="200.0" />
+                     </children>
+                  </VBox>
                </children>
             </GridPane>
          </children>
@@ -74,8 +80,14 @@
             <Insets bottom="10.0" top="20.0" />
          </BorderPane.margin>
          <children>
-            <TextArea fx:id="serverOutput" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
-            <TextArea fx:id="chat" editable="false" prefHeight="43.0" prefWidth="551.0" GridPane.columnIndex="3" />
+            <TextArea fx:id="serverOutput" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets left="42.0" />
+               </GridPane.margin></TextArea>
+            <TextArea fx:id="chat" editable="false" prefHeight="43.0" prefWidth="551.0" GridPane.columnIndex="3">
+               <GridPane.margin>
+                  <Insets right="35.0" />
+               </GridPane.margin></TextArea>
          </children>
       </GridPane>
    </top>

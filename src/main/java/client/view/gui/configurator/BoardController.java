@@ -1,8 +1,8 @@
 package client.view.gui.configurator;
 
-
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
+import client.view.gui.configurator.jfxtras.SimpleMetroArcGaugeSample1;
 import controller.Packet;
 import controller.Player;
 import controller.ServerSideConnectorInt;
@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
 import model.Board;
 import model.City;
 
@@ -57,6 +58,9 @@ public class BoardController extends ClientGUIController {
     private TextArea serverOutput;
     
     @FXML
+    private Pane indicatorPane;
+    
+    @FXML
     private TextArea chat;
 
     String css;
@@ -75,6 +79,12 @@ public class BoardController extends ClientGUIController {
         css= LoaderResources.loadPath("configurator/style.css");
         citiesListener=new CitiesListener(this);
         painter =new Painter(stackPane,grid1,grid2,grid3,linesPane,citiesListener);
+        SimpleMetroArcGauge prova= new SimpleMetroArcGauge();
+        prova.setValue(50);
+        prova.setMaxValue(100);
+        prova.setMinValue(0);
+        indicatorPane.getChildren().add(prova);
+        
     }
 
     //Controllo se i collegamenti vanno benese si manda al server e ridisegno

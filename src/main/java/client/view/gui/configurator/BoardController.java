@@ -14,11 +14,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import model.Board;
+import model.City;
 
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class BoardController extends ClientGUIController {
@@ -75,9 +78,9 @@ public class BoardController extends ClientGUIController {
     }
 
     //Controllo se i collegamenti vanno benese si manda al server e ridisegno
-    public void checkLink(Pane firstLink, Pane secondLink) {
+    public void checkLink(Pane firstLink, Pane secondLink, City city1, City city2) {
         Platform.runLater(()->{
-            painter.createLine(firstLink,secondLink);
+            painter.createLine(firstLink,secondLink, city1, city2);
         });
     }
 
@@ -139,13 +142,22 @@ public class BoardController extends ClientGUIController {
         painter.repaint(board.getRegions());
     }
 
-    public void setCities(char c, char c1,String choice) {
-        this.city1=c;
-        this.city2=c1;
-        //editConnection(choice);
+    public void setCities(char c1, char c2,String choice) {
+        this.city1=c1;
+        this.city2=c2;
+        editConnection(choice);
     }
 
     public void setConnector(ServerSideConnectorInt connector) {
         this.connector = connector;
     }
+
+	public void removeLink(Line line) {
+		List<SingleLink> links = painter.getLinksBetweenCities();
+		for(SingleLink link : links) {
+			if(link.getLine()==line) {
+				setCities(link.getCity1().getName().charAt(0),link.getCity2().getName().charAt(0),"REMOVE");
+			}
+		}
+	}
 }

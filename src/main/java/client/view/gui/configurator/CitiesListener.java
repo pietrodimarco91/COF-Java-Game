@@ -55,13 +55,14 @@ public class CitiesListener {
         this.secondLink = secondLink;
         firstLink.getStyleClass().remove("citySelected");
         this.secondLink.getStyleClass().remove("citySelected");
-        boardController.checkLink(firstLink,secondLink);
+        boardController.checkLink(firstLink,secondLink, firstCity, secondCity);
         //boardController.setCities(firstCity.getName().charAt(0),secondCity.getName().charAt(0),"ADD");
     }
 
 
 
     public void removeLink(Pane linePanes, Line line) {
-       linePanes.getChildren().remove(linePanes.getChildren().indexOf(line));
+    	boardController.removeLink(line);
+       //linePanes.getChildren().remove(linePanes.getChildren().indexOf(line));
     }
 }

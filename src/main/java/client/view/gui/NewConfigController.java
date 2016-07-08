@@ -34,9 +34,6 @@ public class NewConfigController extends ClientGUIController{
 	private TextField permitTileBonusNumber;
 
 	private ServerSideConnectorInt connector;
-	
-	private Media media;
-	private MediaPlayer mediaPlayer;
 
 	public void setStage(Stage dialogStage) {
 		this.stage = dialogStage;
@@ -81,7 +78,5 @@ public class NewConfigController extends ClientGUIController{
 		permitTileBonusNumber.setText("");
 		nobilityTrackBonusNumber.setText("");
 		linksBetweenCities.setText("");
-	}
-	
-	
+	}	
 }

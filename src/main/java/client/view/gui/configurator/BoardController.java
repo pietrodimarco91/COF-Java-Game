@@ -18,7 +18,6 @@ import model.Board;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class BoardController extends ClientGUIController {
@@ -56,10 +55,6 @@ public class BoardController extends ClientGUIController {
     @FXML
     private Button button;
 
-
-
-
-
     String css;
 
     private Painter painter;
@@ -85,7 +80,6 @@ public class BoardController extends ClientGUIController {
         Platform.runLater(()->{
             painter.createLine(firstLink,secondLink);
         });
-
     }
 
 
@@ -96,12 +90,23 @@ public class BoardController extends ClientGUIController {
                 text.appendText(packet.getMessageString());
                 break;
             case "UPDATE":
-                setBoard(packet.getUpdate());
-                repaintCall();
+                handleUpdate(packet.getUpdate());
                 break;
             case "CHAT":
                 break;
         }
+    }
+    
+    public void handleUpdate(UpdateState update) {
+    	switch(update.getHeader()) {
+    	case "BOARD":
+    		setBoard(update);
+            repaintCall();
+    		break;
+    	case "PLAYER_UPDATE":
+    		//repaintPlayerStatus();
+    		break;
+    	}
     }
 
     @FXML
@@ -142,10 +147,6 @@ public class BoardController extends ClientGUIController {
     }
 
     public void setConnector(ServerSideConnectorInt connector) {
-
         this.connector = connector;
-
     }
-
-
 }

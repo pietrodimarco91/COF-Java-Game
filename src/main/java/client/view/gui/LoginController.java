@@ -112,7 +112,6 @@ public class LoginController extends ClientGUIController {
 
 	@FXML
 	public void selectConnectionType(ActionEvent event) {
-
 		ToggleGroup group = new ToggleGroup();
 		socketCheckBox.setToggleGroup(group);
 		rmiCheckBox.setToggleGroup(group);

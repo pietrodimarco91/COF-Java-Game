@@ -1,4 +1,5 @@
 package client.view.gui;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -78,7 +79,6 @@ public class WaitingRoomController extends ClientGUIController {
 
 	@FXML
 	public void initialize() {
-		
 		super.playSound("audio/surroundMusic.mp3");
 	}
 
@@ -119,7 +119,6 @@ public class WaitingRoomController extends ClientGUIController {
 	@FXML
 	public void handleSelectConfiguration() {
 		String string = this.configChose.getText();
-		
 		try {
 			int configId = Integer.parseInt(string);
 			connector.sendToServer(new Packet(new Integer(configId)));
@@ -141,7 +140,7 @@ public class WaitingRoomController extends ClientGUIController {
 			AnchorPane page = (AnchorPane) loader.load();
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("New Configuration");
-			dialogStage.initModality(Modality.NONE);
+			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(waitingRoomStage);
 			Scene scene = new Scene(page);
 			dialogStage.setScene(scene);
@@ -160,10 +159,10 @@ public class WaitingRoomController extends ClientGUIController {
 	public void handleChatMessage() {
 		try {
 			connector.sendToServer(new Packet(chatMessage.getText(), "***"));
+			chatMessage.setText("");
 		} catch (RemoteException e) {
 			serverOutput.appendText(e.getMessage());
 		}
-		chatMessage.setText("");
 	}
 
 	@FXML
@@ -204,7 +203,6 @@ public class WaitingRoomController extends ClientGUIController {
 		case "CHAT":
 			chat.appendText(packet.getMessageString() + "\n");
 			super.playSound("audio/messageIn.mp3");
-			chat.appendText(packet.getMessageString()+"\n");
 			break;
 		}
 	}
@@ -217,12 +215,10 @@ public class WaitingRoomController extends ClientGUIController {
 			Parent parentConnectionStage = null;
 			try {
 				resource = new File("src/main/java/client/view/gui/configurator/mapConfig.fxml").toURI().toURL();
+				loader.setLocation(resource);
+				parentConnectionStage = loader.load();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
-			}
-			loader.setLocation(resource);
-			try {
-				parentConnectionStage = loader.load();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -230,16 +226,16 @@ public class WaitingRoomController extends ClientGUIController {
 			Stage confStage = this.waitingRoomStage;
 
 			confStage.setTitle("Match Room");
-			Scene scene=new Scene(parentConnectionStage);
+			Scene scene = new Scene(parentConnectionStage);
 			BoardController boardController = loader.getController();
 			boardController.setStage(confStage);
 			boardController.setBoard(update);
 
-			Platform.runLater(()->{
+			Platform.runLater(() -> {
 				confStage.setScene(scene);
 				confStage.show();
 				boardController.setConnector(connector);
-				});
+			});
 
 			try {
 				this.clientConnector.setGUIController(boardController);
@@ -257,9 +253,11 @@ public class WaitingRoomController extends ClientGUIController {
 
 	public void refreshPlayersList(UpdateState update) {
 		Platform.runLater(() -> {
+			Label titleLabel = (Label) playersInGame.getChildren().get(0);
 			playersInGame.getChildren().clear();
 			List<Player> players = update.getPlayers();
 			Label playerNickname;
+			playersInGame.getChildren().add(titleLabel);
 			for (Player player : players) {
 				playerNickname = new Label(player.getNickName());
 				playersInGame.getChildren().add(playerNickname);
@@ -272,6 +270,6 @@ public class WaitingRoomController extends ClientGUIController {
 	}
 
 	public void setClientConnector(ClientSideConnectorInt connector) {
-		this.clientConnector=connector;
+		this.clientConnector = connector;
 	}
 }

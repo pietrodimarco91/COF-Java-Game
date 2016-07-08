@@ -51,7 +51,10 @@ public abstract class PubSub {
 							.sendToClient(new Packet("[CHAT] " + players.get(playerId).getNickName() + ": " + message, "***"));
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
-				ServerOutputPrinter.printLine("Error: couldn't write to Client");
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName() + "' and ID "
+						+ player.getId() + " disconnected!");
+				notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+						+ "' and ID " + player.getId() + " disconnected!");
 			}
 		}
 	}

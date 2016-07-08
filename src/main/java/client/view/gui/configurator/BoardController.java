@@ -8,7 +8,6 @@ import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -22,7 +21,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class BoardController extends ClientGUIController implements Initializable{
+public class BoardController extends ClientGUIController {
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;

@@ -102,13 +102,13 @@ public class BoardController extends ClientGUIController {
 	public void sendPacketToGUIController(Packet packet) {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
-			serverOutput.appendText(packet.getMessageString() + "\n");
+			serverOutput.appendText(packet.getMessageString());
 			break;
 		case "UPDATE":
 			handleUpdate(packet.getUpdate());
 			break;
 		case "CHAT":
-			chat.appendText(packet.getMessageString() + "\n");
+			chat.appendText(packet.getMessageString());
 			break;
 		}
 	}

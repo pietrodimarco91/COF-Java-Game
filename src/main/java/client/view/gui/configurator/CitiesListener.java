@@ -68,8 +68,7 @@ public class CitiesListener {
 
 
 
-    public void removeLink(Pane linePanes, Line line) {
+    public void removeLink(Line line) {
     	boardController.removeLink(line);
-       //linePanes.getChildren().remove(linePanes.getChildren().indexOf(line));
     }
 }

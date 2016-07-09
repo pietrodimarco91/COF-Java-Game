@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" prefHeight="627.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.ActionController">
+<AnchorPane maxHeight="-Infinity" prefHeight="627.0" prefWidth="497.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.ActionController">
    <children>
       <TabPane prefHeight="627.0" prefWidth="496.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -182,7 +182,7 @@
                                                 </VBox>
                                                 <VBox alignment="CENTER" prefHeight="112.0" prefWidth="97.0">
                                                    <children>
-                                                      <Button mnemonicParsing="false" text="Choose City">
+                                                      <Button mnemonicParsing="false" onAction="#handleChooseKingCity" text="Choose City">
                                                          <VBox.margin>
                                                             <Insets bottom="10.0" />
                                                          </VBox.margin>
@@ -296,7 +296,7 @@
                                                    </children>
                                                 </VBox>
                                                 <TextField fx:id="quickCouncillorColor" editable="false" prefHeight="25.0" prefWidth="116.0" />
-                                                <Button mnemonicParsing="false" text="Choose Councillor Color">
+                                                <Button mnemonicParsing="false" onAction="#handleChooseCouncillorColor" text="Choose Councillor Color">
                                                    <FlowPane.margin>
                                                       <Insets left="10.0" />
                                                    </FlowPane.margin>

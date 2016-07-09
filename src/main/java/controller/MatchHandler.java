@@ -760,6 +760,7 @@ public class MatchHandler {
 	public void startMarketBuyTime() {
 		this.gameStatus = GameStatusConstants.MARKET_BUY;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'", board);
+		PubSub.sendMarketStatus(players, market);
 		randomPlayerIterator = new RandomPlayerIterator(players);
 		String message = "In order to buy items from the Market, players must respect a random order\n";
 		playerMarketTurn = randomPlayerIterator.next();
@@ -847,6 +848,7 @@ public class MatchHandler {
 
 	public void sendMarketStatus() {
 		PubSub.notifyAllClients(players, market.toString(), board);
+		PubSub.sendMarketStatus(players, market);
 	}
 
 	public void sendErrorToClient(String error, int playerId) {

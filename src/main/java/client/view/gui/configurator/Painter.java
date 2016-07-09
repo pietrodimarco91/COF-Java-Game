@@ -261,6 +261,7 @@ public class Painter {
 		victoryPointsIndicators.setValue(victoryPoints);
 
 		Platform.runLater(()->{
+			indicatorPane.getChildren().clear();
 			indicatorPane.add(coinsIndicators,0,1);
 			indicatorPane.add(nobilityPointsIndicators,1,1);
 			indicatorPane.add(victoryPointsIndicators,2,1);

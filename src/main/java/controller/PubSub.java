@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import model.Board;
+import model.Market;
 
 public abstract class PubSub {
 
@@ -47,8 +48,8 @@ public abstract class PubSub {
 		for (Player player : players) {
 			try {
 				if (!player.playerIsOffline())
-					player.getConnector()
-							.sendToClient(new Packet("[CHAT] " + players.get(playerId).getNickName() + ": " + message, "***"));
+					player.getConnector().sendToClient(
+							new Packet("[CHAT] " + players.get(playerId).getNickName() + ": " + message, "***"));
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
 				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName() + "' and ID "
@@ -59,4 +60,19 @@ public abstract class PubSub {
 		}
 	}
 
+	public static void sendMarketStatus(List<Player> players, Market market) {
+		for (Player player : players) {
+			try {
+				if (!player.playerIsOffline()) {
+					player.getConnector().sendToClient(new Packet(new UpdateState(market)));
+				}
+			} catch (RemoteException e) {
+				player.setPlayerOffline();
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName() + "' and ID "
+						+ player.getId() + " disconnected!");
+				notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+						+ "' and ID " + player.getId() + " disconnected!");
+			}
+		}
+	}
 }

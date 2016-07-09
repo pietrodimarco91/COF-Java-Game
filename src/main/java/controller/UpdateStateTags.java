@@ -1,5 +1,5 @@
 package controller;
 
 public enum UpdateStateTags {
-	PLAYER_UPDATE,BOARD,PLAYERS,MESSAGE;
+	PLAYER_UPDATE,BOARD,PLAYERS,MESSAGE, MARKET;
 }

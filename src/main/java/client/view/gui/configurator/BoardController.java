@@ -1,8 +1,6 @@
 package client.view.gui.configurator;
 
 import client.controller.ClientGUIController;
-import client.view.gui.LoaderResources;
-import client.view.gui.NewConfigController;
 import controller.Packet;
 import controller.Player;
 import controller.ServerSideConnectorInt;
@@ -22,6 +20,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Board;
 import model.City;
+import model.ItemOnSale;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,6 +86,7 @@ public class BoardController extends ClientGUIController {
 	private Player playerStatus;
 	private char city1, city2;
 	private ServerSideConnectorInt connector;
+	private List<ItemOnSale> itemsOnSale;
 
 	public void initialize() {
 		grid.setPickOnBounds(false);
@@ -99,13 +99,13 @@ public class BoardController extends ClientGUIController {
 	public void sendPacketToGUIController(Packet packet) {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
-			serverOutput.appendText(packet.getMessageString());
+			serverOutput.appendText(packet.getMessageString()+"\n");
 			break;
 		case "UPDATE":
 			handleUpdate(packet.getUpdate());
 			break;
 		case "CHAT":
-			chat.appendText(packet.getMessageString());
+			chat.appendText(packet.getMessageString()+"\n");
 			break;
 		}
 	}
@@ -136,7 +136,10 @@ public class BoardController extends ClientGUIController {
 			repaintPlayerStatus(update.getPlayer());
 			break;
 		case "MESSAGE":
-			serverOutput.appendText(update.getMessage());
+			serverOutput.appendText(update.getMessage()+"\n");
+			break;
+		case "MARKET":
+			setItemsOnSale(update);
 			break;
 		}
 	}
@@ -157,6 +160,10 @@ public class BoardController extends ClientGUIController {
 
 	public void setPlayerStatus(UpdateState update) {
 		this.playerStatus = update.getPlayer();
+	}
+	
+	public void setItemsOnSale(UpdateState update) {
+		this.itemsOnSale=update.getItemsOnSale();
 	}
 
 	/**
@@ -232,7 +239,7 @@ public class BoardController extends ClientGUIController {
 		FXMLLoader loader = new FXMLLoader();
 		String pathTo = "PerformActionDialog.fxml";
 		try {
-			resource = new File("src/main/java/client/view/gui/" + pathTo).toURI().toURL();
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
 			loader.setLocation(resource);
 			AnchorPane page = (AnchorPane) loader.load();
 			Stage dialogStage = new Stage();
@@ -251,5 +258,19 @@ public class BoardController extends ClientGUIController {
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
 		}
+	}
+	
+	@FXML
+	public void handlePlayStatus() {
+		try {
+			connector.sendToServer(new Packet("FINISHMAPCONFIG"));
+		} catch (RemoteException e) {
+			serverOutput.appendText(e.getMessage());
+		}
+	}
+	
+	@FXML
+	public void handleChatMessage() {
+		//must show the chat message input field
 	}
 }

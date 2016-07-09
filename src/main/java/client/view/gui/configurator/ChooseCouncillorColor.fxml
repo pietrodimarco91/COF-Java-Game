@@ -1,8 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<AnchorPane prefHeight="205.0" prefWidth="445.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane alignment="CENTER" prefHeight="205.0" prefWidth="477.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="126.0" minHeight="10.0" prefHeight="122.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="77.0" minHeight="10.0" prefHeight="40.0" valignment="CENTER" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Pane prefHeight="108.0" prefWidth="78.0" styleClass="BlackCouncillor" stylesheets="@style.css" />
+            <Pane prefHeight="200.0" prefWidth="200.0" styleClass="OrangeCouncillor" stylesheets="@style.css" GridPane.columnIndex="1" />
+            <Pane prefHeight="200.0" prefWidth="200.0" styleClass="BlueCouncillor" stylesheets="@style.css" GridPane.columnIndex="2" />
+            <Pane prefHeight="200.0" prefWidth="200.0" styleClass="PinkCouncillor" stylesheets="@style.css" GridPane.columnIndex="3" />
+            <Pane prefHeight="200.0" prefWidth="200.0" styleClass="PurpleCouncillor" stylesheets="@style.css" GridPane.columnIndex="4" />
+            <Pane prefHeight="98.0" prefWidth="79.0" styleClass="WhiteCouncillor" stylesheets="@style.css" GridPane.columnIndex="5" />
+            <Button mnemonicParsing="false" onAction="#handleSelectCouncillorColor" text="BLACK" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#handleSelectCouncillorColor" text="ORANGE" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#handleSelectCouncillorColor" text="BLUE" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#handleSelectCouncillorColor" text="PINK" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#handleSelectCouncillorColor" text="PURPLE" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#handleSelectCouncillorColor" text="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+   </children>
 </AnchorPane>
-

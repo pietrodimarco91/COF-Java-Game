@@ -3,11 +3,18 @@ package client.view.gui.configurator;
 import client.view.gui.LoaderResources;
 import client.view.gui.MatchCityPane;
 import controller.Player;
+import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.util.Duration;
 import jfxtras.scene.control.gauge.linear.SimpleMetroArcGauge;
+import jfxtras.scene.control.gauge.linear.elements.PercentSegment;
+import jfxtras.scene.control.gauge.linear.elements.Segment;
 import model.*;
 import model.Region;
 
@@ -61,6 +68,24 @@ public class Painter {
 		nobilityPointsIndicators.setMinValue(0);
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
+
+		coinsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
+		for (int i = 0; i < 10; i++) {
+			Segment lSegment = new PercentSegment(coinsIndicators, i*10.0, (i+1)*10.0);
+			coinsIndicators.segments().add(lSegment);
+		}
+
+		nobilityPointsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
+		for (int i = 0; i < 10; i++) {
+			Segment lSegment = new PercentSegment(nobilityPointsIndicators, i*10.0, (i+1)*10.0);
+			nobilityPointsIndicators.segments().add(lSegment);
+		}
+
+		victoryPointsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
+		for (int i = 0; i < 10; i++) {
+			Segment lSegment = new PercentSegment(victoryPointsIndicators, i*10.0, (i+1)*10.0);
+			victoryPointsIndicators.segments().add(lSegment);
+		}
 
 		this.stackPane = stackPane;
 		this.citiesListener = citiesListener;
@@ -347,6 +372,19 @@ public class Painter {
 				break;
 			}
 			i++;
+			Pane councillorPane = (Pane) councillors.getChildren().get(councillors.getChildren().indexOf(pane));
+			double x = councillorPane.getLayoutX();
+			double y = councillorPane.getLayoutY();
+			Path path = new Path();
+			path.getElements().add(new MoveTo(x,y+100));
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setDuration(Duration.millis(1000));
+			pathTransition.setPath(path);
+			pathTransition.setNode(councillorPane);
+			pathTransition.setAutoReverse(true);
+			pane.setOnMouseEntered(event->{
+				pathTransition.play();
+			});
 		}
 	}
 }

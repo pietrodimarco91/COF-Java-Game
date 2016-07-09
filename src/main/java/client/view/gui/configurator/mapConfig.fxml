@@ -16,7 +16,7 @@
    <center>
       <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
          <children>
-            <GridPane fx:id="grid1" layoutX="10.0" layoutY="10.0">
+            <GridPane layoutX="10.0" layoutY="10.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="NEVER" maxWidth="367.0" minWidth="10.0" percentWidth="3.0" prefWidth="367.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="367.0" minWidth="10.0" percentWidth="30.0" prefWidth="367.0" />
@@ -288,6 +288,7 @@
                         </Button>
                      </children>
                   </FlowPane>
+                  <FlowPane fx:id="buttonsPane" alignment="CENTER" prefHeight="200.0" prefWidth="200.0" />
                </children>
             </GridPane>
          </children>

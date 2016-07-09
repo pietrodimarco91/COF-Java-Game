@@ -5,9 +5,10 @@ import client.view.gui.MatchCityPane;
 import controller.Player;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -69,19 +70,19 @@ public class Painter {
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
 
-		coinsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
+		coinsIndicators.getStyleClass().add("colorscheme-indicator");
 		for (int i = 0; i < 10; i++) {
 			Segment lSegment = new PercentSegment(coinsIndicators, i*10.0, (i+1)*10.0);
 			coinsIndicators.segments().add(lSegment);
 		}
 
-		nobilityPointsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
+		nobilityPointsIndicators.getStyleClass().add("colorscheme-indicator");
 		for (int i = 0; i < 10; i++) {
 			Segment lSegment = new PercentSegment(nobilityPointsIndicators, i*10.0, (i+1)*10.0);
 			nobilityPointsIndicators.segments().add(lSegment);
 		}
 
-		victoryPointsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
+		victoryPointsIndicators.getStyleClass().add("colorscheme-indicator");
 		for (int i = 0; i < 10; i++) {
 			Segment lSegment = new PercentSegment(victoryPointsIndicators, i*10.0, (i+1)*10.0);
 			victoryPointsIndicators.segments().add(lSegment);
@@ -212,6 +213,12 @@ public class Painter {
 		pane.setOnMouseClicked(event -> {
 			citiesListener.cityClicked(pane, city);
 		});
+		pane.setOnMouseEntered(event -> {
+			citiesListener.cityEntered(city);
+		});
+		pane.setOnMouseExited(event -> {
+			citiesListener.cityExited(city);
+		});
 		regionRunLaters.add(new RegionRunLater(pane, colIndex, rowIndex, region));
 		matchCitiesPanes.add(new MatchCityPane(city, pane));
 	}
@@ -276,9 +283,24 @@ public class Painter {
 
 		Platform.runLater(() -> {
 			indicatorPane.getChildren().clear();
-			indicatorPane.add(coinsIndicators, 0, 1);
-			indicatorPane.add(nobilityPointsIndicators, 1, 1);
-			indicatorPane.add(victoryPointsIndicators, 2, 1);
+			VBox coinsBox = new VBox();
+			VBox victoryBox = new VBox();
+			VBox nobilityBox = new VBox();
+			coinsBox.setAlignment(Pos.BOTTOM_CENTER);
+			victoryBox.setAlignment(Pos.BOTTOM_CENTER);
+			nobilityBox.setAlignment(Pos.BOTTOM_CENTER);
+			Label coinsLabel = new Label("COINS");
+			Label nobilityLabel = new Label("NOBILITY TRACK");
+			Label victoryLabel = new Label("VICTORY POINTS");
+			coinsBox.getChildren().add(coinsIndicators);
+			coinsBox.getChildren().add(coinsLabel);
+			indicatorPane.add(coinsBox, 0, 1);
+			victoryBox.getChildren().add(victoryPointsIndicators);
+			victoryBox.getChildren().add(victoryLabel);
+			indicatorPane.add(victoryBox, 1, 1);
+			nobilityBox.getChildren().add(nobilityPointsIndicators);
+			nobilityBox.getChildren().add(nobilityLabel);
+			indicatorPane.add(nobilityBox, 2, 1);
 		});
 
 	}

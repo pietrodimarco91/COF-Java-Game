@@ -259,4 +259,42 @@
   
 }
 
+.menuButton {
+    -fx-background-color: linear-gradient(#ffd65b, #e68400),
+    linear-gradient(#ffef84, #f2ba44),
+    linear-gradient(#ffea6a, #efaa22),
+    linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%);
+    -fx-background-radius: 30;
+    -fx-background-insets: 0, 1, 2, 3, 0;
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+
+.mainLabel {
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+
+.simpleLabel {
+    -fx-text-fill: #654b00;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+
+.colorscheme-indicator {
+    -fxx-segment0-color: #f61319;
+    -fxx-segment1-color: #f3351f;
+    -fxx-segment2-color: #f65821;
+    -fxx-segment3-color: #f18c23;
+    -fxx-segment4-color: #f3a429;
+    -fxx-segment5-color: #fccb2e;
+    -fxx-segment6-color: #f2de31;
+    -fxx-segment7-color: #d4ea35;
+    -fxx-segment8-color: #aacc2a;
+    -fxx-segment9-color: #97b329;
+}
 

@@ -6,31 +6,29 @@ import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.Board;
-import model.City;
-import model.ItemOnSale;
+import model.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -84,6 +82,9 @@ public class BoardController extends ClientGUIController {
 	@FXML
 	private GridPane kingCouncil;
 
+	@FXML
+	private FlowPane buttonsPane;
+
 	private Painter painter;
 
 	private CitiesListener citiesListener;
@@ -100,6 +101,7 @@ public class BoardController extends ClientGUIController {
 		councillors.setPickOnBounds(false);
 		citiesListener = new CitiesListener(this);
 		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
+		showButtonPane();
 	}
 
 	@Override
@@ -279,6 +281,8 @@ public class BoardController extends ClientGUIController {
 		super.playSound("audio/buttonPressed.mp3");
 		try {
 			connector.sendToServer(new Packet("FINISHMAPCONFIG"));
+			citiesListener.setGameState();
+			repaintBoard();
 		} catch (RemoteException e) {
 			serverOutput.appendText(e.getMessage());
 		}
@@ -314,6 +318,12 @@ public class BoardController extends ClientGUIController {
 		}
 	}
 		
+	@FXML
+	public void handleMapConfigurationStatus() {
+		citiesListener.setFirstLinkState();
+		repaintBoard();
+	}
+
 	@FXML
 	public void handleChatMessage() {
 		// must show the chat message input field
@@ -352,5 +362,77 @@ public class BoardController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 			
 		}
+	}
+
+	public void showCityInfo(City city) {
+		Label name = new Label("City Name");
+		Label bonus = new Label("Reward Token");
+		Label emporiums = new Label("Emporiums");
+		name.getStyleClass().add("mainLabel");
+		bonus.getStyleClass().add("mainLabel");
+		emporiums.getStyleClass().add("mainLabel");
+		String cityName = city.getName();
+		Tile rewardToken = city.winBonus();
+		ArrayList<String> cityBonuses = rewardToken.getBonus();
+		ArrayList<Emporium> cityEmporiums = city.getEmporiums();
+		VBox nameBox = new VBox();
+		VBox emporiumBox = new VBox();
+		VBox bonusBox = new VBox();
+		nameBox.getChildren().add(name);
+		Label cityNameLabel = new Label(cityName);
+		cityNameLabel.getStyleClass().add("simpleLabel");
+		nameBox.getChildren().add(cityNameLabel);
+		bonusBox.getChildren().add(bonus);
+		for(String cityBonus : cityBonuses) {
+			Label bonusLabel = new Label(cityBonus);
+			bonusLabel.getStyleClass().add("simpleLabel");
+			bonusBox.getChildren().add(bonusLabel);
+		}
+		emporiumBox.getChildren().add(emporiums);
+		for(Emporium emporium : cityEmporiums) {
+			Label emporiumLabel = new Label(emporium.getOwner().getNickName());
+			emporiumLabel.getStyleClass().add("simpleLabel");
+			emporiumBox.getChildren().add(emporiumLabel);
+		}
+		buttonsPane.getChildren().clear();
+		buttonsPane.getChildren().add(nameBox);
+		buttonsPane.getChildren().add(emporiumBox);
+		buttonsPane.getChildren().add(bonusBox);
+	}
+
+	public void showButtonPane() {
+		Platform.runLater(()->{
+			Button play = new Button("Start Playing");
+			play.setOnAction(event->{
+				handlePlayStatus();
+			});
+			Button market = new Button("Market");
+			market.setOnAction(event->{
+
+			});
+			Button mapConfiguration = new Button("Map Configuration");
+			mapConfiguration.setOnAction(event->{
+				handleMapConfigurationStatus();
+			});
+			Button action = new Button("Perform Action");
+			action.setOnAction(event->{
+				performNewAction();
+			});
+			Button cards = new Button("Your Cards");
+			cards.setOnAction(event->{
+				showPlayerCards(event);
+			});
+			this.buttonsPane.getChildren().clear();
+			action.getStyleClass().add("menuButton");
+			market.getStyleClass().add("menuButton");
+			mapConfiguration.getStyleClass().add("menuButton");
+			play.getStyleClass().add("menuButton");
+			cards.getStyleClass().add("menuButton");
+			this.buttonsPane.getChildren().add(action);
+			this.buttonsPane.getChildren().add(market);
+			this.buttonsPane.getChildren().add(mapConfiguration);
+			this.buttonsPane.getChildren().add(play);
+			this.buttonsPane.getChildren().add(cards);
+		});
 	}
 }

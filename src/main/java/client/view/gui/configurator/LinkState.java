@@ -1,5 +1,6 @@
 package client.view.gui.configurator;
 
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import model.City;
 
@@ -8,4 +9,8 @@ import model.City;
  */
 public interface LinkState {
     void select(CitiesListener citiesListener, Pane pane, City city);
+
+    void cityEntered(City city, BoardController boardController);
+
+    void cityExited(City city, BoardController boardController);
 }

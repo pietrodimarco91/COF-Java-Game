@@ -1,5 +1,6 @@
 package client.view.gui.configurator;
 
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import model.City;
 
@@ -13,5 +14,15 @@ public class LinkStateFirstSelect implements LinkState {
         pane.getStyleClass().add("citySelected");
         citiesListener.setFirstLink(pane,city);
         citiesListener.setSecondLinkState();
+    }
+
+    @Override
+    public void cityEntered(City city, BoardController boardController) {
+
+    }
+
+    @Override
+    public void cityExited(City city, BoardController boardController) {
+
     }
 }

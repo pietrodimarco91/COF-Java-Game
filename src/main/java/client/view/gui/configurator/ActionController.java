@@ -107,6 +107,13 @@ public class ActionController extends ClientGUIController {
 	private Stage dialogStage;
 
 	@FXML
+	public void initialize() {
+		this.regionName="";
+		this.councillorColor="";
+		politicCardColors = new ArrayList<>();
+	}
+
+	@FXML
 	public void handleSelectRegionElectCouncillor() {
 		ToggleGroup group = new ToggleGroup();
 		electCouncillorHills.setToggleGroup(group);
@@ -177,6 +184,8 @@ public class ActionController extends ClientGUIController {
 	public void handleSelectCouncillorColor(ActionEvent event) {
 		Button button = (Button) event.getSource();
 		this.mainCouncillorColor.setText(button.getText());
+		this.quickCouncillorColor.setText(button.getText());
+		this.councillorColor=mainCouncillorColor.getText();
 		dialogStage.close();
 	}
 
@@ -229,7 +238,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformBuyPermitTileAction() {
-		if(regionName==null || this.politicCardColors.size()==0 || this.player==null) {
+		if(this.politicCardColors.size()==0 || this.regionName.equals("") || this.permitTile.getText().equals("")) {
 			String error="";
 			if(regionName==null)
 				error+="Please specity a region!\n";
@@ -251,7 +260,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformBuildEmporiumKingAction() {
-		if(this.cityKingBuildEmporium.getText()=="" || this.politicCardColors.size()==0) {
+		if(this.cityKingBuildEmporium.getText().equals("") || this.politicCardColors.size()==0) {
 			String error="";
 			if(this.cityKingBuildEmporium.getText()=="")
 				error+="Please specity a city!\n";
@@ -271,7 +280,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformSimpleBuildEmporiumAction() {
-		if(this.permitTile.getText()=="" || this.citySimpleBuildEmporium.getText()=="") {
+		if(this.permitTile.getText().equals("") || this.citySimpleBuildEmporium.getText().equals("")) {
 			String error="";
 			if(this.permitTile.getText()=="")
 				error+="Please choose a Permit Tile!\n";
@@ -291,7 +300,7 @@ public class ActionController extends ClientGUIController {
 	
 	@FXML
 	public void handlePerformElectCouncillorAction() {
-		if(this.regionName=="" || this.councillorColor=="") {
+		if(this.regionName.equals("") || this.councillorColor.equals("")) {
 			String error="";
 			if(this.regionName=="")
 				error+="Please choose a Region!\n";
@@ -321,7 +330,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleSwitchPermitTilesAction() {
-		if(this.regionName=="") {
+		if(this.regionName.equals("")) {
 			String error="Please choose a Region!\n";
 			showAlert(error);
 			return;
@@ -336,7 +345,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleSendAssistantAction() {
-		if(this.regionName=="" || this.councillorColor=="") {
+		if(this.regionName.equals("") || this.councillorColor.equals("")) {
 			String error="";
 			if(this.regionName=="")
 				error+="Please choose a Region!\n";

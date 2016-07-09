@@ -12,7 +12,7 @@
    <children>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="426.0">
          <center>
-            <TextField fx:id="replyMessage" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="350.0" text="Write to reply..." BorderPane.alignment="CENTER">
+            <TextField fx:id="replyMessage" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleEnterKey" prefHeight="27.0" prefWidth="350.0" text="Write to reply..." BorderPane.alignment="CENTER">
                <font>
                   <Font name="PT Mono Bold" size="13.0" />
                </font>

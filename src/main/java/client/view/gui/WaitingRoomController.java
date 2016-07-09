@@ -210,6 +210,7 @@ public class WaitingRoomController extends ClientGUIController {
 	public void handleUpdateState(UpdateState update) {
 		switch (update.getHeader()) {
 		case "BOARD":
+			
 			URL resource = null;
 			FXMLLoader loader = new FXMLLoader();
 			Parent parentConnectionStage = null;
@@ -230,6 +231,7 @@ public class WaitingRoomController extends ClientGUIController {
 			BoardController boardController = loader.getController();
 			boardController.setStage(confStage);
 			boardController.setBoard(update);
+			super.stopSound();
 
 			Platform.runLater(() -> {
 				confStage.setScene(scene);

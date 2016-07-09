@@ -163,7 +163,7 @@
                <GridPane.margin>
                   <Insets right="3.0" />
                </GridPane.margin></TextArea>
-            <Button mnemonicParsing="false" text="Chat" GridPane.columnIndex="4">
+            <Button mnemonicParsing="false" onAction="#chatMessage" text="Chat" GridPane.columnIndex="4">
                <GridPane.margin>
                   <Insets right="3.0" />
                </GridPane.margin>

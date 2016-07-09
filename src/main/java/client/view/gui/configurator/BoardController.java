@@ -107,11 +107,14 @@ public class BoardController extends ClientGUIController {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
 			serverOutput.appendText(packet.getMessageString() + "\n");
+			super.playSound("audio/messageIn.mp3");
 			break;
 		case "UPDATE":
+			
 			handleUpdate(packet.getUpdate());
 			break;
 		case "CHAT":
+			super.playSound("audio/messageIn.mp3");
 			chat.appendText(packet.getMessageString() + "\n");
 			break;
 		}
@@ -139,6 +142,7 @@ public class BoardController extends ClientGUIController {
 			repaintBoard();
 			break;
 		case "PLAYER_UPDATE":
+			super.playSound("audio/updateNotify.mp3");
 			setPlayerStatus(update);
 			repaintPlayerStatus(update.getPlayer());
 			break;
@@ -179,6 +183,7 @@ public class BoardController extends ClientGUIController {
 	 */
 	@FXML
 	public void repaintBoard() {
+		super.playSound("audio/buttonPressed.mp3");
 		painter.repaint(board.getRegions());
 		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
 	}
@@ -243,6 +248,7 @@ public class BoardController extends ClientGUIController {
 	@Override
 	@FXML
 	public void performNewAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		URL resource = null;
 		FXMLLoader loader = new FXMLLoader();
 		String pathTo = "PerformActionDialog.fxml";
@@ -270,13 +276,44 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	public void handlePlayStatus() {
+		super.playSound("audio/buttonPressed.mp3");
 		try {
 			connector.sendToServer(new Packet("FINISHMAPCONFIG"));
 		} catch (RemoteException e) {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
-
+	@FXML
+	public void chatMessage(ActionEvent event) {
+		super.playSound("audio/buttonPressed.mp3");
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "chatMessage.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			
+			loader.setLocation(resource);
+			Parent page = loader.load();
+			
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Chat");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			ChatMessage chatMessage = loader.getController();
+			chatMessage.setStage(dialogStage);
+			chatMessage.setConnector(connector);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+			
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+			
+		}
+	}
+		
 	@FXML
 	public void handleChatMessage() {
 		// must show the chat message input field
@@ -284,15 +321,16 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	public void showPlayerCards(ActionEvent event) {
+		super.playSound("audio/buttonPressed.mp3");
 		URL resource = null;
 		FXMLLoader loader = new FXMLLoader();
 		String pathTo = "playerCards.fxml";
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
-			System.out.println("prima volta");
+			
 			loader.setLocation(resource);
 			Parent page = loader.load();
-			System.out.println("seconda volta");
+			
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Your Cards");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -309,10 +347,10 @@ public class BoardController extends ClientGUIController {
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
-			System.out.println("stringa mal formata");
+			
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
-			System.out.println("IO exception");
+			
 		}
 	}
 }

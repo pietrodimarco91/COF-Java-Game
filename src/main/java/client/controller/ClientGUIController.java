@@ -94,6 +94,9 @@ public class ClientGUIController extends ClientController {
 	public void muteSound(boolean mute) {
 		this.mediaPlayer.setMute(mute);
 	}
+	public void stopSound() {
+		this.mediaPlayer.stop();
+	}
 
 	public void sendPacketToGUIController(Packet packet) {}
 }

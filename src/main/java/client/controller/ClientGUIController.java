@@ -10,7 +10,10 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class ClientGUIController extends ClientController {
-
+	
+	private Media media;
+	private MediaPlayer mediaPlayer;
+	
 	@Override
 	public void boardConfiguration() {}
 
@@ -83,9 +86,13 @@ public class ClientGUIController extends ClientController {
 
 	public void playSound(String soundPath) {
 		soundPath = LoaderResources.loadPath(soundPath);
-		Media media = new Media(soundPath);
-		MediaPlayer mediaPlayer = new MediaPlayer(media);
+		this.media = new Media(soundPath);
+		this.mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.play();
+	}
+	
+	public void muteSound(boolean mute) {
+		this.mediaPlayer.setMute(mute);
 	}
 
 	public void sendPacketToGUIController(Packet packet) {}

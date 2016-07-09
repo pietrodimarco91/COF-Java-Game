@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="backGroundColorConfiguration" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
    <center>
@@ -166,8 +167,14 @@
                <GridPane.margin>
                   <Insets right="3.0" />
                </GridPane.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#repaintBoard" text="Refresh Board" />
+            <Button mnemonicParsing="false" onAction="#repaintBoard" prefHeight="24.0" prefWidth="120.0" text="Refresh Board">
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font></Button>
          </children>
       </GridPane>
    </top>
@@ -243,26 +250,41 @@
                            <FlowPane.margin>
                               <Insets bottom="10.0" right="10.0" />
                            </FlowPane.margin>
+                           <font>
+                              <Font name="PT Mono Bold" size="13.0" />
+                           </font>
                         </Button>
                         <Button mnemonicParsing="false" text="Market">
                            <FlowPane.margin>
                               <Insets bottom="10.0" right="10.0" />
                            </FlowPane.margin>
+                           <font>
+                              <Font name="PT Mono Bold" size="13.0" />
+                           </font>
                         </Button>
                         <Button mnemonicParsing="false" text="Map Configuration">
                            <FlowPane.margin>
                               <Insets bottom="10.0" right="10.0" />
                            </FlowPane.margin>
+                           <font>
+                              <Font name="PT Mono Bold" size="13.0" />
+                           </font>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#handlePlayStatus" text="Start Playing">
                            <FlowPane.margin>
                               <Insets bottom="10.0" right="10.0" />
                            </FlowPane.margin>
+                           <font>
+                              <Font name="PT Mono Bold" size="13.0" />
+                           </font>
                         </Button>
                         <Button fx:id="playerCards" mnemonicParsing="false" onAction="#showPlayerCards" text="Your Cards">
                            <FlowPane.margin>
                               <Insets bottom="10.0" right="10.0" />
                            </FlowPane.margin>
+                           <font>
+                              <Font name="PT Mono Bold" size="13.0" />
+                           </font>
                         </Button>
                      </children>
                   </FlowPane>

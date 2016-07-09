@@ -88,12 +88,12 @@ public class WaitingRoomController extends ClientGUIController {
 			mute.getStyleClass().remove("audioButtonNotMute");
 			mute.getStyleClass().add("audioButtonMute");
 			muteCheck = true;
-			muteSound(muteCheck);
+			super.muteSound(muteCheck);
 		} else if (muteCheck) {
 			mute.getStyleClass().remove("audioButtonMute");
 			mute.getStyleClass().add("audioButtonNotMute");
 			muteCheck = false;
-			muteSound(muteCheck);
+			super.muteSound(muteCheck);
 		}
 
 	}
@@ -264,11 +264,6 @@ public class WaitingRoomController extends ClientGUIController {
 			}
 		});
 	}
-
-	private void muteSound(boolean mute) {
-		this.mediaPlayer.setMute(mute);
-	}
-
 	public void setClientConnector(ClientSideConnectorInt connector) {
 		this.clientConnector = connector;
 	}

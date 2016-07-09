@@ -236,7 +236,7 @@
     -fx-padding: 20px;
     -fx-font-family: "PT Mono";
 }
-.city{
+.cityPermitTile{
 	-fx-font-size: 12px;
     -fx-font-weight:bold;
     -fx-padding: 60px;

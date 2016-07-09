@@ -106,6 +106,11 @@ public class CardController extends ClientGUIController {
 		daCancellare.add("N");
 		daCancellare.add("P");
 		
+		ArrayList<String> dabonus=new ArrayList<String>();
+		daCancellare.add("BONUSPRIM");
+		daCancellare.add("BONUSPRIM");
+		daCancellare.add("BONUSPRIM");
+		
 
 		for (int i = 0; i < 10 && !stop; i++) {
 			for (int j = 0; j < 4 && !stop; j++) {
@@ -127,10 +132,20 @@ public class CardController extends ClientGUIController {
 						prova+=daCancellare.get(k)+",";
 						
 					}
-					Label cityName = new Label("\n"+prova);
+					Label cityName = new Label(prova);
 					cityName.getStylesheets().add(css);
-					cityName.getStyleClass().add("id");
+					cityName.getStyleClass().add("city");
 					unusedPermitTileScrollPane.add(cityName, j, i);
+					
+					String bonus="Bonus:\n";
+					for(int k=0;k<dabonus.size();k++){//da cancellare
+						bonus+=dabonus.get(k)+"\n";
+						
+					}
+					Label cityBonus =new Label(bonus);
+					cityBonus.getStylesheets().add(css);
+					cityBonus.getStyleClass().add("bonusPermitTile");
+					unusedPermitTileScrollPane.add(cityBonus, j, i);
 					
 					
 					countCards++;

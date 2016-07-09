@@ -6,10 +6,13 @@ import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -66,6 +69,9 @@ public class BoardController extends ClientGUIController {
 	private TextArea chat;
 
 	@FXML
+	private Button playerCards;
+
+	@FXML
 	private GridPane councillors;
 
 	@FXML
@@ -76,7 +82,6 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private GridPane kingCouncil;
-
 
 	private Painter painter;
 
@@ -91,7 +96,8 @@ public class BoardController extends ClientGUIController {
 	public void initialize() {
 		grid.setPickOnBounds(false);
 		balcony.setPickOnBounds(false);
-		councillors.setPickOnBounds(false);citiesListener = new CitiesListener(this);
+		councillors.setPickOnBounds(false);
+		citiesListener = new CitiesListener(this);
 		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
 	}
 
@@ -99,13 +105,13 @@ public class BoardController extends ClientGUIController {
 	public void sendPacketToGUIController(Packet packet) {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
-			serverOutput.appendText(packet.getMessageString()+"\n");
+			serverOutput.appendText(packet.getMessageString() + "\n");
 			break;
 		case "UPDATE":
 			handleUpdate(packet.getUpdate());
 			break;
 		case "CHAT":
-			chat.appendText(packet.getMessageString()+"\n");
+			chat.appendText(packet.getMessageString() + "\n");
 			break;
 		}
 	}
@@ -136,7 +142,7 @@ public class BoardController extends ClientGUIController {
 			repaintPlayerStatus(update.getPlayer());
 			break;
 		case "MESSAGE":
-			serverOutput.appendText(update.getMessage()+"\n");
+			serverOutput.appendText(update.getMessage() + "\n");
 			break;
 		case "MARKET":
 			setItemsOnSale(update);
@@ -145,8 +151,8 @@ public class BoardController extends ClientGUIController {
 	}
 
 	private void repaintPlayerStatus(Player player) {
-		painter.repaintPlayerStatus(player,indicatorPane);
-		
+		painter.repaintPlayerStatus(player, indicatorPane);
+
 	}
 
 	public void setStage(Stage stage) {
@@ -161,9 +167,9 @@ public class BoardController extends ClientGUIController {
 	public void setPlayerStatus(UpdateState update) {
 		this.playerStatus = update.getPlayer();
 	}
-	
+
 	public void setItemsOnSale(UpdateState update) {
-		this.itemsOnSale=update.getItemsOnSale();
+		this.itemsOnSale = update.getItemsOnSale();
 	}
 
 	/**
@@ -172,7 +178,7 @@ public class BoardController extends ClientGUIController {
 	 */
 	public void repaintBoard() {
 		painter.repaint(board.getRegions());
-		painter.repaintCouncils(board.getRegions(),board.getKingCouncil(),councillors,kingCouncil);
+		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
 	}
 
 	/**
@@ -259,7 +265,7 @@ public class BoardController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
-	
+
 	@FXML
 	public void handlePlayStatus() {
 		try {
@@ -268,9 +274,31 @@ public class BoardController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
-	
+
 	@FXML
 	public void handleChatMessage() {
-		//must show the chat message input field
+		// must show the chat message input field
+	}
+
+	public void showPlayerCards(ActionEvent event) {
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "playerCards.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			Parent page = loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Your Cards");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.show();
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+		}
 	}
 }

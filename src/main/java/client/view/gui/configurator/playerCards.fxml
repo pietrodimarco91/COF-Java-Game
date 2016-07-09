@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="419.0" prefWidth="616.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.CardController">
+  <tabs>
+    <Tab text="Politic Cards">
+         <content>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="cardBackground" stylesheets="@style.css">
+               <center>
+                  <ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="450.0" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+         </content>
+    </Tab>
+    <Tab text="Unused Permit Tile">
+         <content>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="cardBackground" stylesheets="@style.css">
+               <center>
+                  <ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="450.0" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+         </content>
+    </Tab>
+      <Tab text="Used Permit Tile">
+         <content>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="cardBackground" stylesheets="@style.css">
+               <center>
+                  <ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="450.0" BorderPane.alignment="CENTER">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                    </content>
+                  </ScrollPane>
+               </center>
+            </BorderPane>
+         </content>
+      </Tab>
+  </tabs>
+</TabPane>

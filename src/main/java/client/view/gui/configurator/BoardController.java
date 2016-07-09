@@ -304,6 +304,7 @@ public class BoardController extends ClientGUIController {
 			cardController.setConnector(connector);
 			cardController.setPlayer(playerStatus);
 			cardController.setScrollPane();
+			cardController.setUnusedPermitTile();
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());

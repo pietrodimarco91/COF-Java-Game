@@ -1,6 +1,7 @@
 package client.view.gui.configurator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
@@ -19,7 +20,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import model.Board;
+import model.City;
+import model.PermitTile;
 import model.PoliticCard;
+import model.Tile;
 
 public class CardController extends ClientGUIController {
 	private Player player;
@@ -28,12 +32,17 @@ public class CardController extends ClientGUIController {
 	private Board board;
 	private String css;
 	private ArrayList<PoliticCard> politicCards;
+	private ArrayList<Tile> unusedPermitTile;
 
 	@FXML
 	private GridPane politicCardsScrollPane;
+	@FXML
+	private GridPane unusedPermitTileScrollPane;
+	@FXML
+	private GridPane usedPermitTileScrollPane;
 
 	public void setScrollPane() {
-		politicCards = this.player.getPoliticCards();
+		this.politicCards = this.player.getPoliticCards();
 		css = LoaderResources.loadPath("/configurator/style.css");
 		int countCards = 0;
 		boolean stop = false;
@@ -74,9 +83,59 @@ public class CardController extends ClientGUIController {
 						break;
 					}
 					countCards++;
-				}else
-					stop=true;
+				} else
+					stop = true;
 
+			}
+		}
+
+	}
+
+	public void setUnusedPermitTile() {
+		this.unusedPermitTile = this.player.getUnusedPermitTile();
+		css = LoaderResources.loadPath("/configurator/style.css");
+		int countCards = 0;
+		int idCard;
+		List<City>cardCity;
+		ArrayList<String>cardBonus;
+		boolean stop = false;
+		
+		//da eliminare
+		ArrayList<String> daCancellare=new ArrayList<String>();
+		daCancellare.add("M");
+		daCancellare.add("N");
+		daCancellare.add("P");
+		
+
+		for (int i = 0; i < 10 && !stop; i++) {
+			for (int j = 0; j < 4 && !stop; j++) {
+				
+					/*PermitTile tempTile=(PermitTile)this.unusedPermitTile.get(countCards);
+					idCard=tempTile.getId();
+					cardCity=tempTile.getCities();
+					cardBonus=tempTile.getBonus();*/
+					Pane pane = new Pane();
+					pane.getStylesheets().add(css);
+					pane.getStyleClass().add("permitTile");
+					Label id = new Label("ID: 3");
+					id.getStylesheets().add(css);
+					id.getStyleClass().add("id");
+					unusedPermitTileScrollPane.add(pane, j, i);
+					unusedPermitTileScrollPane.add(id, j, i);
+					String prova="City:";
+					for(int k=0;k<daCancellare.size();k++){//da cancellare
+						prova+=daCancellare.get(k)+",";
+						
+					}
+					Label cityName = new Label("\n"+prova);
+					cityName.getStylesheets().add(css);
+					cityName.getStyleClass().add("id");
+					unusedPermitTileScrollPane.add(cityName, j, i);
+					
+					
+					countCards++;
+
+				
 			}
 		}
 

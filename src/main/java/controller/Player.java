@@ -687,4 +687,12 @@ public class Player implements Serializable {
 	public boolean getPlayerWon(){
 		return this.won;
 	}
+	
+	public ArrayList<Tile> getUnusedPermitTile(){
+	return this.unusedPermitTiles;
+	}
+	
+	public ArrayList<Tile> getUsedPermitTile(){
+		return this.usedPermitTiles;
+		}
 }

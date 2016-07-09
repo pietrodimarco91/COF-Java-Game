@@ -223,3 +223,30 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
 }
+
+.permitTile{
+    -fx-background-image: url("cards/permitTile.png");
+    -fx-background-size:400%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.id{
+	-fx-font-size: 14px;
+    -fx-font-weight:bold;
+    -fx-padding: 20px;
+    -fx-font-family: "PT Mono";
+}
+.city{
+	-fx-font-size: 12px;
+    -fx-font-weight:bold;
+    -fx-padding: 60px;
+    -fx-font-family: "PT Mono";
+}
+.bonus{
+	-fx-font-size: 12px;
+    -fx-font-weight:bold;
+    -fx-padding: 100px;
+    -fx-font-family: "PT Mono";
+}
+
+

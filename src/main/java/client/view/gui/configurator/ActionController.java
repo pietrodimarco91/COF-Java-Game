@@ -1,5 +1,9 @@
 package client.view.gui.configurator;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -16,11 +20,15 @@ import controller.Packet;
 import controller.Player;
 import controller.ServerSideConnectorInt;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ActionController extends ClientGUIController {
@@ -165,32 +173,145 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleChooseCouncillorColor() {
-		// open new stage to select the color of the councillor
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "ChooseCouncillorColor.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Choose Councillor Color");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			showAlert(e.getMessage());
+		} catch (IOException e) {
+			showAlert(e.getMessage());
+		}
 	}
 
 	@FXML
 	public void handleChoosePoliticCards() {
-		// open new stage to select the politic cards
+		if(this.player==null) {
+			showAlert("Match isn't started yet!");
+			return;
+		}
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "ChoosePoliticCards.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Choose Politic Cards");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			showAlert(e.getMessage());
+		} catch (IOException e) {
+			showAlert(e.getMessage());
+		}
 	}
 
 	@FXML
 	public void handleChoosePermitTile() {
-		// open new stage to select the permit tile
+		if(this.player==null) {
+			showAlert("Match isn't started yet!");
+			return;
+		}
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "ChoosePermitTile.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Choose Permit Tile");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			showAlert(e.getMessage());
+		} catch (IOException e) {
+			showAlert(e.getMessage());
+		}
 	}
 
 	@FXML
 	public void handleChooseCityOfPermitTile() {
-		// open new stage to select the city of the permit tile
+		if(this.player==null) {
+			showAlert("Match isn't started yet!");
+			return;
+		}
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "ChooseCityOfPermitTile.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Choose City of Permit Tile");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			showAlert(e.getMessage());
+		} catch (IOException e) {
+			showAlert(e.getMessage());
+		}
+	}
+	
+	@FXML
+	public void handleChooseKingCity() {
+		if(this.player==null) {
+			showAlert("Match isn't started yet!");
+			return;
+		}
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "ChooseKingCity.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Choose City");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			showAlert(e.getMessage());
+		} catch (IOException e) {
+			showAlert(e.getMessage());
+		}
 	}
 
 	@FXML
 	public void handlePerformBuyPermitTileAction() {
-		if(regionName==null || this.politicCardColors.size()==0) {
+		if(regionName==null || this.politicCardColors.size()==0 || this.player==null) {
 			String error="";
 			if(regionName==null)
 				error+="Please specity a region!\n";
 			if(politicCardColors.size()==0)
 				error+="Please choose at least one Politic Card!\n";
+			if(this.player==null)
+				error+="Match isn't started yet!\n";
 			showAlert(error);
 			return;
 		}

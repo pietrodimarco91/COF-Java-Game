@@ -33,6 +33,7 @@ public class CardController extends ClientGUIController {
 	private String css;
 	private ArrayList<PoliticCard> politicCards;
 	private ArrayList<Tile> unusedPermitTile;
+	private ArrayList<Tile> usedPermitTile;
 
 	@FXML
 	private GridPane politicCardsScrollPane;
@@ -99,48 +100,35 @@ public class CardController extends ClientGUIController {
 		List<City>cardCity;
 		ArrayList<String>cardBonus;
 		boolean stop = false;
-		
-		//da eliminare
-		ArrayList<String> daCancellare=new ArrayList<String>();
-		daCancellare.add("M");
-		daCancellare.add("N");
-		daCancellare.add("P");
-		
-		ArrayList<String> dabonus=new ArrayList<String>();
-		dabonus.add("BONUSPRIM");
-		dabonus.add("BONUSPRIM2");
-		dabonus.add("BONUSPRIM3");
-		
-
+	
 		for (int i = 0; i < 10 && !stop; i++) {
 			for (int j = 0; j < 4 && !stop; j++) {
 				if(countCards<this.unusedPermitTile.size()){
 				
-					/*PermitTile tempTile=(PermitTile)this.unusedPermitTile.get(countCards);
+					PermitTile tempTile=(PermitTile)this.unusedPermitTile.get(countCards);
 					idCard=tempTile.getId();
 					cardCity=tempTile.getCities();
-					cardBonus=tempTile.getBonus();*/
+					cardBonus=tempTile.getBonus();
 					Pane pane = new Pane();
 					pane.getStylesheets().add(css);
 					pane.getStyleClass().add("permitTile");
-					Label id = new Label("ID: 3");
+					Label id = new Label("ID: "+idCard);
 					id.getStylesheets().add(css);
 					id.getStyleClass().add("id");
 					unusedPermitTileScrollPane.add(pane, j, i);
 					unusedPermitTileScrollPane.add(id, j, i);
-					String prova="\n\n\nCity:";
-					for(int k=0;k<daCancellare.size();k++){//da cancellare
-						prova+=daCancellare.get(k)+",";
-						
-					}
-					Label cityName = new Label(prova);
+					String city="\n\n\nCity:";
+					for(int k=0;k<cardCity.size();k++){
+						city+=cardCity.get(k).getName().charAt(0)+",";
+						}
+					Label cityName = new Label(city);
 					cityName.getStylesheets().add(css);
 					cityName.getStyleClass().add("cityPermitTile");
 					unusedPermitTileScrollPane.add(cityName, j, i);
 					
 					String bonus="\n\n\n\nBonus:\n";
-					for(int k=0;k<dabonus.size();k++){//da cancellare
-						bonus+=dabonus.get(k)+"\n";
+					for(int k=0;k<cardBonus.size();k++){
+						bonus+=cardBonus.get(k)+"\n";
 						
 					}
 					Label cityBonus =new Label(bonus);
@@ -151,7 +139,62 @@ public class CardController extends ClientGUIController {
 					
 					countCards++;
 
-				}
+				}else
+					stop=false;
+			}
+		}
+
+	}
+	
+	public void setUsedPermitTile() {
+		this.usedPermitTile = this.player.getUsedPermitTile();
+		css = LoaderResources.loadPath("/configurator/style.css");
+		int countCards = 0;
+		int idCard;
+		List<City>cardCity;
+		ArrayList<String>cardBonus;
+		boolean stop = false;
+	
+		for (int i = 0; i < 10 && !stop; i++) {
+			for (int j = 0; j < 4 && !stop; j++) {
+				if(countCards<this.usedPermitTile.size()){
+				
+					PermitTile tempTile=(PermitTile)this.usedPermitTile.get(countCards);
+					idCard=tempTile.getId();
+					cardCity=tempTile.getCities();
+					cardBonus=tempTile.getBonus();
+					Pane pane = new Pane();
+					pane.getStylesheets().add(css);
+					pane.getStyleClass().add("permitTile");
+					Label id = new Label("ID: "+idCard);
+					id.getStylesheets().add(css);
+					id.getStyleClass().add("id");
+					usedPermitTileScrollPane.add(pane, j, i);
+					usedPermitTileScrollPane.add(id, j, i);
+					String city="\n\n\nCity:";
+					for(int k=0;k<cardCity.size();k++){
+						city+=cardCity.get(k).getName().charAt(0)+",";
+						}
+					Label cityName = new Label(city);
+					cityName.getStylesheets().add(css);
+					cityName.getStyleClass().add("cityPermitTile");
+					usedPermitTileScrollPane.add(cityName, j, i);
+					
+					String bonus="\n\n\n\nBonus:\n";
+					for(int k=0;k<cardBonus.size();k++){
+						bonus+=cardBonus.get(k)+"\n";
+						
+					}
+					Label cityBonus =new Label(bonus);
+					cityBonus.getStylesheets().add(css);
+					cityBonus.getStyleClass().add("bonus");
+					usedPermitTileScrollPane.add(cityBonus, j, i);
+					
+					
+					countCards++;
+
+				}else
+					stop=false;
 			}
 		}
 

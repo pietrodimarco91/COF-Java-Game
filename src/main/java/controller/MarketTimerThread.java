@@ -7,7 +7,7 @@ public class MarketTimerThread implements Runnable {
 	/**
 	 * This is the TOTAL time for selling in the market
 	 */
-	private static final int SELL_WAITING_TIME = 30000;
+	private static final int SELL_WAITING_TIME = 15000;
 
 	/**
 	 * This is the TOTAL time for buying in the market, and it is proportional
@@ -19,7 +19,7 @@ public class MarketTimerThread implements Runnable {
 
 	public MarketTimerThread(MatchHandler match, int numberOfPlayers) {
 		this.match = match;
-		BUY_WAITING_TIME = 30000 * numberOfPlayers + 1000;
+		BUY_WAITING_TIME = 15000 * numberOfPlayers + 1000;
 	}
 
 	@Override

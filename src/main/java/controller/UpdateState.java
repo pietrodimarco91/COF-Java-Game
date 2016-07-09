@@ -52,6 +52,7 @@ public class UpdateState implements Serializable {
 	}
 	
 	public UpdateState(Market market) {
+		this.header=UpdateStateTags.MARKET.toString();
 		this.itemsOnSale = market.getItemsOnSale();
 	}
 	

@@ -176,6 +176,7 @@ public class BoardController extends ClientGUIController {
 	 * This method is invoked in order to repaint the GUI when receiving a
 	 * packet containing the board
 	 */
+	@FXML
 	public void repaintBoard() {
 		painter.repaint(board.getRegions());
 		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);

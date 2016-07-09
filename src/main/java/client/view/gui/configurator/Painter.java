@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import javax.swing.text.Segment;
-
 /**
  * Created by pietro on 05/07/16.
  */
@@ -49,15 +47,12 @@ public class Painter {
 
 	private SimpleMetroArcGauge coinsIndicators;
 
-
-
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
 			CitiesListener citiesListener) {
 
-
-		victoryPointsIndicators=new SimpleMetroArcGauge();
-		nobilityPointsIndicators=new SimpleMetroArcGauge();
-		coinsIndicators=new SimpleMetroArcGauge();
+		victoryPointsIndicators = new SimpleMetroArcGauge();
+		nobilityPointsIndicators = new SimpleMetroArcGauge();
+		coinsIndicators = new SimpleMetroArcGauge();
 
 		victoryPointsIndicators.setMaxValue(100);
 		victoryPointsIndicators.setMinValue(0);
@@ -66,12 +61,6 @@ public class Painter {
 		nobilityPointsIndicators.setMinValue(0);
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
-		
-		
-		
-		
-
-
 
 		this.stackPane = stackPane;
 		this.citiesListener = citiesListener;
@@ -207,8 +196,9 @@ public class Painter {
 		Parent parentFirstLink = firstLink.getParent();
 		Parent parentSecondLink = secondLink.getParent();
 
-
-
+		if (parentFirstLink == null || parentSecondLink == null) {
+			return;
+		}
 
 		if (parentFirstLink.equals(region1)) {
 			x1 = 50;
@@ -239,7 +229,7 @@ public class Painter {
 			links.add(line);
 			linksBetweenCities.add(new SingleLink(city1, city2, line));
 			line.setOnMouseClicked(event -> {
-				citiesListener.removeLink(linesPane, line);
+				citiesListener.removeLink(line);
 			});
 			line.getStyleClass().add("line");
 			linesPane.getChildren().add(line);
@@ -251,80 +241,75 @@ public class Painter {
 	}
 
 	public void repaintPlayerStatus(Player player, GridPane indicatorPane) {
-		int coins=player.getCoins();
-		int nobilityTrack=player.getPositionInNobilityTrack();
-		int victoryPoints=player.getVictoryPoints();
-
+		int coins = player.getCoins();
+		int nobilityTrack = player.getPositionInNobilityTrack();
+		int victoryPoints = player.getVictoryPoints();
 
 		coinsIndicators.setValue(coins);
 		nobilityPointsIndicators.setValue(nobilityTrack);
 		victoryPointsIndicators.setValue(victoryPoints);
 
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			indicatorPane.getChildren().clear();
-			indicatorPane.add(coinsIndicators,0,1);
-			indicatorPane.add(nobilityPointsIndicators,1,1);
-			indicatorPane.add(victoryPointsIndicators,2,1);
+			indicatorPane.add(coinsIndicators, 0, 1);
+			indicatorPane.add(nobilityPointsIndicators, 1, 1);
+			indicatorPane.add(victoryPointsIndicators, 2, 1);
 		});
-
-
 
 	}
 
-	public void repaintCouncils(Region[] regions, Council kingCouncil,  GridPane councillors,GridPane kingCouncilPane) {
+	public void repaintCouncils(Region[] regions, Council kingCouncil, GridPane councillors, GridPane kingCouncilPane) {
 
-		Council council1=regions[0].getCouncil();
-		Council council2=regions[1].getCouncil();
-		Council council3=regions[2].getCouncil();
-		Council king=kingCouncil;
+		Council council1 = regions[0].getCouncil();
+		Council council2 = regions[1].getCouncil();
+		Council council3 = regions[2].getCouncil();
+		Council king = kingCouncil;
 
+		Queue<Councillor> councillors1 = council1.getCouncillors();
+		Queue<Councillor> councillors2 = council2.getCouncillors();
+		Queue<Councillor> councillors3 = council3.getCouncillors();
+		Queue<Councillor> kingCouncillors = king.getCouncillors();
 
-
-		Queue<Councillor> councillors1=council1.getCouncillors();
-		Queue<Councillor> councillors2=council2.getCouncillors();
-		Queue<Councillor> councillors3=council3.getCouncillors();
-		Queue<Councillor> kingCouncillors=king.getCouncillors();
-
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			councillors.getChildren().clear();
-			setCouncillors(councillors,councillors1,1);
-			setCouncillors(councillors,councillors2,6);
-			setCouncillors(councillors,councillors3,11);
-			setKingCouncillors(kingCouncilPane,kingCouncillors,1);
+			setCouncillors(councillors, councillors1, 1);
+			setCouncillors(councillors, councillors2, 6);
+			setCouncillors(councillors, councillors3, 11);
+			setKingCouncillors(kingCouncilPane, kingCouncillors, 1);
 
 		});
 	}
 
 	private void setKingCouncillors(GridPane kingCouncilPane, Queue<Councillor> kingCouncillors, int startCol) {
-		int i=startCol;
-		for(Councillor kingCouncillor:kingCouncillors){
+		int i = startCol;
+		for (Councillor kingCouncillor : kingCouncillors) {
 			Pane pane = new Pane();
 			pane.getStylesheets().add(css);
-			switch (kingCouncillor.getColor()){
-				case "PINK":
-					pane.getStyleClass().add("kingPing");
-					kingCouncilPane.add(pane,i,1);
-					break;
-				case "PURPLE":
-					pane.getStyleClass().add("kingPurple");
-					kingCouncilPane.add(pane,i,1);
-					break;
-				case "BLACK":
-					pane.getStyleClass().add("kingBlack");
-					kingCouncilPane.add(pane,i,1);
-					break;
-				case "BLUE":
-					pane.getStyleClass().add("kingBlue");
-					kingCouncilPane.add(pane,i,1);
-					break;
-				case "WHITE":
-					pane.getStyleClass().add("kingWhite");
-					kingCouncilPane.add(pane,i,1);
-					break;
-				case "ORANGE":
-					pane.getStyleClass().add("kingOrange");
-					kingCouncilPane.add(pane,i,1);
-					break;
+			switch (kingCouncillor.getColor()) {
+			case "PINK":
+				pane.getStyleClass().add("kingPing");
+				kingCouncilPane.add(pane, i, 1);
+				break;
+			case "PURPLE":
+				pane.getStyleClass().add("kingPurple");
+				kingCouncilPane.add(pane, i, 1);
+				break;
+			case "BLACK":
+				pane.getStyleClass().add("kingBlack");
+				kingCouncilPane.add(pane, i, 1);
+				break;
+			case "BLUE":
+				pane.getStyleClass().add("kingBlue");
+				kingCouncilPane.add(pane, i, 1);
+				break;
+			case "WHITE":
+				pane.getStyleClass().add("kingWhite");
+				kingCouncilPane.add(pane, i, 1);
+				break;
+			case "ORANGE":
+				pane.getStyleClass().add("kingOrange");
+				kingCouncilPane.add(pane, i, 1);
+				break;
 			}
 			i++;
 		}
@@ -332,34 +317,34 @@ public class Painter {
 
 	private void setCouncillors(GridPane councillors, Queue<Councillor> councillors1, int startCol) {
 
-		int i=startCol;
-		for(Councillor councillor:councillors1){
+		int i = startCol;
+		for (Councillor councillor : councillors1) {
 			Pane pane = new Pane();
-			switch (councillor.getColor()){
-				case "PINK":
-					pane.getStyleClass().add("PinkCouncillor");
-					councillors.add(pane,i,0);
-					break;
-				case "PURPLE":
-					pane.getStyleClass().add("PurpleCouncillor");
-					councillors.add(pane,i,0);
-					break;
-				case "BLACK":
-					pane.getStyleClass().add("BlackCouncillor");
-					councillors.add(pane,i,0);
-					break;
-				case "BLUE":
-					pane.getStyleClass().add("BlueCouncillor");
-					councillors.add(pane,i,0);
-					break;
-				case "WHITE":
-					pane.getStyleClass().add("WhiteCouncillor");
-					councillors.add(pane,i,0);
-					break;
-				case "ORANGE":
-					pane.getStyleClass().add("OrangeCouncillor");
-					councillors.add(pane,i,0);
-					break;
+			switch (councillor.getColor()) {
+			case "PINK":
+				pane.getStyleClass().add("PinkCouncillor");
+				councillors.add(pane, i, 0);
+				break;
+			case "PURPLE":
+				pane.getStyleClass().add("PurpleCouncillor");
+				councillors.add(pane, i, 0);
+				break;
+			case "BLACK":
+				pane.getStyleClass().add("BlackCouncillor");
+				councillors.add(pane, i, 0);
+				break;
+			case "BLUE":
+				pane.getStyleClass().add("BlueCouncillor");
+				councillors.add(pane, i, 0);
+				break;
+			case "WHITE":
+				pane.getStyleClass().add("WhiteCouncillor");
+				councillors.add(pane, i, 0);
+				break;
+			case "ORANGE":
+				pane.getStyleClass().add("OrangeCouncillor");
+				councillors.add(pane, i, 0);
+				break;
 			}
 			i++;
 		}

@@ -239,13 +239,11 @@
 .cityPermitTile{
 	-fx-font-size: 12px;
     -fx-font-weight:bold;
-    -fx-padding: 60px;
     -fx-font-family: "PT Mono";
 }
 .bonus{
 	-fx-font-size: 12px;
     -fx-font-weight:bold;
-    -fx-padding: 100px;
     -fx-font-family: "PT Mono";
 }
 

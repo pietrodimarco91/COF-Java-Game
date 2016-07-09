@@ -107,9 +107,9 @@ public class CardController extends ClientGUIController {
 		daCancellare.add("P");
 		
 		ArrayList<String> dabonus=new ArrayList<String>();
-		daCancellare.add("BONUSPRIM");
-		daCancellare.add("BONUSPRIM");
-		daCancellare.add("BONUSPRIM");
+		dabonus.add("BONUSPRIM");
+		dabonus.add("BONUSPRIM2");
+		dabonus.add("BONUSPRIM3");
 		
 
 		for (int i = 0; i < 10 && !stop; i++) {
@@ -127,24 +127,24 @@ public class CardController extends ClientGUIController {
 					id.getStyleClass().add("id");
 					unusedPermitTileScrollPane.add(pane, j, i);
 					unusedPermitTileScrollPane.add(id, j, i);
-					String prova="City:";
+					String prova="\n\n\nCity:";
 					for(int k=0;k<daCancellare.size();k++){//da cancellare
 						prova+=daCancellare.get(k)+",";
 						
 					}
 					Label cityName = new Label(prova);
 					cityName.getStylesheets().add(css);
-					cityName.getStyleClass().add("city");
+					cityName.getStyleClass().add("cityPermitTile");
 					unusedPermitTileScrollPane.add(cityName, j, i);
 					
-					String bonus="Bonus:\n";
+					String bonus="\n\n\n\nBonus:\n";
 					for(int k=0;k<dabonus.size();k++){//da cancellare
 						bonus+=dabonus.get(k)+"\n";
 						
 					}
 					Label cityBonus =new Label(bonus);
 					cityBonus.getStylesheets().add(css);
-					cityBonus.getStyleClass().add("bonusPermitTile");
+					cityBonus.getStyleClass().add("bonus");
 					unusedPermitTileScrollPane.add(cityBonus, j, i);
 					
 					

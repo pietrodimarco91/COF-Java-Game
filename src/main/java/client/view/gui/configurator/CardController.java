@@ -114,6 +114,7 @@ public class CardController extends ClientGUIController {
 
 		for (int i = 0; i < 10 && !stop; i++) {
 			for (int j = 0; j < 4 && !stop; j++) {
+				if(countCards<this.unusedPermitTile.size()){
 				
 					/*PermitTile tempTile=(PermitTile)this.unusedPermitTile.get(countCards);
 					idCard=tempTile.getId();
@@ -150,7 +151,7 @@ public class CardController extends ClientGUIController {
 					
 					countCards++;
 
-				
+				}
 			}
 		}
 

@@ -300,6 +300,7 @@ public class Painter {
 			setCouncillors(councillors, councillors1, 1);
 			setCouncillors(councillors, councillors2, 6);
 			setCouncillors(councillors, councillors3, 11);
+			kingCouncilPane.setPickOnBounds(true);
 			setKingCouncillors(kingCouncilPane, kingCouncillors, 1);
 
 		});
@@ -336,6 +337,19 @@ public class Painter {
 				kingCouncilPane.add(pane, i, 1);
 				break;
 			}
+			Pane councillorPane = (Pane) kingCouncilPane.getChildren().get(kingCouncilPane.getChildren().indexOf(pane));
+			double x = councillorPane.getLayoutX();
+			double y = councillorPane.getLayoutY();
+			Path path = new Path();
+			path.getElements().add(new MoveTo(x,y+100));
+			PathTransition pathTransition = new PathTransition();
+			pathTransition.setDuration(Duration.millis(1000));
+			pathTransition.setPath(path);
+			pathTransition.setNode(councillorPane);
+			pathTransition.setAutoReverse(true);
+			pane.setOnMouseEntered(event->{
+				pathTransition.play();
+			});
 			i++;
 		}
 	}

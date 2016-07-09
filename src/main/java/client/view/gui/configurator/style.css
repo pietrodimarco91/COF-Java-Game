@@ -180,4 +180,46 @@
     -fx-background-position: center center;
 	
 }
-
+.blackCard{
+    -fx-background-image: url("cards/BlackCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.blueCard{
+    -fx-background-image: url("cards/BlueCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.multicolorCard{
+    -fx-background-image: url("cards/MulticolorCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.orangeCard{
+    -fx-background-image: url("cards/OrangeCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.pinkCard{
+     -fx-background-image: url("cards/PinkCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+  
+}
+.purpleCard{
+    -fx-background-image: url("cards/PurpleCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.whiteCard{
+    -fx-background-image: url("cards/WhiteCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}

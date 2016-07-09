@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
@@ -280,25 +281,35 @@ public class BoardController extends ClientGUIController {
 		// must show the chat message input field
 	}
 
+	@FXML
 	public void showPlayerCards(ActionEvent event) {
 		URL resource = null;
 		FXMLLoader loader = new FXMLLoader();
 		String pathTo = "playerCards.fxml";
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			System.out.println("prima volta");
 			loader.setLocation(resource);
 			Parent page = loader.load();
+			System.out.println("seconda volta");
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Your Cards");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(stage);
 			Scene scene = new Scene(page);
 			dialogStage.setScene(scene);
-			dialogStage.show();
+			CardController cardController = loader.getController();
+			cardController.setStage(dialogStage);
+			cardController.setConnector(connector);
+			cardController.setPlayer(playerStatus);
+			cardController.setScrollPane();
+			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
+			System.out.println("stringa mal formata");
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
+			System.out.println("IO exception");
 		}
 	}
 }

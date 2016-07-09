@@ -16,6 +16,7 @@ import client.actions.SendAssistantAction;
 import client.actions.SimpleBuildEmporiumAction;
 import client.actions.SwitchPermitTilesAction;
 import client.controller.ClientGUIController;
+import client.view.gui.LoaderResources;
 import controller.Packet;
 import controller.Player;
 import controller.ServerSideConnectorInt;
@@ -23,13 +24,17 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.PoliticCard;
 
 public class ActionController extends ClientGUIController {
 
@@ -89,6 +94,9 @@ public class ActionController extends ClientGUIController {
 	
 	@FXML
 	private TextField cityKingBuildEmporium;
+	
+	@FXML
+	private GridPane politicCardsScrollPane;
 
 	private String regionName;
 
@@ -105,6 +113,10 @@ public class ActionController extends ClientGUIController {
 	private Player player;
 
 	private Stage dialogStage;
+	
+	private ArrayList<PoliticCard> politicCards;
+	
+	private String css;
 
 	@FXML
 	public void initialize() {
@@ -221,13 +233,15 @@ public class ActionController extends ClientGUIController {
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
 			loader.setLocation(resource);
-			AnchorPane page = (AnchorPane) loader.load();
+			loader.setController(this);
+			Parent page = loader.load();
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Choose Politic Cards");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.initOwner(stage);
 			Scene scene = new Scene(page);
 			dialogStage.setScene(scene);
+			setScrollPane();
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			showAlert(e.getMessage());
@@ -381,6 +395,76 @@ public class ActionController extends ClientGUIController {
 		alert.setHeaderText("Error!");
 		alert.setContentText(errorMessage);
 		alert.showAndWait();
+	}
+	
+	public void setScrollPane() {
+		this.politicCards = this.player.getPoliticCards();
+		System.out.println(this.player.getPoliticCards().size());
+		css = LoaderResources.loadPath("/configurator/style.css");
+		int countCards = 0;
+		boolean stop = false;
+
+		for (int i = 0; i < 10 && !stop; i++) {
+			for (int j = 0; j < 4 && !stop; j++) {
+				if (countCards < this.player.getPoliticCards().size()) {
+					Pane pane = new Pane();
+					pane.getStylesheets().add(css);
+					
+					String color=this.player.getPoliticCards().get(countCards).getColorCard();
+					switch (color) {
+					case "PINK":
+						pane.getStyleClass().add("pinkCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					case "PURPLE":
+						pane.getStyleClass().add("purpleCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					case "BLACK":
+						pane.getStyleClass().add("blackCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					case "BLUE":
+						pane.getStyleClass().add("blueCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					case "WHITE":
+						pane.getStyleClass().add("whiteCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					case "ORANGE":
+						pane.getStyleClass().add("orangeCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					case "MULTICOLOR":
+						pane.getStyleClass().add("multicolorCard");
+						pane.getStyleClass().add("cardClicked");
+						politicCardsScrollPane.add(pane, j, i);
+						break;
+					}
+					pane.setOnMouseClicked(event->{
+						cardClicked(pane,color);
+					});
+					countCards++;
+				} else
+					stop = true;
+
+			}
+		}
+
+	}
+
+	public void cardClicked(Pane pane, String color) {
+		System.out.println(color);
+		this.politicCardColors.add(color);
+		
+		
 	}
 
 	public void setStage(Stage stage) {

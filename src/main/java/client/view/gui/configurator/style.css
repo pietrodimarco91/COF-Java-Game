@@ -253,5 +253,10 @@
     -fx-background-position: top center;
 	
 }
+.cardClicked:hover{
+   -fx-background-size:240%;
+    
+  
+}
 
 

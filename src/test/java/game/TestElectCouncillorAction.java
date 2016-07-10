@@ -37,9 +37,9 @@ public class TestElectCouncillorAction {
 		}
 		assertEquals(0, player.getCoins());
 		String regionName = board.getRegions()[0].getName();
-		Councillor councillor = CouncillorsPool.getCouncillor();
+		Councillor councillor = board.getPool().getCouncillor();
 		String councillorColor = councillor.getColor();
-		CouncillorsPool.addCouncillor(councillor);
+		board.getPool().addCouncillor(councillor);
 		int previousCoins = player.getCoins();
 		actionsHandler.electCouncillor(new ElectCouncillorAction("main", regionName, councillorColor), 0);
 		int postCoins = player.getCoins();

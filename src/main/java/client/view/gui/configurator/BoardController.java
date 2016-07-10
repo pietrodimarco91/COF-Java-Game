@@ -272,6 +272,7 @@ public class BoardController extends ClientGUIController {
 			actionController.setStage(dialogStage);
 			actionController.setConnector(connector);
 			actionController.setPlayer(playerStatus);
+			actionController.setBoard(board);
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());

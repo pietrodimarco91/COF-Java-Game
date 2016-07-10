@@ -29,16 +29,19 @@ public abstract class Council implements Serializable {
 	 * Number of councillors inside each Council.
 	 */
 	private static final int COUNCILLORS_PER_COUNCIL = 4;
+	
+	protected CouncillorsPool pool;
 
 	/**
 	 * Default constructor: each Council is initially created taking 4 random
 	 * Councillors from the CouncillorsPool.
 	 */
-	public Council() {
+	public Council(CouncillorsPool pool) {
+		this.pool=pool;
 		councillors = new LinkedList<Councillor>();
 		for (int i = 0; i < COUNCILLORS_PER_COUNCIL; i++) {
-			CouncillorsPool.shuffle();
-			councillors.add(CouncillorsPool.getCouncillor());
+			pool.shuffle();
+			councillors.add(pool.getCouncillor());
 		}
 	}
 
@@ -47,14 +50,14 @@ public abstract class Council implements Serializable {
 	 * @throws CouncillorNotFoundException if there isn't a councillor of the specified color
 	 */
 	public void addCouncillor(String color) throws CouncillorNotFoundException {
-		councillors.add(CouncillorsPool.getCouncillor(color));
+		councillors.add(pool.getCouncillor(color));
 	}
 
 	/**
 	 * Removes a councillor from the queue and places it inside the Councillors Pool.
 	 */
 	public void removeCouncillor() {
-		CouncillorsPool.addCouncillor(councillors.remove());
+		pool.addCouncillor(councillors.remove());
 	}
 
 	/**

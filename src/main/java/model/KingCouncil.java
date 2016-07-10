@@ -7,6 +7,10 @@ import exceptions.CouncillorNotFoundException;
  */
 public class KingCouncil extends Council{
 	
+	public KingCouncil(CouncillorsPool pool) {
+		super(pool);
+	}
+
 	/**
 	 * This method allows to perform the Main Move "Elect a councillor"
 	 * 
@@ -15,7 +19,7 @@ public class KingCouncil extends Council{
 	 * 
 	 */
 	public void electCouncillor(String color) throws CouncillorNotFoundException {
-		if (CouncillorsPool.checkPresenceOfCouncillor(color)) {
+		if (pool.checkPresenceOfCouncillor(color)) {
 			this.removeCouncillor();
 			this.addCouncillor(color);
 		} else

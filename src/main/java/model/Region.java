@@ -36,6 +36,8 @@ public class Region implements Serializable {
 	 */
 	private Tile regionBonus;
 
+	private CouncillorsPool pool;
+
 	/**
 	 * Instantiates a Region with its main attributes.
 	 * 
@@ -49,8 +51,9 @@ public class Region implements Serializable {
 	 *            the permit tile deck of this region
 	 * 
 	 */
-	public Region(String name, Council council, PermitTileDeck deck) {
+	public Region(String name, Council council, PermitTileDeck deck, CouncillorsPool pool) {
 		this.name = name;
+		this.pool=pool;
 		this.council = council;
 		this.deck = deck;
 		TileFactory tileFactory = new ConcreteTileFactory();
@@ -66,7 +69,7 @@ public class Region implements Serializable {
 	 * 
 	 */
 	public void electCouncillor(String color) throws CouncillorNotFoundException {
-		if (CouncillorsPool.checkPresenceOfCouncillor(color)) {
+		if (pool.checkPresenceOfCouncillor(color)) {
 			this.council.removeCouncillor();
 			this.council.addCouncillor(color);
 		} else

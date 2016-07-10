@@ -71,6 +71,8 @@ public class Board implements Serializable {
 	 */
 	private ColorBonusDeck colorBonusDeck;
 
+	private CouncillorsPool councillorsPool;
+
 	/**
 	 * This attribute is used only to graphically represent the map with the
 	 * regions and the cities distributed in them; the method
@@ -105,12 +107,12 @@ public class Board implements Serializable {
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
 		this.linksBetweenCities = linksBetweenCities;
 		cities = new ArrayList<>();
-		CouncillorsPool councillorsPool = new CouncillorsPool();
+		councillorsPool = new CouncillorsPool();
 		this.kingRewardDeck = new KingRewardDeck();
 		this.colorBonusDeck = new ColorBonusDeck();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
-		kingCouncil = new KingCouncil();
+		kingCouncil = new KingCouncil(councillorsPool);
 		citiesInitialization(rewardTokenBonusNumber, permitTileBonusNumber);
 		MATRIX_ROWS = this.numberOfCities / 3;
 		generateDefaultConnections(linksBetweenCities);
@@ -477,9 +479,9 @@ public class Board implements Serializable {
 		Iterator<String> nameIterator = regionNames.iterator();
 
 		for (int i = 0, initId = 0; i < RegionName.values().length; i++, initId += numberOfPermitTiles / 3) {
-			regionCouncil = new RegionCouncil();
+			regionCouncil = new RegionCouncil(councillorsPool);
 			permitTileDeck = new PermitTileDeck(initId, initId + (numberOfPermitTiles / 3) - 1);
-			regions[i] = new Region(nameIterator.next(), regionCouncil, permitTileDeck);
+			regions[i] = new Region(nameIterator.next(), regionCouncil, permitTileDeck, councillorsPool);
 			regions[i].getDeck().setRegion(regions[i]);
 		}
 	}
@@ -691,7 +693,7 @@ public class Board implements Serializable {
 		string += "\nKING'S COUNCIL:\n";
 		string += kingCouncil.toString() + "\n";
 		string += "\nCOUNCILLOR POOL: current content of the pool is:\n";
-		string += CouncillorsPool.poolStatus() + "\n";
+		string += councillorsPool.poolStatus() + "\n";
 		string += "\nNOBILITY TRACK:\n";
 		string += nobilityTrack.toString() + "\n";
 		string += colorBonusDeck.toString() + "\n";
@@ -718,6 +720,10 @@ public class Board implements Serializable {
 
 	public Council getKingCouncil() {
 		return this.kingCouncil;
+	}
+	
+	public CouncillorsPool getPool() {
+		return this.councillorsPool;
 	}
 
 	public NobilityTrack getNobilityTrack() {

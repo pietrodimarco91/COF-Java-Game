@@ -17,7 +17,7 @@ public class TestCouncilMethods {
 	@Test
 	public void test() {
 		CouncillorsPool testCouncillorPool=new CouncillorsPool();
-		Council testCouncil=new RegionCouncil();
+		Council testCouncil=new RegionCouncil(testCouncillorPool);
 		Queue<Councillor>testQueueCouncillors= testCouncil.getCouncillors();
 		assertEquals(4,testQueueCouncillors.size());
 		

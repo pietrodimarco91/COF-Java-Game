@@ -18,7 +18,7 @@ import exceptions.InvalidInputException;
 
 public abstract class ClientController {
 
-	private static final String ADDRESS = "2.235.73.9";
+	private static final String ADDRESS = "192.168.1.134";
 	private static final int PORT = 9000;
 	private ClientSideConnector clientSideConnector;
 	private RMIConnectionInt rmiConnectionInt;

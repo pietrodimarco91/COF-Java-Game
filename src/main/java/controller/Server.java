@@ -20,7 +20,7 @@ public class Server {
 	 * The IP Address of the Server, that means the address that all Clients
 	 * must know to connect to the game.
 	 */
-	private static final String ip = "2.235.73.9";
+	private static final String ip = "192.168.1.134";
 
 	/**
 	 * The port of the specified IP Address (connection parameter).

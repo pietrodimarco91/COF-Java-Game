@@ -298,7 +298,7 @@ public class MatchActionsHandler {
 	 */
 	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
-			match.sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
+			match.sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
 			return;
 		}
 		int permitTileId;

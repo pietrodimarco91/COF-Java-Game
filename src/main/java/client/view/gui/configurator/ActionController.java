@@ -145,14 +145,22 @@ public class ActionController extends ClientGUIController {
 		electCouncillorCoast.setToggleGroup(group);
 		electCouncillorMountains.setToggleGroup(group);
 		electCouncillorKing.setToggleGroup(group);
-		if (electCouncillorHills.isSelected())
+		if (electCouncillorHills.isSelected()){
 			this.regionName = "HILLS";
-		else if (electCouncillorCoast.isSelected())
+			System.out.println("HILLS");
+		}
+		else if (electCouncillorCoast.isSelected()){
 			this.regionName = "COAST";
-		else if (electCouncillorMountains.isSelected())
+			System.out.println("COAST");
+		}
+		else if (electCouncillorMountains.isSelected()){
 			this.regionName = "MOUNTAINS";
-		else if (electCouncillorKing.isSelected())
+			System.out.println("MOUNTAINS");
+		}
+		else if (electCouncillorKing.isSelected()){
 			this.regionName = "KING";
+			System.out.println("KING");
+		}
 	}
 
 	@FXML

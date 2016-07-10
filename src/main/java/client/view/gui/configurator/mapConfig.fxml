@@ -42,12 +42,12 @@
                <bottom>
                   <GridPane fx:id="councillors" prefHeight="95.0" prefWidth="1170.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="146.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" percentWidth="11.0" prefWidth="146.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="42.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="41.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="42.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="39.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="218.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" percentWidth="19.0" prefWidth="218.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="10.0" prefWidth="44.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="40.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1024.6666641235352" minWidth="0.0" prefWidth="40.0" />
@@ -87,7 +87,13 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Pane prefHeight="200.0" prefWidth="385.0" styleClass="balcony" stylesheets="@style.css" />
+                              <Pane prefHeight="200.0" prefWidth="385.0" styleClass="balcony" stylesheets="@style.css">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <GridPane.margin>
+                                    <Insets left="-20.0" />
+                                 </GridPane.margin></Pane>
                            </children>
                         </GridPane>
                         <GridPane GridPane.columnIndex="2">
@@ -142,20 +148,20 @@
             <GridPane fx:id="permitTileSlot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="115.0" prefWidth="1169.0" StackPane.alignment="BOTTOM_CENTER">
               <columnConstraints>
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="967.0" minWidth="10.0" percentWidth="10.0" prefWidth="296.3333435058594" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="16.0" prefWidth="813.6666564941406" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="18.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="10.0" prefWidth="813.6666564941406" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="1.0" prefWidth="813.6666564941406" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="10.0" prefWidth="813.6666564941406" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="17.0" prefWidth="813.6666564941406" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="10.0" prefWidth="813.6666564941406" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="1.0" prefWidth="813.6666564941406" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="10.0" prefWidth="813.6666564941406" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="17.0" prefWidth="813.6666564941406" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="10.0" prefWidth="813.6666564941406" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="100.0" valignment="TOP" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="31.66668701171875" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="110.6666259765625" minHeight="10.0" prefHeight="108.0" valignment="TOP" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="31.66668701171875" minHeight="0.0" prefHeight="7.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <effect>
                   <Lighting>

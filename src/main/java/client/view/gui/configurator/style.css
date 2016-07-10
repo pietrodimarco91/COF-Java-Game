@@ -233,7 +233,6 @@
 .id{
 	-fx-font-size: 14px;
     -fx-font-weight:bold;
-    -fx-padding: 20px;
     -fx-font-family: "PT Mono";
 }
 .cityPermitTile{
@@ -260,7 +259,6 @@
 .idSlot{
 	-fx-font-size: 10px;
     -fx-font-weight:bold;
-    -fx-padding: 20px;
     -fx-font-family: "PT Mono";
 }
 .cityPermitTileSlot{

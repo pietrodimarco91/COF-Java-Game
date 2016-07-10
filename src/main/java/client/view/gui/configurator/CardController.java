@@ -171,7 +171,7 @@ public class CardController extends ClientGUIController {
 					id.getStyleClass().add("id");
 					usedPermitTileScrollPane.add(pane, j, i);
 					usedPermitTileScrollPane.add(id, j, i);
-					String city="\n\n\nCity:";
+					String city="\nCity:";
 					for(int k=0;k<cardCity.size();k++){
 						city+=cardCity.get(k).getName().charAt(0)+",";
 						}
@@ -180,7 +180,7 @@ public class CardController extends ClientGUIController {
 					cityName.getStyleClass().add("cityPermitTile");
 					usedPermitTileScrollPane.add(cityName, j, i);
 					
-					String bonus="\n\n\n\nBonus:\n";
+					String bonus="\n\nBonus:\n";
 					for(int k=0;k<cardBonus.size();k++){
 						bonus+=cardBonus.get(k)+"\n";
 						

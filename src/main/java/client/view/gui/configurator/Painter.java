@@ -534,7 +534,7 @@ public class Painter {
 				permitTileSlot.add(id, colPosition, 0);
 			
 			
-			String city = "\n\n\nCity:";
+			String city = "\nCity:";
 			for (int k = 0; k < cardCity.size(); k++) {
 				city += cardCity.get(k).getName().charAt(0) + ",";
 			}
@@ -543,7 +543,7 @@ public class Painter {
 			cityName.getStyleClass().add("cityPermitTileSlot");
 			permitTileSlot.add(cityName, colPosition, 0);
 
-			String bonus = "\n\n\n\nBonus:\n";
+			String bonus = "\n\nBonus:\n";
 			for (int k = 0; k < cardBonus.size(); k++) {
 				bonus += cardBonus.get(k) + "\n";
 

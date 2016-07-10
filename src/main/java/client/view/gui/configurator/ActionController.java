@@ -46,6 +46,9 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	private RadioButton electCouncillorMountains;
+	
+	@FXML
+	private RadioButton electCouncillorKing;
 
 	@FXML
 	private RadioButton buyPermitTileHills;
@@ -73,6 +76,9 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	private RadioButton sendAssistantMountains;
+	
+	@FXML
+	private RadioButton sendAssistantKing;
 
 	@FXML
 	private RadioButton buyPermitTileSlot1;
@@ -138,12 +144,15 @@ public class ActionController extends ClientGUIController {
 		electCouncillorHills.setToggleGroup(group);
 		electCouncillorCoast.setToggleGroup(group);
 		electCouncillorMountains.setToggleGroup(group);
+		electCouncillorKing.setToggleGroup(group);
 		if (electCouncillorHills.isSelected())
 			this.regionName = "HILLS";
 		else if (electCouncillorCoast.isSelected())
 			this.regionName = "COAST";
 		else if (electCouncillorMountains.isSelected())
 			this.regionName = "MOUNTAINS";
+		else if (electCouncillorKing.isSelected())
+			this.regionName = "KING";
 	}
 
 	@FXML
@@ -180,12 +189,15 @@ public class ActionController extends ClientGUIController {
 		sendAssistantCoast.setToggleGroup(group);
 		sendAssistantHills.setToggleGroup(group);
 		sendAssistantMountains.setToggleGroup(group);
+		sendAssistantKing.setToggleGroup(group);
 		if (sendAssistantHills.isSelected())
 			this.regionName = "HILLS";
 		else if (sendAssistantHills.isSelected())
 			this.regionName = "COAST";
 		else if (sendAssistantMountains.isSelected())
 			this.regionName = "MOUNTAINS";
+		else if (sendAssistantKing.isSelected())
+			this.regionName = "KING";
 	}
 
 	@FXML

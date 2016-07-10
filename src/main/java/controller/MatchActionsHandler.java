@@ -23,6 +23,7 @@ import exceptions.UnsufficientCouncillorsSatisfiedException;
 import model.Board;
 import model.City;
 import model.Council;
+import model.KingCouncil;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
@@ -67,7 +68,7 @@ public class MatchActionsHandler {
 		chosenPoliticCards = buyPermitTileAction.getPoliticCardColors();
 		slot = buyPermitTileAction.getSlot();
 		region = getRegion(regionName);
-		council=region.getCouncil();
+		council = region.getCouncil();
 
 		cardToRemove = council.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		Player player = this.players.get(playerId);
@@ -100,7 +101,7 @@ public class MatchActionsHandler {
 			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			match.sendErrorToClient(e.showError(), playerId);
-		} catch(NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			player.addCoins(playerPayment);
 			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
@@ -128,10 +129,10 @@ public class MatchActionsHandler {
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
 		chosenPoliticCards = kingBuildEmporiumAction.getPoliticCardColors();
-		council=this.board.getKingCouncil();
+		council = this.board.getKingCouncil();
 		cardToRemove = council.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		try {
-			if (cardToRemove.size()== 0)
+			if (cardToRemove.size() == 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
 
 			City cityTo = board.getCityFromName(cityName);
@@ -152,7 +153,8 @@ public class MatchActionsHandler {
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!", board);
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!",
+						board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
 				PubSub.notifyAllClients(this.players,
@@ -210,12 +212,17 @@ public class MatchActionsHandler {
 		regionName = electCouncillorAction.getRegion();
 		councillorColor = electCouncillorAction.getColor();
 		Player player = this.players.get(playerId);
-		Region region = this.getRegion(regionName);
 		try {
-			region.electCouncillor(councillorColor);
+			if (regionName.equals("KING")) {
+				KingCouncil council = (KingCouncil) this.board.getKingCouncil();
+				council.electCouncillor(councillorColor);
+			} else {
+				Region region = this.getRegion(regionName);
+				region.electCouncillor(councillorColor);
+			}
 			player.addCoins(4);
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' elected a " + councillorColor
-					+ " Councillor in " + regionName, board);
+					+ " Councillor in " + regionName + "Council", board);
 			match.updateClient(playerId);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
@@ -320,7 +327,8 @@ public class MatchActionsHandler {
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!", board);
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!",
+						board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
 			}

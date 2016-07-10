@@ -45,6 +45,11 @@
                                                             <RadioButton fx:id="electCouncillorMountains" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Mountains" />
                                                          </children>
                                                       </FlowPane>
+                                                      <FlowPane prefHeight="200.0" prefWidth="200.0">
+                                                         <children>
+                                                            <RadioButton fx:id="electCouncillorKing" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="King" />
+                                                         </children>
+                                                      </FlowPane>
                                                    </children>
                                                 </VBox>
                                                 <TextField fx:id="mainCouncillorColor" editable="false" prefHeight="27.0" prefWidth="94.0">
@@ -241,7 +246,7 @@
                                                             <RadioButton fx:id="switchPermitTileHills" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Hills" />
                                                          </children>
                                                       </FlowPane>
-                                                      <FlowPane prefHeight="45.0" prefWidth="191.0">
+                                                      <FlowPane prefHeight="45.0" prefWidth="117.0">
                                                          <children>
                                                             <RadioButton fx:id="switchPermitTileCoast" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Coast" />
                                                          </children>
@@ -249,6 +254,11 @@
                                                       <FlowPane prefHeight="52.0" prefWidth="191.0">
                                                          <children>
                                                             <RadioButton fx:id="switchPermitTileMountains" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Mountains" />
+                                                         </children>
+                                                      </FlowPane>
+                                                      <FlowPane prefHeight="52.0" prefWidth="191.0">
+                                                         <children>
+                                                            <RadioButton fx:id="sendAssistantKing" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="King" />
                                                          </children>
                                                       </FlowPane>
                                                    </children>

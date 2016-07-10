@@ -6,6 +6,7 @@ import controller.Player;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -54,6 +55,8 @@ public class Painter {
 
 	private SimpleMetroArcGauge coinsIndicators;
 
+	private ArrayList<Tile> unusedPermitTile;
+
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
 			CitiesListener citiesListener) {
 
@@ -71,19 +74,19 @@ public class Painter {
 
 		coinsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
 		for (int i = 0; i < 10; i++) {
-			Segment lSegment = new PercentSegment(coinsIndicators, i*10.0, (i+1)*10.0);
+			Segment lSegment = new PercentSegment(coinsIndicators, i * 10.0, (i + 1) * 10.0);
 			coinsIndicators.segments().add(lSegment);
 		}
 
 		nobilityPointsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
 		for (int i = 0; i < 10; i++) {
-			Segment lSegment = new PercentSegment(nobilityPointsIndicators, i*10.0, (i+1)*10.0);
+			Segment lSegment = new PercentSegment(nobilityPointsIndicators, i * 10.0, (i + 1) * 10.0);
 			nobilityPointsIndicators.segments().add(lSegment);
 		}
 
 		victoryPointsIndicators.getStyleClass().add("colorscheme-red-to-green-10");
 		for (int i = 0; i < 10; i++) {
-			Segment lSegment = new PercentSegment(victoryPointsIndicators, i*10.0, (i+1)*10.0);
+			Segment lSegment = new PercentSegment(victoryPointsIndicators, i * 10.0, (i + 1) * 10.0);
 			victoryPointsIndicators.segments().add(lSegment);
 		}
 
@@ -341,13 +344,13 @@ public class Painter {
 			double x = councillorPane.getLayoutX();
 			double y = councillorPane.getLayoutY();
 			Path path = new Path();
-			path.getElements().add(new MoveTo(x,y+100));
+			path.getElements().add(new MoveTo(x, y + 100));
 			PathTransition pathTransition = new PathTransition();
 			pathTransition.setDuration(Duration.millis(1000));
 			pathTransition.setPath(path);
 			pathTransition.setNode(councillorPane);
 			pathTransition.setAutoReverse(true);
-			pane.setOnMouseEntered(event->{
+			pane.setOnMouseEntered(event -> {
 				pathTransition.play();
 			});
 			i++;
@@ -390,15 +393,82 @@ public class Painter {
 			double x = councillorPane.getLayoutX();
 			double y = councillorPane.getLayoutY();
 			Path path = new Path();
-			path.getElements().add(new MoveTo(x,y+100));
+			path.getElements().add(new MoveTo(x, y + 100));
 			PathTransition pathTransition = new PathTransition();
 			pathTransition.setDuration(Duration.millis(1000));
 			pathTransition.setPath(path);
 			pathTransition.setNode(councillorPane);
 			pathTransition.setAutoReverse(true);
-			pane.setOnMouseEntered(event->{
+			pane.setOnMouseEntered(event -> {
 				pathTransition.play();
 			});
 		}
+	}
+
+	public void repaintTile(GridPane permitTileSlot, Region[] regions) {
+		Platform.runLater(()->{
+			permitTileSlot.getChildren().clear();
+		ArrayList<PermitTile> allPermitTile = new ArrayList<PermitTile>();
+		Region tempRegionCoast = regions[0];
+		Region tempRegionHills = regions[1];
+		Region tempRegionMountains = regions[2];
+		PermitTile coastSlot1 = (PermitTile) tempRegionCoast.getDeck().getUnconveredPermitTile1();
+		PermitTile coastSlot2 = (PermitTile) tempRegionCoast.getDeck().getUnconveredPermitTile2();
+		PermitTile hillsSlot1 = (PermitTile) tempRegionHills.getDeck().getUnconveredPermitTile1();
+		PermitTile hillsSlot2 = (PermitTile) tempRegionHills.getDeck().getUnconveredPermitTile2();
+		PermitTile mountainsSlot1 = (PermitTile) tempRegionMountains.getDeck().getUnconveredPermitTile1();
+		PermitTile mountainsSlot2 = (PermitTile) tempRegionMountains.getDeck().getUnconveredPermitTile2();
+		allPermitTile.add(coastSlot1);
+		allPermitTile.add(coastSlot2);
+		allPermitTile.add(hillsSlot1);
+		allPermitTile.add(hillsSlot1);
+		allPermitTile.add(mountainsSlot1);
+		allPermitTile.add(mountainsSlot1);
+
+		css = LoaderResources.loadPath("/configurator/style.css");
+		int idCard;
+		List<City> cardCity;
+		ArrayList<String> cardBonus;
+		
+		int colPosition = 0;
+
+		for (int i = 0; i < allPermitTile.size(); i++) {
+			idCard = allPermitTile.get(i).getId();
+			cardCity = allPermitTile.get(i).getCities();
+			cardBonus = allPermitTile.get(i).getBonus();
+			Pane pane = new Pane();
+			pane.getStylesheets().add(css);
+			pane.getStyleClass().add("permitTile");
+			Label id = new Label("ID: " + idCard);
+			id.getStylesheets().add(css);
+			id.getStyleClass().add("idSlot");
+			
+				
+				permitTileSlot.add(pane, colPosition, 0);
+				permitTileSlot.add(id, colPosition, 0);
+			
+			
+			String city = "\n\n\nCity:";
+			for (int k = 0; k < cardCity.size(); k++) {
+				city += cardCity.get(k).getName().charAt(0) + ",";
+			}
+			Label cityName = new Label(city);
+			cityName.getStylesheets().add(css);
+			cityName.getStyleClass().add("cityPermitTileSlot");
+			permitTileSlot.add(cityName, colPosition, 0);
+
+			String bonus = "\n\n\n\nBonus:\n";
+			for (int k = 0; k < cardBonus.size(); k++) {
+				bonus += cardBonus.get(k) + "\n";
+
+			}
+			Label cityBonus = new Label(bonus);
+			cityBonus.getStylesheets().add(css);
+			cityBonus.getStyleClass().add("bonusSlot");
+			permitTileSlot.add(cityBonus, colPosition, 0);
+
+			colPosition += 2;
+		}
+		});
 	}
 }

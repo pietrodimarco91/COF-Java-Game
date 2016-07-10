@@ -3,6 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
@@ -135,6 +138,35 @@
                   <GridPane fx:id="grid3" prefHeight="637.0" prefWidth="187.0" GridPane.columnIndex="5">
                   </GridPane>
                </children>
+            </GridPane>
+            <GridPane fx:id="permitTileSlot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="115.0" prefWidth="1169.0" StackPane.alignment="BOTTOM_CENTER">
+              <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="967.0" minWidth="10.0" percentWidth="10.0" prefWidth="296.3333435058594" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="16.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="1.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="17.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="1.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="17.0" prefWidth="813.6666564941406" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="813.6666564941406" minWidth="10.0" percentWidth="9.0" prefWidth="813.6666564941406" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="100.0" valignment="TOP" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="31.66668701171875" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <effect>
+                  <Lighting>
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                     <light>
+                        <Light.Distant />
+                     </light>
+                  </Lighting>
+               </effect>
             </GridPane>
          </children>
       </StackPane>

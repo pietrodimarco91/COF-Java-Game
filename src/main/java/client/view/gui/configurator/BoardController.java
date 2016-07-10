@@ -83,6 +83,9 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private GridPane kingCouncil;
+	
+	@FXML
+    private GridPane permitTileSlot;
 
 	private Painter painter;
 
@@ -186,6 +189,7 @@ public class BoardController extends ClientGUIController {
 		super.playSound("audio/buttonPressed.mp3");
 		painter.repaint(board.getRegions());
 		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
+		painter.repaintTile(permitTileSlot,this.board.getRegions());
 	}
 
 	/**

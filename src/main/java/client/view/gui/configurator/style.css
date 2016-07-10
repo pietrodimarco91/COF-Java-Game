@@ -255,8 +255,23 @@
 }
 .cardClicked:hover{
    -fx-background-size:240%;
-    
-  
+}
+
+.idSlot{
+	-fx-font-size: 10px;
+    -fx-font-weight:bold;
+    -fx-padding: 20px;
+    -fx-font-family: "PT Mono";
+}
+.cityPermitTileSlot{
+	-fx-font-size: 10px;
+    -fx-font-weight:bold;
+    -fx-font-family: "PT Mono";
+}
+.bonusSlot{
+	-fx-font-size: 10px;
+    -fx-font-weight:bold;
+    -fx-font-family: "PT Mono";
 }
 
 

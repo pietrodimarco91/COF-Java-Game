@@ -689,6 +689,7 @@ public class MatchHandler {
 
 	public void notifyEndOfTurn(Player player) {
 		if (player == currentPlayer) {
+			player.resetTurn();
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.", board);
 			nextTurn();
 		}

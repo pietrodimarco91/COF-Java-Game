@@ -6,11 +6,9 @@ import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,7 +22,6 @@ import model.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -70,7 +67,7 @@ public class BoardController extends ClientGUIController {
 	@FXML
 	private Button playerCards;
 	@FXML
-	private GridPane topIndicators;
+	private GridPane topIndicatorPane;
 
 	@FXML
 	private GridPane councillors;
@@ -105,7 +102,7 @@ public class BoardController extends ClientGUIController {
 		balcony.setPickOnBounds(false);
 		councillors.setPickOnBounds(false);
 		citiesListener = new CitiesListener(this);
-		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener,this,topIndicators);
+		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener,this);
 		showButtonPane();
 	}
 
@@ -162,7 +159,7 @@ public class BoardController extends ClientGUIController {
 	}
 
 	private void repaintPlayerStatus(Player player) {
-		painter.repaintPlayerStatus(player, indicatorPane);
+		painter.repaintPlayerStatus(player, indicatorPane, topIndicatorPane);
 
 	}
 

@@ -31,7 +31,7 @@ public class Painter {
 	private static final int numCols = 5;
 	private static final int numRows = 11;
 
-	private GridPane region1, region2, region3,topIndicators;
+	private GridPane region1, region2, region3;
 
 	private String css;
 
@@ -62,9 +62,8 @@ public class Painter {
 	private BoardController boardController;
 
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
-				   CitiesListener citiesListener, BoardController boardController,GridPane topIndicators) {
-		this.boardController=boardController;
-		this.topIndicators=topIndicators;
+			CitiesListener citiesListener, BoardController boardController) {
+		this.boardController = boardController;
 		victoryPointsIndicators = new SimpleMetroArcGauge();
 		nobilityPointsIndicators = new SimpleMetroArcGauge();
 		coinsIndicators = new SimpleMetroArcGauge();
@@ -76,16 +75,16 @@ public class Painter {
 
 		nobilityPointsIndicators.setMaxValue(20);
 		nobilityPointsIndicators.setMinValue(0);
-		
+
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
-		
+
 		numberOfAssistants.setMaxValue(100);
 		numberOfAssistants.setMinValue(0);
 
 		numberOfEmporium.setMaxValue(10);
 		numberOfEmporium.setMinValue(0);
-		
+
 		coinsIndicators.getStyleClass().add("colorscheme-indicator");
 		for (int i = 0; i < 10; i++) {
 			Segment lSegment = new PercentSegment(coinsIndicators, i * 10.0, (i + 1) * 10.0);
@@ -108,7 +107,7 @@ public class Painter {
 			Segment lSegment = new PercentSegment(numberOfAssistants, i * 10.0, (i + 1) * 10.0);
 			numberOfAssistants.segments().add(lSegment);
 		}
-		
+
 		numberOfEmporium.getStyleClass().add("colorscheme-indicator-emporium");
 		for (int i = 0; i < 10; i++) {
 			Segment lSegment = new PercentSegment(numberOfEmporium, i * 10.0, (i + 1) * 10.0);
@@ -285,12 +284,12 @@ public class Painter {
 			double yOne;
 			double xTwo;
 			double yTwo;
-				 xOne=firstLink.getLayoutX();
-				 yOne=firstLink.getLayoutY();
-				 xTwo=secondLink.getLayoutX();
-				 yTwo=secondLink.getLayoutY();
+			xOne = firstLink.getLayoutX();
+			yOne = firstLink.getLayoutY();
+			xTwo = secondLink.getLayoutX();
+			yTwo = secondLink.getLayoutY();
 
-			if(xOne==0||yOne==0||xTwo==0||yTwo==0)
+			if (xOne == 0 || yOne == 0 || xTwo == 0 || yTwo == 0)
 				boardController.repaintBoard();
 			Line line = new Line(xOne + x1, yOne + y1, xTwo + x2, yTwo + y2);
 			line.setStrokeWidth(10);
@@ -308,12 +307,12 @@ public class Painter {
 		return this.linksBetweenCities;
 	}
 
-	public void repaintPlayerStatus(Player player, GridPane indicatorPane) {
+	public void repaintPlayerStatus(Player player, GridPane indicatorPane, GridPane topIndicatorPane) {
 		int coins = player.getCoins();
 		int nobilityTrack = player.getPositionInNobilityTrack();
 		int victoryPoints = player.getVictoryPoints();
-		int numberOfAssistants=player.getNumberOfAssistants();
-		int numberOfEmporium=player.getNumberOfEmporium();
+		int numberOfAssistants = player.getNumberOfAssistants();
+		int numberOfEmporium = player.getNumberOfEmporium();
 
 		coinsIndicators.setValue(coins);
 		nobilityPointsIndicators.setValue(nobilityTrack);
@@ -323,6 +322,7 @@ public class Painter {
 
 		Platform.runLater(() -> {
 			indicatorPane.getChildren().clear();
+			topIndicatorPane.getChildren().clear();
 			VBox coinsBox = new VBox();
 			VBox victoryBox = new VBox();
 			VBox nobilityBox = new VBox();
@@ -338,36 +338,27 @@ public class Painter {
 			Label victoryLabel = new Label("VICTORY POINTS");
 			Label assistantsLabel = new Label("ASSISTANTS");
 			Label emporiumLabel = new Label("EMPORIUM");
-			
+
 			coinsBox.getChildren().add(coinsIndicators);
 			coinsBox.getChildren().add(coinsLabel);
 			indicatorPane.add(coinsBox, 0, 1);
-			
+
 			victoryBox.getChildren().add(victoryPointsIndicators);
 			victoryBox.getChildren().add(victoryLabel);
 			indicatorPane.add(victoryBox, 1, 1);
-			
+
 			nobilityBox.getChildren().add(nobilityPointsIndicators);
 			nobilityBox.getChildren().add(nobilityLabel);
 			indicatorPane.add(nobilityBox, 2, 1);
-			
+
 			assistantBox.getChildren().add(this.numberOfAssistants);
 			assistantBox.getChildren().add(assistantsLabel);
-			this.topIndicators.add(assistantBox,0,0);
-			
+			topIndicatorPane.add(assistantBox, 0, 0);
+
 			emporiumBox.getChildren().add(this.numberOfEmporium);
 			emporiumBox.getChildren().add(emporiumLabel);
-			this.topIndicators.add(emporiumBox,1,0);
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			topIndicatorPane.add(emporiumBox, 1, 0);
+
 		});
 
 	}
@@ -492,69 +483,65 @@ public class Painter {
 	}
 
 	public void repaintTile(GridPane permitTileSlot, Region[] regions) {
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			permitTileSlot.getChildren().clear();
-		ArrayList<PermitTile> allPermitTile = new ArrayList<PermitTile>();
-		Region tempRegionCoast = regions[0];
-		Region tempRegionHills = regions[1];
-		Region tempRegionMountains = regions[2];
-		PermitTile coastSlot1 = (PermitTile) tempRegionCoast.getDeck().getUnconveredPermitTile1();
-		PermitTile coastSlot2 = (PermitTile) tempRegionCoast.getDeck().getUnconveredPermitTile2();
-		PermitTile hillsSlot1 = (PermitTile) tempRegionHills.getDeck().getUnconveredPermitTile1();
-		PermitTile hillsSlot2 = (PermitTile) tempRegionHills.getDeck().getUnconveredPermitTile2();
-		PermitTile mountainsSlot1 = (PermitTile) tempRegionMountains.getDeck().getUnconveredPermitTile1();
-		PermitTile mountainsSlot2 = (PermitTile) tempRegionMountains.getDeck().getUnconveredPermitTile2();
-		allPermitTile.add(coastSlot1);
-		allPermitTile.add(coastSlot2);
-		allPermitTile.add(hillsSlot1);
-		allPermitTile.add(hillsSlot2);
-		allPermitTile.add(mountainsSlot1);
-		allPermitTile.add(mountainsSlot2);
+			ArrayList<PermitTile> allPermitTile = new ArrayList<PermitTile>();
+			Region tempRegionCoast = regions[0];
+			Region tempRegionHills = regions[1];
+			Region tempRegionMountains = regions[2];
+			PermitTile coastSlot1 = (PermitTile) tempRegionCoast.getDeck().getUnconveredPermitTile1();
+			PermitTile coastSlot2 = (PermitTile) tempRegionCoast.getDeck().getUnconveredPermitTile2();
+			PermitTile hillsSlot1 = (PermitTile) tempRegionHills.getDeck().getUnconveredPermitTile1();
+			PermitTile hillsSlot2 = (PermitTile) tempRegionHills.getDeck().getUnconveredPermitTile2();
+			PermitTile mountainsSlot1 = (PermitTile) tempRegionMountains.getDeck().getUnconveredPermitTile1();
+			PermitTile mountainsSlot2 = (PermitTile) tempRegionMountains.getDeck().getUnconveredPermitTile2();
+			allPermitTile.add(coastSlot1);
+			allPermitTile.add(coastSlot2);
+			allPermitTile.add(hillsSlot1);
+			allPermitTile.add(hillsSlot2);
+			allPermitTile.add(mountainsSlot1);
+			allPermitTile.add(mountainsSlot2);
 
-		css = LoaderResources.loadPath("/configurator/style.css");
-		int idCard;
-		List<City> cardCity;
-		ArrayList<String> cardBonus;
-		
-		int colPosition = 0;
+			css = LoaderResources.loadPath("/configurator/style.css");
+			int idCard;
+			List<City> cardCity;
+			ArrayList<String> cardBonus;
 
-		for (int i = 0; i < allPermitTile.size(); i++) {
-			idCard = allPermitTile.get(i).getId();
-			cardCity = allPermitTile.get(i).getCities();
-			cardBonus = allPermitTile.get(i).getBonus();
-			Pane pane = new Pane();
-			pane.getStylesheets().add(css);
-			pane.getStyleClass().add("permitTile");
-			Label id = new Label("ID: " + idCard);
-			id.getStylesheets().add(css);
-			id.getStyleClass().add("idSlot");
-			
-				
+			int colPosition = 0;
+
+			for (int i = 0; i < allPermitTile.size(); i++) {
+				idCard = allPermitTile.get(i).getId();
+				cardCity = allPermitTile.get(i).getCities();
+				cardBonus = allPermitTile.get(i).getBonus();
+				Pane pane = new Pane();
+				pane.getStylesheets().add(css);
+				pane.getStyleClass().add("permitTile");
+				Label id = new Label("ID: " + idCard);
+				id.getStylesheets().add(css);
+				id.getStyleClass().add("idSlot");
+
 				permitTileSlot.add(pane, colPosition, 0);
 				permitTileSlot.add(id, colPosition, 0);
-			
-			
-			String city = "\nCity:";
-			for (int k = 0; k < cardCity.size(); k++) {
-				city += cardCity.get(k).getName().charAt(0) + ",";
+
+				String city = "\nCity:";
+				for (int k = 0; k < cardCity.size(); k++) {
+					city += cardCity.get(k).getName().charAt(0) + ",";
+				}
+				Label cityName = new Label(city);
+				cityName.getStylesheets().add(css);
+				cityName.getStyleClass().add("cityPermitTileSlot");
+				permitTileSlot.add(cityName, colPosition, 0);
+
+				String bonus = "\n\nBonus:\n";
+				for (int k = 0; k < cardBonus.size(); k++) {
+					bonus += cardBonus.get(k) + "\n";
+				}
+				Label cityBonus = new Label(bonus);
+				cityBonus.getStylesheets().add(css);
+				cityBonus.getStyleClass().add("bonusSlot");
+				permitTileSlot.add(cityBonus, colPosition, 0);
+				colPosition += 2;
 			}
-			Label cityName = new Label(city);
-			cityName.getStylesheets().add(css);
-			cityName.getStyleClass().add("cityPermitTileSlot");
-			permitTileSlot.add(cityName, colPosition, 0);
-
-			String bonus = "\n\nBonus:\n";
-			for (int k = 0; k < cardBonus.size(); k++) {
-				bonus += cardBonus.get(k) + "\n";
-
-			}
-			Label cityBonus = new Label(bonus);
-			cityBonus.getStylesheets().add(css);
-			cityBonus.getStyleClass().add("bonusSlot");
-			permitTileSlot.add(cityBonus, colPosition, 0);
-
-			colPosition += 2;
-		}
 		});
 	}
 }

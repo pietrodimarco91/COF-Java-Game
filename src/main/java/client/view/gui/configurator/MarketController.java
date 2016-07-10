@@ -6,15 +6,27 @@ import model.ItemOnSale;
 
 import java.util.List;
 
+import client.controller.ClientGUIController;
+
 /**
  * Created by pietro on 10/07/16.
  */
-public class MarketController {
+public class MarketController extends ClientGUIController {
 
     private Stage stage;
     private ServerSideConnectorInt connector;
     private Player player;
     private List<ItemOnSale> market;
+    
+    @Override
+    public void sellItemOnMarket() {
+    	
+    }
+    
+    @Override
+    public void buyItemOnMarket() {
+    	
+    }
 
     public void setStage(Stage stage) {
         this.stage = stage;

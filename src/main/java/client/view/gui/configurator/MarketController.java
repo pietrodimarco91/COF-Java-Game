@@ -292,6 +292,8 @@ public class MarketController extends ClientGUIController{
                 if(countCards<marketPermitTile.size()){
                     int itemId;
 
+
+
                     PermitTile tempTile=(PermitTile)marketPermitTile.get(countCards).getTile();
                     itemId=marketPermitTile.get(countCards).getId();
                     idCard=tempTile.getId();

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -252,21 +252,21 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER_RIGHT">
          <children>
-            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" prefHeight="27.0" prefWidth="140.0" text="&lt;&lt; Buy" textAlignment="CENTER">
+            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#buyItemOnMarket" prefHeight="27.0" prefWidth="140.0" text="&lt;&lt; Buy" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Button>
-            <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="140.0" text="Sell &gt;&gt;">
+            <Button mnemonicParsing="false" onAction="#sellItemOnMarket" prefHeight="27.0" prefWidth="140.0" text="Sell &gt;&gt;">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>
             </Button>
-            <Spinner editable="true" prefHeight="27.0" prefWidth="140.0">
+            <TextField fx:id="sellingPrice" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="140.0" text="Selling Price">
                <VBox.margin>
                   <Insets top="3.0" />
                </VBox.margin>
-            </Spinner>
+            </TextField>
          </children>
       </VBox>
    </center>

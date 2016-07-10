@@ -342,15 +342,15 @@
 }
 .actionBackgroundBig{
      -fx-background-image: url("boardImages/actionBackground.jpg");
-    -fx-background-size:300%;
+    -fx-background-size:400%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
   
 }
 
 .assistant{
-     -fx-background-image: url("cards/assistant.png");
-    -fx-background-size:100%;
+     -fx-background-image: url("boardImages/assistant.png");
+    -fx-background-size:500%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
   

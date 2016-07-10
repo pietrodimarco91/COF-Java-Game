@@ -23,4 +23,8 @@ public class PermitTileOnSale extends ItemOnSale {
 		return string;
 	}
 
+
+	public Tile getTile() {
+		return permitTile;
+	}
 }

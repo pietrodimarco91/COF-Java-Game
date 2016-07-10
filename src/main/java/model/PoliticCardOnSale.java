@@ -23,4 +23,8 @@ public class PoliticCardOnSale extends ItemOnSale {
 		return string;
 	}
 
+
+	public String getColor() {
+		return politicCard.getColorCard();
+	}
 }

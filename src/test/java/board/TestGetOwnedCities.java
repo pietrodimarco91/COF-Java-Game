@@ -28,14 +28,14 @@ public class TestGetOwnedCities {
 		city2.buildEmporium(player1);
 		city3.buildEmporium(player1);
 		List<City> ownedCities = board.getNearbyOwnedCities(player1,city1);
-		assertEquals(3,ownedCities.size());
+		assertEquals(2,ownedCities.size());
 		for(City city:map) {
 			if(board.countDistance(city, city1)==-1&&board.countDistance(city, city2)==-1&&board.countDistance(city, city3)==-1) {
 				city.buildEmporium(player1);
 			}
 		}
 		ownedCities = board.getNearbyOwnedCities(player1,city1);
-		assertEquals(3,ownedCities.size());
+		assertEquals(2,ownedCities.size());
 	}
 
 }

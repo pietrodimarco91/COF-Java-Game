@@ -202,7 +202,6 @@ public class Board implements Serializable {
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
 			mapIterator.next().BFSinitialization();
 		}
-		ownedCities.add(cityFrom);
 		cityFrom.BFSsourceVisit();
 		grayNodesQueue.add(cityFrom);
 		while (!(grayNodesQueue.isEmpty())) {

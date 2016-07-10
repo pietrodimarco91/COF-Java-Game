@@ -473,14 +473,14 @@ public class MatchHandler {
 	public void winRewardTokensFromOwnedCities(City city, Player player) {
 		Tile rewardToken = city.winBonus();
 		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
-		PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
+		PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' has just won the following Reward Token:\n"
 				+ rewardToken + " after building an Emporium in " + city.getName(), board);
 		updateClient(player.getId());
 		bonusManager.takeBonusFromTile(rewardToken, player);
 		for (City ownedCity : ownedCities) {
 			rewardToken = ownedCity.winBonus();
 			player.rewardTokenWon(); //TEST PURPOSES
-			PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' has just won the following Reward Token:\n"
 					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName(),
 					board);
 			updateClient(player.getId());

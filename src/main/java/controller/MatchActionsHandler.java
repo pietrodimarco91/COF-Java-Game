@@ -411,7 +411,8 @@ public class MatchActionsHandler {
 		cityChoice = cityChoice.trim();
 		cityChoice = cityChoice.toUpperCase();
 		for (City tempCity : cities) {
-			if (tempCity.getName().equals(cityChoice)) {
+			String cityName = String.valueOf(tempCity.getName().charAt(0));
+			if (cityName.equals(cityChoice)) {
 				if (tempCity.buildEmporium(player))
 					found = true;
 				else

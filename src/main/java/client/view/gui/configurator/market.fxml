@@ -13,15 +13,19 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.MarketController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" styleClass="marketBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.MarketController">
    <left>
       <VBox prefHeight="393.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="17.0" prefWidth="286.0" text="YOUR ITEMS" />
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="286.0" text="YOUR ITEMS">
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font></Label>
             <Accordion prefHeight="581.0" prefWidth="400.0">
               <panes>
-                <TitledPane animated="false" prefHeight="342.0" prefWidth="400.0" text="Assistant">
+                <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Assistant">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
                            <children>
@@ -55,8 +59,11 @@
                            </children>
                         </AnchorPane>
                   </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                 </TitledPane>
-                  <TitledPane animated="false" prefHeight="342.0" prefWidth="400.0" text="Politic Card">
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Politic Card">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
                            <children>
@@ -91,8 +98,11 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                   </TitledPane>
-                  <TitledPane animated="false" prefHeight="342.0" prefWidth="400.0" text="Permit Tile">
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Permit Tile">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
                            <children>
@@ -124,6 +134,9 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                   </TitledPane>
               </panes>
             </Accordion>
@@ -133,10 +146,13 @@
    <right>
       <VBox prefHeight="390.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="17.0" prefWidth="276.0" text="ITEMS ON MARKET" />
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="276.0" text="ITEMS ON MARKET">
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font></Label>
             <Accordion prefHeight="581.0" prefWidth="400.0">
                <panes>
-                  <TitledPane animated="false" prefHeight="342.0" prefWidth="400.0" text="Assistant">
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Assistant">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
                            <children>
@@ -171,8 +187,11 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                   </TitledPane>
-                  <TitledPane animated="false" prefHeight="342.0" prefWidth="400.0" text="Politic Card">
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Politic Card">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
                            <children>
@@ -207,8 +226,11 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                   </TitledPane>
-                  <TitledPane animated="false" prefHeight="342.0" prefWidth="400.0" text="Permit Tile">
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Permit Tile">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
                            <children>
@@ -243,6 +265,9 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
                   </TitledPane>
                </panes>
             </Accordion>
@@ -252,20 +277,29 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER_RIGHT">
          <children>
-            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#buyItemOnMarket" prefHeight="27.0" prefWidth="140.0" text="&lt;&lt; Buy" textAlignment="CENTER">
+            <Button mnemonicParsing="false" onAction="#sellItemOnMarket" prefHeight="27.0" prefWidth="140.0" text="Sell &gt;&gt;">
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#buyItemOnMarket" prefHeight="27.0" prefWidth="138.0" text="&lt;&lt; Buy" textAlignment="CENTER">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#sellItemOnMarket" prefHeight="27.0" prefWidth="140.0" text="Sell &gt;&gt;">
+            <TextField fx:id="sellingPrice" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="184.0" text="Selling Price (int)">
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets top="15.0" />
                </VBox.margin>
-            </Button>
-            <TextField fx:id="sellingPrice" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="140.0" text="Selling Price">
-               <VBox.margin>
-                  <Insets top="3.0" />
-               </VBox.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
             </TextField>
          </children>
       </VBox>

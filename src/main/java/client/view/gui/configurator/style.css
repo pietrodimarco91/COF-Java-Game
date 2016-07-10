@@ -111,13 +111,13 @@
 }
 
 .line{
-    -fx-stroke: red;
+    -fx-stroke: brown;
 
 }
 
 .line:hover{
     -fx-stroke-width: 14;
-    -fx-stroke: orange;
+    -fx-stroke: greenyellow;
 }
 
 .city{

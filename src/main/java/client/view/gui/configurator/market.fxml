@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.MarketController">
+   <left>
+      <VBox prefHeight="393.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="286.0" text="YOUR ITEMS" />
+            <Accordion prefHeight="590.0" prefWidth="400.0">
+              <panes>
+                <TitledPane animated="false" prefHeight="421.0" prefWidth="122.0" text="Assistant">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="775.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="500.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="917.0" prefWidth="396.0" />
+                                </content>
+                              </ScrollPane>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </TitledPane>
+                <TitledPane animated="false" prefHeight="482.0" prefWidth="250.0" text="Politic Card">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </TitledPane>
+                <TitledPane animated="false" prefHeight="591.0" prefWidth="400.0" text="Permit Tile">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </TitledPane>
+              </panes>
+            </Accordion>
+         </children>
+      </VBox>
+   </left>
+   <right>
+      <VBox prefHeight="390.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="276.0" text="ITEMS ON MARKET" />
+            <Accordion>
+              <panes>
+                <TitledPane animated="false" prefHeight="399.0" prefWidth="213.0" text="Assistant">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </TitledPane>
+                <TitledPane animated="false" prefHeight="441.0" prefWidth="239.0" text="Politic Card">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </TitledPane>
+                <TitledPane animated="false" prefHeight="586.0" prefWidth="400.0" text="Permit Tile">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </TitledPane>
+              </panes>
+            </Accordion>
+         </children>
+      </VBox>
+   </right>
+   <center>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER_RIGHT">
+         <children>
+            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" prefHeight="27.0" prefWidth="140.0" text="&lt;&lt; Buy" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </Button>
+            <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="140.0" text="Sell &gt;&gt;">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </Button>
+            <Spinner editable="true" prefHeight="27.0" prefWidth="140.0">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Spinner>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

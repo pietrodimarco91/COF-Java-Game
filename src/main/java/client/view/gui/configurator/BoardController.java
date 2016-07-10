@@ -414,7 +414,7 @@ public class BoardController extends ClientGUIController {
 			});
 			Button market = new Button("Market");
 			market.setOnAction(event->{
-
+				showMarket();
 			});
 			Button mapConfiguration = new Button("Map Configuration");
 			mapConfiguration.setOnAction(event->{
@@ -440,5 +440,34 @@ public class BoardController extends ClientGUIController {
 			this.buttonsPane.getChildren().add(play);
 			this.buttonsPane.getChildren().add(cards);
 		});
+	}
+
+	private void showMarket() {
+		super.playSound("audio/buttonPressed.mp3");
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "market.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			Parent page = loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Market");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			MarketController marketController = loader.getController();
+			marketController.setStage(dialogStage);
+			marketController.setConnector(connector);
+			marketController.setPlayer(playerStatus);
+			marketController.setMarket(this.itemsOnSale);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+		}
 	}
 }

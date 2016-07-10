@@ -979,4 +979,16 @@ public class MatchHandler {
 
 	public void messageFromClient(String messageString, int playerId) {
 	}
+
+	public void passTurn(int playerId) {
+		if(gameStatus!=GameStatusConstants.PLAY) {
+			sendErrorToClient("Match isn't started yet!",playerId);
+			return;
+		}
+		if(currentPlayer!=players.get(playerId)) {
+			sendErrorToClient("It's not your turn!",playerId);
+			return;
+		}
+		notifyEndOfTurn(players.get(playerId));
+	}
 }

@@ -333,11 +333,6 @@ public class BoardController extends ClientGUIController {
 	}
 
 	@FXML
-	public void handleChatMessage() {
-		// must show the chat message input field
-	}
-
-	@FXML
 	public void showPlayerCards(ActionEvent event) {
 		super.playSound("audio/buttonPressed.mp3");
 		URL resource = null;
@@ -430,17 +425,23 @@ public class BoardController extends ClientGUIController {
 			cards.setOnAction(event->{
 				showPlayerCards(event);
 			});
+			Button passTurn = new Button("Pass Turn");
+			passTurn.setOnAction(event->{
+				passPlayerTurn();
+			});
 			this.buttonsPane.getChildren().clear();
 			action.getStyleClass().add("menuButton");
 			market.getStyleClass().add("menuButton");
 			mapConfiguration.getStyleClass().add("menuButton");
 			play.getStyleClass().add("menuButton");
 			cards.getStyleClass().add("menuButton");
+			passTurn.getStyleClass().add("menuButton");
 			this.buttonsPane.getChildren().add(action);
 			this.buttonsPane.getChildren().add(market);
 			this.buttonsPane.getChildren().add(mapConfiguration);
 			this.buttonsPane.getChildren().add(play);
 			this.buttonsPane.getChildren().add(cards);
+			this.buttonsPane.getChildren().add(passTurn);
 		});
 	}
 
@@ -469,6 +470,14 @@ public class BoardController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 
 		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+		}
+	}
+
+	private void passPlayerTurn() {
+		try {
+			connector.sendToServer(new Packet("PASSTURN"));
+		} catch (RemoteException e) {
 			serverOutput.appendText(e.getMessage());
 		}
 	}

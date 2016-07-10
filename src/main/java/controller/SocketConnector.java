@@ -110,6 +110,8 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 				matchHandler.sendPlayerStatus(playerId);
 			else if (packet.getMessageString().equals("FINISHMAPCONFIG"))
 				matchHandler.checkIfGraphIsConnected(playerId);
+			else if(packet.getMessageString().equals("PASSTURN"))
+				matchHandler.passTurn(playerId);
 			else
 				matchHandler.setPlayerNickName(playerId, packet.getMessageString());
 			break;

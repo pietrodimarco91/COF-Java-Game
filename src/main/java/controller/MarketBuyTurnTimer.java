@@ -4,7 +4,7 @@ import server.view.cli.ServerOutputPrinter;
 
 public class MarketBuyTurnTimer implements Runnable {
 
-	private static final int WAITING_TIME=30000;
+	private static final int WAITING_TIME=90000;
 	private Player player;
 	private MatchHandler match;
 	

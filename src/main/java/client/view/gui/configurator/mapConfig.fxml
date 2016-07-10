@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="backGroundColorConfiguration" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="mainBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
    <center>
       <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -174,11 +174,11 @@
    <top>
       <GridPane prefHeight="75.0" prefWidth="1201.0" BorderPane.alignment="CENTER">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.0" minWidth="10.0" percentWidth="10.0" prefWidth="143.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.0" minWidth="10.0" percentWidth="13.0" prefWidth="143.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="564.0" minWidth="10.0" prefWidth="474.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="310.0" minWidth="0.0" percentWidth="1.0" prefWidth="21.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="555.0" minWidth="10.0" prefWidth="513.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="99.0" minWidth="10.0" percentWidth="5.0" prefWidth="99.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="310.0" minWidth="0.0" percentWidth="1.0" prefWidth="0.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="555.0" minWidth="10.0" prefWidth="535.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="99.0" minWidth="10.0" percentWidth="7.0" prefWidth="99.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -191,11 +191,11 @@
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></TextArea>
-            <TextArea fx:id="chat" editable="false" prefHeight="43.0" prefWidth="527.0" GridPane.columnIndex="3">
+            <TextArea fx:id="chat" editable="false" prefHeight="75.0" prefWidth="551.0" GridPane.columnIndex="3">
                <GridPane.margin>
                   <Insets right="3.0" />
                </GridPane.margin></TextArea>
-            <Button mnemonicParsing="false" onAction="#chatMessage" text="Chat" GridPane.columnIndex="4">
+            <Button mnemonicParsing="false" onAction="#chatMessage" prefHeight="38.0" prefWidth="77.0" styleClass="menuButton" stylesheets="@style.css" text="Chat" GridPane.columnIndex="4">
                <GridPane.margin>
                   <Insets right="3.0" />
                </GridPane.margin>
@@ -203,7 +203,7 @@
                   <Font name="PT Mono Bold" size="13.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#repaintBoard" prefHeight="24.0" prefWidth="120.0" text="Refresh Board">
+            <Button mnemonicParsing="false" onAction="#repaintBoard" prefHeight="38.0" prefWidth="152.0" styleClass="menuButton" stylesheets="@style.css" text="Refresh Board">
                <font>
                   <Font name="PT Mono Bold" size="13.0" />
                </font></Button>
@@ -276,50 +276,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#performNewAction" text="Perform Action">
-                           <FlowPane.margin>
-                              <Insets bottom="10.0" right="10.0" />
-                           </FlowPane.margin>
-                           <font>
-                              <Font name="PT Mono Bold" size="13.0" />
-                           </font>
-                        </Button>
-                        <Button mnemonicParsing="false" text="Market">
-                           <FlowPane.margin>
-                              <Insets bottom="10.0" right="10.0" />
-                           </FlowPane.margin>
-                           <font>
-                              <Font name="PT Mono Bold" size="13.0" />
-                           </font>
-                        </Button>
-                        <Button mnemonicParsing="false" text="Map Configuration">
-                           <FlowPane.margin>
-                              <Insets bottom="10.0" right="10.0" />
-                           </FlowPane.margin>
-                           <font>
-                              <Font name="PT Mono Bold" size="13.0" />
-                           </font>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#handlePlayStatus" text="Start Playing">
-                           <FlowPane.margin>
-                              <Insets bottom="10.0" right="10.0" />
-                           </FlowPane.margin>
-                           <font>
-                              <Font name="PT Mono Bold" size="13.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="playerCards" mnemonicParsing="false" onAction="#showPlayerCards" text="Your Cards">
-                           <FlowPane.margin>
-                              <Insets bottom="10.0" right="10.0" />
-                           </FlowPane.margin>
-                           <font>
-                              <Font name="PT Mono Bold" size="13.0" />
-                           </font>
-                        </Button>
-                     </children>
-                  </FlowPane>
+                  <FlowPane alignment="CENTER" prefHeight="200.0" prefWidth="200.0" />
                   <FlowPane fx:id="buttonsPane" alignment="CENTER" prefHeight="200.0" prefWidth="200.0" />
                </children>
             </GridPane>

@@ -254,11 +254,11 @@ public class ActionController extends ClientGUIController {
 	public void handlePerformBuyPermitTileAction() {
 		if(this.politicCardColors.size()==0 || this.regionName.equals("") || this.permitTile.getText().equals("")) {
 			String error="";
-			if(regionName==null)
+			if(this.regionName.equals(""))
 				error+="Please specity a region!\n";
 			if(politicCardColors.size()==0)
 				error+="Please choose at least one Politic Card!\n";
-			if(this.player==null)
+			if(this.permitTile.getText().equals(""))
 				error+="Match isn't started yet!\n";
 			showAlert(error);
 			return;
@@ -457,14 +457,10 @@ public class ActionController extends ClientGUIController {
 
 			}
 		}
-
 	}
 
 	public void cardClicked(Pane pane, String color) {
-		System.out.println(color);
 		this.politicCardColors.add(color);
-		
-		
 	}
 
 	public void setStage(Stage stage) {

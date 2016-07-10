@@ -313,3 +313,7 @@
     -fxx-segment9-color: #97b329;
 }
 
+.mainBackground {
+    -fx-background-image: url("../images/mainBackground.jpg");
+}
+

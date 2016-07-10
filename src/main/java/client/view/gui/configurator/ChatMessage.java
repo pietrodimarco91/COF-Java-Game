@@ -38,8 +38,9 @@ public class ChatMessage extends ClientGUIController{
 		}
 	}
 	@FXML
+	
 	public void resetText() {
-		configChose.setText("");
+		replyMessage.setText("");
 	}
 
 	public void setStage(Stage stage) {

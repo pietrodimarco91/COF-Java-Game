@@ -11,8 +11,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" prefHeight="627.0" prefWidth="497.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.ActionController">
+<AnchorPane maxHeight="-Infinity" prefHeight="627.0" prefWidth="497.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.ActionController">
    <children>
       <TabPane prefHeight="627.0" prefWidth="496.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -24,7 +25,7 @@
                            <children>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Elect Councillor">
                                 <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="122.0" prefWidth="473.0">
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="122.0" prefWidth="473.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="10.4" layoutY="30.4" prefHeight="80.0" prefWidth="497.0" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="20.0">
                                              <children>
@@ -32,49 +33,70 @@
                                                    <children>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="electCouncillorHills" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Hills" />
+                                                            <RadioButton fx:id="electCouncillorHills" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Hills">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="electCouncillorCoast" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Coast" />
+                                                            <RadioButton fx:id="electCouncillorCoast" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Coast">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="electCouncillorMountains" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Mountains" />
+                                                            <RadioButton fx:id="electCouncillorMountains" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="Mountains">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="electCouncillorKing" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="King" />
+                                                            <RadioButton fx:id="electCouncillorKing" mnemonicParsing="false" onAction="#handleSelectRegionElectCouncillor" text="King">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                    </children>
                                                 </VBox>
                                                 <TextField fx:id="mainCouncillorColor" editable="false" prefHeight="27.0" prefWidth="94.0">
                                                    <FlowPane.margin>
-                                                      <Insets top="-20.0" />
+                                                      <Insets left="-30.0" top="-20.0" />
                                                    </FlowPane.margin></TextField>
-                                                <Button mnemonicParsing="false" onAction="#handleChooseCouncillorColor" prefHeight="27.0" prefWidth="174.0" text="Choose Councillor Color">
+                                                <Button mnemonicParsing="false" onAction="#handleChooseCouncillorColor" prefHeight="27.0" prefWidth="210.0" text="Choose Councillor Color">
                                                    <FlowPane.margin>
                                                       <Insets left="10.0" top="-20.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                                 <Button mnemonicParsing="false" onAction="#handlePerformElectCouncillorAction" prefHeight="25.0" prefWidth="144.0" text="Perform Action">
                                                    <FlowPane.margin>
                                                       <Insets left="200.0" top="-30.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                              </children>
                                           </FlowPane>
                                        </children>
                                     </AnchorPane>
                                 </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="497.0" text="Buy Permit Tile">
                                 <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="489.0">
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="489.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="-2.0" layoutY="-52.0" prefHeight="200.0" prefWidth="496.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
@@ -82,17 +104,26 @@
                                                    <children>
                                                       <FlowPane prefHeight="50.0" prefWidth="191.0">
                                                          <children>
-                                                            <RadioButton fx:id="buyPermitTileHills" mnemonicParsing="false" onAction="#handleSelectRegionBuyPermitTile" text="Hills" />
+                                                            <RadioButton fx:id="buyPermitTileHills" mnemonicParsing="false" onAction="#handleSelectRegionBuyPermitTile" text="Hills">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="45.0" prefWidth="191.0">
                                                          <children>
-                                                            <RadioButton fx:id="buyPermitTileCoast" mnemonicParsing="false" onAction="#handleSelectRegionBuyPermitTile" text="Coast" />
+                                                            <RadioButton fx:id="buyPermitTileCoast" mnemonicParsing="false" onAction="#handleSelectRegionBuyPermitTile" text="Coast">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="52.0" prefWidth="191.0">
                                                          <children>
-                                                            <RadioButton fx:id="buyPermitTileMountains" mnemonicParsing="false" onAction="#handleSelectRegionBuyPermitTile" text="Mountains" />
+                                                            <RadioButton fx:id="buyPermitTileMountains" mnemonicParsing="false" onAction="#handleSelectRegionBuyPermitTile" text="Mountains">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                    </children>
@@ -101,28 +132,43 @@
                                                    <children>
                                                       <FlowPane prefHeight="53.0" prefWidth="123.0">
                                                          <children>
-                                                            <RadioButton fx:id="buyPermitTileSlot1" mnemonicParsing="false" onAction="#handleSelectPermitTileSlot" text="Permit Tile Slot 1" />
+                                                            <RadioButton fx:id="buyPermitTileSlot1" mnemonicParsing="false" onAction="#handleSelectPermitTileSlot" text="Permit Tile Slot 1">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="12.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="58.0" prefWidth="144.0">
                                                          <children>
-                                                            <RadioButton fx:id="buyPermitTileSlot2" mnemonicParsing="false" onAction="#handleSelectPermitTileSlot" text="Permit Tile Slot 2" />
+                                                            <RadioButton fx:id="buyPermitTileSlot2" mnemonicParsing="false" onAction="#handleSelectPermitTileSlot" text="Permit Tile Slot 2">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="12.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                    </children>
                                                 </VBox>
                                                 <VBox alignment="TOP_CENTER" prefHeight="91.0" prefWidth="197.0">
                                                    <children>
-                                                      <Label fx:id="electCouncillorPoliticCounter" text="You selected 0 Politic Cards" />
+                                                      <Label fx:id="electCouncillorPoliticCounter" prefHeight="11.0" prefWidth="174.0" text="You selected 0 Cards">
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="13.0" />
+                                                         </font></Label>
                                                       <Button mnemonicParsing="false" onAction="#handleChoosePoliticCards" text="Choose Politic Cards">
                                                          <VBox.margin>
                                                             <Insets top="10.0" />
                                                          </VBox.margin>
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="13.0" />
+                                                         </font>
                                                       </Button>
-                                                      <Button mnemonicParsing="false" onAction="#handlePerformBuyPermitTileAction" prefHeight="25.0" prefWidth="124.0" text="Perform Action">
+                                                      <Button mnemonicParsing="false" onAction="#handlePerformBuyPermitTileAction" prefHeight="25.0" prefWidth="131.0" text="Perform Action">
                                                          <VBox.margin>
                                                             <Insets top="10.0" />
                                                          </VBox.margin>
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="13.0" />
+                                                         </font>
                                                       </Button>
                                                    </children>
                                                 </VBox>
@@ -131,26 +177,35 @@
                                        </children>
                                     </AnchorPane>
                                 </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Build Emporium With Permit Tile">
                                  <content>
-                                    <AnchorPane maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="130.0" prefWidth="200.0">
+                                    <AnchorPane maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="130.0" prefWidth="200.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="-44.0" layoutY="-52.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <VBox alignment="CENTER" prefHeight="112.0" prefWidth="158.0">
                                                    <children>
-                                                      <Label text="Insert the Permit Tile ID:">
+                                                      <Label prefHeight="17.0" prefWidth="162.0" text="Insert the Permit Tile ID:">
                                                          <VBox.margin>
                                                             <Insets bottom="10.0" />
                                                          </VBox.margin>
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="10.0" />
+                                                         </font>
                                                       </Label>
                                                       <TextField fx:id="permitTile" prefHeight="25.0" prefWidth="170.0" />
                                                    </children>
                                                 </VBox>
                                                 <VBox alignment="CENTER" prefHeight="112.0" prefWidth="119.0">
                                                    <children>
-                                                      <Label text="Insert the City:" />
+                                                      <Label text="Insert the City:">
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="11.0" />
+                                                         </font></Label>
                                                       <TextField fx:id="citySimpleBuildEmporium" prefHeight="25.0" prefWidth="170.0">
                                                          <VBox.margin>
                                                             <Insets top="10.0" />
@@ -164,32 +219,47 @@
                                                    <FlowPane.margin>
                                                       <Insets left="20.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                              </children>
                                           </FlowPane>
                                        </children>
                                     </AnchorPane>
                                  </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Build Emporium With King's Help">
                                  <content>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="505.0">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="505.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <VBox alignment="CENTER" prefHeight="108.0" prefWidth="189.0">
                                                    <children>
-                                                      <Label fx:id="kingPoliticCounter" text="You selected 0 Politic Cards" />
+                                                      <Label fx:id="kingPoliticCounter" text="You selected 0 Cards">
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="13.0" />
+                                                         </font></Label>
                                                       <Button mnemonicParsing="false" onAction="#handleChoosePoliticCards" text="Choose Politic Cards">
                                                          <VBox.margin>
                                                             <Insets top="10.0" />
                                                          </VBox.margin>
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="12.0" />
+                                                         </font>
                                                       </Button>
                                                    </children>
                                                 </VBox>
                                                 <VBox alignment="CENTER" prefHeight="112.0" prefWidth="97.0">
                                                    <children>
-                                                      <Label text="Insert the City:" />
+                                                      <Label text="Insert the City:">
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="10.0" />
+                                                         </font></Label>
                                                       <TextField fx:id="cityKingBuildEmporium" prefHeight="25.0" prefWidth="94.0" />
                                                    </children>
                                                 </VBox>
@@ -197,12 +267,18 @@
                                                    <FlowPane.margin>
                                                       <Insets left="20.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                              </children>
                                           </FlowPane>
                                        </children>
                                     </AnchorPane>
                                  </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                            </children>
                         </VBox>
@@ -214,11 +290,11 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="625.0" prefWidth="495.0">
                      <children>
-                        <VBox prefHeight="399.0" prefWidth="492.0" AnchorPane.bottomAnchor="-106.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox prefHeight="399.0" prefWidth="492.0" styleClass="actionBackgroundBig" stylesheets="@style.css" AnchorPane.bottomAnchor="-106.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Engage Assistant">
                                  <content>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="482.0">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="482.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="18.6" layoutY="19.6" prefHeight="54.0" prefWidth="475.0" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                              <children>
@@ -226,16 +302,22 @@
                                                    <FlowPane.margin>
                                                       <Insets left="10.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                              </children>
                                           </FlowPane>
                                        </children>
                                     </AnchorPane>
                                  </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Switch Permit Tiles">
                                  <content>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="489.0">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="489.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="38.6" layoutY="19.6" prefHeight="101.0" prefWidth="455.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                              <children>
@@ -243,32 +325,47 @@
                                                    <children>
                                                       <FlowPane prefHeight="50.0" prefWidth="191.0">
                                                          <children>
-                                                            <RadioButton fx:id="switchPermitTileHills" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Hills" />
+                                                            <RadioButton fx:id="switchPermitTileHills" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Hills">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="45.0" prefWidth="117.0">
                                                          <children>
-                                                            <RadioButton fx:id="switchPermitTileCoast" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Coast" />
+                                                            <RadioButton fx:id="switchPermitTileCoast" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Coast">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="52.0" prefWidth="191.0">
                                                          <children>
-                                                            <RadioButton fx:id="switchPermitTileMountains" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Mountains" />
+                                                            <RadioButton fx:id="switchPermitTileMountains" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="Mountains">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="52.0" prefWidth="191.0">
                                                          <children>
-                                                            <RadioButton fx:id="sendAssistantKing" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="King" />
+                                                            <RadioButton fx:id="sendAssistantKing" mnemonicParsing="false" onAction="#handleSelectRegionSwitchPermitTile" text="King">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                    </children>
                                                 </VBox>
                                                 <VBox alignment="TOP_CENTER" prefHeight="90.0" prefWidth="151.0">
                                                    <children>
-                                                      <Button mnemonicParsing="false" onAction="#handleSwitchPermitTilesAction" prefHeight="25.0" prefWidth="124.0" text="Perform Action">
+                                                      <Button mnemonicParsing="false" onAction="#handleSwitchPermitTilesAction" prefHeight="25.0" prefWidth="134.0" text="Perform Action">
                                                          <VBox.margin>
                                                             <Insets top="10.0" />
                                                          </VBox.margin>
+                                                         <font>
+                                                            <Font name="PT Mono Bold" size="13.0" />
+                                                         </font>
                                                       </Button>
                                                    </children>
                                                 </VBox>
@@ -277,10 +374,13 @@
                                        </children>
                                     </AnchorPane>
                                  </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Send Assistant to Elect a Councillor">
                                  <content>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="122.0" prefWidth="473.0">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="122.0" prefWidth="473.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="-13.0" layoutY="-69.0" prefHeight="200.0" prefWidth="469.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
@@ -288,41 +388,59 @@
                                                    <children>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="sendAssistantHills" mnemonicParsing="false" onAction="#handleSelectRegionSendAssistant" text="Hills" />
+                                                            <RadioButton fx:id="sendAssistantHills" mnemonicParsing="false" onAction="#handleSelectRegionSendAssistant" text="Hills">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="sendAssistantCoast" mnemonicParsing="false" onAction="#handleSelectRegionSendAssistant" text="Coast" />
+                                                            <RadioButton fx:id="sendAssistantCoast" mnemonicParsing="false" onAction="#handleSelectRegionSendAssistant" text="Coast">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                       <FlowPane prefHeight="200.0" prefWidth="200.0">
                                                          <children>
-                                                            <RadioButton fx:id="sendAssistantMountains" mnemonicParsing="false" onAction="#handleSelectRegionSendAssistant" text="Mountains" />
+                                                            <RadioButton fx:id="sendAssistantMountains" mnemonicParsing="false" onAction="#handleSelectRegionSendAssistant" text="Mountains">
+                                                               <font>
+                                                                  <Font name="PT Mono Bold" size="13.0" />
+                                                               </font></RadioButton>
                                                          </children>
                                                       </FlowPane>
                                                    </children>
                                                 </VBox>
-                                                <TextField fx:id="quickCouncillorColor" editable="false" prefHeight="27.0" prefWidth="105.0" />
+                                                <TextField fx:id="quickCouncillorColor" editable="false" prefHeight="27.0" prefWidth="73.0" />
                                                 <Button mnemonicParsing="false" onAction="#handleChooseCouncillorColor" text="Choose Councillor Color">
                                                    <FlowPane.margin>
                                                       <Insets left="10.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                                 <Button mnemonicParsing="false" onAction="#handleSendAssistantAction" prefHeight="25.0" prefWidth="144.0" text="Perform Action">
                                                    <FlowPane.margin>
                                                       <Insets left="320.0" top="-20.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                              </children>
                                           </FlowPane>
                                        </children>
                                     </AnchorPane>
                                  </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                               <TitledPane animated="false" maxHeight="-Infinity" prefWidth="496.0" text="Perform Additional Main Action">
                                  <content>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="482.0">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="482.0" styleClass="actionBackground" stylesheets="@style.css">
                                        <children>
                                           <FlowPane layoutX="18.6" layoutY="19.6" prefHeight="54.0" prefWidth="475.0" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                              <children>
@@ -330,12 +448,18 @@
                                                    <FlowPane.margin>
                                                       <Insets left="10.0" />
                                                    </FlowPane.margin>
+                                                   <font>
+                                                      <Font name="PT Mono Bold" size="13.0" />
+                                                   </font>
                                                 </Button>
                                              </children>
                                           </FlowPane>
                                        </children>
                                     </AnchorPane>
                                  </content>
+                                 <font>
+                                    <Font name="PT Mono Bold" size="13.0" />
+                                 </font>
                               </TitledPane>
                            </children>
                         </VBox>
@@ -345,7 +469,7 @@
           </Tab>
             <Tab text="Help">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" styleClass="actionBackgroundBig" stylesheets="@style.css" />
               </content>
             </Tab>
         </tabs>

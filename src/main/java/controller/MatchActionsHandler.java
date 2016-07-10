@@ -189,6 +189,7 @@ public class MatchActionsHandler {
 			if (player.getNumberOfAssistants() < 3)
 				throw new UnsufficientCoinsException();
 			player.removeMoreAssistants(3);
+			match.updateClient(playerId);
 			player.mainActionDone(false);
 			player.quickActionDone();
 		} catch (UnsufficientCoinsException e) {
@@ -321,8 +322,8 @@ public class MatchActionsHandler {
 				throw new CityNotFoundFromPermitTileException();
 			PubSub.notifyAllClients(players,
 					"Player " + player.getNickName() + " has built an Emporium in " + cityName + "!", board);
-			match.updateClient(playerId);
 			player.fromUnusedToUsedPermitTile(tempPermitTile);
+			match.updateClient(playerId);
 			match.winBuildingBonuses(board.getCityFromName(cityName), player);
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
@@ -409,9 +410,9 @@ public class MatchActionsHandler {
 		List<City> cities = permitTile.getCities();
 		cityChoice = cityChoice.trim();
 		cityChoice = cityChoice.toUpperCase();
-		for (City tempCities : cities) {
-			if (tempCities.getName().equals(cityChoice)) {
-				if (tempCities.buildEmporium(player))
+		for (City tempCity : cities) {
+			if (tempCity.getName().equals(cityChoice)) {
+				if (tempCity.buildEmporium(player))
 					found = true;
 				else
 					throw new AlreadyOwnedEmporiumException();

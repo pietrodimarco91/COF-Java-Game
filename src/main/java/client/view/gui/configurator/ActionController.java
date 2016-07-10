@@ -161,16 +161,19 @@ public class ActionController extends ClientGUIController {
 		electCouncillorKing.setToggleGroup(group);
 		if (electCouncillorHills.isSelected()) {
 			this.regionName = "HILLS";
-			System.out.println(this.regionName);
+			
 		} else if (electCouncillorCoast.isSelected()) {
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "COAST";
-			System.out.println(this.regionName);
+		
 		} else if (electCouncillorMountains.isSelected()) {
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "MOUNTAINS";
-			System.out.println(this.regionName);
+			
 		} else if (electCouncillorKing.isSelected()) {
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "KING";
-			System.out.println(this.regionName);
+			
 		}
 	}
 
@@ -194,12 +197,18 @@ public class ActionController extends ClientGUIController {
 		switchPermitTileHills.setToggleGroup(group);
 		switchPermitTileCoast.setToggleGroup(group);
 		switchPermitTileMountains.setToggleGroup(group);
-		if (switchPermitTileHills.isSelected())
+		if (switchPermitTileHills.isSelected()){
 			this.regionName = "HILLS";
-		else if (switchPermitTileCoast.isSelected())
+		super.playSound("audio/checkBoxClick.mp3");
+		}
+		else if (switchPermitTileCoast.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "COAST";
-		else if (switchPermitTileMountains.isSelected())
+		}
+		else if (switchPermitTileMountains.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "MOUNTAINS";
+			}
 	}
 
 	@FXML
@@ -224,14 +233,19 @@ public class ActionController extends ClientGUIController {
 		ToggleGroup group = new ToggleGroup();
 		buyPermitTileSlot1.setToggleGroup(group);
 		buyPermitTileSlot2.setToggleGroup(group);
-		if (buyPermitTileSlot1.isSelected())
+		if (buyPermitTileSlot1.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.slot = 1;
-		else if (buyPermitTileSlot2.isSelected())
+		}
+		else if (buyPermitTileSlot2.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.slot = 2;
+		}
 	}
 
 	@FXML
 	public void handleSelectCouncillorColor(ActionEvent event) {
+		super.playSound("audio/buttonPressed.mp3");
 		Button button = (Button) event.getSource();
 		this.mainCouncillorColor.setText(button.getText());
 		this.quickCouncillorColor.setText(button.getText());
@@ -241,6 +255,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleChooseCouncillorColor() {
+		super.playSound("audio/buttonPressed.mp3");
 		URL resource = null;
 		FXMLLoader loader = new FXMLLoader();
 		String pathTo = "ChooseCouncillorColor.fxml";
@@ -288,6 +303,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleChoosePoliticCards() {
+		super.playSound("audio/buttonPressed.mp3");
 		URL resource = null;
 		FXMLLoader loader = new FXMLLoader();
 		String pathTo = "ChoosePoliticCards.fxml";
@@ -313,6 +329,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformBuyPermitTileAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		if (this.politicCardColors.size() == 0 || this.regionName.equals("") || this.slot == 0) {
 			String error = "";
 			if (this.regionName.equals(""))
@@ -335,6 +352,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformBuildEmporiumKingAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		if (this.cityKingBuildEmporium.getText().equals("") || this.politicCardColors.size() == 0) {
 			String error = "";
 			if (this.cityKingBuildEmporium.getText().equals(""))
@@ -355,6 +373,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformSimpleBuildEmporiumAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		if (this.permitTile.getText().equals("") || this.citySimpleBuildEmporium.getText().equals("")) {
 			String error = "";
 			if (this.permitTile.getText().equals(""))
@@ -378,6 +397,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformElectCouncillorAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		if (this.regionName.equals("") || this.councillorColor.equals("")) {
 			String error = "";
 			if (this.regionName.equals("")) {

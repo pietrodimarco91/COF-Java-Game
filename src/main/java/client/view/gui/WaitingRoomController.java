@@ -103,6 +103,9 @@ public class WaitingRoomController extends ClientGUIController {
 	public void setStage(Stage stage) {
 		waitingRoomStage = stage;
 		css = LoaderResources.loadPath("/configurator/style.css");
+		stage.setOnCloseRequest(event->{
+			super.disconnect();
+		});
 	}
 
 	public void setNickName(String nickName) {

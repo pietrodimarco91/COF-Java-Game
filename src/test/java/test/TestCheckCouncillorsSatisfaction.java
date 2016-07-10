@@ -26,7 +26,7 @@ public class TestCheckCouncillorsSatisfaction {
 	public void test() {
 	
 		CouncillorsPool testPool= new CouncillorsPool();
-		Council testCouncil= new RegionCouncil();
+		Council testCouncil= new RegionCouncil(testPool);
 		PoliticCard testPoliticCards;
 		ArrayList<PoliticCard> tempCardsArrayList= new ArrayList<PoliticCard>();
 		for(int i=0;i<5;i++){
@@ -150,7 +150,7 @@ public class TestCheckCouncillorsSatisfaction {
 			
 			
 			PermitTileDeck testDeck= new PermitTileDeck(0,9);
-			Region testRegion= new Region("Example",testCouncil,testDeck);
+			Region testRegion= new Region("Example",testCouncil,testDeck,testPool);
 			
 			ArrayList<String> politicCardsString=new ArrayList<String>();
 			PoliticCard politicCard;

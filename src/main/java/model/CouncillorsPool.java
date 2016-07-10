@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,14 +14,14 @@ import exceptions.CouncillorNotFoundException;
  * @author Riccardo
  *
  */
-public class CouncillorsPool {
+public class CouncillorsPool implements Serializable {
 	/**
 	 * This attribute stores an ArrayList of the Councillors inside the pool.
 	 * Notice that this attribute is static, as we need to keep always the same
 	 * pool of Councillors. This allows to instantiate a CouncillorsPool when
 	 * needed, but the pool will be always the same.
 	 */
-	private static ArrayList<Councillor> pool;
+	private ArrayList<Councillor> pool;
 
 	/**
 	 * This number is fixed and represents the number of councillors for each
@@ -58,7 +59,7 @@ public class CouncillorsPool {
 	 * @return A councillor of the specified color, if there is one
 	 * @throws CouncillorNotFoundException if there isn't a councillor of the specified color
 	 */
-	public static Councillor getCouncillor(String color) throws CouncillorNotFoundException {
+	public Councillor getCouncillor(String color) throws CouncillorNotFoundException {
 		Iterator<Councillor> iterator = pool.iterator();
 		Councillor councillor;
 		while (iterator.hasNext()) {
@@ -76,7 +77,7 @@ public class CouncillorsPool {
 	 * @param color the color of the councillor to look for
 	 * @return true if there is a councillor of the specified color, false otherwise
 	 */
-	public static boolean checkPresenceOfCouncillor(String color) {
+	public boolean checkPresenceOfCouncillor(String color) {
 		Iterator<Councillor> iterator = pool.iterator();
 		while(iterator.hasNext()) {
 			if(iterator.next().getColor().equals(color))
@@ -93,7 +94,7 @@ public class CouncillorsPool {
 	 * 
 	 * @return The FIRST councillor of the pool.
 	 */
-	public static Councillor getCouncillor() {
+	public Councillor getCouncillor() {
 		Councillor councillor = pool.remove(0);
 		return councillor;
 	}
@@ -104,7 +105,7 @@ public class CouncillorsPool {
 	 * @param councillor
 	 *            the councillor to put inside the pool
 	 */
-	public static void addCouncillor(Councillor councillor) {
+	public void addCouncillor(Councillor councillor) {
 		pool.add(councillor);
 	}
 
@@ -113,11 +114,11 @@ public class CouncillorsPool {
 	 * beginning of the match to initialize the Councils, to randomize the
 	 * extraction of the councillors from the pool.
 	 */
-	public static void shuffle() {
+	public void shuffle() {
 		Collections.shuffle(pool);
 	}
 	
-	public static String poolStatus() {
+	public String poolStatus() {
 		Iterator<Councillor> iterator = pool.iterator();
 		String string="";
 		Councillor councillor;
@@ -126,5 +127,9 @@ public class CouncillorsPool {
 			string+=councillor.toString()+"\n";
 		}
 		return string;
+	}
+	
+	public ArrayList<Councillor> getPool() {
+		return this.pool;
 	}
 }

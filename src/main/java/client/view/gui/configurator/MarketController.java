@@ -2,12 +2,14 @@ package client.view.gui.configurator;
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
 import controller.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.*;
 
@@ -55,9 +57,24 @@ public class MarketController extends ClientGUIController{
     private int itemId;
 
     public void setStage(Stage stage) {
+        Platform.runLater(()->{
+            yourAssistant.getChildren().clear();
+            yourPolitic.getChildren().clear();
+            yourPermit.getChildren().clear();
+            marketAssistant.getChildren().clear();
+            marketPolitic.getChildren().clear();
+            marketPermit.getChildren().clear();
+        });
+        sellingPrice.setOnMouseClicked(event -> {
+            clean();
+        });
         itemId=-1;
         css = LoaderResources.loadPath("/configurator/style.css");
         this.stage = stage;
+    }
+
+    private void clean() {
+        sellingPrice.setText("");
     }
 
     public void setConnector(ServerSideConnectorInt connector) {
@@ -105,6 +122,7 @@ public class MarketController extends ClientGUIController{
 
         for (int i = 0; i < 10 && count>0; i++) {
             for (int j = 0; j < 4 && count > 0; j++) {
+
                 Pane pane = new Pane();
                 pane.getStylesheets().add(css);
                 pane.getStyleClass().add("assistant");
@@ -126,13 +144,17 @@ public class MarketController extends ClientGUIController{
             for (int j = 0; j < 4 && count<assistant.size(); j++) {
                 int itemId;
                 itemId=assistant.get(count).getId();
-                Pane pane = new Pane();
+                VBox vBox=new VBox();
                 Label label=new Label(assistant.get(count).getSeller().getNickName());
-                pane.getStylesheets().add(css);
-                pane.getStyleClass().add("assistant");
-                marketAssistant.add(pane, j, i);
-                marketAssistant.add(label, j, i);
-                pane.setOnMouseClicked(event -> {
+                Label price=new Label(String.valueOf(assistant.get(count).getPrice()+"$"));
+                price.getStyleClass().add("marketLabel");
+                label.getStyleClass().add("marketLabel");
+                vBox.getStylesheets().add(css);
+                vBox.getStyleClass().add("assistant");
+                vBox.getChildren().add(label);
+                vBox.getChildren().add(price);
+                marketAssistant.add(vBox, j, i);
+                vBox.setOnMouseClicked(event -> {
                     marketItemClicked(itemId);
                 });
                 count++;
@@ -174,16 +196,19 @@ public class MarketController extends ClientGUIController{
                 if (countCards < politicCardOnSales.size()) {
                     int itemId;
                     itemId=politicCardOnSales.get(countCards).getId();
-                    Pane pane = new Pane();
+                    VBox vBox=new VBox();
                     Label label=new Label(politicCardOnSales.get(countCards).getSeller().getNickName());
-                    Label label1=new Label(String.valueOf(politicCardOnSales.get(countCards).getPrice()));
-                    pane.getStylesheets().add(css);
+                    Label price=new Label(String.valueOf(String.valueOf(politicCardOnSales.get(countCards).getPrice()+"$")));
+                    price.getStyleClass().add("marketLabel");
+                    label.getStyleClass().add("marketLabel");
+                    vBox.getStylesheets().add(css);
+                    setStyle(politicCardOnSales.get(countCards).getColor(),vBox);
+                    vBox.getChildren().add(label);
+                    vBox.getChildren().add(price);
                     String color=politicCardOnSales.get(countCards).getColor();
-                    setStyle(color,pane);
-                    marketPolitic.add(pane, j, i);
-                    marketPolitic.add(label,j,i);
-                    marketPolitic.add(label1,j,i);
-                    pane.setOnMouseClicked(event -> {
+                    setStyle(color,vBox);
+                    marketPolitic.add(vBox, j, i);
+                    vBox.setOnMouseClicked(event -> {
                         marketItemClicked(itemId);
                     });
                     countCards++;
@@ -292,25 +317,20 @@ public class MarketController extends ClientGUIController{
                 if(countCards<marketPermitTile.size()){
                     int itemId;
 
-
-
                     PermitTile tempTile=(PermitTile)marketPermitTile.get(countCards).getTile();
                     itemId=marketPermitTile.get(countCards).getId();
                     idCard=tempTile.getId();
                     cardCity=tempTile.getCities();
                     cardBonus=tempTile.getBonus();
-                    Pane pane = new Pane();
-                    pane.getStylesheets().add(css);
-                    pane.getStyleClass().add("permitTile");
+                    VBox vBox = new VBox();
+                    vBox.getStylesheets().add(css);
+                    vBox.getStyleClass().add("permitTile");
                     Label id = new Label("ID: "+idCard);
                     Label price = new Label("Price:"+marketPermitTile.get(countCards).getPrice());
                     Label seller = new Label("Price:"+marketPermitTile.get(countCards).getSeller().getNickName());
                     id.getStylesheets().add(css);
                     id.getStyleClass().add("id");
-                    marketPermit.add(pane, j, i);
-                    marketPermit.add(id, j, i);
-                    marketPermit.add(price, j, i);
-                    marketPermit.add(seller, j, i);
+
                     String city="\n\n\nCity:";
                     for(int k=0;k<cardCity.size();k++){
                         city+=cardCity.get(k).getName().charAt(0)+",";
@@ -318,7 +338,7 @@ public class MarketController extends ClientGUIController{
                     Label cityName = new Label(city);
                     cityName.getStylesheets().add(css);
                     cityName.getStyleClass().add("cityPermitTile");
-                    marketPermit.add(cityName, j, i);
+
 
                     String bonus="\n\n\n\nBonus:\n";
                     for(int k=0;k<cardBonus.size();k++){
@@ -327,8 +347,15 @@ public class MarketController extends ClientGUIController{
                     Label cityBonus =new Label(bonus);
                     cityBonus.getStylesheets().add(css);
                     cityBonus.getStyleClass().add("bonus");
-                    marketPermit.add(cityBonus, j, i);
-                    pane.setOnMouseClicked(event -> {
+
+                    vBox.getChildren().add(id);
+                    vBox.getChildren().add(cityBonus);
+                    vBox.getChildren().add(cityName);
+                    vBox.getChildren().add(seller);
+                    vBox.getChildren().add(price);
+
+                    marketPermit.add(vBox, j, i);
+                    vBox.setOnMouseClicked(event -> {
                         marketItemClicked(itemId);
                     });
                     countCards++;

@@ -238,6 +238,7 @@ public class WaitingRoomController extends ClientGUIController {
 			boardController.setStage(confStage);
 			boardController.setBoard(update);
 			super.stopSound();
+			super.playSound("audio/soundtrackGaming.mp3");
 
 			Platform.runLater(() -> {
 				confStage.setScene(scene);

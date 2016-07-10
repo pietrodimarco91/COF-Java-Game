@@ -126,7 +126,7 @@ public class BoardController extends ClientGUIController {
 
 	@Override
 	public void editConnection(String choice) {
-		super.playSound("audio/buttonPressed.mp3");
+		super.playSound("audio/linkCity.mp3");
 		try {
 			connector.sendToServer(new Packet(String.valueOf(city1), String.valueOf(city2), choice));
 		} catch (RemoteException e) {

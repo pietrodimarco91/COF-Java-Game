@@ -261,7 +261,7 @@ public class BoardController extends ClientGUIController {
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
 			loader.setLocation(resource);
-			AnchorPane page = (AnchorPane) loader.load();
+			AnchorPane page = loader.load();
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Perform Action");
 			dialogStage.initModality(Modality.WINDOW_MODAL);

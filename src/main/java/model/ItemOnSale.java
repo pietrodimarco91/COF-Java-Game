@@ -66,4 +66,6 @@ public abstract class ItemOnSale implements Serializable {
 		string+="Price: "+this.getPrice()+"\n";
 		return string;
 	}
+
+
 }

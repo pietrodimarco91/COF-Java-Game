@@ -66,6 +66,7 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private Button playerCards;
+	
 	@FXML
 	private GridPane topIndicatorPane;
 

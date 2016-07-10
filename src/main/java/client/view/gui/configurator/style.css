@@ -298,6 +298,12 @@
     -fx-padding: 10 20 10 20;
 }
 
+.nicknameLabel {
+	-fx-text-fill: #654b00;
+    -fx-font-size: 12px;
+    -fx-padding: 5;
+}
+
 .colorscheme-indicator {
     -fxx-segment0-color: #f61319;
     -fxx-segment1-color: #f3351f;

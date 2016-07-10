@@ -77,6 +77,8 @@ public class WaitingRoomController extends ClientGUIController {
 
 	private MediaPlayer mediaPlayer;
 
+	private String css;
+
 	@FXML
 	public void initialize() {
 		super.playSound("audio/surroundMusic.mp3");
@@ -100,6 +102,7 @@ public class WaitingRoomController extends ClientGUIController {
 
 	public void setStage(Stage stage) {
 		waitingRoomStage = stage;
+		css = LoaderResources.loadPath("/configurator/style.css");
 	}
 
 	public void setNickName(String nickName) {
@@ -262,10 +265,13 @@ public class WaitingRoomController extends ClientGUIController {
 			playersInGame.getChildren().add(titleLabel);
 			for (Player player : players) {
 				playerNickname = new Label(player.getNickName());
+				playerNickname.getStylesheets().add(css);
+				playerNickname.getStyleClass().add("nicknameLabel");
 				playersInGame.getChildren().add(playerNickname);
 			}
 		});
 	}
+
 	public void setClientConnector(ClientSideConnectorInt connector) {
 		this.clientConnector = connector;
 	}

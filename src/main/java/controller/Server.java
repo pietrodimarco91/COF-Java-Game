@@ -20,12 +20,12 @@ public class Server {
 	 * The IP Address of the Server, that means the address that all Clients
 	 * must know to connect to the game.
 	 */
-	private static final String ip = "192.168.1.134";
+	private static final String ip = "localhost";
 
 	/**
 	 * The port of the specified IP Address (connection parameter).
 	 */
-	private static final int port = 9000;
+	private static final int port = 2000;
 
 	/**
 	 * The boolean variable to stop the server

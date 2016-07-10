@@ -31,7 +31,7 @@ public class Painter {
 	private static final int numCols = 5;
 	private static final int numRows = 11;
 
-	private GridPane region1, region2, region3;
+	private GridPane region1, region2, region3,topIndicators;
 
 	private String css;
 
@@ -52,6 +52,8 @@ public class Painter {
 	private SimpleMetroArcGauge victoryPointsIndicators;
 
 	private SimpleMetroArcGauge nobilityPointsIndicators;
+	private SimpleMetroArcGauge numberOfAssistants;
+	private SimpleMetroArcGauge numberOfEmporium;
 
 	private SimpleMetroArcGauge coinsIndicators;
 
@@ -60,20 +62,30 @@ public class Painter {
 	private BoardController boardController;
 
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
-				   CitiesListener citiesListener, BoardController boardController) {
+				   CitiesListener citiesListener, BoardController boardController,GridPane topIndicators) {
 		this.boardController=boardController;
+		this.topIndicators=topIndicators;
 		victoryPointsIndicators = new SimpleMetroArcGauge();
 		nobilityPointsIndicators = new SimpleMetroArcGauge();
 		coinsIndicators = new SimpleMetroArcGauge();
+		numberOfAssistants = new SimpleMetroArcGauge();
+		numberOfEmporium = new SimpleMetroArcGauge();
 
 		victoryPointsIndicators.setMaxValue(100);
 		victoryPointsIndicators.setMinValue(0);
 
 		nobilityPointsIndicators.setMaxValue(20);
 		nobilityPointsIndicators.setMinValue(0);
+		
 		coinsIndicators.setMaxValue(20);
 		coinsIndicators.setMinValue(0);
+		
+		numberOfAssistants.setMaxValue(100);
+		numberOfAssistants.setMinValue(0);
 
+		numberOfEmporium.setMaxValue(10);
+		numberOfEmporium.setMinValue(0);
+		
 		coinsIndicators.getStyleClass().add("colorscheme-indicator");
 		for (int i = 0; i < 10; i++) {
 			Segment lSegment = new PercentSegment(coinsIndicators, i * 10.0, (i + 1) * 10.0);
@@ -91,7 +103,17 @@ public class Painter {
 			Segment lSegment = new PercentSegment(victoryPointsIndicators, i * 10.0, (i + 1) * 10.0);
 			victoryPointsIndicators.segments().add(lSegment);
 		}
-
+		numberOfAssistants.getStyleClass().add("colorscheme-indicator");
+		for (int i = 0; i < 10; i++) {
+			Segment lSegment = new PercentSegment(numberOfAssistants, i * 10.0, (i + 1) * 10.0);
+			numberOfAssistants.segments().add(lSegment);
+		}
+		
+		numberOfEmporium.getStyleClass().add("colorscheme-indicator-emporium");
+		for (int i = 0; i < 10; i++) {
+			Segment lSegment = new PercentSegment(numberOfEmporium, i * 10.0, (i + 1) * 10.0);
+			numberOfEmporium.segments().add(lSegment);
+		}
 		this.stackPane = stackPane;
 		this.citiesListener = citiesListener;
 		links = new ArrayList<>();
@@ -290,31 +312,62 @@ public class Painter {
 		int coins = player.getCoins();
 		int nobilityTrack = player.getPositionInNobilityTrack();
 		int victoryPoints = player.getVictoryPoints();
+		int numberOfAssistants=player.getNumberOfAssistants();
+		int numberOfEmporium=player.getNumberOfEmporium();
 
 		coinsIndicators.setValue(coins);
 		nobilityPointsIndicators.setValue(nobilityTrack);
 		victoryPointsIndicators.setValue(victoryPoints);
+		this.numberOfAssistants.setValue(numberOfAssistants);
+		this.numberOfEmporium.setValue(numberOfEmporium);
 
 		Platform.runLater(() -> {
 			indicatorPane.getChildren().clear();
 			VBox coinsBox = new VBox();
 			VBox victoryBox = new VBox();
 			VBox nobilityBox = new VBox();
+			VBox assistantBox = new VBox();
+			VBox emporiumBox = new VBox();
 			coinsBox.setAlignment(Pos.BOTTOM_CENTER);
 			victoryBox.setAlignment(Pos.BOTTOM_CENTER);
 			nobilityBox.setAlignment(Pos.BOTTOM_CENTER);
+			assistantBox.setAlignment(Pos.BOTTOM_CENTER);
+			emporiumBox.setAlignment(Pos.BOTTOM_CENTER);
 			Label coinsLabel = new Label("COINS");
 			Label nobilityLabel = new Label("NOBILITY TRACK");
 			Label victoryLabel = new Label("VICTORY POINTS");
+			Label assistantsLabel = new Label("ASSISTANTS");
+			Label emporiumLabel = new Label("EMPORIUM");
+			
 			coinsBox.getChildren().add(coinsIndicators);
 			coinsBox.getChildren().add(coinsLabel);
 			indicatorPane.add(coinsBox, 0, 1);
+			
 			victoryBox.getChildren().add(victoryPointsIndicators);
 			victoryBox.getChildren().add(victoryLabel);
 			indicatorPane.add(victoryBox, 1, 1);
+			
 			nobilityBox.getChildren().add(nobilityPointsIndicators);
 			nobilityBox.getChildren().add(nobilityLabel);
 			indicatorPane.add(nobilityBox, 2, 1);
+			
+			assistantBox.getChildren().add(this.numberOfAssistants);
+			assistantBox.getChildren().add(assistantsLabel);
+			this.topIndicators.add(assistantBox,0,0);
+			
+			emporiumBox.getChildren().add(this.numberOfEmporium);
+			emporiumBox.getChildren().add(emporiumLabel);
+			this.topIndicators.add(emporiumBox,1,0);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		});
 
 	}

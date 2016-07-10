@@ -15,6 +15,8 @@ public class CitiesListener {
 
     LinkState linkStateSecondSelect;
 
+    LinkState gameState;
+
     Pane firstLink;
 
     Pane secondLink;
@@ -27,6 +29,8 @@ public class CitiesListener {
 
         this.boardController = boardController;
         linkStateFirstSelect=new LinkStateFirstSelect();
+        gameState = new GameState(boardController);
+
         linkStateSecondSelect=new LinkStateSecondSelect();
         linkState=linkStateFirstSelect;
 
@@ -66,9 +70,19 @@ public class CitiesListener {
         boardController.createLink(firstLink,secondLink, firstCity, secondCity);
     }
 
-
-
     public void removeLink(Line line) {
     	boardController.removeLink(line);
+    }
+
+    public void setGameState() {
+        this.linkState=gameState;
+    }
+
+    public void cityEntered(City city) {
+        linkState.cityEntered(city,boardController);
+    }
+
+    public void cityExited(City city) {
+        linkState.cityExited(city,boardController);
     }
 }

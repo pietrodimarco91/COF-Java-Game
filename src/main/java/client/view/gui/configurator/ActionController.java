@@ -365,9 +365,9 @@ public class ActionController extends ClientGUIController {
 			return;
 		}
 		try {
-			this.connector.sendToServer(
-					new Packet(new SimpleBuildEmporiumAction("main", Integer.parseInt(this.permitTile.getText()),
-							String.valueOf(this.citySimpleBuildEmporium.getText().charAt(0)))));
+			String cityName = String.valueOf(this.citySimpleBuildEmporium.getText().charAt(0)).toUpperCase();
+			this.connector.sendToServer(new Packet(
+					new SimpleBuildEmporiumAction("main", Integer.parseInt(this.permitTile.getText()), cityName)));
 			stage.close();
 		} catch (RemoteException e) {
 			e.printStackTrace();

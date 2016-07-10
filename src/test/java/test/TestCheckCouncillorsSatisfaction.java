@@ -149,7 +149,7 @@ public class TestCheckCouncillorsSatisfaction {
 			}
 			
 			
-			PermitTileDeck testDeck= new PermitTileDeck(10);
+			PermitTileDeck testDeck= new PermitTileDeck(0,9);
 			Region testRegion= new Region("Example",testCouncil,testDeck);
 			
 			ArrayList<String> politicCardsString=new ArrayList<String>();

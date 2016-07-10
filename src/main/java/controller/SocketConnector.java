@@ -134,6 +134,7 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 	@Override
 	public void sendToClient(Packet packet) throws RemoteException {
 		try {
+			outputObjectToClient.reset();
 			outputObjectToClient.writeObject(packet);
 			outputObjectToClient.flush();
 		} catch (IOException e) {

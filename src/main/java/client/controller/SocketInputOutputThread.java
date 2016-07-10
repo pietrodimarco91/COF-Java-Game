@@ -51,6 +51,7 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 	@Override
 	public void sendToServer(Packet packet) throws RemoteException {
 		try {
+			outputObjectToServer.reset();
 			outputObjectToServer.writeObject(packet);
 			outputObjectToServer.flush();
 		} catch (IOException e) {

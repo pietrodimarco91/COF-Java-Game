@@ -312,6 +312,18 @@
     -fxx-segment8-color: #aacc2a;
     -fxx-segment9-color: #97b329;
 }
+.colorscheme-indicator-emporium {
+    -fxx-segment9-color: #f61319;
+    -fxx-segment8-color: #f3351f;
+    -fxx-segment7-color: #f65821;
+    -fxx-segment6-color: #f18c23;
+    -fxx-segment5-color: #f3a429;
+    -fxx-segment4-color: #fccb2e;
+    -fxx-segment3-color: #f2de31;
+    -fxx-segment2-color: #d4ea35;
+    -fxx-segment1-color: #aacc2a;
+    -fxx-segment0-color: #97b329;
+}
 
 .mainBackground {
     -fx-background-image: url("../images/mainBackground.jpg");

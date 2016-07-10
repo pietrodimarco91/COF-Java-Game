@@ -69,6 +69,8 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private Button playerCards;
+	@FXML
+	private GridPane topIndicators;
 
 	@FXML
 	private GridPane councillors;
@@ -103,7 +105,7 @@ public class BoardController extends ClientGUIController {
 		balcony.setPickOnBounds(false);
 		councillors.setPickOnBounds(false);
 		citiesListener = new CitiesListener(this);
-		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener,this);
+		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener,this,topIndicators);
 		showButtonPane();
 	}
 

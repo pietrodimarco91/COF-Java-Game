@@ -203,10 +203,6 @@
                   <Font name="PT Mono Bold" size="13.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#repaintBoard" prefHeight="38.0" prefWidth="152.0" styleClass="menuButton" stylesheets="@style.css" text="Refresh Board">
-               <font>
-                  <Font name="PT Mono Bold" size="13.0" />
-               </font></Button>
          </children>
       </GridPane>
    </top>

@@ -57,9 +57,11 @@ public class Painter {
 
 	private ArrayList<Tile> unusedPermitTile;
 
-	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
-			CitiesListener citiesListener) {
+	private BoardController boardController;
 
+	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
+				   CitiesListener citiesListener, BoardController boardController) {
+		this.boardController=boardController;
 		victoryPointsIndicators = new SimpleMetroArcGauge();
 		nobilityPointsIndicators = new SimpleMetroArcGauge();
 		coinsIndicators = new SimpleMetroArcGauge();
@@ -257,8 +259,18 @@ public class Painter {
 		}
 
 		Platform.runLater(() -> {
-			Line line = new Line(firstLink.getLayoutX() + x1, firstLink.getLayoutY() + y1, secondLink.getLayoutX() + x2,
-					secondLink.getLayoutY() + y2);
+			double xOne;
+			double yOne;
+			double xTwo;
+			double yTwo;
+				 xOne=firstLink.getLayoutX();
+				 yOne=firstLink.getLayoutY();
+				 xTwo=secondLink.getLayoutX();
+				 yTwo=secondLink.getLayoutY();
+
+			if(xOne==0||yOne==0||xTwo==0||yTwo==0)
+				boardController.repaintBoard();
+			Line line = new Line(xOne + x1, yOne + y1, xTwo + x2, yTwo + y2);
 			line.setStrokeWidth(10);
 			links.add(line);
 			linksBetweenCities.add(new SingleLink(city1, city2, line));

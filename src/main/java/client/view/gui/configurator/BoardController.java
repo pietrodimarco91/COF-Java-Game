@@ -103,7 +103,7 @@ public class BoardController extends ClientGUIController {
 		balcony.setPickOnBounds(false);
 		councillors.setPickOnBounds(false);
 		citiesListener = new CitiesListener(this);
-		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
+		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener,this);
 		showButtonPane();
 	}
 
@@ -112,10 +112,9 @@ public class BoardController extends ClientGUIController {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
 			serverOutput.appendText(packet.getMessageString() + "\n");
-			super.playSound("audio/messageIn.mp3");
+
 			break;
 		case "UPDATE":
-			
 			handleUpdate(packet.getUpdate());
 			break;
 		case "CHAT":
@@ -127,6 +126,7 @@ public class BoardController extends ClientGUIController {
 
 	@Override
 	public void editConnection(String choice) {
+		super.playSound("audio/buttonPressed.mp3");
 		try {
 			connector.sendToServer(new Packet(String.valueOf(city1), String.valueOf(city2), choice));
 		} catch (RemoteException e) {
@@ -147,7 +147,6 @@ public class BoardController extends ClientGUIController {
 			repaintBoard();
 			break;
 		case "PLAYER_UPDATE":
-			super.playSound("audio/updateNotify.mp3");
 			setPlayerStatus(update);
 			repaintPlayerStatus(update.getPlayer());
 			break;
@@ -188,10 +187,9 @@ public class BoardController extends ClientGUIController {
 	 */
 	@FXML
 	public void repaintBoard() {
-		super.playSound("audio/buttonPressed.mp3");
-		painter.repaint(board.getRegions());
-		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
-		painter.repaintTile(permitTileSlot,this.board.getRegions());
+			painter.repaint(board.getRegions());
+			painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
+			painter.repaintTile(permitTileSlot,this.board.getRegions());
 	}
 
 	/**
@@ -208,6 +206,7 @@ public class BoardController extends ClientGUIController {
 	public void setCities(char c1, char c2, String choice) {
 		this.city1 = c1;
 		this.city2 = c2;
+
 		editConnection(choice);
 	}
 
@@ -246,6 +245,7 @@ public class BoardController extends ClientGUIController {
 	 *            the second City object
 	 */
 	public void createLink(Pane firstLink, Pane secondLink, City city1, City city2) {
+
 		Platform.runLater(() -> {
 			painter.createLine(firstLink, secondLink, city1, city2);
 		});

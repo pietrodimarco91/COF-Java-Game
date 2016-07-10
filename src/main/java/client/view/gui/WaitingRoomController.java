@@ -210,7 +210,7 @@ public class WaitingRoomController extends ClientGUIController {
 	public void handleUpdateState(UpdateState update) {
 		switch (update.getHeader()) {
 		case "BOARD":
-			
+
 			URL resource = null;
 			FXMLLoader loader = new FXMLLoader();
 			Parent parentConnectionStage = null;

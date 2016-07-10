@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="mainBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="1200.0" prefHeight="400.0" prefWidth="600.0" styleClass="mainBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.BoardController">
    <center>
       <StackPane fx:id="stackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1200.0" prefHeight="600.0" prefWidth="1200.0" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -192,11 +192,11 @@
             <Insets bottom="7.0" top="5.0" />
          </BorderPane.margin>
          <children>
-            <TextArea fx:id="serverOutput" editable="false" prefHeight="45.0" prefWidth="473.0">
+            <TextArea fx:id="serverOutput" editable="false" opacity="0.8" prefHeight="45.0" prefWidth="473.0">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></TextArea>
-            <TextArea fx:id="chat" editable="false" prefHeight="75.0" prefWidth="551.0" GridPane.columnIndex="2">
+            <TextArea fx:id="chat" editable="false" opacity="0.8" prefHeight="75.0" prefWidth="551.0" GridPane.columnIndex="2">
                <GridPane.margin>
                   <Insets right="3.0" />
                </GridPane.margin></TextArea>

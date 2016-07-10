@@ -143,7 +143,7 @@ public class ActionCreator {
 		boolean proceed = false;
 		String regionName = null;
 		ClientOutputPrinter.printLine(
-				"Type the Region name of the Council where you wish to elect the councillor: choose from 'HILLS', 'COAST' or 'MOUNTAINS'");
+				"Type the Region name of the Council where you wish to elect the councillor: choose from 'HILLS', 'COAST', 'MOUNTAINS' or 'KING'");
 		while (!proceed) {
 			regionName = input.nextLine();
 			regionName = regionName.toUpperCase();
@@ -246,7 +246,7 @@ public class ActionCreator {
 
 	public void verifyRegionName(String region) throws InvalidInputException {
 		ArrayList<String> regionNames = RegionName.getRegionNames();
-		if (!regionNames.contains(region))
+		if (!regionNames.contains(region) && !region.equals("KING"))
 			throw new InvalidInputException();
 	}
 

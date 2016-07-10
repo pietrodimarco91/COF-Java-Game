@@ -166,6 +166,9 @@ public class BoardController extends ClientGUIController {
 
 	public void setStage(Stage stage) {
 		this.stage = stage;
+		stage.setOnCloseRequest(event->{
+			super.disconnect();
+		});
 	}
 
 	public void setBoard(UpdateState update) {

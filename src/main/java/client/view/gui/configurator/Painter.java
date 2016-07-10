@@ -507,9 +507,9 @@ public class Painter {
 		allPermitTile.add(coastSlot1);
 		allPermitTile.add(coastSlot2);
 		allPermitTile.add(hillsSlot1);
-		allPermitTile.add(hillsSlot1);
+		allPermitTile.add(hillsSlot2);
 		allPermitTile.add(mountainsSlot1);
-		allPermitTile.add(mountainsSlot1);
+		allPermitTile.add(mountainsSlot2);
 
 		css = LoaderResources.loadPath("/configurator/style.css");
 		int idCard;

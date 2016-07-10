@@ -82,7 +82,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	private TextField mainCouncillorColor;
-	
+
 	@FXML
 	private TextField quickCouncillorColor;
 
@@ -91,10 +91,16 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	private TextField citySimpleBuildEmporium;
-	
+
 	@FXML
 	private TextField cityKingBuildEmporium;
 	
+	@FXML
+	private Label electCouncillorPoliticCounter;
+	
+	@FXML
+	private Label kingPoliticCounter;
+
 	@FXML
 	private GridPane politicCardsScrollPane;
 
@@ -113,16 +119,17 @@ public class ActionController extends ClientGUIController {
 	private Player player;
 
 	private Stage dialogStage;
-	
+
 	private ArrayList<PoliticCard> politicCards;
-	
+
 	private String css;
 
 	@FXML
 	public void initialize() {
-		this.regionName="";
-		this.councillorColor="";
+		this.regionName = "";
+		this.councillorColor = "";
 		politicCardColors = new ArrayList<>();
+		this.slot=0;
 	}
 
 	@FXML
@@ -152,7 +159,7 @@ public class ActionController extends ClientGUIController {
 		else if (buyPermitTileMountains.isSelected())
 			this.regionName = "MOUNTAINS";
 	}
-	
+
 	@FXML
 	public void handleSelectRegionSwitchPermitTile() {
 		ToggleGroup group = new ToggleGroup();
@@ -166,7 +173,7 @@ public class ActionController extends ClientGUIController {
 		else if (switchPermitTileMountains.isSelected())
 			this.regionName = "MOUNTAINS";
 	}
-	
+
 	@FXML
 	public void handleSelectRegionSendAssistant() {
 		ToggleGroup group = new ToggleGroup();
@@ -197,7 +204,7 @@ public class ActionController extends ClientGUIController {
 		Button button = (Button) event.getSource();
 		this.mainCouncillorColor.setText(button.getText());
 		this.quickCouncillorColor.setText(button.getText());
-		this.councillorColor=mainCouncillorColor.getText();
+		this.councillorColor = mainCouncillorColor.getText();
 		dialogStage.close();
 	}
 
@@ -252,14 +259,14 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformBuyPermitTileAction() {
-		if(this.politicCardColors.size()==0 || this.regionName.equals("") || this.permitTile.getText().equals("")) {
-			String error="";
-			if(this.regionName.equals(""))
-				error+="Please specity a region!\n";
-			if(politicCardColors.size()==0)
-				error+="Please choose at least one Politic Card!\n";
-			if(this.permitTile.getText().equals(""))
-				error+="Match isn't started yet!\n";
+		if (this.politicCardColors.size() == 0 || this.regionName.equals("") || this.slot==0 ) {
+			String error = "";
+			if (this.regionName.equals(""))
+				error += "Please specity a region!\n";
+			if (politicCardColors.size() == 0)
+				error += "Please choose at least one Politic Card!\n";
+			if(this.slot==0)
+				error+="Please specify the Permit Tile Slot!";
 			showAlert(error);
 			return;
 		}
@@ -274,18 +281,18 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformBuildEmporiumKingAction() {
-		if(this.cityKingBuildEmporium.getText().equals("") || this.politicCardColors.size()==0) {
-			String error="";
-			if(this.cityKingBuildEmporium.getText()=="")
-				error+="Please specity a city!\n";
-			if(politicCardColors.size()==0)
-				error+="Please choose at least one Politic Card!\n";
+		if (this.cityKingBuildEmporium.getText().equals("") || this.politicCardColors.size() == 0) {
+			String error = "";
+			if (this.cityKingBuildEmporium.getText().equals(""))
+				error += "Please specity a city!\n";
+			if (politicCardColors.size() == 0)
+				error += "Please choose at least one Politic Card!\n";
 			showAlert(error);
 			return;
 		}
 		try {
 			this.connector.sendToServer(new Packet(
-					new KingBuildEmporiumAction("main", this.cityKingBuildEmporium.getText(), this.politicCardColors)));
+					new KingBuildEmporiumAction("main", String.valueOf(this.cityKingBuildEmporium.getText().charAt(0)), this.politicCardColors)));
 			stage.close();
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -294,32 +301,34 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handlePerformSimpleBuildEmporiumAction() {
-		if(this.permitTile.getText().equals("") || this.citySimpleBuildEmporium.getText().equals("")) {
-			String error="";
-			if(this.permitTile.getText()=="")
-				error+="Please choose a Permit Tile!\n";
-			if(this.citySimpleBuildEmporium.getText()=="")
-				error+="Please choose the city where you want to build your Emporium!\n";
+		if (this.permitTile.getText().equals("") || this.citySimpleBuildEmporium.getText().equals("")) {
+			String error = "";
+			if (this.permitTile.getText().equals(""))
+				error += "Please choose a Permit Tile!\n";
+			if (this.citySimpleBuildEmporium.getText().equals(""))
+				error += "Please choose the city where you want to build your Emporium!\n";
 			showAlert(error);
 			return;
 		}
 		try {
-			this.connector.sendToServer(
-					new Packet(new SimpleBuildEmporiumAction("main", Integer.parseInt(this.permitTile.getText()), this.citySimpleBuildEmporium.getText())));
+			this.connector.sendToServer(new Packet(new SimpleBuildEmporiumAction("main",
+					Integer.parseInt(this.permitTile.getText()), String.valueOf(this.citySimpleBuildEmporium.getText().charAt(0)))));
 			stage.close();
 		} catch (RemoteException e) {
 			e.printStackTrace();
+		} catch(NumberFormatException e) {
+			showAlert("Expected Integer!");
 		}
 	}
-	
+
 	@FXML
 	public void handlePerformElectCouncillorAction() {
-		if(this.regionName.equals("") || this.councillorColor.equals("")) {
-			String error="";
-			if(this.regionName=="")
-				error+="Please choose a Region!\n";
-			if(this.councillorColor=="")
-				error+="Please choose the color of the councillor to elect!\n";
+		if (this.regionName.equals("") || this.councillorColor.equals("")) {
+			String error = "";
+			if (this.regionName.equals(""))
+				error += "Please choose a Region!\n";
+			if (this.councillorColor.equals(""))
+				error += "Please choose the color of the councillor to elect!\n";
 			showAlert(error);
 			return;
 		}
@@ -344,8 +353,8 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleSwitchPermitTilesAction() {
-		if(this.regionName.equals("")) {
-			String error="Please choose a Region!\n";
+		if (this.regionName.equals("")) {
+			String error = "Please choose a Region!\n";
 			showAlert(error);
 			return;
 		}
@@ -359,12 +368,12 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleSendAssistantAction() {
-		if(this.regionName.equals("") || this.councillorColor.equals("")) {
-			String error="";
-			if(this.regionName=="")
-				error+="Please choose a Region!\n";
-			if(this.councillorColor=="")
-				error+="Please choose the color of the councillor to elect!\n";
+		if (this.regionName.equals("") || this.councillorColor.equals("")) {
+			String error = "";
+			if (this.regionName.equals(""))
+				error += "Please choose a Region!\n";
+			if (this.councillorColor.equals(""))
+				error += "Please choose the color of the councillor to elect!\n";
 			showAlert(error);
 			return;
 		}
@@ -376,18 +385,17 @@ public class ActionController extends ClientGUIController {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	public void handleAdditionalMainAction() {
 		try {
-			this.connector
-					.sendToServer(new Packet(new AdditionalMainAction("quick")));
+			this.connector.sendToServer(new Packet(new AdditionalMainAction("quick")));
 			stage.close();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void showAlert(String errorMessage) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.initOwner(stage);
@@ -396,7 +404,7 @@ public class ActionController extends ClientGUIController {
 		alert.setContentText(errorMessage);
 		alert.showAndWait();
 	}
-	
+
 	public void setScrollPane() {
 		this.politicCards = this.player.getPoliticCards();
 		System.out.println(this.player.getPoliticCards().size());
@@ -409,8 +417,8 @@ public class ActionController extends ClientGUIController {
 				if (countCards < this.player.getPoliticCards().size()) {
 					Pane pane = new Pane();
 					pane.getStylesheets().add(css);
-					
-					String color=this.player.getPoliticCards().get(countCards).getColorCard();
+
+					String color = this.player.getPoliticCards().get(countCards).getColorCard();
 					switch (color) {
 					case "PINK":
 						pane.getStyleClass().add("pinkCard");
@@ -448,8 +456,8 @@ public class ActionController extends ClientGUIController {
 						politicCardsScrollPane.add(pane, j, i);
 						break;
 					}
-					pane.setOnMouseClicked(event->{
-						cardClicked(pane,color);
+					pane.setOnMouseClicked(event -> {
+						cardClicked(pane, color);
 					});
 					countCards++;
 				} else
@@ -460,18 +468,32 @@ public class ActionController extends ClientGUIController {
 	}
 
 	public void cardClicked(Pane pane, String color) {
+		if(this.politicCardColors.size()==4) {
+			showAlert("You've already chosen 4 Politic Cards!");
+			return;
+		}
 		this.politicCardColors.add(color);
+		Platform.runLater(()->{
+			this.electCouncillorPoliticCounter.setText("You selected "+this.politicCardColors.size()+" Politic Cards");
+			this.kingPoliticCounter.setText("You selected "+this.politicCardColors.size()+" Politic Cards");
+		});
 	}
 
 	public void setStage(Stage stage) {
 		this.stage = stage;
+		this.stage.setOnCloseRequest(event -> {
+			this.councillorColor = "";
+			this.regionName = "";
+			this.politicCardColors.clear();
+			this.slot=0;
+		});
 	}
 
 	public void setConnector(ServerSideConnectorInt connector) {
 		this.connector = connector;
 	}
-	
+
 	public void setPlayer(Player player) {
-		this.player=player;
+		this.player = player;
 	}
 }

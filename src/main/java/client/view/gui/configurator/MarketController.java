@@ -158,8 +158,8 @@ public class MarketController {
                     Label id = new Label("ID: "+idCard);
                     id.getStylesheets().add(css);
                     id.getStyleClass().add("id");
-                    marketPermit.add(pane, j, i);
-                    marketPermit.add(id, j, i);
+                    yourPermit.add(pane, j, i);
+                    yourPermit.add(id, j, i);
                     String city="\n\n\nCity:";
                     for(int k=0;k<cardCity.size();k++){
                         city+=cardCity.get(k).getName().charAt(0)+",";
@@ -167,7 +167,7 @@ public class MarketController {
                     Label cityName = new Label(city);
                     cityName.getStylesheets().add(css);
                     cityName.getStyleClass().add("cityPermitTile");
-                    marketPermit.add(cityName, j, i);
+                    yourPermit.add(cityName, j, i);
 
                     String bonus="\n\n\n\nBonus:\n";
                     for(int k=0;k<cardBonus.size();k++){
@@ -176,7 +176,7 @@ public class MarketController {
                     Label cityBonus =new Label(bonus);
                     cityBonus.getStylesheets().add(css);
                     cityBonus.getStyleClass().add("bonus");
-                    marketPermit.add(cityBonus, j, i);
+                    yourPermit.add(cityBonus, j, i);
                     String finalBonus = bonus;
                     pane.setOnMouseClicked(event -> {
                         permitTileClicked(pane, finalBonus);

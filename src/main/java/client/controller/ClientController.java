@@ -19,7 +19,7 @@ import exceptions.InvalidInputException;
 public abstract class ClientController {
 
 	private static final String ADDRESS = "localhost";
-	private static final int PORT = 9000;
+	private static final int PORT = 2000;
 	private ClientSideConnector clientSideConnector;
 	private RMIConnectionInt rmiConnectionInt;
 	private ServerSideConnectorInt packetSenderInt;

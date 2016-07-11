@@ -114,7 +114,7 @@ public class BoardController extends ClientGUIController {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
 			serverOutput.appendText(packet.getMessageString() + "\n");
-
+			handleMessageFromServer(packet.getMessageString());
 			break;
 		case "UPDATE":
 			handleUpdate(packet.getUpdate());
@@ -153,8 +153,8 @@ public class BoardController extends ClientGUIController {
 			repaintPlayerStatus(update.getPlayer());
 			break;
 		case "MESSAGE":
-			handleMessageFromServer(update.getMessage());
 			serverOutput.appendText(update.getMessage() + "\n");
+			handleMessageFromServer(update.getMessage());
 			break;
 		case "MARKET":
 			setItemsOnSale(update);
@@ -163,31 +163,35 @@ public class BoardController extends ClientGUIController {
 	}
 
 	private void handleMessageFromServer(String message) {
-		if (message.contains("Error")||message.contains("disconnected")) {
+		if (message.indexOf("Error") > -1 || message.indexOf("disconnected") > -1) {
 			showErrorMessage(message);
 		}
-		if (message.contains("it's your turn. Perform your actions!") || message.contains("won")
-				|| message.contains("points") || message.contains("bonus")) {
+		if (message.indexOf("it's your turn. Perform your actions!") > -1 || message.indexOf("won") > -1
+				|| message.indexOf("points") > -1 || message.indexOf("bonus") > -1) {
 			showDialogMessage(message);
 		}
 	}
 
 	private void showDialogMessage(String message) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("Turn Informtation");
-		alert.setHeaderText("It's your turn");
-		alert.setContentText(message);
-		alert.showAndWait();
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.initOwner(stage);
+			alert.setTitle("Game Information");
+			alert.setHeaderText("Important information from Game Server!");
+			alert.setContentText(message);
+			alert.showAndWait();
+		});
 	}
 
 	private void showErrorMessage(String message) {
-		Alert alert = new Alert(AlertType.WARNING);
-		alert.setTitle("ERROR");
-		alert.setHeaderText("Negative response from SERVER");
-		alert.setContentText(message);
-
-		alert.showAndWait();
-
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.initOwner(stage);
+			alert.setTitle("ERROR");
+			alert.setHeaderText("Negative response from SERVER");
+			alert.setContentText(message);
+			alert.showAndWait();
+		});
 	}
 
 	private void repaintPlayerStatus(Player player) {

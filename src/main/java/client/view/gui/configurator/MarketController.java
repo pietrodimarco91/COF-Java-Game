@@ -2,7 +2,6 @@ package client.view.gui.configurator;
 import client.controller.ClientGUIController;
 import client.view.gui.LoaderResources;
 import controller.*;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -17,8 +16,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Created by pietro on 10/07/16.
+ * It Controls the market filling the grids of the FXML associated file
+ * and listening the events generated on the window
+ *
+ *
  */
 public class MarketController extends ClientGUIController{
 
@@ -56,6 +59,7 @@ public class MarketController extends ClientGUIController{
     private int idTemp;
     private int itemId;
 
+
     public void setStage(Stage stage) {
         sellingPrice.setOnMouseClicked(event -> {
             clean();
@@ -69,10 +73,20 @@ public class MarketController extends ClientGUIController{
         sellingPrice.setText("");
     }
 
+    /**
+     * The connector is used for the communication with the server
+     * @param connector
+     *
+     */
     public void setConnector(ServerSideConnectorInt connector) {
         this.connector = connector;
     }
 
+    /**
+     * It fills the panes with the items of the player
+     * @param player
+     *
+     */
     public void setPlayer(Player player) {
         this.player = player;
         setAssistant(player.getNumberOfAssistants());
@@ -80,6 +94,11 @@ public class MarketController extends ClientGUIController{
         setPermitTile(player.getUnusedPermitTile());
     }
 
+    /**
+     * It fills the panes with the players items that can be bought by the specific player
+     * @param market
+     *
+     */
     public void setMarket(List<ItemOnSale> market) {
         this.market = market;
         List<AssistantOnSale> assistantOnSales=new ArrayList<>();
@@ -107,8 +126,11 @@ public class MarketController extends ClientGUIController{
 
 
 
-    /*****FILLING GRIDS*****/
-
+    /**
+     * It fills the pane with the assistants of the player
+     * @param assistant
+     *
+     */
     public void setAssistant(int assistant) {
         int count=assistant;
 
@@ -127,7 +149,11 @@ public class MarketController extends ClientGUIController{
         }
     }
 
-
+    /**
+     * It fills the pane with the assistants of the players
+     * @param assistant
+     *
+     */
     public void setMarketAssistant(List<AssistantOnSale> assistant) {
         int count=0;
 
@@ -155,7 +181,11 @@ public class MarketController extends ClientGUIController{
 
     }
 
-
+    /**
+     * It fills the pane with the politic cards of the player
+     * @param politicCards
+     *
+     */
     public void setPoliticCard(ArrayList<PoliticCard> politicCards) {
         int countCards = 0;
         boolean stop = false;
@@ -179,6 +209,11 @@ public class MarketController extends ClientGUIController{
         }
     }
 
+    /**
+     * It fills the pane with the politic cards of the players
+     * @param politicCardOnSales
+     *
+     */
     private void setMarketPoliticCard(List<PoliticCardOnSale> politicCardOnSales) {
         int countCards = 0;
         boolean stop = false;
@@ -211,9 +246,6 @@ public class MarketController extends ClientGUIController{
         }
     }
 
-
-
-
     private void setStyle(String color, Pane pane) {
         switch (color) {
             case "PINK":
@@ -241,7 +273,11 @@ public class MarketController extends ClientGUIController{
     }
 
 
-
+    /**
+     * It fills the pane with the permit tiles of the player
+     * @param permitTile
+     *
+     */
     public void setPermitTile(ArrayList<Tile> permitTile) {
         int countCards = 0;
         int idCard;
@@ -295,8 +331,11 @@ public class MarketController extends ClientGUIController{
         }
     }
 
-
-
+    /**
+     * It fills the pane with the permit tiles of the players
+     * @param marketPermitTile
+     *
+     */
     public void setMarketPermitTile(List<PermitTileOnSale> marketPermitTile) {
         int countCards = 0;
         int idCard;
@@ -364,7 +403,6 @@ public class MarketController extends ClientGUIController{
     }
 
 
-    /******EVENTS HANDLER******/
 
     private void yourAssistantClicked() {
         itemOnSaleTemp="ASSISTANT";
@@ -381,6 +419,11 @@ public class MarketController extends ClientGUIController{
     }
 
 
+    /**
+     * It handle the buy button click creating a packet that contains the itemId of the item wanted,
+     * this packet is sent to the server that will check the transition
+     * @throws RemoteException
+     */
     @Override
 	public void buyItemOnMarket() {
     	super.playSound("audio/buttonPressed.mp3");
@@ -400,6 +443,13 @@ public class MarketController extends ClientGUIController{
         }
     }
 
+    /**
+     * It handle the sell button click creating a packet that contains the information of the item sold,
+     * this packet is sent to the server that will check the transition
+     *
+     * @throws RemoteException
+     * @throws NumberFormatException if the TextField is not set up correctly
+     */
     @Override
     public void sellItemOnMarket() {
     	super.playSound("audio/buttonPressed.mp3");

@@ -301,7 +301,7 @@ public class Player implements Serializable {
 		for (int i = 0; i < this.unusedPermitTiles.size(); i++) {
 			tempTile = (PermitTile) this.unusedPermitTiles.get(i);
 			if (tempTile.getId() == permitTileId) {
-				return this.unusedPermitTiles.get(i);
+				return tempTile;
 			}
 		}
 		throw new TileNotFoundException();

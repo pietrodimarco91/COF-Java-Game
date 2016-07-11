@@ -111,13 +111,13 @@
 }
 
 .line{
-    -fx-stroke: red;
+    -fx-stroke: brown;
 
 }
 
 .line:hover{
     -fx-stroke-width: 14;
-    -fx-stroke: orange;
+    -fx-stroke: greenyellow;
 }
 
 .city{
@@ -233,7 +233,6 @@
 .id{
 	-fx-font-size: 14px;
     -fx-font-weight:bold;
-    -fx-padding: 20px;
     -fx-font-family: "PT Mono";
 }
 .cityPermitTile{
@@ -260,7 +259,6 @@
 .idSlot{
 	-fx-font-size: 10px;
     -fx-font-weight:bold;
-    -fx-padding: 20px;
     -fx-font-family: "PT Mono";
 }
 .cityPermitTileSlot{
@@ -287,6 +285,14 @@
     -fx-padding: 10 20 10 20;
 }
 
+.marketLabel {
+
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+
 .mainLabel {
     -fx-text-fill: #654b00;
     -fx-font-weight: bold;
@@ -298,6 +304,12 @@
     -fx-text-fill: #654b00;
     -fx-font-size: 14px;
     -fx-padding: 10 20 10 20;
+}
+
+.nicknameLabel {
+	-fx-text-fill: #654b00;
+    -fx-font-size: 12px;
+    -fx-padding: 5;
 }
 
 .colorscheme-indicator {
@@ -312,8 +324,50 @@
     -fxx-segment8-color: #aacc2a;
     -fxx-segment9-color: #97b329;
 }
+.colorscheme-indicator-emporium {
+    -fxx-segment9-color: #f61319;
+    -fxx-segment8-color: #f3351f;
+    -fxx-segment7-color: #f65821;
+    -fxx-segment6-color: #f18c23;
+    -fxx-segment5-color: #f3a429;
+    -fxx-segment4-color: #fccb2e;
+    -fxx-segment3-color: #f2de31;
+    -fxx-segment2-color: #d4ea35;
+    -fxx-segment1-color: #aacc2a;
+    -fxx-segment0-color: #97b329;
+}
 
 .mainBackground {
     -fx-background-image: url("../images/mainBackground.jpg");
+}
+
+.actionBackground{
+     -fx-background-image: url("boardImages/actionBackground.jpg");
+    -fx-background-size:100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+  
+}
+.actionBackgroundBig{
+     -fx-background-image: url("boardImages/actionBackground.jpg");
+    -fx-background-size:400%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+  
+}
+
+.assistant{
+     -fx-background-image: url("boardImages/assistant.png");
+    -fx-background-size:500%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+  
+}
+.marketBackground{
+    -fx-background-image: url("boardImages/marketBackground.jpg");
+    -fx-background-size:100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+  
 }
 

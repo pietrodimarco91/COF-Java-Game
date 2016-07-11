@@ -3,7 +3,7 @@ package model;
 import java.util.Random;
 
 /**
- * 
+ * Enumeration of the city color
  */
 public enum CityColors {
 	GOLD, SILVER, BRONZE, STEEL;

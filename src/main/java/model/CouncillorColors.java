@@ -32,7 +32,10 @@ public enum CouncillorColors {
 		}
 		return colorValues;
 	}
-	
+	/**
+	 * 
+	 * @return ArrayList of politic cards color
+	 */
 	public static ArrayList<String> getPoliticCardsColors() {
 		ArrayList<String> colorValues = new ArrayList<>();
 		CouncillorColors[] values = CouncillorColors.values();

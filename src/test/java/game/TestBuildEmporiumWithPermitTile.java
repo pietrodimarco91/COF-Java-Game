@@ -67,7 +67,7 @@ public class TestBuildEmporiumWithPermitTile {
 		// Now checking the 'buildEmporiumWithPermitTile'
 		List<City> cities = ((PermitTile) tile).getCities();
 		City city = cities.get(0);
-		String cityName = city.getName();
+		String cityName = String.valueOf(city.getName().charAt(0));
 		player.resetTurn();
 		actionsHandler.buildEmporiumWithPermitTile(new SimpleBuildEmporiumAction("main", tileId, cityName), 0);
 		assertEquals(9, player.getNumberOfEmporium());

@@ -12,6 +12,9 @@ public class NobilityTrack implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Variable used for max dimension of nobility track
+	 */
 	private static final int LENGTH = 20;
 	/**
 	 * The track is an array of NobilityCell.

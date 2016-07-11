@@ -15,9 +15,13 @@ import exceptions.NoMoreBonusException;
 public class ColorBonusDeck implements Serializable {
 
 	/**
-	 * 
+	 * variable used for serialization 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * List of tiles 
+	 */
 	private List<Tile> tiles;
 
 	public ColorBonusDeck() {

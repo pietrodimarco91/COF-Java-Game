@@ -4,7 +4,10 @@ import controller.Player;
 
 public class PoliticCardOnSale extends ItemOnSale {
 	private PoliticCard politicCard;
-
+/**
+ * 
+ * Default constructor
+ */
 	public PoliticCardOnSale (PoliticCard politicCard,Player seller,int price) {
 		super(seller,price);
 		this.politicCard = politicCard;
@@ -23,4 +26,8 @@ public class PoliticCardOnSale extends ItemOnSale {
 		return string;
 	}
 
+
+	public String getColor() {
+		return politicCard.getColorCard();
+	}
 }

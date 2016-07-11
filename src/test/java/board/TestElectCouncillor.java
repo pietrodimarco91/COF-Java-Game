@@ -16,7 +16,7 @@ public class TestElectCouncillor {
 	public void test() {
 		Board board = new Board(4, 3, 3, 3, 3);
 		String color = CouncillorColors.getRandomColor();
-		boolean check = CouncillorsPool.checkPresenceOfCouncillor(color);
+		boolean check = board.getPool().checkPresenceOfCouncillor(color);
 		Region region = board.getRegions()[0];
 		String string = "";
 		if (check) {

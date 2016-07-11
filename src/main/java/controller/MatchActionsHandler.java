@@ -23,6 +23,7 @@ import exceptions.UnsufficientCouncillorsSatisfiedException;
 import model.Board;
 import model.City;
 import model.Council;
+import model.KingCouncil;
 import model.PermitTile;
 import model.PermitTileDeck;
 import model.PoliticCard;
@@ -32,23 +33,36 @@ import model.Tile;
 /**
  * This class has all the method used to perform the actions of the game.
  * 
- * @author Riccardo
+ * @author Riccardo Cannistrà
  *
  */
 public class MatchActionsHandler {
-
+	/**
+	 * Currentrly board
+	 */
 	private Board board;
-
+/**
+ * Currently match
+ */
 	private MatchHandler match;
-
+/**
+ * Currently player
+ */
 	private List<Player> players;
-
+/**
+ * 
+ * Default constructor
+ */
 	public MatchActionsHandler(MatchHandler match, Board board, List<Player> players) {
 		this.board = board;
 		this.match = match;
 		this.players = players;
 	}
-
+/**
+ * Method used to buy a permit tile
+ * @param buyPermitTileAction 
+ * @param playerId player to associate the action
+ */
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
 			match.sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
@@ -67,7 +81,7 @@ public class MatchActionsHandler {
 		chosenPoliticCards = buyPermitTileAction.getPoliticCardColors();
 		slot = buyPermitTileAction.getSlot();
 		region = getRegion(regionName);
-		council=region.getCouncil();
+		council = region.getCouncil();
 
 		cardToRemove = council.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		Player player = this.players.get(playerId);
@@ -100,7 +114,7 @@ public class MatchActionsHandler {
 			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
 			match.sendErrorToClient(e.showError(), playerId);
-		} catch(NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			player.addCoins(playerPayment);
 			for (int i = 0; i < chosenPoliticCards.size(); i++)
 				player.addCardOnHand(new PoliticCard(chosenPoliticCards.get(i)));
@@ -109,9 +123,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS IMPLEMENTATION
-	 * 
-	 * @return
+	 * Method used to build an Emporium with Kings Help 
+	 * @param kingBuildEmporiumAction action 
+	 * @param playerId player to associate the action
 	 * @throws UnsufficientCoinsException
 	 */
 	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId) {
@@ -128,10 +142,10 @@ public class MatchActionsHandler {
 		Player player = this.players.get(playerId);
 		cityName = kingBuildEmporiumAction.getCityName();
 		chosenPoliticCards = kingBuildEmporiumAction.getPoliticCardColors();
-		council=this.board.getKingCouncil();
+		council = this.board.getKingCouncil();
 		cardToRemove = council.numberOfCouncillorsSatisfied(chosenPoliticCards);
 		try {
-			if (cardToRemove.size()== 0)
+			if (cardToRemove.size() == 0)
 				throw new UnsufficientCouncillorsSatisfiedException();
 
 			City cityTo = board.getCityFromName(cityName);
@@ -152,7 +166,8 @@ public class MatchActionsHandler {
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!", board);
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!",
+						board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
 				PubSub.notifyAllClients(this.players,
@@ -175,7 +190,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * @return
+	 * Method used to perform an additional Main Action
+	 * @param action 
+	 * @param playerId player to associate the action
 	 */
 	public void performAdditionalMainAction(AdditionalMainAction action, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -187,6 +204,7 @@ public class MatchActionsHandler {
 			if (player.getNumberOfAssistants() < 3)
 				throw new UnsufficientCoinsException();
 			player.removeMoreAssistants(3);
+			match.updateClient(playerId);
 			player.mainActionDone(false);
 			player.quickActionDone();
 		} catch (UnsufficientCoinsException e) {
@@ -195,10 +213,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop untile the move is correctly performed.
-	 * 
-	 * @return
+	 * Method used to perform an addiction 
+	 * @param electCouncillorAction
+	 * @param playerId player to associate the action
 	 */
 	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
@@ -210,12 +227,17 @@ public class MatchActionsHandler {
 		regionName = electCouncillorAction.getRegion();
 		councillorColor = electCouncillorAction.getColor();
 		Player player = this.players.get(playerId);
-		Region region = this.getRegion(regionName);
 		try {
-			region.electCouncillor(councillorColor);
+			if (regionName.equals("KING")) {
+				KingCouncil council = (KingCouncil) this.board.getKingCouncil();
+				council.electCouncillor(councillorColor);
+			} else {
+				Region region = this.getRegion(regionName);
+				region.electCouncillor(councillorColor);
+			}
 			player.addCoins(4);
 			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' elected a " + councillorColor
-					+ " Councillor in " + regionName, board);
+					+ " Councillor in " + regionName + "Council", board);
 			match.updateClient(playerId);
 			player.mainActionDone(true);
 			if (player.hasPerformedQuickAction()) {
@@ -228,10 +250,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop until the move is correctly performed.
-	 * 
-	 * @return
+	 * Method used to engage an Assistant
+	 * @param engageAssistantAction
+	 * @param playerId player to associate the action
 	 */
 	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -258,10 +279,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS REVISION: the parameters communication must be implemented inside
-	 * the method.
-	 * 
-	 * @return
+	 * Method used to switch a Permit tile on board
+	 * @param switchPermitTilesAction
+	 * @param playerId player to associate the action
 	 */
 	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -292,13 +312,13 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
-	 * 
-	 * @return
+	 *  Method used to build an emporium using only Permit Tile
+	 * @param simpleBuildEmporium
+	 * @param playerId player to associate the action
 	 */
 	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
-			match.sendErrorToClient("You've already performed a Quick Action for this turn!", playerId);
+			match.sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
 			return;
 		}
 		int permitTileId;
@@ -314,13 +334,14 @@ public class MatchActionsHandler {
 				throw new CityNotFoundFromPermitTileException();
 			PubSub.notifyAllClients(players,
 					"Player " + player.getNickName() + " has built an Emporium in " + cityName + "!", board);
-			match.updateClient(playerId);
 			player.fromUnusedToUsedPermitTile(tempPermitTile);
+			match.updateClient(playerId);
 			match.winBuildingBonuses(board.getCityFromName(cityName), player);
 			player.mainActionDone(true);
 			if (hasBuiltLastEmporium(player)) {
 				PubSub.notifyAllClients(this.players,
-						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!", board);
+						"Player " + player.getNickName() + " has built his last Emporium!!\n This is your last turn!",
+						board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
 			}
@@ -338,8 +359,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Method used to send an assistant to elect a councillor 
+	 * @param sendAssistantAction
+	 * @param playerId player to associate the action
 	 */
 	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -370,12 +392,6 @@ public class MatchActionsHandler {
 		}
 	}
 
-	/**
-	 * NEEDS REVISION: the specified name may be incorrect or invalid.
-	 * Exception?
-	 * 
-	 * @return
-	 */
 	public Region getRegion(String regionName) {
 		boolean regionFound = false;
 		Region region = null;
@@ -391,6 +407,11 @@ public class MatchActionsHandler {
 		return region;
 	}
 
+ /**
+  * 
+  * @param player
+  * @return boolean value that indicate if the player has build last emporium
+  */
 	public boolean hasBuiltLastEmporium(Player player) {
 		return player.getNumberOfEmporium() == 0;
 	}
@@ -401,9 +422,10 @@ public class MatchActionsHandler {
 		List<City> cities = permitTile.getCities();
 		cityChoice = cityChoice.trim();
 		cityChoice = cityChoice.toUpperCase();
-		for (City tempCities : cities) {
-			if (tempCities.getName().equals(cityChoice)) {
-				if (tempCities.buildEmporium(player))
+		for (City tempCity : cities) {
+			String cityName = String.valueOf(tempCity.getName().charAt(0));
+			if (cityName.equals(cityChoice)) {
+				if (tempCity.buildEmporium(player))
 					found = true;
 				else
 					throw new AlreadyOwnedEmporiumException();

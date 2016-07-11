@@ -13,6 +13,13 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.rmi.RemoteException;
 
+/**
+ * This class represents the client side connector when the client is connected
+ * through Socket connection. This thread keeps running waiting for something
+ * sent by the server, and it allows to send packets to the server as well. As
+ * it implements two different kinds of interfaces, some methods will not be
+ * implemented, as they aren't needed.
+ */
 public class SocketInputOutputThread extends Thread implements ClientSideConnectorInt, ServerSideConnectorInt {
 
 	private ObjectInputStream inputObjectFromServer;
@@ -59,10 +66,7 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 		}
 	}
 
-	@Override
-	public void setPlayerId(int id) {
-
-	}
+	
 
 	public void sendToClient(Packet packet) throws RemoteException {
 		switch (packet.getHeader()) {
@@ -84,20 +88,8 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 			break;
 		default:
 		}
-
 	}
-
-	public void setGUIController(ClientGUIController controller) {
-		this.guiController = controller;
-	}
-
-	// *****SERVER SIDE METHOD******//
-
-	@Override
-	public void setMatchHandler(MatchHandler matchHandler) {
-
-	}
-
+	
 	public void disconnect() {
 		stop = true;
 		try {
@@ -106,5 +98,21 @@ public class SocketInputOutputThread extends Thread implements ClientSideConnect
 		} catch (IOException e) {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
+	}
+
+	public void setGUIController(ClientGUIController controller) {
+		this.guiController = controller;
+	}
+
+	// *****SERVER SIDE METHOD ******//
+
+	@Override
+	public void setMatchHandler(MatchHandler matchHandler) {
+
+	}
+	
+	@Override
+	public void setPlayerId(int id) {
+
 	}
 }

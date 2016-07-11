@@ -32,7 +32,7 @@ public class Board implements Serializable {
 	 * 
 	 */
 	private int linksBetweenCities;
-	
+
 	/**
 	 * The number of cities is an important parameter, depending on the number
 	 * of players.
@@ -60,16 +60,18 @@ public class Board implements Serializable {
 	 * current match.
 	 */
 	private NobilityTrack nobilityTrack;
-	
+
 	/**
 	 * This attribute represents the deck of the King Reward Tiles
 	 */
 	private KingRewardDeck kingRewardDeck;
-	
+
 	/**
 	 * This attribute represents the deck of the color bonus tiles.
 	 */
 	private ColorBonusDeck colorBonusDeck;
+
+	private CouncillorsPool councillorsPool;
 
 	/**
 	 * This attribute is used only to graphically represent the map with the
@@ -103,14 +105,14 @@ public class Board implements Serializable {
 	 */
 	public Board(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) {
-		this.linksBetweenCities=linksBetweenCities;
+		this.linksBetweenCities = linksBetweenCities;
 		cities = new ArrayList<>();
-		CouncillorsPool councillorsPool = new CouncillorsPool();
+		councillorsPool = new CouncillorsPool();
 		this.kingRewardDeck = new KingRewardDeck();
 		this.colorBonusDeck = new ColorBonusDeck();
 		constantsInitialization(numberOfPlayers);
 		regionsInitialization(numberOfPermitTiles);
-		kingCouncil = new KingCouncil();
+		kingCouncil = new KingCouncil(councillorsPool);
 		citiesInitialization(rewardTokenBonusNumber, permitTileBonusNumber);
 		MATRIX_ROWS = this.numberOfCities / 3;
 		generateDefaultConnections(linksBetweenCities);
@@ -192,7 +194,7 @@ public class Board implements Serializable {
 	 *            the player to check for
 	 * @return the arraylist of the owned cities (where he has an emporium)
 	 */
-	public List<City> getNearbyOwnedCities(Player player,City cityFrom) {
+	public List<City> getNearbyOwnedCities(Player player, City cityFrom) {
 		ArrayList<City> ownedCities = new ArrayList<>();
 		Queue<City> grayNodesQueue = new LinkedList<>();
 		City cityToExpand, connectedCity;
@@ -200,7 +202,6 @@ public class Board implements Serializable {
 		while (mapIterator.hasNext()) { // all cities initialized for BFS visit
 			mapIterator.next().BFSinitialization();
 		}
-		ownedCities.add(cityFrom);
 		cityFrom.BFSsourceVisit();
 		grayNodesQueue.add(cityFrom);
 		while (!(grayNodesQueue.isEmpty())) {
@@ -394,21 +395,28 @@ public class Board implements Serializable {
 		}
 		return true;
 	}
-	
+
 	/**
-	 * This method allows to win the Color Bonus of the specified color, when a player builds its emporiums in all the cities of the specified color
+	 * This method allows to win the Color Bonus of the specified color, when a
+	 * player builds its emporiums in all the cities of the specified color
+	 * 
 	 * @param color
 	 * @return the Color Bonus Tile, if still available
-	 * @throws NoMoreBonusException if the Color Bonus Tile of the specified color isn't available.
+	 * @throws NoMoreBonusException
+	 *             if the Color Bonus Tile of the specified color isn't
+	 *             available.
 	 */
 	public Tile winColorBonus(String color) throws NoMoreBonusException {
 		return this.colorBonusDeck.getColorBonus(color);
 	}
-	
+
 	/**
-	 * This method allows to win one of the King Rewards, if available, when a Player owns a Region Bonus or a Color Bonus.
+	 * This method allows to win one of the King Rewards, if available, when a
+	 * Player owns a Region Bonus or a Color Bonus.
+	 * 
 	 * @return one of the King Reward Tiles
-	 * @throws NoMoreBonusException if there are no more King Reward Tiles
+	 * @throws NoMoreBonusException
+	 *             if there are no more King Reward Tiles
 	 */
 	public Tile winKingReward() throws NoMoreBonusException {
 		return this.kingRewardDeck.getKingReward();
@@ -469,10 +477,10 @@ public class Board implements Serializable {
 		ArrayList<String> regionNames = RegionName.getRegionNames();
 		Iterator<String> nameIterator = regionNames.iterator();
 
-		for (int i = 0; i < RegionName.values().length; i++) {
-			regionCouncil = new RegionCouncil();
-			permitTileDeck = new PermitTileDeck(numberOfPermitTiles);
-			regions[i] = new Region(nameIterator.next(), regionCouncil, permitTileDeck);
+		for (int i = 0, initId = 0; i < RegionName.values().length; i++, initId += numberOfPermitTiles / 3) {
+			regionCouncil = new RegionCouncil(councillorsPool);
+			permitTileDeck = new PermitTileDeck(initId, initId + (numberOfPermitTiles / 3) - 1);
+			regions[i] = new Region(nameIterator.next(), regionCouncil, permitTileDeck, councillorsPool);
 			regions[i].getDeck().setRegion(regions[i]);
 		}
 	}
@@ -597,8 +605,7 @@ public class Board implements Serializable {
 	 * @param k
 	 *            the index of the current region
 	 */
-	public Map<String, City> mapCitiesWithLetters(List<String> cityNames, Map<String, City> hashMap,
-			int k) {
+	public Map<String, City> mapCitiesWithLetters(List<String> cityNames, Map<String, City> hashMap, int k) {
 		ArrayList<City> regionCities = regions[k].getCities();
 		Iterator<City> iterator = regionCities.iterator();
 		String name;
@@ -637,13 +644,13 @@ public class Board implements Serializable {
 	 * cities each city is connected to.
 	 */
 	public String printConnections() {
-		String string="";
+		String string = "";
 		for (City city : cities) {
-			string+="Cities connected to " + city.getName() + ":\n";
+			string += "Cities connected to " + city.getName() + ":\n";
 			for (City cityConnected : city.getConnectedCities()) {
-				string+=cityConnected.getName() + " ";
+				string += cityConnected.getName() + " ";
 			}
-			string+="\n";
+			string += "\n";
 		}
 		return string;
 	}
@@ -652,25 +659,25 @@ public class Board implements Serializable {
 	 * This methods prints the distances between all the cities of the map.
 	 */
 	public String printDistances() {
-		String string="";
+		String string = "";
 		for (City city1 : cities) {
 			for (City city2 : cities) {
 				int distance = countDistance(city1, city2);
 				if (distance != -1) {
-					string+="Distance between " + city1.getName() + " and " + city2.getName() + " is: " + distance+"\n";
+					string += "Distance between " + city1.getName() + " and " + city2.getName() + " is: " + distance
+							+ "\n";
 				} else
-					string+=city1.getName() + " and " + city2.getName() + " are not connected.\n";
+					string += city1.getName() + " and " + city2.getName() + " are not connected.\n";
 			}
 		}
 		return string;
 	}
-	
 
 	@Override
 	public String toString() {
 		String string = "";
 		string += "MAP STATUS:\n";
-		string+=printMatrix()+"\n\n";
+		string += printMatrix() + "\n\n";
 		string += "CITIES:\n";
 		Iterator<City> iterator = cities.iterator();
 		while (iterator.hasNext()) {
@@ -685,14 +692,14 @@ public class Board implements Serializable {
 		string += "\nKING'S COUNCIL:\n";
 		string += kingCouncil.toString() + "\n";
 		string += "\nCOUNCILLOR POOL: current content of the pool is:\n";
-		string += CouncillorsPool.poolStatus() + "\n";
+		string += councillorsPool.poolStatus() + "\n";
 		string += "\nNOBILITY TRACK:\n";
 		string += nobilityTrack.toString() + "\n";
-		string+=colorBonusDeck.toString()+"\n";
-		string+=kingRewardDeck.toString()+"\n";
+		string += colorBonusDeck.toString() + "\n";
+		string += kingRewardDeck.toString() + "\n";
 		return string;
 	}
-	
+
 	public int getNumberOfCities() {
 		return this.numberOfCities;
 	}
@@ -713,19 +720,23 @@ public class Board implements Serializable {
 	public Council getKingCouncil() {
 		return this.kingCouncil;
 	}
+	
+	public CouncillorsPool getPool() {
+		return this.councillorsPool;
+	}
 
 	public NobilityTrack getNobilityTrack() {
 		return this.nobilityTrack;
 	}
-	
+
 	public City getCityFromName(String cityName) {
-		boolean found=false;
-		City tempCity=null;
-		for(int i=0;i<this.cities.size() && !found;i++){
-			tempCity=this.cities.get(i);
-			if(String.valueOf(tempCity.getName().charAt(0)).equals(String.valueOf(cityName.charAt(0))))
-				found=true;
+		boolean found = false;
+		City tempCity = null;
+		for (int i = 0; i < this.cities.size() && !found; i++) {
+			tempCity = this.cities.get(i);
+			if (String.valueOf(tempCity.getName().charAt(0)).equals(String.valueOf(cityName.charAt(0))))
+				found = true;
 		}
-		return tempCity;	
+		return tempCity;
 	}
 }

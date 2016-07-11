@@ -2,9 +2,13 @@ package controller;
 
 import server.view.cli.ServerOutputPrinter;
 
+/**
+ * This timer set up the time
+ */
+
 public class TurnTimerThread implements Runnable {
 	
-	private static final int waitingTime=60000;
+	private static final int waitingTime=180000;
 	private MatchHandler match;
 	private Player player;
 	

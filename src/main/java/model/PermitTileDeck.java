@@ -23,12 +23,6 @@ public class PermitTileDeck implements Serializable {
 	 */
 	private Queue<Tile> deck;
 
-	/*
-	 * The number of tiles in the deck. This is parametric, according to the
-	 * number of cities.
-	 */
-	private int numberOfTiles;
-
 	/**
 	 * This attribute represents one of the uncovered Permit Tiles that a player
 	 * can choose from when he purchases a Permit Tile.
@@ -47,16 +41,40 @@ public class PermitTileDeck implements Serializable {
 	private Region region;
 
 	/**
-	 * Default constructor
+	 * The initial ID of the Permit Tiles of the deck
 	 */
-	public PermitTileDeck(int numberOfTiles) {
-		this.numberOfTiles = numberOfTiles;
-		deck = new LinkedList<Tile>();
-	}
+	private int initId;
 
+	/**
+	 * The end ID of the Permit Tile of the deck
+	 */
+	private int endId;
+
+	/**
+	 * The number of the tiles of the deck, this is parametric according to the
+	 * number of players
+	 */
+	private int numberOfTiles;
+
+	/**
+	 * Default constructor
+	 * 
+	 * @param endId
+	 * @param initId
+	 */
+	public PermitTileDeck(int initId, int endId) {
+		deck = new LinkedList<Tile>();
+		this.initId = initId;
+		this.endId = endId;
+		this.numberOfTiles = endId + 1;
+	}
+/**
+ * This method generate a new permit tiles
+ * @param bonusNumber
+ */
 	public void generatePermitTiles(int bonusNumber) {
 		TileFactory tileFactory = new ConcreteTileFactory();
-		for (int i = 0; i < numberOfTiles; i++) {
+		for (int i = initId; i <= endId; i++) {
 			deck.add(tileFactory.createPermitTile(i, region.getCities(), bonusNumber));
 		}
 

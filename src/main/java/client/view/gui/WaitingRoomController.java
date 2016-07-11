@@ -77,6 +77,8 @@ public class WaitingRoomController extends ClientGUIController {
 
 	private MediaPlayer mediaPlayer;
 
+	private String css;
+
 	@FXML
 	public void initialize() {
 		super.playSound("audio/surroundMusic.mp3");
@@ -89,7 +91,7 @@ public class WaitingRoomController extends ClientGUIController {
 			mute.getStyleClass().add("audioButtonMute");
 			muteCheck = true;
 			super.muteSound(muteCheck);
-		} else if (muteCheck) {
+		} else {
 			mute.getStyleClass().remove("audioButtonMute");
 			mute.getStyleClass().add("audioButtonNotMute");
 			muteCheck = false;
@@ -100,6 +102,10 @@ public class WaitingRoomController extends ClientGUIController {
 
 	public void setStage(Stage stage) {
 		waitingRoomStage = stage;
+		css = LoaderResources.loadPath("/configurator/style.css");
+		stage.setOnCloseRequest(event->{
+			super.disconnect();
+		});
 	}
 
 	public void setNickName(String nickName) {
@@ -210,7 +216,7 @@ public class WaitingRoomController extends ClientGUIController {
 	public void handleUpdateState(UpdateState update) {
 		switch (update.getHeader()) {
 		case "BOARD":
-			
+
 			URL resource = null;
 			FXMLLoader loader = new FXMLLoader();
 			Parent parentConnectionStage = null;
@@ -232,6 +238,7 @@ public class WaitingRoomController extends ClientGUIController {
 			boardController.setStage(confStage);
 			boardController.setBoard(update);
 			super.stopSound();
+			super.playSound("audio/soundtrackGaming.mp3");
 
 			Platform.runLater(() -> {
 				confStage.setScene(scene);
@@ -262,10 +269,13 @@ public class WaitingRoomController extends ClientGUIController {
 			playersInGame.getChildren().add(titleLabel);
 			for (Player player : players) {
 				playerNickname = new Label(player.getNickName());
+				playerNickname.getStylesheets().add(css);
+				playerNickname.getStyleClass().add("nicknameLabel");
 				playersInGame.getChildren().add(playerNickname);
 			}
 		});
 	}
+
 	public void setClientConnector(ClientSideConnectorInt connector) {
 		this.clientConnector = connector;
 	}

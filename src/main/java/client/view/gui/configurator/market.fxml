@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" styleClass="marketBackground" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.gui.configurator.MarketController">
+   <left>
+      <VBox prefHeight="393.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="286.0" text="YOUR ITEMS">
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font></Label>
+            <Accordion prefHeight="581.0" prefWidth="400.0">
+              <panes>
+                <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Assistant">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="497.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1103.0" prefWidth="396.0">
+                                       <children>
+                                          <GridPane fx:id="yourAssistant" layoutY="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="995.0" prefWidth="379.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" percentWidth="25.0" prefWidth="210.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="0.0" percentWidth="25.0" prefWidth="0.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                          </GridPane>
+                                       </children></AnchorPane>
+                                </content>
+                              </ScrollPane>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
+                </TitledPane>
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Politic Card">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="497.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1211.0" prefWidth="396.0">
+                                       <children>
+                                          <GridPane fx:id="yourPolitic" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="995.0" prefWidth="379.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" percentWidth="25.0" prefWidth="210.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="0.0" percentWidth="25.0" prefWidth="0.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
+                  </TitledPane>
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Permit Tile">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="497.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1211.0" prefWidth="396.0" />
+                                 </content>
+                              </ScrollPane>
+                              <GridPane fx:id="yourPermit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="995.0" prefWidth="379.0">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" percentWidth="25.0" prefWidth="210.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="0.0" percentWidth="25.0" prefWidth="0.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
+                              </GridPane>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
+                  </TitledPane>
+              </panes>
+            </Accordion>
+         </children>
+      </VBox>
+   </left>
+   <right>
+      <VBox prefHeight="390.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="276.0" text="ITEMS ON MARKET">
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font></Label>
+            <Accordion prefHeight="581.0" prefWidth="400.0">
+               <panes>
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Assistant">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="497.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1211.0" prefWidth="396.0">
+                                       <children>
+                                          <GridPane fx:id="marketAssistant" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="995.0" prefWidth="379.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" percentWidth="25.0" prefWidth="210.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="0.0" percentWidth="25.0" prefWidth="0.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
+                  </TitledPane>
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Politic Card">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="497.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1211.0" prefWidth="396.0">
+                                       <children>
+                                          <GridPane fx:id="marketPolitic" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="995.0" prefWidth="379.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" percentWidth="25.0" prefWidth="210.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="0.0" percentWidth="25.0" prefWidth="0.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
+                  </TitledPane>
+                  <TitledPane animated="false" opacity="0.9" prefHeight="342.0" prefWidth="400.0" text="Permit Tile">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="198.0" prefWidth="398.0">
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="497.0" prefWidth="401.0" vbarPolicy="ALWAYS">
+                                 <content>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1211.0" prefWidth="396.0">
+                                       <children>
+                                          <GridPane fx:id="marketPermit" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="995.0" prefWidth="379.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.0" minWidth="10.0" percentWidth="25.0" prefWidth="210.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="197.0" minWidth="0.0" percentWidth="25.0" prefWidth="0.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="159.0" minWidth="10.0" percentWidth="25.0" prefWidth="151.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <font>
+                        <Font name="PT Mono Bold" size="13.0" />
+                     </font>
+                  </TitledPane>
+               </panes>
+            </Accordion>
+         </children>
+      </VBox>
+   </right>
+   <center>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER_RIGHT">
+         <children>
+            <Button mnemonicParsing="false" onAction="#sellItemOnMarket" prefHeight="27.0" prefWidth="140.0" text="Sell &gt;&gt;">
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
+            </Button>
+            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#buyItemOnMarket" prefHeight="27.0" prefWidth="138.0" text="&lt;&lt; Buy" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
+            </Button>
+            <TextField fx:id="sellingPrice" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="184.0" text="Selling Price (int)">
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="PT Mono Bold" size="13.0" />
+               </font>
+            </TextField>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

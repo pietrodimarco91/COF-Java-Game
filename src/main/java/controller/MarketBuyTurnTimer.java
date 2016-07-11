@@ -1,13 +1,29 @@
 package controller;
 
 import server.view.cli.ServerOutputPrinter;
-
+/**
+ * 
+ *Thread class used to handle the market buy turn timer
+ *
+ */
 public class MarketBuyTurnTimer implements Runnable {
-
-	private static final int WAITING_TIME=30000;
+	/**
+	 * Static final variable used to set the time 
+	 */
+	private static final int WAITING_TIME=90000;
+	/**
+	 * Player to attribute the timer
+	 */
 	private Player player;
-	private MatchHandler match;
 	
+	/**
+	 * reference to MatchHandler
+	 */
+	private MatchHandler match;
+	/**
+	 * 
+	 * Default constructor
+	 */
 	public MarketBuyTurnTimer(Player player,MatchHandler match) {
 		this.player=player;
 		this.match=match;

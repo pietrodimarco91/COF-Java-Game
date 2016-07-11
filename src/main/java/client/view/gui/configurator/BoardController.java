@@ -6,13 +6,13 @@ import controller.Player;
 import controller.ServerSideConnectorInt;
 import controller.UpdateState;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -24,7 +24,6 @@ import model.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -71,6 +70,9 @@ public class BoardController extends ClientGUIController {
 	private Button playerCards;
 
 	@FXML
+	private GridPane topIndicatorPane;
+
+	@FXML
 	private GridPane councillors;
 
 	@FXML
@@ -81,9 +83,9 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private GridPane kingCouncil;
-	
+
 	@FXML
-    private GridPane permitTileSlot;
+	private GridPane permitTileSlot;
 
 	@FXML
 	private FlowPane buttonsPane;
@@ -103,7 +105,7 @@ public class BoardController extends ClientGUIController {
 		balcony.setPickOnBounds(false);
 		councillors.setPickOnBounds(false);
 		citiesListener = new CitiesListener(this);
-		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener);
+		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener, this);
 		showButtonPane();
 	}
 
@@ -112,10 +114,9 @@ public class BoardController extends ClientGUIController {
 		switch (packet.getHeader()) {
 		case "MESSAGESTRING":
 			serverOutput.appendText(packet.getMessageString() + "\n");
-			super.playSound("audio/messageIn.mp3");
+			handleMessageFromServer(packet.getMessageString());
 			break;
 		case "UPDATE":
-			
 			handleUpdate(packet.getUpdate());
 			break;
 		case "CHAT":
@@ -127,6 +128,7 @@ public class BoardController extends ClientGUIController {
 
 	@Override
 	public void editConnection(String choice) {
+		super.playSound("audio/linkCity.m4a");
 		try {
 			connector.sendToServer(new Packet(String.valueOf(city1), String.valueOf(city2), choice));
 		} catch (RemoteException e) {
@@ -147,12 +149,12 @@ public class BoardController extends ClientGUIController {
 			repaintBoard();
 			break;
 		case "PLAYER_UPDATE":
-			super.playSound("audio/updateNotify.mp3");
 			setPlayerStatus(update);
 			repaintPlayerStatus(update.getPlayer());
 			break;
 		case "MESSAGE":
 			serverOutput.appendText(update.getMessage() + "\n");
+			handleMessageFromServer(update.getMessage());
 			break;
 		case "MARKET":
 			setItemsOnSale(update);
@@ -160,13 +162,48 @@ public class BoardController extends ClientGUIController {
 		}
 	}
 
+	private void handleMessageFromServer(String message) {
+		if (message.indexOf("Error") > -1 || message.indexOf("disconnected") > -1) {
+			showErrorMessage(message);
+		}
+		if (message.indexOf("it's your turn. Perform your actions!") > -1 || message.indexOf("won") > -1
+				|| message.indexOf("points") > -1 || message.indexOf("bonus") > -1 || message.indexOf("market")>-1) {
+			showDialogMessage(message);
+		}
+	}
+
+	private void showDialogMessage(String message) {
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.initOwner(stage);
+			alert.setTitle("Game Information");
+			alert.setHeaderText("Important information from Game Server!");
+			alert.setContentText(message);
+			alert.showAndWait();
+		});
+	}
+
+	private void showErrorMessage(String message) {
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.initOwner(stage);
+			alert.setTitle("ERROR");
+			alert.setHeaderText("Negative response from SERVER");
+			alert.setContentText(message);
+			alert.showAndWait();
+		});
+	}
+
 	private void repaintPlayerStatus(Player player) {
-		painter.repaintPlayerStatus(player, indicatorPane);
+		painter.repaintPlayerStatus(player, indicatorPane, topIndicatorPane);
 
 	}
 
 	public void setStage(Stage stage) {
 		this.stage = stage;
+		stage.setOnCloseRequest(event -> {
+			super.disconnect();
+		});
 	}
 
 	public void setBoard(UpdateState update) {
@@ -188,10 +225,9 @@ public class BoardController extends ClientGUIController {
 	 */
 	@FXML
 	public void repaintBoard() {
-		super.playSound("audio/buttonPressed.mp3");
 		painter.repaint(board.getRegions());
 		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
-		painter.repaintTile(permitTileSlot,this.board.getRegions());
+		painter.repaintTile(permitTileSlot, this.board.getRegions());
 	}
 
 	/**
@@ -208,6 +244,7 @@ public class BoardController extends ClientGUIController {
 	public void setCities(char c1, char c2, String choice) {
 		this.city1 = c1;
 		this.city2 = c2;
+
 		editConnection(choice);
 	}
 
@@ -246,6 +283,7 @@ public class BoardController extends ClientGUIController {
 	 *            the second City object
 	 */
 	public void createLink(Pane firstLink, Pane secondLink, City city1, City city2) {
+
 		Platform.runLater(() -> {
 			painter.createLine(firstLink, secondLink, city1, city2);
 		});
@@ -261,7 +299,7 @@ public class BoardController extends ClientGUIController {
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
 			loader.setLocation(resource);
-			AnchorPane page = (AnchorPane) loader.load();
+			AnchorPane page = loader.load();
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Perform Action");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -272,6 +310,7 @@ public class BoardController extends ClientGUIController {
 			actionController.setStage(dialogStage);
 			actionController.setConnector(connector);
 			actionController.setPlayer(playerStatus);
+			actionController.setBoard(board);
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
@@ -291,6 +330,7 @@ public class BoardController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
+
 	@FXML
 	public void chatMessage(ActionEvent event) {
 		super.playSound("audio/buttonPressed.mp3");
@@ -299,10 +339,10 @@ public class BoardController extends ClientGUIController {
 		String pathTo = "chatMessage.fxml";
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
-			
+
 			loader.setLocation(resource);
 			Parent page = loader.load();
-			
+
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Chat");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -315,22 +355,17 @@ public class BoardController extends ClientGUIController {
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		}
 	}
-		
+
 	@FXML
 	public void handleMapConfigurationStatus() {
 		citiesListener.setFirstLinkState();
 		repaintBoard();
-	}
-
-	@FXML
-	public void handleChatMessage() {
-		// must show the chat message input field
 	}
 
 	@FXML
@@ -341,10 +376,10 @@ public class BoardController extends ClientGUIController {
 		String pathTo = "playerCards.fxml";
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
-			
+
 			loader.setLocation(resource);
 			Parent page = loader.load();
-			
+
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Your Cards");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -357,14 +392,14 @@ public class BoardController extends ClientGUIController {
 			cardController.setPlayer(playerStatus);
 			cardController.setScrollPane();
 			cardController.setUnusedPermitTile();
-			cardController.setUsedPermitTile() ;
+			cardController.setUsedPermitTile();
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		}
 	}
 
@@ -387,13 +422,13 @@ public class BoardController extends ClientGUIController {
 		cityNameLabel.getStyleClass().add("simpleLabel");
 		nameBox.getChildren().add(cityNameLabel);
 		bonusBox.getChildren().add(bonus);
-		for(String cityBonus : cityBonuses) {
+		for (String cityBonus : cityBonuses) {
 			Label bonusLabel = new Label(cityBonus);
 			bonusLabel.getStyleClass().add("simpleLabel");
 			bonusBox.getChildren().add(bonusLabel);
 		}
 		emporiumBox.getChildren().add(emporiums);
-		for(Emporium emporium : cityEmporiums) {
+		for (Emporium emporium : cityEmporiums) {
 			Label emporiumLabel = new Label(emporium.getOwner().getNickName());
 			emporiumLabel.getStyleClass().add("simpleLabel");
 			emporiumBox.getChildren().add(emporiumLabel);
@@ -405,26 +440,30 @@ public class BoardController extends ClientGUIController {
 	}
 
 	public void showButtonPane() {
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			Button play = new Button("Start Playing");
-			play.setOnAction(event->{
+			play.setOnAction(event -> {
 				handlePlayStatus();
 			});
 			Button market = new Button("Market");
-			market.setOnAction(event->{
-
+			market.setOnAction(event -> {
+				showMarket();
 			});
 			Button mapConfiguration = new Button("Map Configuration");
-			mapConfiguration.setOnAction(event->{
+			mapConfiguration.setOnAction(event -> {
 				handleMapConfigurationStatus();
 			});
 			Button action = new Button("Perform Action");
-			action.setOnAction(event->{
+			action.setOnAction(event -> {
 				performNewAction();
 			});
 			Button cards = new Button("Your Cards");
-			cards.setOnAction(event->{
+			cards.setOnAction(event -> {
 				showPlayerCards(event);
+			});
+			Button passTurn = new Button("Pass Turn");
+			passTurn.setOnAction(event -> {
+				passPlayerTurn();
 			});
 			this.buttonsPane.getChildren().clear();
 			action.getStyleClass().add("menuButton");
@@ -432,11 +471,50 @@ public class BoardController extends ClientGUIController {
 			mapConfiguration.getStyleClass().add("menuButton");
 			play.getStyleClass().add("menuButton");
 			cards.getStyleClass().add("menuButton");
+			passTurn.getStyleClass().add("menuButton");
 			this.buttonsPane.getChildren().add(action);
 			this.buttonsPane.getChildren().add(market);
 			this.buttonsPane.getChildren().add(mapConfiguration);
 			this.buttonsPane.getChildren().add(play);
 			this.buttonsPane.getChildren().add(cards);
+			this.buttonsPane.getChildren().add(passTurn);
 		});
+	}
+
+	private void showMarket() {
+		super.playSound("audio/buttonPressed.mp3");
+		URL resource = null;
+		FXMLLoader loader = new FXMLLoader();
+		String pathTo = "market.fxml";
+		try {
+			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
+			loader.setLocation(resource);
+			Parent page = loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Market");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(stage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			MarketController marketController = loader.getController();
+			marketController.setStage(dialogStage);
+			marketController.setConnector(connector);
+			marketController.setPlayer(playerStatus);
+			marketController.setMarket(this.itemsOnSale);
+			dialogStage.showAndWait();
+		} catch (MalformedURLException e) {
+			serverOutput.appendText(e.getMessage());
+
+		} catch (IOException e) {
+			serverOutput.appendText(e.getMessage());
+		}
+	}
+
+	private void passPlayerTurn() {
+		try {
+			connector.sendToServer(new Packet("PASSTURN"));
+		} catch (RemoteException e) {
+			serverOutput.appendText(e.getMessage());
+		}
 	}
 }

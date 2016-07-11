@@ -57,7 +57,7 @@ public class TestWinBuildingBonuses {
 			colorFound = false;
 			match.winBuildingBonuses(city, player);
 		}
-		assertEquals(1 + 2 + 3 + 4 + 5, player.getNumberOfRewardTokensWon());
+		assertEquals(1 + 2 + 3 + 4, player.getNumberOfRewardTokensWon());
 		assertEquals(1, player.getNumberOfRegionBonusWon());
 
 		Region region2 = board.getRegions()[1];

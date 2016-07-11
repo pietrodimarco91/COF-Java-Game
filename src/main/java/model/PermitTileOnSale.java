@@ -3,8 +3,15 @@ package model;
 import controller.Player;
 
 public class PermitTileOnSale extends ItemOnSale {
-
+/**
+ * permit Tile
+ */
 	Tile permitTile;
+	
+	/**
+	 * 
+	 * Default constructor
+	 */
 	
 	public PermitTileOnSale(Tile permitTile,Player seller,int price) {
 		super(seller,price);
@@ -23,4 +30,8 @@ public class PermitTileOnSale extends ItemOnSale {
 		return string;
 	}
 
+
+	public Tile getTile() {
+		return permitTile;
+	}
 }

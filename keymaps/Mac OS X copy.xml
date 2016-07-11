@@ -1,5 +1,1 @@
-<keymap version="1" name="Mac OS X copy" parent="Mac OS X">
-  <action id="GenerateJavadoc">
-    <keyboard-shortcut first-keystroke="j" />
-  </action>
-</keymap>
+<keymap version="1" name="Mac OS X copy" parent="Mac OS X" />

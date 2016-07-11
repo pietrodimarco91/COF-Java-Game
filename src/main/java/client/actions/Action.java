@@ -3,7 +3,7 @@ package client.actions;
 import java.io.Serializable;
 
 /**
- * This abstract class is the father of the concrete classes that represent the
+ * This abstract class is the father of the concrete classes that represents the
  * actions that a Client will perform
  * 
  * @author Riccardo

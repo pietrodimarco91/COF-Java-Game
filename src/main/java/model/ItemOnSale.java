@@ -1,12 +1,21 @@
 package model;
 
+import java.io.Serializable;
+
 import controller.Player;
 
-public abstract class ItemOnSale {
+public abstract class ItemOnSale implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * This attribute represents the seller of this item
 	 */
 	private Player seller;
+
+	private int id;
 
 	/**
 	 * This attribute represents the price (coins) for this item
@@ -26,6 +35,10 @@ public abstract class ItemOnSale {
 		return price;
 	}
 	
+	public int getId() {
+		return id;
+	}
+	
 	/**
 	 * This method returns this item on sale when someone buys it
 	 * @return the item contained in this ItemOnSale object
@@ -40,4 +53,17 @@ public abstract class ItemOnSale {
 		return coins>=price;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		String string="";
+		string+="ITEM ON SALE\n";
+		string+="ID: "+this.id+", ";
+		string+="Seller: "+this.seller.getNickName()+"\n";
+		string+="Price: "+this.getPrice()+"\n";
+		return string;
+	}
 }

@@ -6,13 +6,11 @@ package model;
  */
 public class RegionBonusTile extends Tile {
 
-    private int points;
-
     /**
      * Set the RegionBonusTile's points.
      */
     public RegionBonusTile(int points) {
-        this.points=points;
+        super(points);
     }
 
 

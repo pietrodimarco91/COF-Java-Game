@@ -1,0 +1,319 @@
+
+.STEELCastle{
+    -fx-background-image: url("../castleImg/BlueCastle.png");
+}
+
+.kingPing{
+    -fx-background-image: url("Councillors/kingPing.png");
+    -fx-background-size: 800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingPurple{
+    -fx-background-image: url("Councillors/kingPurple.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingBlack{
+    -fx-background-image: url("Councillors/kingBlack.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingBlue{
+    -fx-background-image: url("Councillors/kingBlue.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.kingWhite{
+    -fx-background-image: url("Councillors/kingWhite.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.kingWhite{
+    -fx-background-image: url("Councillors/kingWhite.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+.kingOrange{
+    -fx-background-image: url("Councillors/kingOrange.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+.PinkCouncillor{
+    -fx-background-image: url("Councillors/PinkCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.PurpleCouncillor{
+    -fx-background-image: url("Councillors/PurpleCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.BlackCouncillor{
+    -fx-background-image: url("Councillors/BlackCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.BlueCouncillor{
+    -fx-background-image: url("Councillors/BlueCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+.WhiteCouncillor{
+    -fx-background-image: url("Councillors/WhiteCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+
+.OrangeCouncillor{
+    -fx-background-image: url("Councillors/OrangeCouncillor.png");
+    -fx-background-size:800%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+
+
+.SILVERCastle{
+    -fx-background-image: url("../castleImg/GreyCastle.png");
+}
+.BRONZECastle{
+    -fx-background-image: url("../castleImg/OrangeCastle.png");
+}
+.PurpleCastle{
+    -fx-background-image: url("../castleImg/PurpleCastle.png");
+}
+.GOLDCastle{
+    -fx-background-image: url("../castleImg/YellowCastle.png");
+}
+
+.line{
+    -fx-stroke: red;
+
+}
+
+.line:hover{
+    -fx-stroke-width: 14;
+    -fx-stroke: orange;
+}
+
+.city{
+    -fx-border-radius: 5px;
+    -fx-background-size: 150;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color:
+            -fx-shadow-highlight-color,
+            -fx-outer-border,
+            -fx-inner-border,
+            -fx-body-color;
+    -fx-background-insets: 0 0 -1 0, 0, 3, 2;
+    -fx-background-radius: 1px, 3px, 2px, 1px;
+}
+
+
+.citySelected{
+    -fx-outer-border: #0066ff;
+}
+
+.city:hover{
+    -fx-outer-border: yellow;
+}
+
+.coastRegion{
+    -fx-background-image: url("boardImages/coastRegion.png");
+    -fx-background-size:110%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.hillsRegion{
+    -fx-background-image: url("boardImages/hillsRegion.png");
+    -fx-background-size:110%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.mountainsRegion{
+    -fx-background-image: url("boardImages/mountainsRegion.png");
+    -fx-background-size:110%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.backGroundColorConfiguration{
+	 -fx-background-color:#FFF8DC;
+}
+
+.balcony{
+	 -fx-background-image: url("boardImages/balcony.png");
+    -fx-background-size:50%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+	
+}
+.cardBackground{
+	 -fx-background-image: url("boardImages/cardBackground.jpg");
+    -fx-background-size:100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+	
+}
+.blackCard{
+    -fx-background-image: url("cards/BlackCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.blueCard{
+    -fx-background-image: url("cards/BlueCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.multicolorCard{
+    -fx-background-image: url("cards/MulticolorCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.orangeCard{
+    -fx-background-image: url("cards/OrangeCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.pinkCard{
+     -fx-background-image: url("cards/PinkCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+  
+}
+.purpleCard{
+    -fx-background-image: url("cards/PurpleCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.whiteCard{
+    -fx-background-image: url("cards/WhiteCard.png");
+    -fx-background-size:200%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.permitTile{
+    -fx-background-image: url("cards/permitTile.png");
+    -fx-background-size:400%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+.id{
+	-fx-font-size: 14px;
+    -fx-font-weight:bold;
+    -fx-padding: 20px;
+    -fx-font-family: "PT Mono";
+}
+.cityPermitTile{
+	-fx-font-size: 12px;
+    -fx-font-weight:bold;
+    -fx-font-family: "PT Mono";
+}
+.bonus{
+	-fx-font-size: 12px;
+    -fx-font-weight:bold;
+    -fx-font-family: "PT Mono";
+}
+.replyWindow{
+	-fx-background-image: url("boardImages/replyBackground.png");
+    -fx-background-size:100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: top center;
+	
+}
+.cardClicked:hover{
+   -fx-background-size:240%;
+}
+
+.idSlot{
+	-fx-font-size: 10px;
+    -fx-font-weight:bold;
+    -fx-padding: 20px;
+    -fx-font-family: "PT Mono";
+}
+.cityPermitTileSlot{
+	-fx-font-size: 10px;
+    -fx-font-weight:bold;
+    -fx-font-family: "PT Mono";
+}
+.bonusSlot{
+	-fx-font-size: 10px;
+    -fx-font-weight:bold;
+    -fx-font-family: "PT Mono";
+}
+
+.menuButton {
+    -fx-background-color: linear-gradient(#ffd65b, #e68400),
+    linear-gradient(#ffef84, #f2ba44),
+    linear-gradient(#ffea6a, #efaa22),
+    linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%);
+    -fx-background-radius: 30;
+    -fx-background-insets: 0, 1, 2, 3, 0;
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+
+.mainLabel {
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+
+.simpleLabel {
+    -fx-text-fill: #654b00;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+
+.colorscheme-indicator {
+    -fxx-segment0-color: #f61319;
+    -fxx-segment1-color: #f3351f;
+    -fxx-segment2-color: #f65821;
+    -fxx-segment3-color: #f18c23;
+    -fxx-segment4-color: #f3a429;
+    -fxx-segment5-color: #fccb2e;
+    -fxx-segment6-color: #f2de31;
+    -fxx-segment7-color: #d4ea35;
+    -fxx-segment8-color: #aacc2a;
+    -fxx-segment9-color: #97b329;
+}
+
+.mainBackground {
+    -fx-background-image: url("../images/mainBackground.jpg");
+}
+

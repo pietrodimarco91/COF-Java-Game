@@ -1,17 +1,9 @@
 package controller;
 
-import java.util.*;
-
 /**
  * 
  */
 public abstract class CoinsManager {
-
-    /**
-     * Default constructor
-     */
-    public CoinsManager() {
-    }
 
     public static int paymentForPermitTile(int numberOfCouncillorSatisfied){
     	int coins=0;

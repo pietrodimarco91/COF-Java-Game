@@ -1,24 +1,29 @@
 package client.actions;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import client.view.cli.ClientOutputPrinter;
+import controller.Packet;
+import controller.ServerSideConnectorInt;
 import exceptions.InvalidInputException;
 import exceptions.InvalidSlotException;
 import model.CouncillorColors;
 import model.RegionName;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class ActionCreator {
 
-	Scanner input;
+	private Scanner input;
 	
-	public ActionCreator(String type, int num) {
-		createAction(type, num);
+	private ServerSideConnectorInt actionSenderInt;
+
+	public ActionCreator() {
 		input = new Scanner(System.in);
 	}
 
-	public void createAction(String type, int id) {
+	public void createAction(String type, int id, ServerSideConnectorInt actionSenderInt) {
+		this.actionSenderInt=actionSenderInt;
 		if ("MAIN".equals(type)) {
 			switch (id) {
 			case 1:
@@ -33,6 +38,7 @@ public class ActionCreator {
 			case 4:
 				createKingBuildEmporium(type);
 				break;
+			default:
 			}
 		} else {
 			switch (id) {
@@ -48,32 +54,32 @@ public class ActionCreator {
 			case 4:
 				createAdditionalMainAction(type);
 				break;
+			default:
 			}
 		}
 	}
 
 	public void createAdditionalMainAction(String type) {
-		Action action = new AdditionalMainAction(type);
-		//NEEDS COMPLETION
+		this.sendAction(new AdditionalMainAction(type));
 	}
 
 	public void createSendAssistant(String type) {
-		String color,regionName;
+		String color, regionName;
 		ClientOutputPrinter.printLine("SEND ASSISTANT TO ELECT A COUNCILLOR");
-		regionName=selectRegionName();
-		color=selectCouncillorColor();
-		Action action = new SendAssistantAction(type, regionName, color);
-		//NEEDS COMPLETION
+		regionName = selectRegionName();
+		color = selectCouncillorColor();
+		this.sendAction(new SendAssistantAction(type, regionName, color));
 	}
 
 	public void createSwitchPermitTiles(String type) {
 		String regionName = null;
-		boolean proceed=false;
+		boolean proceed = false;
 		ClientOutputPrinter.printLine("SWITCH PERMIT TILES");
 		ClientOutputPrinter.printLine(
 				"Type the Region name which you would like to switch the uncovered Permit Tiles from: choose from 'HILLS', 'COAST' or 'MOUNTAINS'");
 		while (!proceed) {
 			regionName = input.nextLine();
+			regionName = regionName.toUpperCase();
 			try {
 				verifyRegionName(regionName);
 				proceed = true;
@@ -81,46 +87,48 @@ public class ActionCreator {
 				ClientOutputPrinter.printLine(e.printError());
 			}
 		}
-		Action action = new SwitchPermitTilesAction(type, regionName);
-		//NEEDS COMPLETION;
+		this.sendAction(new SwitchPermitTilesAction(type, regionName));
 	}
 
 	public void createEngageAssistant(String type) {
-		Action action = new EngageAssistantAction(type);
-		//NEEDS COMPLETION
+		sendAction(new EngageAssistantAction(type));
 	}
 
 	public void createKingBuildEmporium(String type) {
-		Action action;
-		int numberOfCards=0;
-		String color,cityName;
+		int numberOfCards = 0;
+		String color, cityName;
 		ArrayList<String> colors = new ArrayList<>();
-		ClientOutputPrinter.printLine("BUILD AN EMPOIUM WITH KING'S HELP");
-		ClientOutputPrinter.printLine(
-				"Type the color of the Politic Cards you would like to use to satisfy the King's Council ");
-		ClientOutputPrinter.printLine("Type the colors one per line");
-		while (numberOfCards < 4) {
-			color = input.nextLine();
+		ClientOutputPrinter.printLine("BUILD AN EMPORIUM WITH KING'S HELP");
+		ClientOutputPrinter
+				.printLine("Type the color of the Politic Cards you would like to use to satisfy the King's Council ");
+		ClientOutputPrinter.printLine("Type the colors one per line, type 'stop' to stop");
+		color = input.nextLine();
+		color = color.toUpperCase();
+		while (numberOfCards == 0 || !color.equals("stop")) {
 			try {
 				verifyColor(color);
 				colors.add(color);
 				numberOfCards++;
+				if (numberOfCards == 4)
+					break;
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
 			}
 		}
-		ClientOutputPrinter.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
-		cityName=input.nextLine();
-		action = new KingBuildEmporiumAction(type, cityName, colors);
-		//NEEDS COMPLETION
+		ClientOutputPrinter
+				.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
+		cityName = input.nextLine();
+		cityName = cityName.toUpperCase();
+		this.sendAction(new KingBuildEmporiumAction(type, cityName, colors));
 	}
 
 	public String selectCouncillorColor() {
-		boolean proceed=false;
-		String color=null;
+		boolean proceed = false;
+		String color = null;
 		ClientOutputPrinter.printLine("Type the color of the Councillor to elect:");
 		while (!proceed) {
 			color = input.nextLine();
+			color = color.toUpperCase();
 			try {
 				verifyColor(color);
 				proceed = true;
@@ -130,14 +138,15 @@ public class ActionCreator {
 		}
 		return color;
 	}
-	
+
 	public String selectRegionName() {
 		boolean proceed = false;
-		String regionName=null;
+		String regionName = null;
 		ClientOutputPrinter.printLine(
 				"Type the Region name of the Council where you wish to elect the councillor: choose from 'HILLS', 'COAST' or 'MOUNTAINS'");
 		while (!proceed) {
 			regionName = input.nextLine();
+			regionName = regionName.toUpperCase();
 			try {
 				verifyRegionName(regionName);
 				proceed = true;
@@ -147,33 +156,38 @@ public class ActionCreator {
 		}
 		return regionName;
 	}
-	
+
 	public void createElectCouncillor(String type) {
-		Action action;
-		boolean proceed = false;
-		String regionName=null, color=null;
+		String regionName = null, color = null;
 		ClientOutputPrinter.printLine("ELECT A COUNCILLOR");
-		regionName=selectRegionName();
-		color=selectCouncillorColor();
-		action = new ElectCouncillorAction(type, regionName, color);
-		//NEEDS COMPLETION
+		regionName = selectRegionName();
+		color = selectCouncillorColor();
+		this.sendAction(new ElectCouncillorAction(type, regionName, color));
 	}
 
 	public void createSimpleBuildEmporium(String type) {
-		Action action;
 		int id;
-		String cityName=null;
+		String cityName = null;
+		boolean proceed = false;
+
 		ClientOutputPrinter.printLine("BUILD AN EMPORIUM USING A PERMIT TILE");
-		ClientOutputPrinter.printLine("Type the ID of the Permit Tile you would like to choose to build your emporium:");
-		id=Integer.parseInt(input.nextLine());
-		ClientOutputPrinter.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
-		cityName=input.nextLine();
-		action = new SimpleBuildEmporiumAction(type, id, cityName);
-		//NEEDS IMPLEMENTATION
+		while (!proceed) {
+			try {
+				ClientOutputPrinter
+						.printLine("Type the ID of the Permit Tile you would like to choose to build your emporium:");
+				id = Integer.parseInt(input.nextLine());
+				ClientOutputPrinter
+						.printLine("Type the INITIAL LETTER of the city where you would like to build your emporium:");
+				cityName = input.nextLine();
+				this.sendAction(new SimpleBuildEmporiumAction(type, id, cityName));
+				proceed = true;
+			} catch (NumberFormatException e) {
+				ClientOutputPrinter.printLine("Invalid input! Please insert an integer");
+			}
+		}
 	}
 
 	public void createBuyPermitTile(String type) {
-		Action action;
 		String regionName = null;
 		String color;
 		ArrayList<String> colors = new ArrayList<String>();
@@ -186,6 +200,7 @@ public class ActionCreator {
 		while (!proceed) {
 			regionName = input.nextLine();
 			try {
+				regionName = regionName.toUpperCase();
 				verifyRegionName(regionName);
 				proceed = true;
 			} catch (InvalidInputException e) {
@@ -199,6 +214,7 @@ public class ActionCreator {
 		while (numberOfCards < 4) {
 			color = input.nextLine();
 			try {
+				color = color.toUpperCase();
 				verifyColor(color);
 				colors.add(color);
 				numberOfCards++;
@@ -207,16 +223,25 @@ public class ActionCreator {
 			}
 		}
 		while (!proceed) {
-			slot = Integer.parseInt(input.nextLine());
 			try {
+				slot = Integer.parseInt(input.nextLine());
 				verifySlot(slot);
 				proceed = true;
 			} catch (InvalidSlotException e) {
 				ClientOutputPrinter.printLine(e.showError());
+			} catch (NumberFormatException e) {
+				ClientOutputPrinter.printLine(e.getMessage());
 			}
 		}
-		action = new BuyPermitTileAction(type, regionName, colors, slot);
-		// NEEDS TO BE COMPLETED
+		this.sendAction(new BuyPermitTileAction(type, regionName, colors, slot));
+	}
+
+	private void sendAction(Action action) {
+		try {
+			actionSenderInt.sendToServer(new Packet(action));
+		} catch (RemoteException e) {
+			ClientOutputPrinter.printLine(e.getMessage());
+		}
 	}
 
 	public void verifyRegionName(String region) throws InvalidInputException {

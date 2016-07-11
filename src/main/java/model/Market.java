@@ -1,21 +1,32 @@
 package model;
 
-import java.util.*;
-
 import controller.Player;
+import controller.PubSub;
+import exceptions.ItemNotFoundException;
 import exceptions.UnsufficientCoinsException;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
  */
-public class Market {
-	private static ArrayList<ItemOnSale> itemsOnSale;
+public class Market implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private List<ItemOnSale> itemsOnSale;
 
 	/**
-	 * Default constructor: Market implements Singleton pattern
+	 * Default constructor:
 	 */
 	public Market() {
-		itemsOnSale = new ArrayList<ItemOnSale>();
+		itemsOnSale = Collections.synchronizedList(new ArrayList<ItemOnSale>());
 	}
 
 	/**
@@ -24,7 +35,9 @@ public class Market {
 	 * @param itemOnSale
 	 *            the item on sale to be inserted in the market
 	 */
-	public static void putItemOnSale(ItemOnSale itemOnSale) {
+	public synchronized void putItemOnSale(ItemOnSale itemOnSale) {
+		int id=itemsOnSale.size();
+		itemOnSale.setId(id);
 		itemsOnSale.add(itemOnSale);
 	}
 
@@ -33,7 +46,7 @@ public class Market {
 	 * 
 	 * @return the list of items on sale
 	 */
-	public static ArrayList<ItemOnSale> getItemsOnSale() {
+	public List<ItemOnSale> getItemsOnSale() {
 		return itemsOnSale;
 	}
 
@@ -43,7 +56,7 @@ public class Market {
 	 * @param item
 	 *            the item to be removed
 	 */
-	public static void removeItemFromMarket(ItemOnSale item) {
+	public synchronized void removeItemFromMarket(ItemOnSale item) {
 		boolean stop = false;
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
 		while (!stop && iterator.hasNext()) {
@@ -64,11 +77,13 @@ public class Market {
 	 *            the item that will be purchased
 	 * @throws UnsufficientCoinsException 
 	 */
-	public static void buyItemOnSale(Player player, ItemOnSale item) throws UnsufficientCoinsException {
+	public synchronized void buyItemOnSale(Player player, int itemId) throws UnsufficientCoinsException, ItemNotFoundException {
 		Iterator<ItemOnSale> iterator = itemsOnSale.iterator();
-		boolean stop = false;
+		boolean stop = false, found=false;
 		while (!stop && iterator.hasNext()) {
-			if (iterator.next() == item) {
+			ItemOnSale item=iterator.next();
+			if (item.getId() == itemId) {
+				found=true;
 				if (item.hasEnoughCoins(player.getCoins())) {
 					item.buyItem(player);
 					CoinsManager.coinsTransaction(player, item.getSeller(), item.getPrice());
@@ -79,6 +94,17 @@ public class Market {
 					throw new UnsufficientCoinsException();
 			}
 		}
+		if(!found)
+			throw new ItemNotFoundException();
+	}
+	
+	public String toString() {
+		String string="";
+		string+="MARKET STATUS\n";
+		for(ItemOnSale item : itemsOnSale) {
+			string+=item.toString();
+		}
+		return string;
 	}
 
 }

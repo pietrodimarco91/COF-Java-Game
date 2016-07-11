@@ -12,4 +12,11 @@ public class AssistantOnSale extends ItemOnSale {
 	public void buyItem(Player player) {
 		player.addAssistant();
 	}
+	
+	@Override
+	public String toString() {
+		String string=super.toString();
+		string+="Kind of Item: Assistant\n";
+		return string;
+	}
 }

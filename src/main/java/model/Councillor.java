@@ -1,10 +1,16 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * This class represents a Councillor. Each councillor is instantiated at the
  * beginning of the match.
  */
-public class Councillor {
+public class Councillor implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Color of the Councillor
 	 */

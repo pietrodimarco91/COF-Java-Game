@@ -1,9 +1,15 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Created by Gabriele Bressan on 13/05/16.
  */
-public class PoliticCard {
+public class PoliticCard implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Color of Politic Card
 	 */
@@ -29,6 +35,11 @@ public class PoliticCard {
 	 * @return String of card color
 	 */
 	public String getColorCard() {
+		return this.color;
+	}
+	
+	@Override
+	public String toString() {
 		return this.color;
 	}
 	

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import exceptions.ConfigAlreadyExistingException;
-import model.ConfigFileManager;
-import model.ConfigObject;
+import filehandler.ConfigFileManager;
+import filehandler.ConfigObject;
 
 public class TestConfigFile {
 

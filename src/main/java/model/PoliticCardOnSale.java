@@ -14,5 +14,13 @@ public class PoliticCardOnSale extends ItemOnSale {
 	public void buyItem(Player player) {
 		player.addCardOnHand(politicCard);
 	}
+	
+	@Override
+	public String toString() {
+		String string=super.toString();
+		string+="Kind of Item: Politic Card\nInfo:\n";
+		string+=this.politicCard.getColorCard();
+		return string;
+	}
 
 }

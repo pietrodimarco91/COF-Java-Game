@@ -2,15 +2,22 @@ package model;
 
 import exceptions.InvalidSlotException;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
  * This class represents the deck of the Business Permit Tiles of a single
  * region.
  */
-public class PermitTileDeck {
+public class PermitTileDeck implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The deck is represented by a Queue.
 	 */
@@ -50,7 +57,7 @@ public class PermitTileDeck {
 	public void generatePermitTiles(int bonusNumber) {
 		TileFactory tileFactory = new ConcreteTileFactory();
 		for (int i = 0; i < numberOfTiles; i++) {
-			deck.add(tileFactory.createPermitTile(i,region.getCities(), bonusNumber));
+			deck.add(tileFactory.createPermitTile(i, region.getCities(), bonusNumber));
 		}
 
 		uncoveredPermitTile1 = deck.remove();
@@ -77,15 +84,19 @@ public class PermitTileDeck {
 	 * @throws InvalidSlotException
 	 *             if the specified slot is different from 1 or 2.
 	 */
-	public Tile drawPermitTile(int slot) throws InvalidSlotException {
+	public Tile drawPermitTile(int slot) throws InvalidSlotException, NoSuchElementException {
 		switch (slot) {
 		case 1: {
+			if (deck.isEmpty())
+				throw new NoSuchElementException();
 			Tile tempPermitTile = uncoveredPermitTile1;
 			uncoveredPermitTile1 = deck.remove();
 			return tempPermitTile;
 		}
 
 		case 2: {
+			if (deck.isEmpty())
+				throw new NoSuchElementException();
 			Tile tempPermitTile = uncoveredPermitTile1;
 			uncoveredPermitTile2 = deck.remove();
 			return tempPermitTile;
@@ -94,15 +105,15 @@ public class PermitTileDeck {
 			throw new InvalidSlotException();
 		}
 	}
-	
+
 	public Queue<Tile> getDeck() {
 		return this.deck;
 	}
-	
+
 	public Tile getUnconveredPermitTile1() {
 		return this.uncoveredPermitTile1;
 	}
-	
+
 	public Tile getUnconveredPermitTile2() {
 		return this.uncoveredPermitTile2;
 	}

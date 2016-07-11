@@ -8,10 +8,10 @@ import java.util.List;
 import org.junit.Test;
 
 import controller.Player;
+import exceptions.NoMoreBonusException;
 import model.Board;
 import model.City;
 import model.CityColors;
-import model.NoMoreBonusException;
 import model.Tile;
 
 /**
@@ -26,11 +26,11 @@ public class TestIsEligibleForColorBonus {
 	@Test
 	public void test() {
 		Board board = new Board(4, 3, 3, 3, 3);
-		Player player = new Player(1);
+		Player player = new Player(0);
 		String randomCityColor = CityColors.random();
 		String string = "";
 		List<City> map = board.getMap();
-		assertEquals(false, board.isEligibleForColorBonus(player, randomCityColor));
+		assertFalse(board.isEligibleForColorBonus(player, randomCityColor));
 		List<Tile> rewardTokens = new ArrayList<>();
 		for (City city : map) {
 			if (city.getColor().equals(randomCityColor)) {

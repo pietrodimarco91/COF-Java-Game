@@ -1,19 +1,26 @@
 package controller;
 
-import exceptions.CouncillorNotFoundException;
-import exceptions.InvalidInputException;
-import exceptions.InvalidSlotException;
-import exceptions.UnsufficientCoinsException;
+import client.actions.Action;
+import client.actions.AdditionalMainAction;
+import client.actions.BuyPermitTileAction;
+import client.actions.ElectCouncillorAction;
+import client.actions.EngageAssistantAction;
+import client.actions.KingBuildEmporiumAction;
+import client.actions.SendAssistantAction;
+import client.actions.SimpleBuildEmporiumAction;
+import client.actions.SwitchPermitTilesAction;
+import exceptions.*;
+import filehandler.ConfigFileManager;
+import filehandler.ConfigObject;
 import model.*;
 import server.view.cli.ServerOutputPrinter;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -23,7 +30,7 @@ import java.util.logging.StreamHandler;
  * Created by Gabriele on 22/05/16. This class represents the thread always
  * running while a match is on-going. It stores the core of the game engine.
  */
-public class MatchHandler extends Thread {
+public class MatchHandler {
 
 	private static final Logger logger = Logger.getLogger(MatchHandler.class.getName());
 
@@ -34,6 +41,8 @@ public class MatchHandler extends Thread {
 	private static final int NUMBER_OF_PARAMETERS = 5;
 
 	private static final int MINUMUM_NUMBER_OF_PLAYERS = 2;
+
+	private ConfigFileManager configFileManager;
 
 	/**
 	 * The ID of the match: IDs are assigned in a crescent way, starting from 0.
@@ -51,9 +60,19 @@ public class MatchHandler extends Thread {
 	private Board board;
 
 	/**
+	 * The bonus manager that assigns the bonuses to the players
+	 */
+	private BonusManager bonusManager;
+
+	/**
+	 * This class handles all the main and quick actions received from players
+	 */
+	private MatchActionsHandler actionsHandler;
+
+	/**
 	 * An ArrayList of players in this MatchHandler.
 	 */
-	private ArrayList<Player> players; // To add UML scheme
+	private List<Player> players; // To add UML scheme
 
 	/**
 	 * This attribute represents the creator of the match
@@ -72,425 +91,103 @@ public class MatchHandler extends Thread {
 	private int[] configParameters;
 
 	/**
-	 * A boolean value used to know if the first player has decided the total
-	 * number of players. It's true when he has finished to set the number false
-	 * otherwise
+	 * Game Status: 0 wait board configuration 1 wait for players 2 wait map
+	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
 	 */
-	private boolean pending; // To add UML scheme
+	private int gameStatus;
+
+	private ExecutorService timers;
 
 	/**
-	 * Default constructor
+	 * A reference to the market of the match.
 	 */
+	private Market market;
 
-	public MatchHandler(int id, Date date, ConnectorInt connector) {
-		this.players = new ArrayList<Player>();
+	/**
+	 * The Player whose turn is currently active
+	 */
+	private Player currentPlayer;
 
-		this.creator = new Player(connector, 0);
+	/**
+	 * The Player whose turn in the market is currently active
+	 */
+	private Player playerMarketTurn;
+
+	/**
+	 * The iterator for the player turns
+	 */
+	private PlayerTurnIterator playerTurnIterator;
+
+	/**
+	 * This random iterator is used to iterate over the players during the
+	 * market buy time
+	 */
+	private RandomPlayerIterator randomPlayerIterator;
+
+	/**
+	 * Default constructor: this constructor is used during the game, and allows
+	 * to initialize the match. The MatchHandler handles the core of the server
+	 * game controller, which directly communicates with the model.
+	 * 
+	 * @param id
+	 *            the match ID, in chronological order of creation
+	 * @param date
+	 *            the Date of when the match has been created
+	 * @param connector
+	 *            the connector of the first player (creator)
+	 * @param serverSideConnector
+	 *            it's used only to set the player ID to the creator's server
+	 *            side connector
+	 * @param creatorNickName
+	 *            the nickname of the creator of the match
+	 */
+	public MatchHandler(int id, Date date, ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector,
+			String creatorNickName) {
+		timers = Executors.newCachedThreadPool();
+		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+		this.players = Collections.synchronizedList(new ArrayList<Player>());
+		gameStatus = GameStatusConstants.BOARD_CONFIG;
+		configFileManager = new ConfigFileManager();
+		try {
+			serverSideConnector.setPlayerId(0);
+		} catch (RemoteException e) {
+			logger.log(Level.INFO, "Remote Exception", e);
+		}
+		this.creator = new Player(connector, 0, creatorNickName);
+		this.currentPlayer = creator;
 		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
 		this.players.add(creator);
 		this.id = id;
 		this.date = date;
 		this.configParameters = new int[NUMBER_OF_PARAMETERS];
-		this.pending = false;
+		this.market = new Market();
+		ServerOutputPrinter.printLine("[MATCH " + id + "] New Game Session started!");
+	}
+
+	/**
+	 * IMPORTANT! This constructor is used only for testing purposes, as it
+	 * doesn't initialize those components related to the connection.
+	 * 
+	 * @param id
+	 *            the match id
+	 * @param date
+	 *            date of the match
+	 */
+	public MatchHandler(int id, Date date) {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-		ServerOutputPrinter.printLine("[MATCH " + id + "]: Started running...");
+		this.players = new ArrayList<Player>();
+		gameStatus = GameStatusConstants.BOARD_CONFIG;
+		configFileManager = new ConfigFileManager();
+		this.creator = new Player(0);
+		this.numberOfPlayers = MINUMUM_NUMBER_OF_PLAYERS;
+		this.players.add(creator);
+		this.id = id;
+		this.date = date;
+		this.configParameters = new int[NUMBER_OF_PARAMETERS];
+		this.market = new Market();
 	}
 
-	public void run() {
-		new BoardConfiguration(creator,configParameters,numberOfPlayers);
-		waitingForPlayers();
-		countdown();
-		setDefinitiveNumberOfPlayers();
-		boardInitialization();
-		mapConfiguration(creator.getConnector());
-		play();
-	}
-
-
-
-	/**
-	 *
-	 */
-	public void mapConfiguration(ConnectorInt connector) {
-		boolean stop = false;
-		int choice = 0;
-		while (!stop) {
-			try {
-				connector.writeToClient(
-						"Next choice?\n1) New connection\n2)Remove connection\n3) Go on\n4) View graphic map\n5) View links\n6) View map status\n7) Count distance\n8) Show all distances\n ");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				choice = connector.receiveIntFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive to client", e);
-			}
-			switch (choice) {
-			case 1:
-				try {
-					generateConnection(this.board, connector);
-					break;
-				} catch (InvalidInputException e1) {
-					try {
-						creator.getConnector().writeToClient(e1.printError());
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				}
-				break;
-			case 2:
-				try {
-					removeConnection(this.board, connector);
-				} catch (InvalidInputException e1) {
-					try {
-						creator.getConnector().writeToClient(e1.printError());
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				}
-				break;
-			case 3:
-				if (this.board.graphIsConnected()) {
-					stop = true;
-					break;
-				} else
-					try {
-						connector.writeToClient("Error: map is not connected. Add the necessary connections.\n");
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				break;
-			case 4:
-				try {
-					connector.writeToClient(this.board.printMatrix());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-
-				break;
-			case 5:
-				try {
-					connector.writeToClient(this.board.printConnections());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-
-				break;
-			case 6:
-				try {
-					connector.writeToClient(this.board.toString());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-				break;
-			case 7:
-				try {
-					countDistance(this.board, connector);
-				} catch (InvalidInputException e1) {
-					try {
-						creator.getConnector().writeToClient(e1.printError());
-					} catch (RemoteException e) {
-						logger.log(Level.INFO, "Error: couldn't write to client", e);
-					}
-				}
-				break;
-			case 8:
-				try {
-					connector.writeToClient(this.board.printDistances());
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-
-				break;
-			default:
-				try {
-					connector.writeToClient("Error: invalid number\n");
-				} catch (RemoteException e) {
-					logger.log(Level.INFO, "Error: couldn't write to client", e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * @throws InvalidInputException
-	 * 
-	 */
-	public void generateConnection(Board map, ConnectorInt connector) throws InvalidInputException {
-		String first = null;
-		String second = null;
-		City city1 = null, city2 = null, tempCity;
-		List<City> cities = map.getMap();
-		Iterator<City> cityIterator = cities.iterator();
-		try {
-			connector.writeToClient("NEW CONNECTION\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the first city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				first = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-
-		} while (first.length() > 1);
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the second city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				second = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-
-		} while (second.length() > 1 || second.equals(first));
-		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
-			throw new InvalidInputException();
-		}
-		first = first.toUpperCase();
-		second = second.toUpperCase();
-		while (cityIterator.hasNext()) {
-			tempCity = cityIterator.next();
-			if (tempCity.getName().charAt(0) == first.charAt(0)) {
-				city1 = tempCity;
-			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-				city2 = tempCity;
-			}
-		}
-		if (map.checkPossibilityOfNewConnection(city1, city2))
-			map.connectCities(city1, city2);
-		else {
-			try {
-				connector.writeToClient("Error: cities cannot be connected\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-		}
-	}
-
-	/**
-	 * @throws InvalidInputException
-	 * 
-	 */
-	public void removeConnection(Board map, ConnectorInt connector) throws InvalidInputException {
-		String first = null;
-		String second = null;
-		City city1 = null, city2 = null, tempCity;
-		List<City> cities = map.getMap();
-		Iterator<City> cityIterator = cities.iterator();
-
-		try {
-			connector.writeToClient("REMOVE CONNECTION\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the first city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				first = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (first.length() > 1);
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the second city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				second = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (second.length() > 1 || second.equals(first));
-		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
-			throw new InvalidInputException();
-		}
-		first = first.toUpperCase();
-		second = second.toUpperCase();
-		while (cityIterator.hasNext()) {
-			tempCity = cityIterator.next();
-			if (tempCity.getName().charAt(0) == first.charAt(0)) {
-				city1 = tempCity;
-			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-				city2 = tempCity;
-			}
-		}
-		map.unconnectCities(city1, city2);
-	}
-
-	/**
-	 * @throws InvalidInputException
-	 * 
-	 */
-	public void countDistance(Board map, ConnectorInt connector) throws InvalidInputException {
-		String first = null;
-		String second = null;
-		City city1 = null, city2 = null, tempCity;
-		List<City> cities = map.getMap();
-		Iterator<City> cityIterator = cities.iterator();
-
-		try {
-			connector.writeToClient("COUNT DISTANCE:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the first city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				first = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (first.length() > 1);
-		do {
-			try {
-				connector.writeToClient("Insert the FIRST letter of the second city:\n");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				second = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (second.length() > 1 || second.equals(first));
-		if (first == null || second == null || !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(first))
-				|| !("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".contains(second))) {
-			throw new InvalidInputException();
-		}
-		first = first.toUpperCase();
-		second = second.toUpperCase();
-		while (cityIterator.hasNext()) {
-			tempCity = cityIterator.next();
-			if (tempCity.getName().charAt(0) == first.charAt(0)) {
-				city1 = tempCity;
-			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
-				city2 = tempCity;
-			}
-		}
-		if (city1 != null && city2 != null)
-			try {
-				if (map.countDistance(city1, city2) != -1) {
-					connector.writeToClient("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
-							+ map.countDistance(city1, city2) + "\n");
-				} else {
-					connector.writeToClient(city1.getName() + " and " + city2.getName() + "are not connected\n");
-				}
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-
-	}
-
-
-
-
-
-	/**
-	 * This method is invoked to initialize the board before a match starts. The
-	 * parameters are set by the first player that joins the match.
-	 */
-	public void boardInitialization() {
-		board = new Board(configParameters[0], configParameters[1], configParameters[2], configParameters[3],
-				configParameters[4]);
-	}
-
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void setDefinitiveNumberOfPlayers() {
-		configParameters[0] = this.players.size();
-		this.numberOfPlayers=this.players.size();
-	}
-
-
-
-
-
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void waitingForPlayers() {
-		ServerOutputPrinter.printLine("[MATCH " + id + "] Currently waiting for players...");
-		pending = true;
-		try {
-			creator.getConnector().writeToClient("[Match ID: " + id + "] Currently waiting for players...");
-		} catch (RemoteException e) {
-			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-		}
-		while (this.players.size() < MINUMUM_NUMBER_OF_PLAYERS) {
-			// Match starts with at least two players
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
-			}
-		}
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
-		}
-	}
-
-	/**
-	 * NEEDS JAVADOC
-	 */
-	public void countdown() {
-		for (int i = 20; i > 0; i--) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				logger.log(Level.SEVERE, "ERROR TRYING TO SLEEP!", e);
-			}
-			for (Player player : players) {
-				try {
-					player.getConnector().writeToClient("MATCH STARTING IN: " + i + "\n");
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * NEEDS IMPLEMENTATION
-	 */
-	public void play() {// To add UML scheme
-
-		while (true) {
-			roundsOfPlayer();
-		}
-
-	}
-
-	/**
-	 * INCOMPLETE IMPLEMENTATION
-	 */
+	@Override
 	public String toString() {
 		String string = "";
 		string += "Match number " + this.id + "\n";
@@ -501,230 +198,329 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * @return
+	 */
+	public boolean isFull() {
+		return this.players.size() >= this.numberOfPlayers;
+	}
+
+	/**
 	 * This method allows to know whether the current match is pending or not
 	 * 
 	 * @return true is it currently pending, false otherwise
 	 */
 	public boolean isPending() {
-		return this.pending;
-	}
-
-	public void roundsOfPlayer() {
-		Player player;
-		int choice = 0;
-		ConnectorInt connector;
-		for (int i = 0; i < this.players.size(); i++) {
-			player = this.players.get(i);
-			connector = player.getConnector();
-			showMap(player);
-			showRegionContent(player);
-			drawPoliticCard(player);
-			showPlayerInfo(player);
-			try {
-				connector.writeToClient("You have drawn a Politic Card!");
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			do {
-				try {
-					connector.writeToClient("Do you wanna choose firstly:\n1)Main Actions\n2)Quick Actions?");
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-				try {
-					choice = connector.receiveIntFromClient();
-					ServerOutputPrinter.printLine(String.valueOf(choice));
-
-				} catch (RemoteException e) {
-					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-
-				}
-			} while (choice != 1 && choice != 2);
-			if (choice == 1) {
-				do {
-					showMainActions(player);
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-
-				mainActions(player, choice);
-
-				do {
-					showQuickActions(player);
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5);
-				quickActions(player, choice);
-			} else {
-				do {
-					showQuickActions(player);
-
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5);
-				quickActions(player, choice);
-				do {
-					showMainActions(player);
-					try {
-						choice = connector.receiveIntFromClient();
-					} catch (RemoteException e) {
-						logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-					}
-				} while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-				mainActions(player, choice);
-			}
-			try {
-				connector.writeToClient("These are your update information! Think very well for the next action... ");
-			} catch (RemoteException e) {
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			showPlayerInfo(player);
-		}
+		return this.gameStatus == GameStatusConstants.WAIT_FOR_PLAYERS;
 	}
 
 	/**
 	 * 
-	 * @param player
-	 * @param choice
 	 */
-	public void mainActions(Player player, int choice) {
-		switch (choice) {
-		case 1:
-			showMap(player);
-			buyPermitTile(player);
-			break;
-		case 2:
-			// da implementare
-			break;
-		case 3:
-			showMap(player);
-			electCouncillor(player);
-			break;
-		case 4:
-			showMap(player);
-			buildEmporiumWithPermitTile(player);
-			break;
-		}
+	public synchronized List<Player> getPlayers() {
+		return this.players;
 	}
 
 	/**
 	 * 
-	 * @param player
-	 * @param choice
 	 */
-	public void quickActions(Player player, int choice) {
-		switch (choice) {
-		case 1:
-			showMap(player);
-			engageAssistant(player);
-			break;
-		case 2:
-			showMap(player);
-			changeBusinessPermitTiles(player);
-			break;
-		case 3:
-			showMap(player);
-			sendAssistantToElectCouncillor(player);
-			break;
-		case 4:
-			showMap(player);
-			performAdditionalMainAction(player);
-			break;
-		}
+	public int getId() {
+		return this.id;
+	}
+
+	public BonusManager getBonusManager() {
+		return this.bonusManager;
 	}
 
 	/**
-	 * NEEDS REVISION AFTER IMPLEMENTATION. Especially the try/catch and the
-	 * exceptions.
-	 * 
-	 * @param player
-	 * @param regionName
+	 * @return
 	 */
-	public void buyPermitTile(Player player) {
-		int playerPayment;
-		int numberOfCouncillorSatisfied;
-		int slot = 0;
-		String regionName = "";
-		PermitTileDeck regionDeck;
-
+	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id,
+			String nickName) {
 		try {
-			player.getConnector().writeToClient("Which region do you want to buy a Permit Tile? ");
+			serverSideConnector.setPlayerId(id);
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+			logger.log(Level.INFO, "Remote Exception", e);
 		}
+		Player player = new Player(connector, id, nickName);
+		this.players.add(player);
+		sendListOfPlayers();
+	}
 
+	/**
+	 * IMPORTANT: this method is used only for test purposes, as the original
+	 * one requires connection components.
+	 * 
+	 * @param id
+	 *            the player id
+	 */
+	public void addPlayer(int id) {
+		this.players.add(new Player(id));
+	}
+
+	public void setConfigObject(ConfigObject config, int playerId) {
+		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
+			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
+			return;
+		}
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
 		try {
-			regionName = player.getConnector().receiveStringFromClient();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
+			configFileManager.createConfiguration(config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
+					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
+					config.getLinksBetweenCities());
+			numberOfPlayers = config.getNumberOfPlayers();
+			configParameters = new int[] { config.getNumberOfPlayers(), config.getRewardTokenBonusNumber(),
+					config.getPermitTileBonusNumber(), config.getNobilityTrackBonusNumber(),
+					config.getLinksBetweenCities() };
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
+					MINUMUM_NUMBER_OF_PLAYERS);
+			initializator.start();
+		} catch (ConfigAlreadyExistingException e) {
+			sendErrorToClient(e.printError(), playerId);
 		}
-		regionName = regionName.trim();
-		regionName = regionName.toUpperCase();
-		Region region = this.getRegion(regionName);
-		region = this.getRegion(regionName);
-		ArrayList<PoliticCard> cardsChosenForCouncilSatisfaction = player.cardsToCouncilSatisfaction();
-		numberOfCouncillorSatisfied = region.numberOfCouncillorsSatisfied(cardsChosenForCouncilSatisfaction);
+	}
 
-		if (numberOfCouncillorSatisfied > 0) {
-			try {
-				player.getConnector().writeToClient("You are able to satisfy the region Council with "
-						+ numberOfCouncillorSatisfied + " Politic Cards!");
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
-			playerPayment = CoinsManager.paymentForPermitTile(numberOfCouncillorSatisfied);
-			player.performPayment(playerPayment);
-			player.removeCardsFromHand(cardsChosenForCouncilSatisfaction);
-			regionDeck = region.getDeck();
-			do {
-				try {
-					player.getConnector().writeToClient("Choose slot: 1 or 2?");
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-				}
-				try {
-					slot = player.getConnector().receiveIntFromClient();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-				}
-			} while (slot != 1 && slot != 2);
-			try {
-				player.addUnusedPermitTiles(regionDeck.drawPermitTile(slot));
-			} catch (InvalidSlotException e) {
-				try {
-					player.getConnector().writeToClient(e.showError());
-				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
-				}
-			}
-			try {
-				player.getConnector().writeToClient("You bought a Permit Tile");
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
-			}
+	public void setExistingConf(int configId, int playerId) {
+		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
+			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
+			return;
+		}
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		try {
+			ConfigObject chosenConfig = configFileManager.getConfiguration(configId);
+			numberOfPlayers = chosenConfig.getNumberOfPlayers();
+			configParameters = new int[] { chosenConfig.getNumberOfPlayers(), chosenConfig.getRewardTokenBonusNumber(),
+					chosenConfig.getPermitTileBonusNumber(), chosenConfig.getNobilityTrackBonusNumber(),
+					chosenConfig.getLinksBetweenCities() };
+			GameInitializator initializator = new GameInitializator(this.id, this.configParameters, this,
+					MINUMUM_NUMBER_OF_PLAYERS);
+			initializator.start();
+		} catch (UnexistingConfigurationException e) {
+			sendErrorToClient(e.printError(), playerId);
+		}
+	}
 
+	/**
+	 * This method is performed when gameStatus=2 (MAP CONFIGURATION), and it
+	 * checks if the graph map is connected or not. The graph map must be
+	 * connected in order to play.
+	 * 
+	 * @param playerId
+	 */
+	public void checkIfGraphIsConnected(int playerId) {
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		if (gameStatus != GameStatusConstants.MAP_CONFIG) {
+			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
+			return;
+		}
+		if (this.board.graphIsConnected()) {
+			PubSub.notifyAllClients(players, "Map Configuration is over! Game status changed to 'PLAY'!", board);
+			ServerOutputPrinter.printLine("[MATCH " + this.id + "] Game Status changed to 'PLAY'");
+			initializeMatchComponents();
+			startTurns();
 		} else {
+			Player player = players.get(playerId);
 			try {
-				player.getConnector()
-						.writeToClient("You were not able to satisfy the specified Council with these Politic Cards");
+				if (!player.playerIsOffline())
+					player.getConnector()
+							.sendToClient(new Packet("Error: map is not connected. Add the necessary connections.\n"));
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't write to client\n", e);
+				player.setPlayerOffline();
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '"
+						+ this.players.get(playerId).getNickName() + "' and ID " + playerId + " disconnected!");
+			}
+		}
+	}
+
+	public void initializeMatchComponents() {
+		bonusManager = new BonusManager(players, board, this);
+		playerTurnIterator = new PlayerTurnIterator(players);
+		actionsHandler = new MatchActionsHandler(this, board, players);
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public void generateConnection(String parameter, int playerId) {
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		if (gameStatus != GameStatusConstants.MAP_CONFIG) {
+			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
+			return;
+		}
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = board.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		StringTokenizer tokenizer = new StringTokenizer(parameter, " ");
+		String first, second;
+		first = tokenizer.nextToken();
+		second = tokenizer.nextToken();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (city1 == null || city2 == null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names",
+					playerId);
+		} else if (board.checkPossibilityOfNewConnection(city1, city2)) {
+			board.connectCities(city1, city2);
+			PubSub.notifyAllClients(players, "Player with nickname '" + players.get(playerId).getNickName()
+					+ "' connected " + city1.getName() + " with " + city2.getName(), board);
+		} else {
+			sendErrorToClient("Cities cannot be connected\n", playerId);
+		}
+	}
+
+	/**
+	 * 
+	 * 
+	 */
+	public void removeConnection(String parameter, int playerId) {
+		if (creator.getId() != playerId) {
+			sendErrorToClient("You're not the match creator, you are not allowed to perform this action!", playerId);
+			return;
+		}
+		if (gameStatus != GameStatusConstants.MAP_CONFIG) {
+			sendErrorToClient("Game status isn't 'Map Configuration'", playerId);
+			return;
+		}
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = board.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		StringTokenizer tokenizer = new StringTokenizer(parameter, " ");
+		String first, second;
+		first = tokenizer.nextToken();
+		second = tokenizer.nextToken();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (city1 == null || city2 == null) {
+			sendErrorToClient("The specified cities were not found, make sure you choose existing city names",
+					playerId);
+		} else {
+			board.unconnectCities(city1, city2);
+			PubSub.notifyAllClients(players, "Player with nickname '" + players.get(playerId).getNickName()
+					+ "' removed connection between " + city1.getName() + " and " + city2.getName(), board);
+		}
+	}
+
+	public void countDistance(String parameter, int playerId) {
+		if (gameStatus < GameStatusConstants.MAP_CONFIG) {
+			sendErrorToClient("Unable to perform this action, match isn't started yet", playerId);
+			return;
+		}
+		City city1 = null, city2 = null, tempCity;
+		List<City> cities = board.getMap();
+		Iterator<City> cityIterator = cities.iterator();
+		StringTokenizer tokenizer = new StringTokenizer(parameter, " ");
+		String first, second;
+		first = tokenizer.nextToken();
+		second = tokenizer.nextToken();
+		while (cityIterator.hasNext()) {
+			tempCity = cityIterator.next();
+			if (tempCity.getName().charAt(0) == first.charAt(0)) {
+				city1 = tempCity;
+			} else if (tempCity.getName().charAt(0) == second.charAt(0)) {
+				city2 = tempCity;
+			}
+		}
+		if (city1 != null && city2 != null) {
+			if (board.countDistance(city1, city2) != -1) {
+				sendMessageToClient("Distance between " + city1.getName() + " and " + city2.getName() + " is: "
+						+ board.countDistance(city1, city2) + "\n", playerId);
+			} else {
+				sendMessageToClient(city1.getName() + " and " + city2.getName() + "are not connected\n", playerId);
+			}
+		} else {
+			sendErrorToClient("Cities were not found", playerId);
+		}
+	}
+
+	/**
+	 * This method allows to make a player win all the possible bonuses after
+	 * the construction of an emporium
+	 * 
+	 * @param city
+	 *            the city where the emporium has been built
+	 * @param player
+	 *            the player who built the emporium
+	 */
+	public void winBuildingBonuses(City city, Player player) {
+		winRewardTokensFromOwnedCities(city, player);
+		winImportantBonuses(city, player);
+	}
+
+	public void winRewardTokensFromOwnedCities(City city, Player player) {
+		Tile rewardToken = city.winBonus();
+		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
+		PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
+				+ rewardToken + " after building an Emporium in " + city.getName(), board);
+		updateClient(player.getId());
+		bonusManager.takeBonusFromTile(rewardToken, player);
+		for (City ownedCity : ownedCities) {
+			rewardToken = ownedCity.winBonus();
+			player.rewardTokenWon(); //TEST PURPOSES
+			PubSub.notifyAllClients(players, "Player '" + player + "' has just won the following Reward Token:\n"
+					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName(),
+					board);
+			updateClient(player.getId());
+			bonusManager.takeBonusFromTile(rewardToken, player);
+		}
+	}
+
+	public void winImportantBonuses(City city, Player player) {
+		Region region = city.getRegion();
+		Tile colorBonus, regionBonus, kingReward;
+		if (board.isEligibleForColorBonus(player, city.getColor())) {
+			try {
+				colorBonus = board.winColorBonus(city.getColor());
+				player.colorBonusWon(); //TEST PURPOSES
+				bonusManager.takeBonusFromTile(colorBonus, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError(), board);
+			}
+			try {
+				kingReward = board.winKingReward();
+				player.kingRewardWon(); //TEST PURPOSES
+				bonusManager.takeBonusFromTile(kingReward, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError(), board);
+			}
+		}
+		if (region.isEligibleForRegionBonus(player)) {
+			try {
+				regionBonus = region.winRegionBonus(player);
+				player.regionBonusWon(); //TEST PURPOSES
+				bonusManager.takeBonusFromTile(regionBonus, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError(), board);
+			}
+			try {
+				kingReward = board.winKingReward();
+				player.kingRewardWon(); //TEST PURPOSES
+				bonusManager.takeBonusFromTile(kingReward, player);
+			} catch (NoMoreBonusException e) {
+				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 		}
 	}
@@ -734,514 +530,10 @@ public class MatchHandler extends Thread {
 	 * his turn.
 	 */
 	public void drawPoliticCard(Player player) {
-		player.addCardOnHand(PoliticCardDeck.generateRandomPoliticCard());
-	}
-	
-	/**
-	 * NEEDS IMPLEMENTATION
-	 * @return
-	 * @throws UnsufficientCoinsException 
-	 */
-	public void buildEmporiumWithKingsHelp(Player player) throws UnsufficientCoinsException {
-		String city=null;
-		ArrayList<String> chosenPoliticCards = new ArrayList<String>();
-		// I obtain the information I need
-		int coinsToPay;
-		City cityTo=null;
-		City cityFrom=board.findKingCity();
-		coinsToPay=board.countDistance(cityFrom, cityTo)*2;
-		if(player.getCoins()>=coinsToPay)
-			player.removeCoins(coinsToPay);
-		else throw new UnsufficientCoinsException();
-	}
-
-	/**
-	 * @return the connector of the player with the specified player number.
-	 */
-	public ConnectorInt getPlayerConnector(int playerNumber) {// To
-																// add
-																// UML
-		// scheme
-		Player player = players.get(playerNumber);
-		return player.getConnector();
-	}
-
-	/**
-	 * @return
-	 */
-	public void performAdditionalMainAction(Player player) {
-		int choice=0;
-		if (player.getNumberOfAssistants() > 3) {
-			
-			player.removeMoreAssistants(3);
-			do{
-			showMainActions(player);
-			try {
-				choice = player.getConnector().receiveIntFromClient();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				logger.log(Level.FINEST, "Error: couldn't receive from client\n", e);
-			}
-			}while(choice != 1 && choice != 2 && choice != 3 && choice != 4);
-			mainActions(player, choice);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop untile the move is correctly performed.
-	 * 
-	 * @return
-	 */
-	public void electCouncillor(Player player) {
-		String regionName = "";
-		String councillorColor = "";
-		boolean checkCouncillorColor = true;
-		do {
-			try {
-				player.getConnector().writeToClient("Which region do you want elect a councillor?");
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-			try {
-				regionName = player.getConnector().receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-
-			regionName = regionName.toUpperCase();
-			regionName = regionName.trim();
-		} while (!checkCorrectRegionName(regionName));
-		do {
-			try {
-				player.getConnector().writeToClient("Which color do you want to choose?");
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-			try {
-				councillorColor = player.getConnector().receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-			}
-			councillorColor = councillorColor.toUpperCase();
-			councillorColor = councillorColor.trim();
-
-			Region region = this.getRegion(regionName);
-			try {
-				region.electCouncillor(councillorColor);
-			} catch (CouncillorNotFoundException e) {
-				try {
-					player.getConnector().writeToClient(e.showError());
-				} catch (RemoteException e1) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
-				}
-				checkCouncillorColor = false;
-			}
-		} while (!checkCouncillorColor);
-
-		player.addCoins(4);
-		try {
-			player.getConnector().writeToClient("You have elect a new councillor!");
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-		}
-	}
-
-	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop until the move is correctly performed.
-	 * 
-	 * @return
-	 */
-	public boolean engageAssistant(Player player) {
-		int coins = player.getCoins();
-		if (coins >= 3) {
-			player.removeCoins(3);
-			player.addAssistant();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * NEEDS REVISION: the parameters communication must be implemented inside
-	 * the method.
-	 * 
-	 * @return
-	 */
-	public boolean changeBusinessPermitTiles(Player player) {
-		String regionName = "";
-		do {
-			try {
-				player.getConnector().writeToClient("Which region name do you want to switch permit tile?");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				regionName = player.getConnector().receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (!checkCorrectRegionName(regionName));
-
-		Region region = this.getRegion(regionName);
-		if (player.getNumberOfAssistants() >= 1) {
-			region.getDeck().switchPermitTiles();
-			player.removeAssistant();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
-	 * 
-	 * @return
-	 */
-
-	public void buildEmporiumWithPermitTile(Player player) {
-		ArrayList<City> cities;
-		int permitTileChoice = -1;
-		String cityChoice = null;
-
-		ConnectorInt connector = player.getConnector();
-
-		do {
-
-			try {
-				connector.writeToClient("Which card do you want to choose?");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				connector.writeToClient(player.showPermitTileCards());
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				permitTileChoice = connector.receiveIntFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (permitTileChoice < 0 || permitTileChoice > (player.getNumberOfPermitTile() - 1));
-
-		PermitTile permitTile = (PermitTile) player.getUnusedPermitTile(permitTileChoice);
-
-		do {
-			try {
-				connector.writeToClient("Which city do you want to build?");
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-			try {
-				cityChoice = connector.receiveStringFromClient();
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't receive from client", e);
-			}
-		} while (!checkCorrectCityNameChoice(permitTile, cityChoice)
-				|| !checkPresenceOfEmporium(permitTile, player, cityChoice));
-		buildEmporium(permitTile, player, cityChoice);
-		try {
-			connector.writeToClient("Your emporium has been successfully built!:D");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		player.fromUnusedToUsedPermitTile(player, permitTile);
-
-		try {
-			connector.writeToClient("You have built a new Emporium!");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean sendAssistantToElectCouncillor(Player player) {
-		boolean checkCouncillorColor = true;
-		String councillorColor = "";
-		String regionName = "";
-		if (player.getNumberOfAssistants() >= 1) {
-
-			do {
-				try {
-					player.getConnector().writeToClient("Which region do you want elect a councillor?");
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-				try {
-					regionName = player.getConnector().receiveStringFromClient();
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-
-				regionName = regionName.toUpperCase();
-				regionName = regionName.trim();
-			} while (!checkCorrectRegionName(regionName));
-
-			do {
-				try {
-					player.getConnector().writeToClient("Which color do you want to choose?");
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-				try {
-					councillorColor = player.getConnector().receiveStringFromClient();
-				} catch (RemoteException e) {
-					logger.log(Level.SEVERE, "Error: couldn't write to client!", e);
-				}
-				councillorColor = councillorColor.toUpperCase();
-				councillorColor = councillorColor.trim();
-
-				Region region = this.getRegion(regionName);
-				try {
-					region.electCouncillor(councillorColor);
-				} catch (CouncillorNotFoundException e) {
-					try {
-						player.getConnector().writeToClient(e.showError());
-					} catch (RemoteException e1) {
-						logger.log(Level.SEVERE, "Error: couldn't write to client!", e1);
-					}
-					checkCouncillorColor = false;
-				}
-			} while (!checkCouncillorColor);
-			return true;
-		} else
-			return false;
-	}
-
-	/**
-	 * @return
-	 */
-	public void addPlayer(ConnectorInt connector, int id) {// To
-															// add
-															// UML
-		// scheme
-		Player player = new Player(connector, id);
-		this.players.add(player);
-		if (isFull())
-			this.play();
-	}
-
-	/**
-	 * NEEDS REVISION: the specified name may be incorrect or invalid.
-	 * Exception?
-	 * 
-	 * @return
-	 */
-	public Region getRegion(String regionName) {
-		boolean regionFound = false;
-		Region region = null;
-		Region regions[] = this.board.getRegions();
-		regionName = regionName.toUpperCase();
-		regionName = regionName.trim();
-		for (int i = 0; i < regions.length && !regionFound; i++) {
-			if (regions[i].getName().equals(regionName)) {
-				regionFound = true;
-				region = regions[i];
-			}
-		}
-		return region;
-	}
-
-	/**
-	 * 
-	 */
-	public void showMap(Player player) {
-		try {
-			player.getConnector().writeToClient(this.board.printMatrix());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showMainActions(Player player) {
-		try {
-			player.getConnector().writeToClient(
-					"MAIN ACTIONS\n1)Buy Permit Tile\n2)Build and emporium using King's help\n3)Elect Councillor\n4)Build and emporium using Permit Tile");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showQuickActions(Player player) {
-		try {
-			player.getConnector().writeToClient(
-					"QUICK ACTIONS\n1)Engage an Assistant\n2)Switch Permit Tile\n3)Send an Assistant to Elect a Coucillor\n4)Do another Main Action\n5)Jump Quick Action");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-
-	}
-
-	/**
-	 * @return
-	 */
-	public void showRegionContent(Player player) {
-		Region regions[] = this.board.getRegions();
-		for (int i = 0; i < regions.length; i++)
-			try {
-				player.getConnector().writeToClient(regions[i].toString());
-			} catch (RemoteException e) {
-				logger.log(Level.INFO, "Error: couldn't write to client", e);
-			}
-	}
-
-	/**
-	 * @return
-	 */
-	public void showPlayerPoliticCards(Player player) {
-		try {
-			player.getConnector().writeToClient("You have these Politic Cars: ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			player.getConnector().writeToClient(player.showPoliticCards());
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerCoins(Player player) {
-		int coins = player.getCoins();
-		try {
-			player.getConnector().writeToClient("COINS: " + coins + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerAssistants(Player player) {
-		int assistants = player.getNumberOfAssistants();
-		try {
-			player.getConnector().writeToClient("ASSISTANTS: " + assistants + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerVictoryPoints(Player player) {
-		int victoryPoints = player.getVictoryPoints();
-		try {
-			player.getConnector().writeToClient("VICTORY POINTS: " + victoryPoints + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerNumberOfEmporium(Player player) {
-		int emporium = player.getNumberOfEmporium();
-		try {
-			player.getConnector().writeToClient("NUMBER OF EMPORIUM: " + emporium + " ");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerPermitTileUnused(Player player) {
-		String permitTileUnused = player.showPermitTileCards();
-		try {
-			player.getConnector().writeToClient("PERMIT TILE UNUSED:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			player.getConnector().writeToClient(permitTileUnused);
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerPermitTileUsed(Player player) {
-		String permitTileUsed = player.showUsedPermitTileCards();
-		try {
-			player.getConnector().writeToClient("PERMIT TILE USED:\n");
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-		try {
-			player.getConnector().writeToClient(permitTileUsed);
-		} catch (RemoteException e) {
-			logger.log(Level.INFO, "Error: couldn't write to client", e);
-		}
-	}
-
-	/**
-	 * 
-	 * @param player
-	 */
-	public void showPlayerInfo(Player player) {
-		showPlayerVictoryPoints(player);
-		showPlayerCoins(player);
-		showPlayerAssistants(player);
-		showPlayerNumberOfEmporium(player);
-		showPlayerPoliticCards(player);
-		showPlayerPermitTileUnused(player);
-		showPlayerPermitTileUsed(player);
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean isFull() {
-		return this.players.size() >= this.numberOfPlayers;
-	}
-
-	/**
-	 * 
-	 */
-	public ArrayList<Player> getPlayers() {
-		return this.players;
-	}
-
-	/**
-	 * 
-	 */
-	public int getIdentifier() {
-		return this.id;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean checkCorrectRegionName(String regionName) {
-		Region tempRegion = null;
-		tempRegion = getRegion(regionName);
-		return tempRegion != null;
+		PoliticCard card = PoliticCardDeck.generateRandomPoliticCard();
+		player.addCardOnHand(card);
+		updateClient(player.getId());
+		sendMessageToClient("You've drawn a " + card.getColorCard() + " Politic Card", player.getId());
 	}
 
 	/**
@@ -1259,39 +551,431 @@ public class MatchHandler extends Thread {
 	}
 
 	/**
+	 * This method must understand which action to perform for the specified
+	 * player, depending on the dynamic dispatching of the Action
 	 * 
-	 * @param permitTile
-	 * @param player
-	 * @param cityChoice
-	 * @return
+	 * @param action
+	 * @param playerId
 	 */
-	public boolean checkPresenceOfEmporium(PermitTile permitTile, Player player, String cityChoice) {
-		List<City> cities = permitTile.getCities();
-		City tempCity;
-		boolean find = false;
-		cityChoice = cityChoice.trim();
-		cityChoice = cityChoice.toUpperCase();
-		for (int i = 0; i < cities.size() && !find; i++) {
-			tempCity = cities.get(i);
-			if (tempCity.getName().equals(cityChoice))
-				find = true;
+	public void evaluateAction(Action action, int playerId) {
+		if (gameStatus != GameStatusConstants.PLAY) {
+			sendErrorToClient("You can't perform an action at the moment!", playerId);
+			return;
 		}
-		return find;
-
-	}
-
-	public boolean hasBuiltLastEmporium(Player player) {
-		return player.getNumberOfEmporium() > 0;
-	}
-
-	public void buildEmporium(PermitTile permitTile, Player player, String cityChoice) {
-		List<City> cities = permitTile.getCities();
-		cityChoice = cityChoice.trim();
-		cityChoice = cityChoice.toUpperCase();
-		for (City tempCities : cities) {
-			if (tempCities.getName().equals(cityChoice))
-				tempCities.buildEmporium(player);
+		if (currentPlayer != players.get(playerId)) {
+			sendErrorToClient("It's not your turn!", playerId);
+			return;
+		}
+		if (action instanceof AdditionalMainAction) {
+			AdditionalMainAction mainAction = (AdditionalMainAction) action;
+			actionsHandler.performAdditionalMainAction(mainAction, playerId);
+		} else if (action instanceof BuyPermitTileAction) {
+			BuyPermitTileAction buyPermitTileAction = (BuyPermitTileAction) action;
+			actionsHandler.buyPermitTile(buyPermitTileAction, playerId);
+		} else if (action instanceof ElectCouncillorAction) {
+			ElectCouncillorAction electConcillorAction = (ElectCouncillorAction) action;
+			actionsHandler.electCouncillor(electConcillorAction, playerId);
+		} else if (action instanceof EngageAssistantAction) {
+			EngageAssistantAction engageAssistanAction = (EngageAssistantAction) action;
+			actionsHandler.engageAssistant(engageAssistanAction, playerId);
+		} else if (action instanceof KingBuildEmporiumAction) {
+			KingBuildEmporiumAction kingBuildEmporiumAction = (KingBuildEmporiumAction) action;
+			actionsHandler.buildEmporiumWithKingsHelp(kingBuildEmporiumAction, playerId);
+		} else if (action instanceof SendAssistantAction) {
+			SendAssistantAction sendAssistantAction = (SendAssistantAction) action;
+			actionsHandler.sendAssistantToElectCouncillor(sendAssistantAction, playerId);
+		} else if (action instanceof SimpleBuildEmporiumAction) {
+			SimpleBuildEmporiumAction simpleBuildEmporium = (SimpleBuildEmporiumAction) action;
+			actionsHandler.buildEmporiumWithPermitTile(simpleBuildEmporium, playerId);
+		} else if (action instanceof SwitchPermitTilesAction) {
+			SwitchPermitTilesAction switchPermitTilesAction = (SwitchPermitTilesAction) action;
+			actionsHandler.switchPermitTile(switchPermitTilesAction, playerId);
 		}
 	}
 
+	public void notifyMatchWinner() {// was setted private but now i changed in
+										// public for the test
+		List<Player> playersInDraw = new ArrayList<>();
+		Player winner = null;
+		int maxVictoryPoints = 0, maxAssistants = 0, maxPoliticCardsInHand = 0;
+
+		assignFinalPermitTilePoints();
+		assignFinalNobilityTrackPoints();
+
+		for (Player player : players) {
+			if (player.getVictoryPoints() > maxVictoryPoints) {
+				maxVictoryPoints = player.getVictoryPoints();
+				winner = player;
+				playersInDraw.clear();
+			} else if (player.getVictoryPoints() == maxVictoryPoints) {
+				if (!playersInDraw.contains(winner))
+					playersInDraw.add(winner);
+				playersInDraw.add(player);
+			}
+		}
+
+		if (playersInDraw.isEmpty() && winner != null) {
+			winner.setPlayerWon();// added only for the test use;
+			PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!",
+					board);
+		}
+
+		else {
+			for (Player player : playersInDraw) {
+				if (player.getPoliticCards().size() + player.getNumberOfAssistants() > maxAssistants
+						+ maxPoliticCardsInHand) {
+					winner = player;
+					maxPoliticCardsInHand = player.getPoliticCards().size();
+					maxAssistants = player.getNumberOfAssistants();
+				}
+			}
+			if (winner != null) {
+				winner.setPlayerWon();// added only for the test uses
+				PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!",
+						board);
+			}
+
+		}
+	}
+
+	public void assignFinalNobilityTrackPoints() {
+		List<Player> playersInFirstPosition = new ArrayList<>();
+		List<Player> playersInSecondPosition = new ArrayList<>();
+		int firstPosition = 0;
+		int secondPosition = 0;
+		for (Player player : players) {
+			if (player.getPositionInNobilityTrack() >= firstPosition) {
+				firstPosition = player.getPositionInNobilityTrack();
+				playersInFirstPosition.add(player);
+			}
+		}
+		for (Player player : players) {
+			if (player.getPositionInNobilityTrack() >= secondPosition
+					&& player.getPositionInNobilityTrack() < firstPosition) {
+				secondPosition = player.getPositionInNobilityTrack();
+				playersInSecondPosition.add(player);
+			}
+		}
+
+		if (playersInFirstPosition.size() == 1) {
+			playersInFirstPosition.get(0).addVictoryPoints(5);
+			if (playersInSecondPosition.size() == 1)
+				playersInSecondPosition.get(0).addVictoryPoints(2);
+			else {
+				for (Player player : playersInSecondPosition) {
+					player.addVictoryPoints(2);
+				}
+			}
+		} else {
+			for (Player player : playersInFirstPosition)
+				player.addVictoryPoints(5);
+		}
+	}
+
+	public void assignFinalPermitTilePoints() {
+		Iterator<Player> iterator = players.iterator();
+		Player player, tempWinner = null;
+		int maxNumberOfPermitTile = 0;
+		while (iterator.hasNext()) {
+			player = iterator.next();
+			if (player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile() > maxNumberOfPermitTile) {
+				maxNumberOfPermitTile = player.getNumberOfPermitTile() + player.getNumberOfUsedPermitTile();
+				tempWinner = player;
+			}
+		}
+		if (tempWinner != null)
+			tempWinner.addVictoryPoints(3);
+	}
+
+	public void notifyEndOfTurn(Player player) {
+		if (player == currentPlayer) {
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "', your turn is over.", board);
+			nextTurn();
+		}
+	}
+
+	public void startTurns() {
+		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
+		if (!currentPlayer.playerIsOffline()) {
+			PubSub.notifyAllClients(players,
+					"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!", board);
+			drawPoliticCard(currentPlayer);
+			timers.submit(new TurnTimerThread(this, currentPlayer));
+		} else
+			nextTurn();
+	}
+
+	public void nextTurn() {
+		if (playerTurnIterator.isLastPlayer(currentPlayer)) {
+			if (GameStatusConstants.FINISH == gameStatus) {
+				PubSub.notifyAllClients(this.players, "Turns are over!", board);
+				notifyMatchWinner();
+				return;
+			}
+			currentPlayer = playerTurnIterator.next();
+			startMarketSellTime();
+		} else {
+			currentPlayer = playerTurnIterator.next();
+			if (!currentPlayer.playerIsOffline()) {
+				PubSub.notifyAllClients(players,
+						"Player '" + currentPlayer.getNickName() + "', it's your turn. Perform your actions!", board);
+				drawPoliticCard(currentPlayer);
+				timers.submit(new TurnTimerThread(this, currentPlayer));
+			} else
+				nextTurn();
+		}
+	}
+
+	private void startMarketSellTime() {
+		gameStatus = GameStatusConstants.MARKET_SELL;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'", board);
+		sendMarketStatus();
+		timers.submit(new MarketTimerThread(this, numberOfPlayers));
+	}
+
+	/**
+	 * This method is invoked only and exclusively when the timer for buying in
+	 * the market for a specified player is over. A new timer for the next
+	 * player will be initialized
+	 * 
+	 * @param playerId
+	 *            the current player in the marketBuyTurn array list
+	 */
+	public void nextMarketBuyTurn(Player player) {
+		if (playerMarketTurn == player) {
+			if (!randomPlayerIterator.hasNext()) {
+				playerMarketTurn = null;
+				return;
+			}
+			playerMarketTurn = randomPlayerIterator.next();
+			PubSub.notifyAllClients(players,
+					"Player '" + player.getNickName() + "' your turn for buying in the Market is over!", board);
+			PubSub.notifyAllClients(players,
+					"Player '" + playerMarketTurn.getNickName() + "' now it's your turn for buying in the Market!",
+					board);
+			timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
+		}
+	}
+
+	public void startMarketBuyTime() {
+		this.gameStatus = GameStatusConstants.MARKET_BUY;
+		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'", board);
+		PubSub.sendMarketStatus(players, market);
+		randomPlayerIterator = new RandomPlayerIterator(players);
+		String message = "In order to buy items from the Market, players must respect a random order\n";
+		playerMarketTurn = randomPlayerIterator.next();
+		message += "Player '" + playerMarketTurn.getNickName() + "' it's your turn! Be fast, your time is limited!\n";
+		PubSub.notifyAllClients(players, message, board);
+		timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
+	}
+
+	public void buyEvent(MarketEvent marketEvent, int playerId) {
+		if (gameStatus != GameStatusConstants.MARKET_BUY) {
+			sendErrorToClient("Game status isn't 'Market Buy Time'", playerId);
+			return;
+		} else if (players.get(playerId) == playerMarketTurn) {
+			MarketEventBuy event = (MarketEventBuy) marketEvent;
+			try {
+				market.buyItemOnSale(playerMarketTurn, event.getItemId());
+				PubSub.notifyAllClients(
+						players, "Player '" + players.get(playerId).getNickName()
+								+ "' has just bought the item with ID " + event.getItemId() + " from the Market!",
+						board);
+				updateClient(playerId);
+				nextMarketBuyTurn(playerMarketTurn);
+			} catch (UnsufficientCoinsException e) {
+				sendErrorToClient(e.showError(), playerId);
+			} catch (ItemNotFoundException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
+		} else {
+			sendErrorToClient("You're not allowed to buy now, please wait for your turn!", playerId);
+		}
+	}
+
+	public void sellEvent(MarketEvent marketEvent, int playerId) {
+		if (gameStatus != GameStatusConstants.MARKET_SELL) {
+			sendErrorToClient("Game status isn't 'Market Sell Time'", playerId);
+			return;
+		}
+
+		Player player = players.get(playerId);
+		MarketEventSell event = (MarketEventSell) marketEvent;
+		ItemFactory factory = new ConcreteItemFactory();
+		ItemOnSale item;
+		String header = event.getHeader();
+		switch (header) {
+		case "PERMITTILE":
+			int permitTileId = event.getPermitTileId();
+			Tile permitTile;
+			try {
+				permitTile = player.sellPermitTile(permitTileId);
+				item = factory.createPermitTileOnSale(permitTile, player, event.getPrice());
+				market.putItemOnSale(item);
+				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString(), board);
+			} catch (TileNotFoundException e) {
+				sendErrorToClient("Ops! A PermitTile with the specified ID was not found!", playerId);
+				return;
+			}
+			break;
+		case "POLITICCARD":
+			String politicCardColor = event.getPoliticCardColor();
+			try {
+				player.checkIfYouOwnThisCard(politicCardColor, player.getPoliticCards());
+				item = factory.createPoliticCardOnSale(player.sellPoliticCard(politicCardColor), player,
+						event.getPrice());
+				market.putItemOnSale(item);
+				PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+						+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString(), board);
+			} catch (CardNotFoundException e) {
+				sendErrorToClient(e.showError(), playerId);
+			}
+			break;
+		case "ASSISTANT":
+			if (player.getNumberOfAssistants() == 0) {
+				sendErrorToClient("You haven't got Assistants in your pool!", playerId);
+				return;
+			}
+			item = factory.createAssistantOnSale(player, event.getPrice());
+			market.putItemOnSale(item);
+			PubSub.notifyAllClients(players, "Player '" + player.getNickName()
+					+ "' has just put a new Item on sale in the Market!\nInfo:\n" + item.toString(), board);
+			break;
+		default:
+		}
+	}
+
+	public void sendMarketStatus() {
+		PubSub.notifyAllClients(players, market.toString(), board);
+		PubSub.sendMarketStatus(players, market);
+	}
+
+	public void sendErrorToClient(String error, int playerId) {
+		String message = "[SERVER] Error: " + error;
+		Player player = players.get(playerId);
+		try {
+			if (!player.playerIsOffline())
+				player.getConnector().sendToClient(new Packet(message));
+		} catch (RemoteException e) {
+			player.setPlayerOffline();
+			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+			+ "' and ID " + player.getId() + " disconnected!");
+			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+					+ "' and ID " + playerId + " disconnected!");
+
+		}
+	}
+
+	public void updateClient(int playerId) {
+		Player player = players.get(playerId);
+		try {
+			if (!player.playerIsOffline()) {
+				player.getConnector().sendToClient(new Packet(new UpdateState(player)));
+			}
+		} catch (RemoteException e) {
+			player.setPlayerOffline();
+			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+			+ "' and ID " + player.getId() + " disconnected!");
+			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+					+ "' and ID " + playerId + " disconnected!");
+
+		}
+	}
+	
+	public synchronized void sendListOfPlayers() {
+		for(Player player : players) {
+			try {
+				if (!player.playerIsOffline()) {
+					List<Player> list = new ArrayList<>();
+					list.addAll(players);
+					player.getConnector().sendToClient(new Packet(new UpdateState(list)));
+				}
+			} catch (RemoteException e) {
+				player.setPlayerOffline();
+				PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+				+ "' and ID " + player.getId() + " disconnected!");
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName()
+						+ "' and ID " + player.getId() + " disconnected!");
+
+			}
+		}
+	}
+
+	public void sendMessageToClient(String s, int playerId) {
+		String message = "[MATCH " + this.id + "] " + s;
+		Player player = players.get(playerId);
+		try {
+			if (!player.playerIsOffline())
+				player.getConnector().sendToClient(new Packet(message));
+		} catch (RemoteException e) {
+			player.setPlayerOffline();
+			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
+			+ "' and ID " + player.getId() + " disconnected!");
+			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
+					+ "' and ID " + playerId + " disconnected!");
+
+		}
+	}
+
+	public void sendBoardStatus(int playerId) {
+		if (gameStatus > GameStatusConstants.WAIT_FOR_PLAYERS) {
+			sendMessageToClient(
+					board.toString() + board.printMatrix() + board.printConnections() + board.printDistances(),
+					playerId);
+		} else {
+			sendErrorToClient("Board isn't configured yet", playerId);
+		}
+	}
+
+	public void sendConfigurations(int playerId) {
+		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
+			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
+			return;
+		}
+		ArrayList<ConfigObject> configurations = configFileManager.getConfigurations();
+		String string = "";
+		for (ConfigObject config : configurations) {
+			string += config.toString() + "\n";
+		}
+		sendMessageToClient(string, playerId);
+	}
+
+	public void sendPlayerStatus(int playerId) {
+		if (gameStatus < GameStatusConstants.PLAY) {
+			sendErrorToClient("The match isn't started yet", playerId);
+			return;
+		}
+		sendMessageToClient(players.get(playerId).toString(), playerId);
+	}
+
+	public void setGameStatus(int i) {
+		this.gameStatus = i;
+	}
+
+	public void setBoard(Board board) {
+
+		this.board = board;
+	}
+
+	public void setNumberOfPlayers(int i) {
+		this.numberOfPlayers = i;
+	}
+
+	public synchronized void setPlayerNickName(int playerId, String nickName) {
+		this.players.get(playerId).setPlayerNickName(nickName);
+		
+	}
+
+	public void chat(int playerId, String messageString) {
+		PubSub.chatMessage(playerId, players, messageString);
+	}
+
+	public void setPlayerOffline(int playerId) {
+		Player player = this.players.get(playerId);
+		player.setPlayerOffline();
+	}
+
+	public void messageFromClient(String messageString, int playerId) {
+	}
 }

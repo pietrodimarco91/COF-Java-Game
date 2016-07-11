@@ -1,0 +1,25 @@
+.blueCastle{
+	-fx-background-image: url("../images/Castle/BlueCastle.png");
+	-fx-background-size:100%;
+	-fx-background-repeat: no-repeat;
+}
+.yellowCastle{
+	-fx-background-image: url("../images/Castle/YellowCastle.png");
+	-fx-background-size:100%;
+	-fx-background-repeat: no-repeat;
+}
+.greyCastle{
+	-fx-background-image: url("../images/Castle/GreyCastle.png");
+	-fx-background-size:100%;
+	-fx-background-repeat: no-repeat;
+}
+.purpleCastle{
+	-fx-background-image: url("../images/Castle/PurpleCastle.png");
+	-fx-background-size:100%;
+	-fx-background-repeat: no-repeat;
+}
+.orangeCastle{
+	-fx-background-image: url("../images/Castle/OrangeCastle.png");
+	-fx-background-size:100%;
+	-fx-background-repeat: no-repeat;
+}

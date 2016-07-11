@@ -470,6 +470,12 @@ public class MatchHandler {
 		winImportantBonuses(city, player);
 	}
 
+	/**
+	 * This method make the player win reward token after the building of a emporium in one specific city
+	 * from the owned cities
+	 * @param city
+	 * @param player
+     */
 	public void winRewardTokensFromOwnedCities(City city, Player player) {
 		Tile rewardToken = city.winBonus();
 		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
@@ -490,6 +496,12 @@ public class MatchHandler {
 			bonusManager.takeBonusFromTile(rewardToken, player);
 		}
 	}
+
+	/**
+	 * check if the player can win the important bonuses such as kingReward or regionBonus
+	 * @param city
+	 * @param player
+     */
 
 	public void winImportantBonuses(City city, Player player) {
 		Region region = city.getRegion();
@@ -540,8 +552,11 @@ public class MatchHandler {
 	}
 
 	/**
-	 * 
-	 */
+	 * check the correct city name chosen
+	 * @param permitTile
+	 * @param cityChoice
+     * @return
+     */
 	public boolean checkCorrectCityNameChoice(PermitTile permitTile, String cityChoice) {
 		List<City> cities = permitTile.getCities();
 		cityChoice = cityChoice.trim();
@@ -596,6 +611,10 @@ public class MatchHandler {
 		}
 	}
 
+
+	/**
+	 * at the end of the turn it checks if someone win the match
+	 */
 	public void notifyMatchWinner() {// was setted private but now i changed in
 										// public for the test
 		List<Player> playersInDraw = new ArrayList<>();
@@ -637,7 +656,6 @@ public class MatchHandler {
 				PubSub.notifyAllClients(this.players, "Player " + winner.getNickName() + " is the winner of the Match!",
 						board);
 			}
-
 		}
 	}
 

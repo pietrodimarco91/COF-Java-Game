@@ -6,17 +6,20 @@ import filehandler.ConfigObject;
 import java.io.Serializable;
 
 /**
- * Created by pietro on 12/06/16.
+ * The packet is the main object used for the communication Client-Server, it contains all the actions
+ * and requests that the clients can perform.
+ * Are implemented different types of constructor that are used to set up different packets
+ *
  */
 public class Packet implements Serializable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private UpdateState update;
 
+    /**
+     *The header is used by the clients and by the server to decode the content of the packet
+     */
 	private String header;
 
     private Action action;

@@ -285,6 +285,14 @@
     -fx-padding: 10 20 10 20;
 }
 
+.marketLabel {
+
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+
 .mainLabel {
     -fx-text-fill: #654b00;
     -fx-font-weight: bold;

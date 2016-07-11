@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Created by pietro on 05/07/16.
+ * This class is used to paint and repaint the GameBoard when the server send the updates
  */
 public class Painter {
 
@@ -60,6 +60,7 @@ public class Painter {
 	private ArrayList<Tile> unusedPermitTile;
 
 	private BoardController boardController;
+
 
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
 			CitiesListener citiesListener, BoardController boardController) {
@@ -152,19 +153,18 @@ public class Painter {
 			region1.getChildren().clear();
 			region2.getChildren().clear();
 			region3.getChildren().clear();
-		});
-		matchCitiesPanes.clear();
-		links.clear();
 
-		regionRunLaters = new ArrayList<RegionRunLater>();
-		List<City> regionOne = regions[0].getCities();
-		List<City> regionTwo = regions[1].getCities();
-		List<City> regionThree = regions[2].getCities();
-		fillGrid(regionOne, region1);
-		fillGrid(regionTwo, region2);
-		fillGrid(regionThree, region3);
+			matchCitiesPanes.clear();
+			links.clear();
 
-		Platform.runLater(() -> {
+			regionRunLaters = new ArrayList<RegionRunLater>();
+			List<City> regionOne = regions[0].getCities();
+			List<City> regionTwo = regions[1].getCities();
+			List<City> regionThree = regions[2].getCities();
+			fillGrid(regionOne, region1);
+			fillGrid(regionTwo, region2);
+			fillGrid(regionThree, region3);
+
 			for (RegionRunLater regionRunLater : regionRunLaters) {
 				if (regionRunLater.getRegion().equals(region1))
 					region1.add(regionRunLater.getPane(), regionRunLater.getColIndex(), regionRunLater.getRowIndex());
@@ -177,11 +177,11 @@ public class Painter {
 			region1.setPickOnBounds(false);
 			region2.setPickOnBounds(false);
 			region3.setPickOnBounds(false);
-		});
 
-		addLinks(regionOne);
-		addLinks(regionTwo);
-		addLinks(regionThree);
+			addLinks(regionOne);
+			addLinks(regionTwo);
+			addLinks(regionThree);
+		});
 
 	}
 
@@ -204,9 +204,10 @@ public class Painter {
 							matchSecondCityPane = cityPane;
 						}
 					}
-
-					citiesListener.setFirstLink(matchFirstCityPane.getPane(), city);
-					citiesListener.setAutomaticSecondLink(matchSecondCityPane.getPane(), connectedCity);
+					if (matchSecondCityPane != null) {
+						citiesListener.setFirstLink(matchFirstCityPane.getPane(), city);
+						citiesListener.setAutomaticSecondLink(matchSecondCityPane.getPane(), connectedCity);
+					}
 				}
 		}
 	}

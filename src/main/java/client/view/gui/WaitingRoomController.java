@@ -91,7 +91,7 @@ public class WaitingRoomController extends ClientGUIController {
 			mute.getStyleClass().add("audioButtonMute");
 			muteCheck = true;
 			super.muteSound(muteCheck);
-		} else if (muteCheck) {
+		} else {
 			mute.getStyleClass().remove("audioButtonMute");
 			mute.getStyleClass().add("audioButtonNotMute");
 			muteCheck = false;

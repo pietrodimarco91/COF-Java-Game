@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
- * Non possiamo fare a meno di questa classe in quanto se si usasse soltanto la
- * ClientSide interface il Server non riuscirebbe ad ascoltare!!
+ * It is implemented by the SocketConnector and by the ServerSideConnector in case of RMI Connection,
+ * it generates requests to the Server
  */
 public interface ServerSideConnectorInt extends Remote {
 

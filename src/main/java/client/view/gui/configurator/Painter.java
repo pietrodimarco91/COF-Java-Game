@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Created by pietro on 05/07/16.
+ * This class is used to paint and repaint the GameBoard when the server send the updates
  */
 public class Painter {
 
@@ -60,6 +60,7 @@ public class Painter {
 	private ArrayList<Tile> unusedPermitTile;
 
 	private BoardController boardController;
+
 
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
 			CitiesListener citiesListener, BoardController boardController) {

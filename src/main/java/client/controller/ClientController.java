@@ -16,6 +16,14 @@ import controller.RMIConnectionInt;
 import controller.ServerSideConnectorInt;
 import exceptions.InvalidInputException;
 
+/**
+ * This abstract class represents the main controller used client side. Its
+ * concrete classes will be the ClientCLIController if the client decides to
+ * play with the CLI, or the ClientGUIController otherwise.
+ * 
+ * @author Riccardo
+ *
+ */
 public abstract class ClientController {
 
 	private static final String ADDRESS = "localhost";
@@ -30,6 +38,13 @@ public abstract class ClientController {
 		return packetSenderInt;
 	}
 
+	/**
+	 * This will be executed if the client decides to play with a socket
+	 * connection. It connects to the game server using Sockets.
+	 * 
+	 * @param nickName
+	 *            the chosen nickname for the current session
+	 */
 	public void startSocketConnection(String nickName) {
 		try {
 			socketInputOutputThread = new SocketInputOutputThread(new Socket(ADDRESS, PORT));
@@ -47,6 +62,13 @@ public abstract class ClientController {
 		}
 	}
 
+	/**
+	 * This will be executed if the client decides to play with a RMI
+	 * connection. It connects to the game server using RMI.
+	 * 
+	 * @param nickName
+	 *            the chosen nickname for the current session
+	 */
 	public void startRMIConnection(String nickName) {
 		try {
 			clientSideConnector = new ClientSideConnector();
@@ -62,7 +84,9 @@ public abstract class ClientController {
 	}
 
 	/**
-	 * NEEDS IMPLEMENTATION
+	 * Used when the client decides to disconnect from the game and the server.
+	 * It unexports the client side remote object if the client was connected
+	 * through RMI, or it close the socket input/output streams.
 	 */
 	public void disconnect() {
 		try {
@@ -85,14 +109,21 @@ public abstract class ClientController {
 	}
 
 	/**
-	 * Checks whether the specified parameters respect the rules or not.
+	 * Checks whether the specified parameters respect the rules of the game or
+	 * not.
 	 *
 	 * @param numberOfPlayers
+	 *            must be between 2 and 8
 	 * @param rewardTokenBonusNumber
+	 *            must be 1-3
 	 * @param permitTileBonusNumber
+	 *            must be 1-3
 	 * @param nobilityTrackBonusNumber
+	 *            must be 1-3
 	 * @param linksBetweenCities
+	 *            must be 2-4
 	 * @throws InvalidInputException
+	 *             if the chosen configuration isn't allowed
 	 */
 	public void parametersValidation(int numberOfPlayers, int rewardTokenBonusNumber, int permitTileBonusNumber,
 			int nobilityTrackBonusNumber, int linksBetweenCities) throws InvalidInputException {
@@ -105,12 +136,12 @@ public abstract class ClientController {
 		if (linksBetweenCities < 2 && linksBetweenCities > 4)
 			throw new InvalidInputException();
 	}
-	
-	public ClientSideConnector getClientSideConnector(){
+
+	public ClientSideConnector getClientSideConnector() {
 		return clientSideConnector;
 	}
-	
-	public SocketInputOutputThread getSocketThread(){
+
+	public SocketInputOutputThread getSocketThread() {
 		return socketInputOutputThread;
 	}
 

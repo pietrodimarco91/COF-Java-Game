@@ -18,8 +18,8 @@ import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
 /**
- * This class represents the CLI controller client side
- * which controls everything the client wants to do
+ * This class represents the CLI controller client side which controls
+ * everything the client wants to perform
  * 
  * @author Riccardo
  *
@@ -31,12 +31,17 @@ public class ClientCLIController extends ClientController {
 	private String nickName;
 	private ActionCreator actionCreator;
 
+	/**
+	 * Default constructor: it initializes the controller, with an instance of
+	 * the ActionCreator, used to create the action packets.
+	 */
 	public ClientCLIController() {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		input = new Scanner(System.in);
 		actionCreator = new ActionCreator();
 	}
-	
+
+	@Override
 	public void welcome(String[] args) {
 		ClientOutputPrinter.printLine("Welcome to a new session of 'Council Of Four' Game!");
 		do {
@@ -45,9 +50,10 @@ public class ClientCLIController extends ClientController {
 			checkCorrectNickName(nickName);
 		} while (!checkCorrectNickName(nickName));
 	}
-	
+
+	@Override
 	/**
-	 * @throws RemoteException
+	 * This method allows to connect to the game server.
 	 */
 	public void connect() throws RemoteException {
 		ClientOutputPrinter.printLine("Please, you need to connect to the Game Server...");
@@ -74,6 +80,11 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
+	/**
+	 * This method will be executed straight after the client has connected to
+	 * the game server.
+	 */
 	public void initialConfiguration() {
 		boolean correct = false;
 		do {
@@ -94,6 +105,12 @@ public class ClientCLIController extends ClientController {
 		} while (!correct);
 	}
 
+	@Override
+	/**
+	 * This method allows to continue playing and view the main menu for the CLI
+	 * controller. It allows the client to choose which will be the next action
+	 * to perform.
+	 */
 	public void play() {
 		int choice;
 		boolean quit = false;
@@ -137,6 +154,10 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
+	/**
+	 * This method allows to perform a new action
+	 */
 	public void performNewAction() {
 		String type = null;
 		String id;
@@ -171,6 +192,7 @@ public class ClientCLIController extends ClientController {
 		proceed = false;
 	}
 
+	@Override
 	public void sellItemOnMarket() {
 		int choice, price;
 		boolean proceed = false;
@@ -215,6 +237,7 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
 	public void buyItemOnMarket() {
 		int id;
 		ClientOutputPrinter.printLine("Type the Item ID you would like to buy:");
@@ -228,9 +251,7 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
-	/**
-	 * 
-	 */
+	@Override
 	public void requestBoardStatus() {
 		try {
 			super.getServerConnector().sendToServer(new Packet());
@@ -239,9 +260,7 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
-	/**
-	 * 
-	 */
+	@Override
 	public void requestPlayerStatus() {
 		try {
 			super.getServerConnector().sendToServer(new Packet("REQUESTPLAYERSTATUS"));
@@ -250,6 +269,7 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
 	public void boardConfiguration() {
 		boolean correctAnswer = false;
 		int choice = 0;
@@ -307,12 +327,7 @@ public class ClientCLIController extends ClientController {
 
 	}
 
-	/**
-	 * This method permit to modify the game map
-	 *
-	 * @param player
-	 *            connector
-	 */
+	@Override
 	public void mapConfiguration() {
 		boolean stop = false;
 		int choice = 0;
@@ -353,6 +368,11 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
+	/**
+	 * This method will be used only by the CLI controller, as it is useful to
+	 * check how long is the distance between two specified cities
+	 */
 	public void countDistance() {
 		String city1 = "null";
 		String city2 = "null";
@@ -374,6 +394,11 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
+	/**
+	 * This method is used during the map configuration status, and allows to
+	 * create/remove connections between the cities
+	 */
 	public void editConnection(String choice) {
 		String city1 = "null";
 		String city2 = "null";
@@ -399,8 +424,9 @@ public class ClientCLIController extends ClientController {
 
 	}
 
+	@Override
 	/**
-	 * 
+	 * This method allows to create a new configuration for the board
 	 */
 	public void newConfiguration() {
 		String parameters = "";
@@ -433,8 +459,8 @@ public class ClientCLIController extends ClientController {
 			try {
 				parametersValidation(numberOfPlayers, rewardTokenBonusNumber, permitTileBonusNumber,
 						nobilityTrackBonusNumber, linksBetweenCities);
-				super.getServerConnector().sendToServer(new Packet(new ConfigObject(numberOfPlayers, rewardTokenBonusNumber,
-						permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities)));
+				super.getServerConnector().sendToServer(new Packet(new ConfigObject(numberOfPlayers,
+						rewardTokenBonusNumber, permitTileBonusNumber, nobilityTrackBonusNumber, linksBetweenCities)));
 				stop = true;
 			} catch (InvalidInputException e) {
 				ClientOutputPrinter.printLine(e.printError());
@@ -444,6 +470,7 @@ public class ClientCLIController extends ClientController {
 		}
 	}
 
+	@Override
 	public void chat() {
 		ClientOutputPrinter.printLine("Write the message to send to the other players:");
 		String message = input.nextLine();
@@ -453,7 +480,7 @@ public class ClientCLIController extends ClientController {
 			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
-	
+
 	public void showActions(String type) {
 		if ("MAIN".equals(type)) {
 			ClientOutputPrinter.printLine(
@@ -470,7 +497,7 @@ public class ClientCLIController extends ClientController {
 			throw new InvalidInputException();
 		return s;
 	}
-	
+
 	public int verifyActionID(String id) throws InvalidInputException, NumberFormatException {
 		int num = Integer.parseInt(id);
 		if (num < 1 || num > 4)

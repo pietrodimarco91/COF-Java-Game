@@ -14,6 +14,11 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
+/**
+ * This class is used by the Server in case of socket connection, it listens the socket of the specific client
+ * receiving requests and responding to them with specific packets
+ */
+
 public class SocketConnector extends Thread implements ClientSideConnectorInt, ServerSideConnectorInt {
 
 	private static final Logger logger = Logger.getLogger(SocketConnector.class.getName());
@@ -22,6 +27,9 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 	private MatchHandler matchHandler;
 	private int playerId;
 
+	/**
+	 * Sets up the connection with the specific client
+	 */
 	public SocketConnector(Socket socket) {
 		logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
 		try {
@@ -33,6 +41,11 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 		ServerOutputPrinter.printLine("[SERVER] New Socket connection established with Client!");
 	}
 
+
+
+	/**
+	 * It listens the client requests and send to the Server the packet received
+	 */
 	@Override
 	public void run() {
 		while (true) {
@@ -71,17 +84,29 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 		}
 	}
 
-	// *****SERVER SIDE METHOD******//
+	/**
+	 * Sets up the matchHandler
+	 * @param matchHandler
+     */
 	@Override
 	public void setMatchHandler(MatchHandler matchHandler) {
 		this.matchHandler = matchHandler;
 	}
 
+	/**
+	 * Sets up the playerId
+	 * @param id
+     */
 	@Override
 	public void setPlayerId(int id) {
 		this.playerId = id;
 	}
-	
+
+	/**
+	 * It send to the match handler the right request from the client decoding the packet
+	 * @param packet
+	 * @throws RemoteException
+     */
 	@Override
 	public void sendToServer(Packet packet) throws RemoteException {
 		switch (packet.getHeader()) {
@@ -130,9 +155,12 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 		default:
 		}
 	}
-	
-	// *****SERVER SIDE METHOD******//
-	//in this case this method is used to receive something from client
+
+	/**
+	 * It send to the client the packet, client side it will be decoded and interpreted
+	 * @param packet
+	 * @throws RemoteException
+     */
 	@Override
 	public void sendToClient(Packet packet) throws RemoteException {
 		try {
@@ -144,7 +172,6 @@ public class SocketConnector extends Thread implements ClientSideConnectorInt, S
 		}
 	}
 
-	//This method is used only client side to set the GUI Controller
 	@Override
 	public void setGUIController(ClientGUIController controller) {
 

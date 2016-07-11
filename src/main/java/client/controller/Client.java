@@ -7,24 +7,34 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 
 /**
- * 
+ * This class is the main object that will be execute Client-side to run the
+ * game. Its fundamental duty is to choose the type of the client-controller to
+ * use for the game, which could be chosen between CLI and GUI.
  */
 public class Client {
 
 	private Scanner input = new Scanner(System.in);
 
+	/**
+	 * The type of the controller chosen by the client for this game session
+	 */
 	private ClientController controller;
 
 	private String args[];
 
 	/**
-	 * Default constructor
+	 * Default constructor: creates a new client and instantiates the controller
 	 */
 	public Client(String[] args) {
 		controller = chooseController();
 		this.args = args;
 	}
 
+	/**
+	 * The main method executed client side to start playing. It allows to
+	 * connect to the game server. This method will be executed in different
+	 * ways depending on the controller chosen by the client
+	 */
 	public void start() {
 		controller.welcome(args);
 		try {
@@ -38,6 +48,12 @@ public class Client {
 		}
 	}
 
+	/**
+	 * This method allows to choose the controller used by the Client: GUI or
+	 * CLI
+	 * 
+	 * @return the type of the controller chosen by the client
+	 */
 	private ClientController chooseController() {
 		boolean proceed = false;
 		ClientController controller = null;

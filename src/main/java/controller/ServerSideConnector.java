@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * Created by pietro on 01/06/16.
+ * This class is used by the Clients connectors in case of RMI connection
  */
 public class ServerSideConnector extends UnicastRemoteObject implements ServerSideConnectorInt {
 
@@ -16,7 +16,9 @@ public class ServerSideConnector extends UnicastRemoteObject implements ServerSi
 	}
 
 	/**
-	 * IN THIS CASE IT'S USED BY CLIENTS
+	 * It send to the match handler the right request from the client decoding the packet
+	 * @param packet
+	 * @throws RemoteException
 	 */
 	@Override
 	public void sendToServer(Packet packet) throws RemoteException {

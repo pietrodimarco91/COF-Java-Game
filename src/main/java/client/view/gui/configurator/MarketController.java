@@ -51,20 +51,12 @@ public class MarketController extends ClientGUIController{
     private ServerSideConnectorInt connector;
     private Player player;
     private List<ItemOnSale> market;
-    private String itemOnSaleTemp;
-    private String colorItem;
+    private String itemOnSaleTemp="";
+    private String colorItem="";
     private int idTemp;
     private int itemId;
 
     public void setStage(Stage stage) {
-        Platform.runLater(()->{
-            yourAssistant.getChildren().clear();
-            yourPolitic.getChildren().clear();
-            yourPermit.getChildren().clear();
-            marketAssistant.getChildren().clear();
-            marketPolitic.getChildren().clear();
-            marketPermit.getChildren().clear();
-        });
         sellingPrice.setOnMouseClicked(event -> {
             clean();
         });
@@ -265,14 +257,14 @@ public class MarketController extends ClientGUIController{
                     idCard=tempTile.getId();
                     cardCity=tempTile.getCities();
                     cardBonus=tempTile.getBonus();
-                    Pane pane = new Pane();
+                    VBox pane = new VBox();
                     pane.getStylesheets().add(css);
                     pane.getStyleClass().add("permitTile");
                     Label id = new Label("ID: "+idCard);
                     id.getStylesheets().add(css);
                     id.getStyleClass().add("id");
-                    yourPermit.add(pane, j, i);
-                    yourPermit.add(id, j, i);
+
+                    pane.getChildren().add(id);
                     String city="\n\n\nCity:";
                     for(int k=0;k<cardCity.size();k++){
                         city+=cardCity.get(k).getName().charAt(0)+",";
@@ -280,7 +272,7 @@ public class MarketController extends ClientGUIController{
                     Label cityName = new Label(city);
                     cityName.getStylesheets().add(css);
                     cityName.getStyleClass().add("cityPermitTile");
-                    yourPermit.add(cityName, j, i);
+                    pane.getChildren().add(cityName);
 
                     String bonus="\n\n\n\nBonus:\n";
                     for(int k=0;k<cardBonus.size();k++){
@@ -289,8 +281,9 @@ public class MarketController extends ClientGUIController{
                     Label cityBonus =new Label(bonus);
                     cityBonus.getStylesheets().add(css);
                     cityBonus.getStyleClass().add("bonus");
-                    yourPermit.add(cityBonus, j, i);
+                    pane.getChildren().add(cityBonus);
                     String finalBonus = bonus;
+                    yourPermit.add(pane, j, i);
                     pane.setOnMouseClicked(event -> {
                         yourPermitTileClicked(tempTile.getId());
                     });

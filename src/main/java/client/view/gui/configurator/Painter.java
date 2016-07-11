@@ -152,7 +152,7 @@ public class Painter {
 			region1.getChildren().clear();
 			region2.getChildren().clear();
 			region3.getChildren().clear();
-		});
+
 		matchCitiesPanes.clear();
 		links.clear();
 
@@ -164,7 +164,6 @@ public class Painter {
 		fillGrid(regionTwo, region2);
 		fillGrid(regionThree, region3);
 
-		Platform.runLater(() -> {
 			for (RegionRunLater regionRunLater : regionRunLaters) {
 				if (regionRunLater.getRegion().equals(region1))
 					region1.add(regionRunLater.getPane(), regionRunLater.getColIndex(), regionRunLater.getRowIndex());
@@ -177,11 +176,12 @@ public class Painter {
 			region1.setPickOnBounds(false);
 			region2.setPickOnBounds(false);
 			region3.setPickOnBounds(false);
-		});
+
 
 		addLinks(regionOne);
 		addLinks(regionTwo);
 		addLinks(regionThree);
+		});
 
 	}
 

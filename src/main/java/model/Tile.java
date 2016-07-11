@@ -5,19 +5,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Created by pietro on 12/05/16.
+ * Created by pietro on 12/05/16. Tile class
  */
 public abstract class Tile implements Serializable {
 	/**
-	 * 
+	 * Variable used for serialization
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 * ArrayList tile bonus
 	 */
 	private ArrayList<String> bonus;
 	
+	/**
+	 * points of the bonus
+	 */
 	private int points;
 	
 	/**

@@ -4,9 +4,16 @@ import java.io.Serializable;
 
 import controller.Player;
 
+/**
+ * 
+ * @author Gabriele Bressan
+ * Abstract class used for put one item on sale
+ *
+ */
+
 public abstract class ItemOnSale implements Serializable {
 	/**
-	 * 
+	 * Variable used for serialization
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -21,22 +28,12 @@ public abstract class ItemOnSale implements Serializable {
 	 * This attribute represents the price (coins) for this item
 	 */
 	private int price;
-	
+	/**
+	 * Default constructor:
+	 */
 	public ItemOnSale(Player seller, int price) {
 		this.seller=seller;
 		this.price=price;
-	}
-
-	public Player getSeller() {
-		return seller;
-	}
-
-	public int getPrice() {
-		return price;
-	}
-	
-	public int getId() {
-		return id;
 	}
 	
 	/**
@@ -55,6 +52,18 @@ public abstract class ItemOnSale implements Serializable {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public Player getSeller() {
+		return seller;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 	@Override

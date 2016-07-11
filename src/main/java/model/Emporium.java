@@ -5,6 +5,7 @@ import java.io.Serializable;
 import controller.Player;
 
 /**
+ * @author Gabriele Bressan
  * This class represents an Emporium that is built inside a City by a specified
  * Player.
  */

@@ -68,7 +68,10 @@ public class PermitTileDeck implements Serializable {
 		this.endId = endId;
 		this.numberOfTiles = endId + 1;
 	}
-
+/**
+ * This method generate a new permit tiles
+ * @param bonusNumber
+ */
 	public void generatePermitTiles(int bonusNumber) {
 		TileFactory tileFactory = new ConcreteTileFactory();
 		for (int i = initId; i <= endId; i++) {

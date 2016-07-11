@@ -12,11 +12,12 @@ import exceptions.CouncillorNotFoundException;
 
 /**
  * Created by Gabriele Bressan on 13/05/16.
+ * Abstract class used for create a council
  */
 public abstract class Council implements Serializable {
 
 	/**
-	 * 
+	 * Variable used for serialization
 	 */
 	private static final long serialVersionUID = 1L;
 

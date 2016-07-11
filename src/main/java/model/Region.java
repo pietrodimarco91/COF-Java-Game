@@ -9,6 +9,8 @@ import exceptions.NoMoreBonusException;
 
 /**
  * Created by Gabriele Bressan on 13/05/16.
+ * 
+ * Region class used on the board class
  */
 public class Region implements Serializable {
 	/**

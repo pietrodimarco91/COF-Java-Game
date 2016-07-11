@@ -4,7 +4,9 @@ package model;
  * Created by Pietro Di Marco on 14/05/16.
  */
 public class KingRewardTile extends Tile {
-
+	/**
+	 * Default constructor:
+	 */
     public KingRewardTile(int points) {
         super(points);
     }

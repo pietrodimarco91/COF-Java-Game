@@ -39,9 +39,14 @@ public class MatchHandler {
 	 * board configuration
 	 */
 	private static final int NUMBER_OF_PARAMETERS = 5;
-
+	
+	/**
+	 * This constant represents the minimum number of players
+	 */
 	private static final int MINUMUM_NUMBER_OF_PLAYERS = 2;
-
+    /**
+     * This object represent a configuration file 
+     */
 	private ConfigFileManager configFileManager;
 
 	/**
@@ -95,7 +100,10 @@ public class MatchHandler {
 	 * configuration 3 play 4 marketSellTime 5 marketBuyTime 6 finished
 	 */
 	private int gameStatus;
-
+	
+	/**
+	 * timer to execute a perform
+	 */
 	private ExecutorService timers;
 
 	/**
@@ -198,7 +206,8 @@ public class MatchHandler {
 	}
 
 	/**
-	 * @return
+	 * 
+	 * @return a boolean value that indicate id number of player is the maximum  
 	 */
 	public boolean isFull() {
 		return this.players.size() >= this.numberOfPlayers;
@@ -232,7 +241,11 @@ public class MatchHandler {
 	}
 
 	/**
-	 * @return
+	 * Method used to add a player on the match using these parameters.
+	 * @param connector
+	 * @param serverSideConnector 
+	 * @param id of the player
+	 * @param nickName of the player
 	 */
 	public void addPlayer(ClientSideConnectorInt connector, ServerSideConnectorInt serverSideConnector, int id,
 			String nickName) {
@@ -256,7 +269,13 @@ public class MatchHandler {
 	public void addPlayer(int id) {
 		this.players.add(new Player(id));
 	}
-
+	
+	
+/**
+ * 
+ * @param config
+ * @param playerId
+ */
 	public void setConfigObject(ConfigObject config, int playerId) {
 		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
 			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
@@ -281,7 +300,11 @@ public class MatchHandler {
 			sendErrorToClient(e.printError(), playerId);
 		}
 	}
-
+	/**
+	 * 
+	 * @param configId
+	 * @param playerId
+	 */
 	public void setExistingConf(int configId, int playerId) {
 		if (gameStatus != GameStatusConstants.BOARD_CONFIG) {
 			sendErrorToClient("Game status isn't 'Board Configuration'", playerId);
@@ -347,8 +370,9 @@ public class MatchHandler {
 	}
 
 	/**
-	 * 
-	 * 
+	 * This method generate a new connection on the map
+	 * @param parameter
+	 * @param playerId
 	 */
 	public void generateConnection(String parameter, int playerId) {
 		if (creator.getId() != playerId) {
@@ -387,8 +411,9 @@ public class MatchHandler {
 	}
 
 	/**
-	 * 
-	 * 
+	 * method used to remove a connection on the map
+	 * @param parameter
+	 * @param playerId
 	 */
 	public void removeConnection(String parameter, int playerId) {
 		if (creator.getId() != playerId) {

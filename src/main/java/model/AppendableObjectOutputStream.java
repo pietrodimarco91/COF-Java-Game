@@ -11,7 +11,7 @@ import java.io.OutputStream;
  * correctly write objects in the config file, after it has already been
  * initialized.
  * 
- * @author Riccardo
+ * @author Riccardo Cannistrà
  *
  */
 public class AppendableObjectOutputStream extends ObjectOutputStream {

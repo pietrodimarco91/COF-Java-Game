@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 /**
- * 
+ * Enumeration of region name
  */
 public enum RegionName {
     COAST,

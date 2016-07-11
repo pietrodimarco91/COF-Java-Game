@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class PoliticCard implements Serializable {
 	/**
-	 * 
+	 * Variable used for serialization
 	 */
 	private static final long serialVersionUID = 1L;
 	/**

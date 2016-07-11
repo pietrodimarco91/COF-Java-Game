@@ -15,7 +15,11 @@ public enum CityNames {
 
 	private String firstCityLetter;
 	private int cityNumber;
-
+/**
+ * Used for creation of the city name
+ * @param firstCityLetter
+ * @param cityNumber
+ */
 	CityNames(String firstCityLetter, int cityNumber) {
 		this.firstCityLetter = firstCityLetter;
 		this.cityNumber = cityNumber;

@@ -33,23 +33,36 @@ import model.Tile;
 /**
  * This class has all the method used to perform the actions of the game.
  * 
- * @author Riccardo
+ * @author Riccardo Cannistrà
  *
  */
 public class MatchActionsHandler {
-
+	/**
+	 * Currentrly board
+	 */
 	private Board board;
-
+/**
+ * Currently match
+ */
 	private MatchHandler match;
-
+/**
+ * Currently player
+ */
 	private List<Player> players;
-
+/**
+ * 
+ * Default constructor
+ */
 	public MatchActionsHandler(MatchHandler match, Board board, List<Player> players) {
 		this.board = board;
 		this.match = match;
 		this.players = players;
 	}
-
+/**
+ * Method used to buy a permit tile
+ * @param buyPermitTileAction 
+ * @param playerId player to associate the action
+ */
 	public void buyPermitTile(BuyPermitTileAction buyPermitTileAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
 			match.sendErrorToClient("You've already performed a Main Action for this turn!", playerId);
@@ -110,9 +123,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS IMPLEMENTATION
-	 * 
-	 * @return
+	 * Method used to build an Emporium with Kings Help 
+	 * @param kingBuildEmporiumAction action 
+	 * @param playerId player to associate the action
 	 * @throws UnsufficientCoinsException
 	 */
 	public void buildEmporiumWithKingsHelp(KingBuildEmporiumAction kingBuildEmporiumAction, int playerId) {
@@ -177,7 +190,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * @return
+	 * Method used to perform an additional Main Action
+	 * @param action 
+	 * @param playerId player to associate the action
 	 */
 	public void performAdditionalMainAction(AdditionalMainAction action, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -198,10 +213,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop untile the move is correctly performed.
-	 * 
-	 * @return
+	 * Method used to perform an addiction 
+	 * @param electCouncillorAction
+	 * @param playerId player to associate the action
 	 */
 	public void electCouncillor(ElectCouncillorAction electCouncillorAction, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
@@ -236,10 +250,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS REVISION: this method must not return a boolean: the try/catch must
-	 * be handled inside a while loop until the move is correctly performed.
-	 * 
-	 * @return
+	 * Method used to engage an Assistant
+	 * @param engageAssistantAction
+	 * @param playerId player to associate the action
 	 */
 	public void engageAssistant(EngageAssistantAction engageAssistantAction, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -266,10 +279,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * NEEDS REVISION: the parameters communication must be implemented inside
-	 * the method.
-	 * 
-	 * @return
+	 * Method used to switch a Permit tile on board
+	 * @param switchPermitTilesAction
+	 * @param playerId player to associate the action
 	 */
 	public void switchPermitTile(SwitchPermitTilesAction switchPermitTilesAction, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -300,9 +312,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * MUST BE FIXED IMMEDIATELY! COMPILATION ERRORS
-	 * 
-	 * @return
+	 *  Method used to build an emporium using only Permit Tile
+	 * @param simpleBuildEmporium
+	 * @param playerId player to associate the action
 	 */
 	public void buildEmporiumWithPermitTile(SimpleBuildEmporiumAction simpleBuildEmporium, int playerId) {
 		if (players.get(playerId).hasPerformedMainAction()) {
@@ -347,8 +359,9 @@ public class MatchActionsHandler {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Method used to send an assistant to elect a councillor 
+	 * @param sendAssistantAction
+	 * @param playerId player to associate the action
 	 */
 	public void sendAssistantToElectCouncillor(SendAssistantAction sendAssistantAction, int playerId) {
 		if (players.get(playerId).hasPerformedQuickAction()) {
@@ -379,12 +392,6 @@ public class MatchActionsHandler {
 		}
 	}
 
-	/**
-	 * NEEDS REVISION: the specified name may be incorrect or invalid.
-	 * Exception?
-	 * 
-	 * @return
-	 */
 	public Region getRegion(String regionName) {
 		boolean regionFound = false;
 		Region region = null;
@@ -400,6 +407,11 @@ public class MatchActionsHandler {
 		return region;
 	}
 
+ /**
+  * 
+  * @param player
+  * @return boolean value that indicate if the player has build last emporium
+  */
 	public boolean hasBuiltLastEmporium(Player player) {
 		return player.getNumberOfEmporium() == 0;
 	}

@@ -160,6 +160,7 @@ public class ActionController extends ClientGUIController {
 		electCouncillorMountains.setToggleGroup(group);
 		electCouncillorKing.setToggleGroup(group);
 		if (electCouncillorHills.isSelected()) {
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "HILLS";
 			
 		} else if (electCouncillorCoast.isSelected()) {
@@ -183,12 +184,18 @@ public class ActionController extends ClientGUIController {
 		buyPermitTileHills.setToggleGroup(group);
 		buyPermitTileCoast.setToggleGroup(group);
 		buyPermitTileMountains.setToggleGroup(group);
-		if (buyPermitTileHills.isSelected())
+		if (buyPermitTileHills.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "HILLS";
-		else if (buyPermitTileCoast.isSelected())
+		}
+		else if (buyPermitTileCoast.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "COAST";
-		else if (buyPermitTileMountains.isSelected())
+		}
+		else if (buyPermitTileMountains.isSelected()){
+			super.playSound("audio/checkBoxClick.mp3");
 			this.regionName = "MOUNTAINS";
+		}
 	}
 
 	@FXML
@@ -420,6 +427,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleEngageAssistantAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		try {
 			this.connector.sendToServer(new Packet(new EngageAssistantAction("quick")));
 			stage.close();
@@ -430,6 +438,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleSwitchPermitTilesAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		if (this.regionName.equals("")) {
 			String error = "Please choose a Region!\n";
 			showAlert(error);
@@ -445,6 +454,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleSendAssistantAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		if (this.regionName.equals("") || this.councillorColor.equals("")) {
 			String error = "";
 			if (this.regionName.equals(""))
@@ -465,6 +475,7 @@ public class ActionController extends ClientGUIController {
 
 	@FXML
 	public void handleAdditionalMainAction() {
+		super.playSound("audio/buttonPressed.mp3");
 		try {
 			this.connector.sendToServer(new Packet(new AdditionalMainAction("quick")));
 			stage.close();

@@ -383,6 +383,7 @@ public class MarketController extends ClientGUIController{
 
     @Override
 	public void buyItemOnMarket() {
+    	super.playSound("audio/buttonPressed.mp3");
         if(itemId==-1){
             String error = "";
             error += "Click an Item in the Market";
@@ -401,6 +402,7 @@ public class MarketController extends ClientGUIController{
 
     @Override
     public void sellItemOnMarket() {
+    	super.playSound("audio/buttonPressed.mp3");
         if (sellingPrice.getText().equals("") || itemOnSaleTemp.equals("")) {
             String error = "";
 

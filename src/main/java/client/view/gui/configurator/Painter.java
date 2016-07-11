@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * This class is used to paint and repaint the GameBoard when the server send the updates
+ * This class is used to paint and repaint the GameBoard when the server send
+ * the updates
  */
 public class Painter {
 
@@ -61,6 +62,7 @@ public class Painter {
 
 	private BoardController boardController;
 
+	private static final double precision = 0.000001;
 
 	public Painter(StackPane stackPane, GridPane region1, GridPane region2, GridPane region3, Pane linesPane,
 			CitiesListener citiesListener, BoardController boardController) {
@@ -290,7 +292,8 @@ public class Painter {
 			xTwo = secondLink.getLayoutX();
 			yTwo = secondLink.getLayoutY();
 
-			if (xOne == 0 || yOne == 0 || xTwo == 0 || yTwo == 0)
+			if (Math.abs(xOne - 0) < precision || Math.abs(yOne - 0) < precision || Math.abs(xTwo - 0) < precision
+					|| Math.abs(yTwo - 0) < precision)
 				boardController.repaintBoard();
 			Line line = new Line(xOne + x1, yOne + y1, xTwo + x2, yTwo + y2);
 			line.setStrokeWidth(10);

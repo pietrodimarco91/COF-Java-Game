@@ -12,7 +12,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ClientSideConnector extends UnicastRemoteObject implements ClientSideConnectorInt {
 
-	private ClientGUIController guiController;
+	private transient ClientGUIController guiController;
 
 	public ClientSideConnector() throws RemoteException {
 

@@ -227,7 +227,7 @@ public class ActionController extends ClientGUIController {
 		sendAssistantKing.setToggleGroup(group);
 		if (sendAssistantHills.isSelected())
 			this.regionName = "HILLS";
-		else if (sendAssistantHills.isSelected())
+		else if (sendAssistantCoast.isSelected())
 			this.regionName = "COAST";
 		else if (sendAssistantMountains.isSelected())
 			this.regionName = "MOUNTAINS";

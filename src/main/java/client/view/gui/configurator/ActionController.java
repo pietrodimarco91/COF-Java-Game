@@ -353,7 +353,7 @@ public class ActionController extends ClientGUIController {
 					new Packet(new BuyPermitTileAction("main", this.regionName, this.politicCardColors, this.slot)));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 
@@ -374,7 +374,7 @@ public class ActionController extends ClientGUIController {
 					String.valueOf(this.cityKingBuildEmporium.getText().charAt(0)), this.politicCardColors)));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 
@@ -396,7 +396,7 @@ public class ActionController extends ClientGUIController {
 					new SimpleBuildEmporiumAction("main", Integer.parseInt(this.permitTile.getText()), cityName)));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		} catch (NumberFormatException e) {
 			showAlert("Expected Integer!");
 		}
@@ -421,7 +421,7 @@ public class ActionController extends ClientGUIController {
 					.sendToServer(new Packet(new ElectCouncillorAction("main", this.regionName, this.councillorColor)));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 
@@ -432,7 +432,7 @@ public class ActionController extends ClientGUIController {
 			this.connector.sendToServer(new Packet(new EngageAssistantAction("quick")));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 
@@ -448,7 +448,7 @@ public class ActionController extends ClientGUIController {
 			this.connector.sendToServer(new Packet(new SwitchPermitTilesAction("quick", this.regionName)));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 
@@ -469,7 +469,7 @@ public class ActionController extends ClientGUIController {
 					.sendToServer(new Packet(new SendAssistantAction("quick", this.regionName, this.councillorColor)));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 
@@ -480,7 +480,7 @@ public class ActionController extends ClientGUIController {
 			this.connector.sendToServer(new Packet(new AdditionalMainAction("quick")));
 			stage.close();
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showAlert(e.getMessage());
 		}
 	}
 

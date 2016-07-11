@@ -3,6 +3,7 @@ package client.view.gui;
 import client.controller.ClientGUIController;
 import client.controller.ClientSideConnector;
 import client.controller.SocketInputOutputThread;
+import client.view.cli.ClientOutputPrinter;
 import controller.ServerSideConnectorInt;
 import java.io.File;
 import java.io.IOException;
@@ -86,9 +87,9 @@ public class LoginController extends ClientGUIController {
 				}
 			});
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 

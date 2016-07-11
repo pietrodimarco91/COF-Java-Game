@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import client.view.cli.ClientOutputPrinter;
+
 /**
  * Created by pietro on 06/07/16.
  */
@@ -23,9 +25,9 @@ public final class LoaderResources {
 			loader.setLocation(resourceURL);
 			returned = loader.load();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 		return returned;
 	}
@@ -39,9 +41,9 @@ public final class LoaderResources {
 			loader.load();
 			return loader;
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 
 		return loader;
@@ -52,7 +54,7 @@ public final class LoaderResources {
 		try {
 			resource = new File("src/main/java/client/view/gui/" + s).toURI().toURL();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 		if (resource != null)
 			return resource.toString();

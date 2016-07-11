@@ -3,6 +3,7 @@ package client.view.gui;
 import java.rmi.RemoteException;
 
 import client.controller.ClientGUIController;
+import client.view.cli.ClientOutputPrinter;
 import controller.Packet;
 import controller.ServerSideConnectorInt;
 import filehandler.ConfigObject;
@@ -56,7 +57,7 @@ public class NewConfigController extends ClientGUIController{
 		} catch (NumberFormatException e) {
 			showAlert("Expected integers!");
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			ClientOutputPrinter.printLine(e.getMessage());
 		}
 	}
 	

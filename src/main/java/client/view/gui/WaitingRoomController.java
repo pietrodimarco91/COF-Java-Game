@@ -225,9 +225,9 @@ public class WaitingRoomController extends ClientGUIController {
 				loader.setLocation(resource);
 				parentConnectionStage = loader.load();
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				serverOutput.appendText(e.getMessage());
 			} catch (IOException e) {
-				e.printStackTrace();
+				serverOutput.appendText(e.getMessage());
 			}
 
 			Stage confStage = this.waitingRoomStage;
@@ -249,7 +249,7 @@ public class WaitingRoomController extends ClientGUIController {
 			try {
 				this.clientConnector.setGUIController(boardController);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				serverOutput.appendText(e.getMessage());
 			}
 
 			break;

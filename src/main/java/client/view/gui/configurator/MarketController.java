@@ -439,7 +439,7 @@ public class MarketController extends ClientGUIController{
             stage.close();
 
         } catch (RemoteException e) {
-            e.printStackTrace();
+            showAlert(e.getMessage());
         }
     }
 
@@ -482,7 +482,7 @@ public class MarketController extends ClientGUIController{
             }
 
         } catch (RemoteException e) {
-            e.printStackTrace();
+        	showAlert(e.getMessage());
         } catch (NumberFormatException e) {
             showAlert("Expected Integer!");
         }

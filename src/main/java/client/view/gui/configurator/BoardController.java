@@ -132,7 +132,7 @@ public class BoardController extends ClientGUIController {
 		try {
 			connector.sendToServer(new Packet(String.valueOf(city1), String.valueOf(city2), choice));
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			showErrorMessage(e.getMessage());
 		}
 	}
 

@@ -473,15 +473,18 @@ public class MatchHandler {
 	public void winRewardTokensFromOwnedCities(City city, Player player) {
 		Tile rewardToken = city.winBonus();
 		List<City> ownedCities = board.getNearbyOwnedCities(player, city);
-		PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' has just won the following Reward Token:\n"
-				+ rewardToken + " after building an Emporium in " + city.getName(), board);
+		PubSub.notifyAllClients(players,
+				"Player '" + player.getNickName() + "' has just won the following Reward Token:\n" + rewardToken
+						+ " after building an Emporium in " + city.getName(),
+				board);
 		updateClient(player.getId());
 		bonusManager.takeBonusFromTile(rewardToken, player);
 		for (City ownedCity : ownedCities) {
 			rewardToken = ownedCity.winBonus();
-			player.rewardTokenWon(); //TEST PURPOSES
-			PubSub.notifyAllClients(players, "Player '" + player.getNickName() + "' has just won the following Reward Token:\n"
-					+ rewardToken + " from  " + ownedCity.getName() + ", as it is connected to " + city.getName(),
+			player.rewardTokenWon(); // TEST PURPOSES
+			PubSub.notifyAllClients(players,
+					"Player '" + player.getNickName() + "' has just won the following Reward Token:\n" + rewardToken
+							+ " from  " + ownedCity.getName() + ", as it is connected to " + city.getName(),
 					board);
 			updateClient(player.getId());
 			bonusManager.takeBonusFromTile(rewardToken, player);
@@ -494,14 +497,14 @@ public class MatchHandler {
 		if (board.isEligibleForColorBonus(player, city.getColor())) {
 			try {
 				colorBonus = board.winColorBonus(city.getColor());
-				player.colorBonusWon(); //TEST PURPOSES
+				player.colorBonusWon(); // TEST PURPOSES
 				bonusManager.takeBonusFromTile(colorBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 			try {
 				kingReward = board.winKingReward();
-				player.kingRewardWon(); //TEST PURPOSES
+				player.kingRewardWon(); // TEST PURPOSES
 				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
@@ -510,14 +513,14 @@ public class MatchHandler {
 		if (region.isEligibleForRegionBonus(player)) {
 			try {
 				regionBonus = region.winRegionBonus(player);
-				player.regionBonusWon(); //TEST PURPOSES
+				player.regionBonusWon(); // TEST PURPOSES
 				bonusManager.takeBonusFromTile(regionBonus, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
 			}
 			try {
 				kingReward = board.winKingReward();
-				player.kingRewardWon(); //TEST PURPOSES
+				player.kingRewardWon(); // TEST PURPOSES
 				bonusManager.takeBonusFromTile(kingReward, player);
 			} catch (NoMoreBonusException e) {
 				PubSub.notifyAllClients(players, e.showError(), board);
@@ -638,6 +641,12 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * This method will be invoked when the match is finished and the turns are
+	 * over, and the final points must be assigned to the players, according to
+	 * their position of the nobility track. The first player of the nobility
+	 * track will receive extra points.
+	 */
 	public void assignFinalNobilityTrackPoints() {
 		List<Player> playersInFirstPosition = new ArrayList<>();
 		List<Player> playersInSecondPosition = new ArrayList<>();
@@ -672,6 +681,10 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * The players that own the highest number of permit tiles receive extra
+	 * points at the end of the game.
+	 */
 	public void assignFinalPermitTilePoints() {
 		Iterator<Player> iterator = players.iterator();
 		Player player, tempWinner = null;
@@ -687,6 +700,13 @@ public class MatchHandler {
 			tempWinner.addVictoryPoints(3);
 	}
 
+	/**
+	 * This method is invoked when a player turn is over, and it will invoke the
+	 * nextTurn() method.
+	 * 
+	 * @param player
+	 *            the player whose turn was over
+	 */
 	public void notifyEndOfTurn(Player player) {
 		if (player == currentPlayer) {
 			player.resetTurn();
@@ -695,6 +715,9 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * This method allows to start the turns.
+	 */
 	public void startTurns() {
 		this.gameStatus = GameStatusConstants.PLAY; // we're ready to play!
 		if (!currentPlayer.playerIsOffline()) {
@@ -706,6 +729,9 @@ public class MatchHandler {
 			nextTurn();
 	}
 
+	/**
+	 * This method is invoked to shift the player turn
+	 */
 	public void nextTurn() {
 		if (playerTurnIterator.isLastPlayer(currentPlayer)) {
 			if (GameStatusConstants.FINISH == gameStatus) {
@@ -727,6 +753,9 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * This method is invoked when the Market Sell Time starts
+	 */
 	private void startMarketSellTime() {
 		gameStatus = GameStatusConstants.MARKET_SELL;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Sell Time'", board);
@@ -758,6 +787,9 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * This method is invoked when the market buy time starts
+	 */
 	public void startMarketBuyTime() {
 		this.gameStatus = GameStatusConstants.MARKET_BUY;
 		PubSub.notifyAllClients(players, "Game Status changed to 'Market Buy Time'", board);
@@ -770,6 +802,15 @@ public class MatchHandler {
 		timers.submit(new MarketBuyTurnTimer(playerMarketTurn, this));
 	}
 
+	/**
+	 * This method is invoked when a client send a market buy event in order to
+	 * buy something from the market.
+	 * 
+	 * @param marketEvent
+	 *            the object that contains the useful informations in order to
+	 *            buy something
+	 * @param playerId
+	 */
 	public void buyEvent(MarketEvent marketEvent, int playerId) {
 		if (gameStatus != GameStatusConstants.MARKET_BUY) {
 			sendErrorToClient("Game status isn't 'Market Buy Time'", playerId);
@@ -794,6 +835,15 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * This method is invoked when a client send a market sell event in order to
+	 * sell something in the market.
+	 * 
+	 * @param marketEvent
+	 *            the object that contains the useful informations in order to
+	 *            sell something
+	 * @param playerId
+	 */
 	public void sellEvent(MarketEvent marketEvent, int playerId) {
 		if (gameStatus != GameStatusConstants.MARKET_SELL) {
 			sendErrorToClient("Game status isn't 'Market Sell Time'", playerId);
@@ -847,6 +897,9 @@ public class MatchHandler {
 		}
 	}
 
+	/**
+	 * This method sends to the client the market status
+	 */
 	public void sendMarketStatus() {
 		PubSub.notifyAllClients(players, market.toString(), board);
 		PubSub.sendMarketStatus(players, market);
@@ -860,14 +913,19 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
-			+ "' and ID " + player.getId() + " disconnected!");
+			PubSub.notifyAllClientsExceptOne(player.getId(), players,
+					"Client with nickname '" + player.getNickName() + "' and ID " + player.getId() + " disconnected!");
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
 		}
 	}
 
+	/**
+	 * This method updates the specified client sending the player status
+	 * 
+	 * @param playerId
+	 */
 	public void updateClient(int playerId) {
 		Player player = players.get(playerId);
 		try {
@@ -876,16 +934,16 @@ public class MatchHandler {
 			}
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
-			+ "' and ID " + player.getId() + " disconnected!");
+			PubSub.notifyAllClientsExceptOne(player.getId(), players,
+					"Client with nickname '" + player.getNickName() + "' and ID " + player.getId() + " disconnected!");
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
 		}
 	}
-	
+
 	public synchronized void sendListOfPlayers() {
-		for(Player player : players) {
+		for (Player player : players) {
 			try {
 				if (!player.playerIsOffline()) {
 					List<Player> list = new ArrayList<>();
@@ -894,10 +952,10 @@ public class MatchHandler {
 				}
 			} catch (RemoteException e) {
 				player.setPlayerOffline();
-				PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
-				+ "' and ID " + player.getId() + " disconnected!");
-				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName()
-						+ "' and ID " + player.getId() + " disconnected!");
+				PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '"
+						+ player.getNickName() + "' and ID " + player.getId() + " disconnected!");
+				ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + player.getNickName() + "' and ID "
+						+ player.getId() + " disconnected!");
 
 			}
 		}
@@ -911,8 +969,8 @@ public class MatchHandler {
 				player.getConnector().sendToClient(new Packet(message));
 		} catch (RemoteException e) {
 			player.setPlayerOffline();
-			PubSub.notifyAllClientsExceptOne(player.getId(), players, "Client with nickname '" + player.getNickName()
-			+ "' and ID " + player.getId() + " disconnected!");
+			PubSub.notifyAllClientsExceptOne(player.getId(), players,
+					"Client with nickname '" + player.getNickName() + "' and ID " + player.getId() + " disconnected!");
 			ServerOutputPrinter.printLine("[SERVER] Client with nickname '" + this.players.get(playerId).getNickName()
 					+ "' and ID " + playerId + " disconnected!");
 
@@ -965,7 +1023,7 @@ public class MatchHandler {
 
 	public synchronized void setPlayerNickName(int playerId, String nickName) {
 		this.players.get(playerId).setPlayerNickName(nickName);
-		
+
 	}
 
 	public void chat(int playerId, String messageString) {
@@ -981,12 +1039,12 @@ public class MatchHandler {
 	}
 
 	public void passTurn(int playerId) {
-		if(gameStatus!=GameStatusConstants.PLAY) {
-			sendErrorToClient("Match isn't started yet!",playerId);
+		if (gameStatus != GameStatusConstants.PLAY) {
+			sendErrorToClient("Match isn't started yet!", playerId);
 			return;
 		}
-		if(currentPlayer!=players.get(playerId)) {
-			sendErrorToClient("It's not your turn!",playerId);
+		if (currentPlayer != players.get(playerId)) {
+			sendErrorToClient("It's not your turn!", playerId);
 			return;
 		}
 		notifyEndOfTurn(players.get(playerId));

@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -66,7 +68,7 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private Button playerCards;
-	
+
 	@FXML
 	private GridPane topIndicatorPane;
 
@@ -81,9 +83,9 @@ public class BoardController extends ClientGUIController {
 
 	@FXML
 	private GridPane kingCouncil;
-	
+
 	@FXML
-    private GridPane permitTileSlot;
+	private GridPane permitTileSlot;
 
 	@FXML
 	private FlowPane buttonsPane;
@@ -103,7 +105,7 @@ public class BoardController extends ClientGUIController {
 		balcony.setPickOnBounds(false);
 		councillors.setPickOnBounds(false);
 		citiesListener = new CitiesListener(this);
-		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener,this);
+		painter = new Painter(stackPane, grid1, grid2, grid3, linesPane, citiesListener, this);
 		showButtonPane();
 	}
 
@@ -151,12 +153,41 @@ public class BoardController extends ClientGUIController {
 			repaintPlayerStatus(update.getPlayer());
 			break;
 		case "MESSAGE":
+			handleMessageFromServer(update.getMessage());
 			serverOutput.appendText(update.getMessage() + "\n");
 			break;
 		case "MARKET":
 			setItemsOnSale(update);
 			break;
 		}
+	}
+
+	private void handleMessageFromServer(String message) {
+		if (message.contains("Error")||message.contains("disconnected")) {
+			showErrorMessage(message);
+		}
+		if (message.contains("it's your turn. Perform your actions!") || message.contains("won")
+				|| message.contains("points") || message.contains("bonus")) {
+			showDialogMessage(message);
+		}
+	}
+
+	private void showDialogMessage(String message) {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Turn Informtation");
+		alert.setHeaderText("It's your turn");
+		alert.setContentText(message);
+		alert.showAndWait();
+	}
+
+	private void showErrorMessage(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("ERROR");
+		alert.setHeaderText("Negative response from SERVER");
+		alert.setContentText(message);
+
+		alert.showAndWait();
+
 	}
 
 	private void repaintPlayerStatus(Player player) {
@@ -166,7 +197,7 @@ public class BoardController extends ClientGUIController {
 
 	public void setStage(Stage stage) {
 		this.stage = stage;
-		stage.setOnCloseRequest(event->{
+		stage.setOnCloseRequest(event -> {
 			super.disconnect();
 		});
 	}
@@ -190,9 +221,9 @@ public class BoardController extends ClientGUIController {
 	 */
 	@FXML
 	public void repaintBoard() {
-			painter.repaint(board.getRegions());
-			painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
-			painter.repaintTile(permitTileSlot,this.board.getRegions());
+		painter.repaint(board.getRegions());
+		painter.repaintCouncils(board.getRegions(), board.getKingCouncil(), councillors, kingCouncil);
+		painter.repaintTile(permitTileSlot, this.board.getRegions());
 	}
 
 	/**
@@ -295,6 +326,7 @@ public class BoardController extends ClientGUIController {
 			serverOutput.appendText(e.getMessage());
 		}
 	}
+
 	@FXML
 	public void chatMessage(ActionEvent event) {
 		super.playSound("audio/buttonPressed.mp3");
@@ -303,10 +335,10 @@ public class BoardController extends ClientGUIController {
 		String pathTo = "chatMessage.fxml";
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
-			
+
 			loader.setLocation(resource);
 			Parent page = loader.load();
-			
+
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Chat");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -319,13 +351,13 @@ public class BoardController extends ClientGUIController {
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		}
 	}
-		
+
 	@FXML
 	public void handleMapConfigurationStatus() {
 		citiesListener.setFirstLinkState();
@@ -340,10 +372,10 @@ public class BoardController extends ClientGUIController {
 		String pathTo = "playerCards.fxml";
 		try {
 			resource = new File("src/main/java/client/view/gui/configurator/" + pathTo).toURI().toURL();
-			
+
 			loader.setLocation(resource);
 			Parent page = loader.load();
-			
+
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Your Cards");
 			dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -356,14 +388,14 @@ public class BoardController extends ClientGUIController {
 			cardController.setPlayer(playerStatus);
 			cardController.setScrollPane();
 			cardController.setUnusedPermitTile();
-			cardController.setUsedPermitTile() ;
+			cardController.setUsedPermitTile();
 			dialogStage.showAndWait();
 		} catch (MalformedURLException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		} catch (IOException e) {
 			serverOutput.appendText(e.getMessage());
-			
+
 		}
 	}
 
@@ -386,13 +418,13 @@ public class BoardController extends ClientGUIController {
 		cityNameLabel.getStyleClass().add("simpleLabel");
 		nameBox.getChildren().add(cityNameLabel);
 		bonusBox.getChildren().add(bonus);
-		for(String cityBonus : cityBonuses) {
+		for (String cityBonus : cityBonuses) {
 			Label bonusLabel = new Label(cityBonus);
 			bonusLabel.getStyleClass().add("simpleLabel");
 			bonusBox.getChildren().add(bonusLabel);
 		}
 		emporiumBox.getChildren().add(emporiums);
-		for(Emporium emporium : cityEmporiums) {
+		for (Emporium emporium : cityEmporiums) {
 			Label emporiumLabel = new Label(emporium.getOwner().getNickName());
 			emporiumLabel.getStyleClass().add("simpleLabel");
 			emporiumBox.getChildren().add(emporiumLabel);
@@ -404,29 +436,29 @@ public class BoardController extends ClientGUIController {
 	}
 
 	public void showButtonPane() {
-		Platform.runLater(()->{
+		Platform.runLater(() -> {
 			Button play = new Button("Start Playing");
-			play.setOnAction(event->{
+			play.setOnAction(event -> {
 				handlePlayStatus();
 			});
 			Button market = new Button("Market");
-			market.setOnAction(event->{
+			market.setOnAction(event -> {
 				showMarket();
 			});
 			Button mapConfiguration = new Button("Map Configuration");
-			mapConfiguration.setOnAction(event->{
+			mapConfiguration.setOnAction(event -> {
 				handleMapConfigurationStatus();
 			});
 			Button action = new Button("Perform Action");
-			action.setOnAction(event->{
+			action.setOnAction(event -> {
 				performNewAction();
 			});
 			Button cards = new Button("Your Cards");
-			cards.setOnAction(event->{
+			cards.setOnAction(event -> {
 				showPlayerCards(event);
 			});
 			Button passTurn = new Button("Pass Turn");
-			passTurn.setOnAction(event->{
+			passTurn.setOnAction(event -> {
 				passPlayerTurn();
 			});
 			this.buttonsPane.getChildren().clear();

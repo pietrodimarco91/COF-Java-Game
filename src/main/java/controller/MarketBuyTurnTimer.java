@@ -10,7 +10,7 @@ public class MarketBuyTurnTimer implements Runnable {
 	/**
 	 * Static final variable used to set the time 
 	 */
-	private static final int WAITING_TIME=90000;
+	private static final int WAITING_TIME=30000;
 	/**
 	 * Player to attribute the timer
 	 */

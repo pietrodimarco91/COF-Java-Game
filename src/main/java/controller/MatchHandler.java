@@ -601,7 +601,7 @@ public class MatchHandler {
 	 * @param playerId
 	 */
 	public void evaluateAction(Action action, int playerId) {
-		if (gameStatus != GameStatusConstants.PLAY) {
+		if (gameStatus != GameStatusConstants.PLAY && gameStatus != GameStatusConstants.FINISH) {
 			sendErrorToClient("You can't perform an action at the moment!", playerId);
 			return;
 		}
@@ -780,6 +780,7 @@ public class MatchHandler {
 			if (GameStatusConstants.FINISH == gameStatus) {
 				PubSub.notifyAllClients(this.players, "Turns are over!", board);
 				notifyMatchWinner();
+				setGameStatus(GameStatusConstants.END);
 				return;
 			}
 			currentPlayer = playerTurnIterator.next();

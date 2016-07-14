@@ -9,5 +9,6 @@ public abstract class GameStatusConstants {
 	public static final int MARKET_SELL=4;
 	public static final int MARKET_BUY=5;
 	public static final int FINISH=6;
+	public static final int END=7;
 
 }

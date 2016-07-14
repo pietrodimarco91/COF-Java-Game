@@ -115,7 +115,7 @@ public class PermitTileDeck implements Serializable {
 		case 2: {
 			if (deck.isEmpty())
 				throw new NoSuchElementException();
-			Tile tempPermitTile = uncoveredPermitTile1;
+			Tile tempPermitTile = uncoveredPermitTile2;
 			uncoveredPermitTile2 = deck.remove();
 			return tempPermitTile;
 		}

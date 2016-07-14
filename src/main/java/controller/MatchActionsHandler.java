@@ -170,6 +170,7 @@ public class MatchActionsHandler {
 						board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
+				match.updateClient(playerId);
 				PubSub.notifyAllClients(this.players,
 						"Player " + player.getNickName() + " has won 3 bonus Victory Points!", board);
 			}
@@ -344,6 +345,7 @@ public class MatchActionsHandler {
 						board);
 				match.setGameStatus(GameStatusConstants.FINISH);
 				player.addVictoryPoints(3);
+				match.updateClient(playerId);
 			}
 			if (player.hasPerformedQuickAction()) {
 				match.notifyEndOfTurn(player);

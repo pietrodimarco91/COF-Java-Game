@@ -163,11 +163,11 @@ public class BoardController extends ClientGUIController {
 	}
 
 	private void handleMessageFromServer(String message) {
-		if (message.indexOf("Error") > -1 || message.indexOf("disconnected") > -1) {
+		if (message.indexOf("Error") > -1) {
 			showErrorMessage(message);
 		}
 		if (message.indexOf("it's your turn. Perform your actions!") > -1 || message.indexOf("won") > -1
-				|| message.indexOf("points") > -1 || message.indexOf("bonus") > -1 || message.indexOf("market")>-1 || message.indexOf("winner")>-1) {
+				|| message.indexOf("points") > -1 || message.indexOf("bonus") > -1 || message.indexOf("market")>-1 || message.indexOf("winner")>-1 || message.indexOf("disconnected") > -1) {
 			showDialogMessage(message);
 		}
 	}
